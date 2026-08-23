@@ -151,6 +151,22 @@ func (h *harness) mustDo(method, path, token string, body any, wantStatus int) m
 	return out
 }
 
+// firstFieldError returns the field path of the first validation error in a 400 body,
+// which is how a test asserts not just that a body was rejected but where.
+func firstFieldError(t *testing.T, rec *httptest.ResponseRecorder) string {
+	t.Helper()
+	var body struct {
+		Fields []struct{ Field, Message string } `json:"fieldErrors"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
+		t.Fatalf("decode field errors: %v", err)
+	}
+	if len(body.Fields) == 0 {
+		t.Fatalf("no field errors in %s", rec.Body.String())
+	}
+	return body.Fields[0].Field
+}
+
 // seedSSHEndpoint creates an SSH endpoint as admin and returns its id.
 func (h *harness) seedSSHEndpoint(name string) string {
 	h.t.Helper()
@@ -1533,31 +1549,43 @@ func TestProcessWithoutABatchSectionIsStillAProcess(t *testing.T) {
 		tokenAlice, map[string]any{"command": "hostname"}, http.StatusCreated)
 }
 
-// The template mappings are a section of the process too: written with it, read back
-// nested in it, and replaced wholesale by an update.
+// The template mappings are part of the batchProcess section: written with it, read
+// back nested in it, and replaced wholesale by an update.
 func TestProcessCarriesItsTemplateMappings(t *testing.T) {
 	h := newHarness(t)
 	deployment, inputID, outputID := h.seedDeploymentWithIO("mappings")
-	batch := map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+	batch := func(extra map[string]any) map[string]any {
+		body := map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+		}
+		for k, v := range extra {
+			body[k] = v
+		}
+		return body
 	}
 
 	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
-		"processType":  "BATCH_JOB",
-		"batchProcess": batch,
-		"inputMappings": []any{
-			map[string]any{"templateInputId": inputID, "value": `{"value": "/scratch/in.fasta"}`},
-		},
-		"outputMappings": []any{
-			map[string]any{"templateOutputId": outputID, "value": `{"value": "/scratch/out.pdb"}`},
-		},
+		"processType": "BATCH_JOB",
+		"batchProcess": batch(map[string]any{
+			"inputMappings": []any{
+				map[string]any{"templateInputId": inputID, "value": `{"value": "/scratch/in.fasta"}`},
+			},
+			"outputMappings": []any{
+				map[string]any{"templateOutputId": outputID, "value": `{"value": "/scratch/out.pdb"}`},
+			},
+		}),
 	}, http.StatusCreated)
 
 	processID := created["processId"].(string)
-	inputs := created["inputMappings"].([]any)
+	// The mappings are read back inside the section that owns them, not beside it.
+	if _, ok := created["inputMappings"]; ok {
+		t.Error("inputMappings appeared at the top level of the response")
+	}
+	section := created["batchProcess"].(map[string]any)
+	inputs := section["inputMappings"].([]any)
 	if len(inputs) != 1 {
-		t.Fatalf("inputMappings = %v, want one", created["inputMappings"])
+		t.Fatalf("inputMappings = %v, want one", section["inputMappings"])
 	}
 	first := inputs[0].(map[string]any)
 	if first["templateInputId"] != inputID {
@@ -1566,39 +1594,58 @@ func TestProcessCarriesItsTemplateMappings(t *testing.T) {
 	if first["templateInputMappingId"] == "" || first["templateInputMappingId"] == nil {
 		t.Error("templateInputMappingId was not assigned")
 	}
-	if len(created["outputMappings"].([]any)) != 1 {
-		t.Errorf("outputMappings = %v, want one", created["outputMappings"])
+	if len(section["outputMappings"].([]any)) != 1 {
+		t.Errorf("outputMappings = %v, want one", section["outputMappings"])
 	}
 
 	// An update replaces the set rather than merging into it, so dropping a mapping
 	// from the body drops it from the process.
 	updated := h.mustDo(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
-		"processType":  "BATCH_JOB",
-		"batchProcess": batch,
-		"inputMappings": []any{
-			map[string]any{"templateInputId": inputID, "value": `{"value": "/scratch/other.fasta"}`},
-		},
+		"processType": "BATCH_JOB",
+		"batchProcess": batch(map[string]any{
+			"inputMappings": []any{
+				map[string]any{"templateInputId": inputID, "value": `{"value": "/scratch/other.fasta"}`},
+			},
+		}),
 	}, http.StatusOK)
-	if got := updated["inputMappings"].([]any)[0].(map[string]any)["value"]; got != `{"value": "/scratch/other.fasta"}` {
+	updatedSection := updated["batchProcess"].(map[string]any)
+	if got := updatedSection["inputMappings"].([]any)[0].(map[string]any)["value"]; got != `{"value": "/scratch/other.fasta"}` {
 		t.Errorf("value after update = %v, want the replacement", got)
 	}
-	if len(updated["outputMappings"].([]any)) != 0 {
-		t.Errorf("outputMappings after update = %v, want the omitted set emptied", updated["outputMappings"])
-	}
-	if rec := h.do(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
-		"processType":   "BATCH_JOB",
-		"batchProcess":  batch,
-		"inputMappings": []any{map[string]any{"templateInputId": "  "}},
-	}); rec.Code != http.StatusBadRequest {
-		t.Errorf("blank template input id: status = %d, want 400", rec.Code)
+	if len(updatedSection["outputMappings"].([]any)) != 0 {
+		t.Errorf("outputMappings after update = %v, want the omitted set emptied", updatedSection["outputMappings"])
 	}
 
-	// Deleting the process takes the mappings with it.
+	// A mapping is validated inside the section, so its field path is reported there.
+	rec := h.do(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": batch(map[string]any{
+			"inputMappings": []any{map[string]any{"templateInputId": "  "}},
+		}),
+	})
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("blank template input id: status = %d, want 400", rec.Code)
+	} else if field := firstFieldError(t, rec); field != "batchProcess.inputMappings[0].templateInputId" {
+		t.Errorf("field = %q, want it reported under the section", field)
+	}
+
+	// Deleting the process takes the batch section with it, and the mappings with that.
+	batchProcessID := updatedSection["batchProcessId"].(string)
 	h.mustDo(http.MethodDelete, "/api/v1/processes/"+processID, tokenAdmin, nil, http.StatusNoContent)
 	var remaining int64
-	h.db.Table("process_template_input_mappings").Where("process_id = ?", processID).Count(&remaining)
+	h.db.Table("process_template_input_mappings").Where("batch_process_id = ?", batchProcessID).Count(&remaining)
 	if remaining != 0 {
 		t.Error("the process's input mappings survived the delete")
+	}
+
+	// A process with no batch section has no field to send mappings in at all, so a
+	// body carrying them at the top level is ignored rather than stored.
+	noBatch := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType":   "CLOUD_JOB",
+		"inputMappings": []any{map[string]any{"templateInputId": inputID}},
+	}, http.StatusCreated)
+	if noBatch["batchProcess"] != nil {
+		t.Errorf("batchProcess = %v, want null", noBatch["batchProcess"])
 	}
 }
 

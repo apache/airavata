@@ -31,6 +31,12 @@ type BatchJobProcess struct {
 
 	JobID   *string `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
 	JobName *string `gorm:"column:job_name;type:varchar(255)" json:"jobName,omitempty"`
+
+	// The values this run supplies for the deployment template's declared inputs and
+	// outputs. They hang off the batch process rather than off the process because the
+	// declarations they name belong to the deployment, which only a BATCH_JOB has.
+	InputMappings  []*TemplateInputMapping  `gorm:"foreignKey:BatchProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"inputMappings,omitempty"`
+	OutputMappings []*TemplateOutputMapping `gorm:"foreignKey:BatchProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"outputMappings,omitempty"`
 }
 
 // TableName returns the table backing BatchJobProcess.

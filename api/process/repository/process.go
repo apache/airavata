@@ -31,8 +31,8 @@ func (r *ProcessRepository) WithTx(tx *gorm.DB) *ProcessRepository { return &Pro
 func (r *ProcessRepository) query(ctx context.Context) *gorm.DB {
 	return r.db.WithContext(ctx).
 		Preload("BatchProcess.BatchJobConfig").
-		Preload("InputMappings").
-		Preload("OutputMappings")
+		Preload("BatchProcess.InputMappings").
+		Preload("BatchProcess.OutputMappings")
 }
 
 // FindAll returns every process.
@@ -78,7 +78,7 @@ func (r *ProcessRepository) Save(ctx context.Context, p *model.Process) error {
 }
 
 // Delete removes a process. Its BeforeDelete takes the statuses and the batch process
-// with it, and the database cascades the tasks and the mappings.
+// with it — and the mappings with that — and the database cascades the tasks.
 func (r *ProcessRepository) Delete(ctx context.Context, p *model.Process) error {
 	return r.db.WithContext(ctx).Delete(p).Error
 }
@@ -93,14 +93,14 @@ func (r *ProcessRepository) SaveBatchJobConfig(ctx context.Context, c *applicati
 	return r.db.WithContext(ctx).Save(c).Error
 }
 
-// ReplaceInputMappings swaps a process's input mapping set for the given rows.
+// ReplaceInputMappings swaps a batch process's input mapping set for the given rows.
 //
 // Wholesale replacement, matching how a template's declarations are replaced: the ids
 // are not part of the request, so there is nothing to match an incoming mapping to an
 // existing row by.
-func (r *ProcessRepository) ReplaceInputMappings(ctx context.Context, processID string, mappings []*model.TemplateInputMapping) error {
+func (r *ProcessRepository) ReplaceInputMappings(ctx context.Context, batchProcessID string, mappings []*model.TemplateInputMapping) error {
 	db := r.db.WithContext(ctx)
-	if err := db.Where("process_id = ?", processID).Delete(&model.TemplateInputMapping{}).Error; err != nil {
+	if err := db.Where("batch_process_id = ?", batchProcessID).Delete(&model.TemplateInputMapping{}).Error; err != nil {
 		return err
 	}
 	if len(mappings) == 0 {
@@ -109,10 +109,10 @@ func (r *ProcessRepository) ReplaceInputMappings(ctx context.Context, processID 
 	return db.Create(mappings).Error
 }
 
-// ReplaceOutputMappings swaps a process's output mapping set for the given rows.
-func (r *ProcessRepository) ReplaceOutputMappings(ctx context.Context, processID string, mappings []*model.TemplateOutputMapping) error {
+// ReplaceOutputMappings swaps a batch process's output mapping set for the given rows.
+func (r *ProcessRepository) ReplaceOutputMappings(ctx context.Context, batchProcessID string, mappings []*model.TemplateOutputMapping) error {
 	db := r.db.WithContext(ctx)
-	if err := db.Where("process_id = ?", processID).Delete(&model.TemplateOutputMapping{}).Error; err != nil {
+	if err := db.Where("batch_process_id = ?", batchProcessID).Delete(&model.TemplateOutputMapping{}).Error; err != nil {
 		return err
 	}
 	if len(mappings) == 0 {

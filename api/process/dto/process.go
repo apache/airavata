@@ -3,8 +3,9 @@
 // There is one resource here — the process — and everything a run needs hangs off it.
 // A batch job is not a resource of its own: what a BATCH_JOB needs beyond any other
 // process is carried in the batchProcess section of a process body, created with the
-// process, read back nested inside it, and removed with it. The same holds for the
-// template input and output mappings.
+// process, read back nested inside it, and removed with it. The template input and
+// output mappings are part of that section rather than of the process: the declarations
+// they name come from the deployment's template, which only a BATCH_JOB has.
 package dto
 
 import (
@@ -30,6 +31,11 @@ type BatchProcessRequest struct {
 	JobID          *string                               `json:"jobId"`
 	JobName        *string                               `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigRequest `json:"batchJobConfig"`
+
+	// The values this run supplies for the deployment template's declared inputs and
+	// outputs. Both sets are replaced wholesale by an update.
+	InputMappings  []InputMapping  `json:"inputMappings"`
+	OutputMappings []OutputMapping `json:"outputMappings"`
 }
 
 // Validate implements httpx.Validator.
@@ -40,6 +46,12 @@ func (r *BatchProcessRequest) Validate() []httpx.FieldError {
 		c.Add("batchJobConfig", "Batch job config cannot be null")
 	} else {
 		c.Nested("batchJobConfig", r.BatchJobConfig)
+	}
+	for i := range r.InputMappings {
+		c.Nested(indexed("inputMappings", i), &r.InputMappings[i])
+	}
+	for i := range r.OutputMappings {
+		c.Nested(indexed("outputMappings", i), &r.OutputMappings[i])
 	}
 	return c.Fields()
 }
@@ -52,6 +64,9 @@ type BatchProcessResponse struct {
 	JobID          *string                                `json:"jobId"`
 	JobName        *string                                `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigResponse `json:"batchJobConfig"`
+
+	InputMappings  []InputMapping  `json:"inputMappings"`
+	OutputMappings []OutputMapping `json:"outputMappings"`
 }
 
 // InputMapping binds one of the template's declared inputs to a value for this run.
@@ -101,9 +116,6 @@ type Request struct {
 
 	// BatchProcess is required when ProcessType is BATCH_JOB and rejected otherwise.
 	BatchProcess *BatchProcessRequest `json:"batchProcess"`
-
-	InputMappings  []InputMapping  `json:"inputMappings"`
-	OutputMappings []OutputMapping `json:"outputMappings"`
 }
 
 // Validate implements httpx.Validator.
@@ -128,13 +140,6 @@ func (r *Request) Validate() []httpx.FieldError {
 	case r.BatchProcess != nil:
 		c.Nested("batchProcess", r.BatchProcess)
 	}
-
-	for i := range r.InputMappings {
-		c.Nested(indexed("inputMappings", i), &r.InputMappings[i])
-	}
-	for i := range r.OutputMappings {
-		c.Nested(indexed("outputMappings", i), &r.OutputMappings[i])
-	}
 	return c.Fields()
 }
 
@@ -147,20 +152,15 @@ type Response struct {
 	LastStatusID *string            `json:"lastStatusId"`
 
 	BatchProcess *BatchProcessResponse `json:"batchProcess"`
-
-	InputMappings  []InputMapping  `json:"inputMappings"`
-	OutputMappings []OutputMapping `json:"outputMappings"`
 }
 
 func ToResponse(p *model.Process) Response {
 	return Response{
-		ProcessID:      p.ID,
-		UserID:         p.OwnerID,
-		ProcessType:    p.ProcessType,
-		LastStatusID:   p.LastStatusID,
-		BatchProcess:   ToBatchProcessResponse(p.BatchProcess),
-		InputMappings:  ToInputMappings(p.InputMappings),
-		OutputMappings: ToOutputMappings(p.OutputMappings),
+		ProcessID:    p.ID,
+		UserID:       p.OwnerID,
+		ProcessType:  p.ProcessType,
+		LastStatusID: p.LastStatusID,
+		BatchProcess: ToBatchProcessResponse(p.BatchProcess),
 	}
 }
 
@@ -184,6 +184,8 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		JobID:          b.JobID,
 		JobName:        b.JobName,
 		BatchJobConfig: applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
+		InputMappings:  ToInputMappings(b.InputMappings),
+		OutputMappings: ToOutputMappings(b.OutputMappings),
 	}
 }
 
@@ -225,15 +227,15 @@ func ToOutputMappings(in []*model.TemplateOutputMapping) []OutputMapping {
 	return out
 }
 
-// ToInputMappingEntities builds the rows for a process's mapping set. Ids are left
-// unset so BeforeCreate assigns them.
-func ToInputMappingEntities(processID string, in []InputMapping) []*model.TemplateInputMapping {
+// ToInputMappingEntities builds the rows for a batch process's mapping set. Ids are
+// left unset so BeforeCreate assigns them.
+func ToInputMappingEntities(batchProcessID string, in []InputMapping) []*model.TemplateInputMapping {
 	out := make([]*model.TemplateInputMapping, 0, len(in))
 	for i := range in {
 		m := &in[i]
 		templateInputID := m.TemplateInputID
 		out = append(out, &model.TemplateInputMapping{
-			ProcessID:       &processID,
+			BatchProcessID:  &batchProcessID,
 			TemplateInputID: &templateInputID,
 			Value:           m.Value,
 		})
@@ -241,14 +243,14 @@ func ToInputMappingEntities(processID string, in []InputMapping) []*model.Templa
 	return out
 }
 
-// ToOutputMappingEntities builds the rows for a process's output mapping set.
-func ToOutputMappingEntities(processID string, in []OutputMapping) []*model.TemplateOutputMapping {
+// ToOutputMappingEntities builds the rows for a batch process's output mapping set.
+func ToOutputMappingEntities(batchProcessID string, in []OutputMapping) []*model.TemplateOutputMapping {
 	out := make([]*model.TemplateOutputMapping, 0, len(in))
 	for i := range in {
 		m := &in[i]
 		templateOutputID := m.TemplateOutputID
 		out = append(out, &model.TemplateOutputMapping{
-			ProcessID:        &processID,
+			BatchProcessID:   &batchProcessID,
 			TemplateOutputID: &templateOutputID,
 			Value:            m.Value,
 		})

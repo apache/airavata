@@ -922,10 +922,12 @@ carries hangs off it, and nothing that hangs off it is addressable on its own.
 
 What a run needs beyond an owner and a type depends on what kind of run it is, and that
 is carried in a **section** of the process body rather than in a resource of its own. A
-`BATCH_JOB` carries a `batchProcess` section — the deployment being run and the
-resources this run asks for. Every process may carry `inputMappings` and
-`outputMappings`, the values it supplies for its template's declared inputs and
-outputs.
+`BATCH_JOB` carries a `batchProcess` section — the deployment being run, the resources
+this run asks for, and the values it supplies for the deployment template's declared
+inputs and outputs. Those `inputMappings` and `outputMappings` sit inside the section
+rather than beside it, since the declarations they name come from the deployment's
+template, which only a `BATCH_JOB` has. A process carrying no `batchProcess` therefore
+has nowhere to carry mappings at all.
 
 So there is no `POST /api/v1/batch-processes`, and no batch process id to address: a
 batch process is created with its process, read back nested inside it, corrected by
@@ -970,14 +972,14 @@ curl -s -X POST localhost:9095/api/v1/processes \
         "allocation": "MY-ALLOC",
         "nodes": 1,
         "gpus": 2
-      }
-    },
-    "inputMappings": [
-      { "templateInputId": "'"$INPUT_ID"'", "value": "{\"value\": \"/scratch/input.fasta\"}" }
-    ],
-    "outputMappings": [
-      { "templateOutputId": "'"$OUTPUT_ID"'", "value": "{\"value\": \"/scratch/out/\"}" }
-    ]
+      },
+      "inputMappings": [
+        { "templateInputId": "'"$INPUT_ID"'", "value": "{\"value\": \"/scratch/input.fasta\"}" }
+      ],
+      "outputMappings": [
+        { "templateOutputId": "'"$OUTPUT_ID"'", "value": "{\"value\": \"/scratch/out/\"}" }
+      ]
+    }
   }'
 ```
 
@@ -985,8 +987,6 @@ curl -s -X POST localhost:9095/api/v1/processes \
 |---|---|---|
 | `processType` | string | required, one of `BATCH_JOB`, `CLOUD_JOB` |
 | `batchProcess` | object \| null | required when `processType` is `BATCH_JOB`, rejected otherwise |
-| `inputMappings` | array | optional; replaced wholesale by a `PUT` |
-| `outputMappings` | array | optional; replaced wholesale by a `PUT` |
 
 There is no `userId`: ownership comes from the token.
 
@@ -998,13 +998,15 @@ There is no `userId`: ownership comes from the token.
 | `batchJobConfig` | object | required — the same shape a deployment carries |
 | `jobName` | string \| null | optional |
 | `jobId` | string \| null | optional. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded afterwards |
+| `inputMappings` | array | optional; replaced wholesale by a `PUT` |
+| `outputMappings` | array | optional; replaced wholesale by a `PUT` |
 
 The resource request is carried here rather than copied from the deployment's default,
 which is what lets a caller ask for different resources for a particular run. Each run
 owns its own `batchJobConfig` row, distinct from the deployment's, and deleting the
 process deletes it.
 
-**`inputMappings` / `outputMappings`**
+**`batchProcess.inputMappings` / `batchProcess.outputMappings`**
 
 | Field | Type | Notes |
 |---|---|---|
@@ -1015,7 +1017,10 @@ process deletes it.
 A `PUT` replaces each set wholesale rather than merging into it, the same way a
 template's declarations are replaced — the mapping ids are not part of the request, so
 there is nothing to match an incoming mapping to an existing row by. Omitting a set
-empties it.
+empties it. Validation errors are reported under the section that carries them, as
+`batchProcess.inputMappings[0].templateInputId`.
+
+Deleting the process deletes the batch section, and the mappings with it.
 
 **Response — `201 Created`**
 
@@ -1036,16 +1041,16 @@ empties it.
       "allocation": "MY-ALLOC",
       "nodes": 1,
       "gpus": 2
-    }
-  },
-  "inputMappings": [
-    {
-      "templateInputMappingId": "1a2b3c4d-5e6f-4708-8192-a3b4c5d6e7f8",
-      "templateInputId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
-      "value": "{\"value\": \"/scratch/input.fasta\"}"
-    }
-  ],
-  "outputMappings": []
+    },
+    "inputMappings": [
+      {
+        "templateInputMappingId": "1a2b3c4d-5e6f-4708-8192-a3b4c5d6e7f8",
+        "templateInputId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+        "value": "{\"value\": \"/scratch/input.fasta\"}"
+      }
+    ],
+    "outputMappings": []
+  }
 }
 ```
 

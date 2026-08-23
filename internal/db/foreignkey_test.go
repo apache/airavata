@@ -57,9 +57,9 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"batch_processes", "deployment_id", "batch_application_deployments", "deployment_id"},
 		{"batch_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
 		{"process_statuses", "process_id", "processes", "process_id"},
-		{"process_template_input_mappings", "process_id", "processes", "process_id"},
+		{"process_template_input_mappings", "batch_process_id", "batch_processes", "batch_process_id"},
 		{"process_template_input_mappings", "template_input_id", "application_template_inputs", "input_id"},
-		{"process_template_output_mappings", "process_id", "processes", "process_id"},
+		{"process_template_output_mappings", "batch_process_id", "batch_processes", "batch_process_id"},
 		{"process_template_output_mappings", "template_output_id", "application_template_outputs", "output_id"},
 		// The tasks name their process through a real foreign key, so a task cannot
 		// outlive the run it belongs to.

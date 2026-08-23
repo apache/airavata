@@ -113,12 +113,13 @@ func (s *ProcessService) Create(ctx context.Context, req *dto.Request) (*dto.Res
 		}
 
 		if req.BatchProcess != nil {
-			if _, err := s.saveBatchProcess(ctx, tx, proc.ID, nil, req.BatchProcess); err != nil {
+			batch, err := s.saveBatchProcess(ctx, tx, proc.ID, nil, req.BatchProcess)
+			if err != nil {
 				return err
 			}
-		}
-		if err := s.saveMappings(ctx, tx, proc.ID, req); err != nil {
-			return err
+			if err := s.saveMappings(ctx, tx, batch.ID, req.BatchProcess); err != nil {
+				return err
+			}
 		}
 
 		// Recorded in the same transaction as the process itself, so a caller never
@@ -163,12 +164,13 @@ func (s *ProcessService) Update(ctx context.Context, id string, req *dto.Request
 		}
 
 		if req.BatchProcess != nil {
-			if _, err := s.saveBatchProcess(ctx, tx, proc.ID, proc.BatchProcess, req.BatchProcess); err != nil {
+			batch, err := s.saveBatchProcess(ctx, tx, proc.ID, proc.BatchProcess, req.BatchProcess)
+			if err != nil {
 				return err
 			}
-		}
-		if err := s.saveMappings(ctx, tx, proc.ID, req); err != nil {
-			return err
+			if err := s.saveMappings(ctx, tx, batch.ID, req.BatchProcess); err != nil {
+				return err
+			}
 		}
 		return s.render(ctx, processes, proc.ID, &out)
 	})
@@ -241,13 +243,17 @@ func (s *ProcessService) saveBatchProcess(
 	return batch, nil
 }
 
-// saveMappings replaces a process's template input and output mapping sets.
-func (s *ProcessService) saveMappings(ctx context.Context, tx *gorm.DB, processID string, req *dto.Request) error {
+// saveMappings replaces a batch process's template input and output mapping sets.
+//
+// The sets are part of the batchProcess section rather than of the process, so this
+// runs after the section has been written and is keyed by its id. A process with no
+// batch section carries no mappings at all — there is no field to send them in.
+func (s *ProcessService) saveMappings(ctx context.Context, tx *gorm.DB, batchProcessID string, req *dto.BatchProcessRequest) error {
 	processes := s.processes.WithTx(tx)
-	if err := processes.ReplaceInputMappings(ctx, processID, dto.ToInputMappingEntities(processID, req.InputMappings)); err != nil {
+	if err := processes.ReplaceInputMappings(ctx, batchProcessID, dto.ToInputMappingEntities(batchProcessID, req.InputMappings)); err != nil {
 		return err
 	}
-	return processes.ReplaceOutputMappings(ctx, processID, dto.ToOutputMappingEntities(processID, req.OutputMappings))
+	return processes.ReplaceOutputMappings(ctx, batchProcessID, dto.ToOutputMappingEntities(batchProcessID, req.OutputMappings))
 }
 
 // render reloads a process and writes its response into out.

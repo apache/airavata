@@ -16,9 +16,9 @@ type TemplateInputMapping struct {
 	TemplateInputID *string                    `gorm:"column:template_input_id;type:varchar(36);index" json:"templateInputId,omitempty"`
 	TemplateInput   *application.TemplateInput `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"templateInput,omitempty"`
 
-	// Owned by Process.InputMappings, which declares the cascade; only the key is
-	// held here.
-	ProcessID *string `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	// Owned by BatchJobProcess.InputMappings, which declares the cascade; only the
+	// key is held here.
+	BatchProcessID *string `gorm:"column:batch_process_id;type:varchar(36);index" json:"batchProcessId,omitempty"`
 
 	// Value is a JSON document, either {"value": "..."} for a single value or
 	// {"values": [...]} for a list.
@@ -32,9 +32,9 @@ type TemplateOutputMapping struct {
 	TemplateOutputID *string                     `gorm:"column:template_output_id;type:varchar(36);index" json:"templateOutputId,omitempty"`
 	TemplateOutput   *application.TemplateOutput `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"templateOutput,omitempty"`
 
-	// Owned by Process.OutputMappings, which declares the cascade; only the key is
-	// held here.
-	ProcessID *string `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	// Owned by BatchJobProcess.OutputMappings, which declares the cascade; only the
+	// key is held here.
+	BatchProcessID *string `gorm:"column:batch_process_id;type:varchar(36);index" json:"batchProcessId,omitempty"`
 
 	// Value is a JSON document, either {"value": "..."} for a single value or
 	// {"values": [...]} for a list.
@@ -85,9 +85,6 @@ type Process struct {
 	// BatchProcess is present exactly when ProcessType is BATCH_JOB. It is owned by
 	// the process, not shared with it: deleting the process deletes it too.
 	BatchProcess *BatchJobProcess `gorm:"foreignKey:ProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"batchProcess,omitempty"`
-
-	InputMappings  []*TemplateInputMapping  `gorm:"foreignKey:ProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"inputMappings,omitempty"`
-	OutputMappings []*TemplateOutputMapping `gorm:"foreignKey:ProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"outputMappings,omitempty"`
 }
 
 // TableName returns the table backing Process.
@@ -117,10 +114,11 @@ func (p *Process) BeforeCreate(*gorm.DB) error {
 // The batch process is deleted through GORM rather than left to its ON DELETE CASCADE
 // so that its own AfterDelete fires and takes the owned BatchJobConfig with it. A
 // cascade in the database removes the row without ever calling into Go, which would
-// leave the config orphaned.
+// leave the config orphaned. Deleting it also takes the template mappings, which hang
+// off the batch process and cascade with it.
 //
-// The tasks and the template mappings need neither: their foreign keys cascade and
-// they own nothing outside themselves.
+// The tasks need neither: their foreign key cascades and they own nothing outside
+// themselves.
 func (p *Process) BeforeDelete(tx *gorm.DB) error {
 	if err := tx.Where("process_id = ?", p.ID).Delete(&ProcessStatus{}).Error; err != nil {
 		return err
