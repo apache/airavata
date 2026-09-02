@@ -7,20 +7,6 @@ import (
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
-type DataStorageType string
-
-const (
-	DataStorageTypeSCP DataStorageType = "SCP"
-)
-
-func (t DataStorageType) Valid() bool {
-	switch t {
-	case DataStorageTypeSCP:
-		return true
-	}
-	return false
-}
-
 // ProvisionStatus is the lifecycle state of a registered dataset.
 type ProvisionStatus string
 

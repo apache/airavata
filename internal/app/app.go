@@ -44,16 +44,16 @@ type Services struct {
 	GroupMember *iamsvc.GroupMemberService
 
 	// Credentials.
-	SSHKey            *credentialssvc.SSHKeyService
-	SSHUserCredential *credentialssvc.SSHUserCredentialService
+	SSHKey                       *credentialssvc.SSHKeyService
+	SSHUserCredential            *credentialssvc.SSHUserCredentialService
+	SSHEndpoint                  *credentialssvc.SSHEndpointService
+	SSHEndpointCredential        *credentialssvc.SSHEndpointCredentialService
+	SSHEndpointCredentialSharing *credentialssvc.SSHEndpointCredentialSharingService
+	CredentialAccess             *credentialssvc.CredentialAccess
 
 	// Compute.
-	SSHEndpoint                  *computesvc.SSHEndpointService
-	Cluster                      *computesvc.ClusterService
-	ClusterPartition             *computesvc.ClusterPartitionService
-	SSHEndpointCredential        *computesvc.SSHEndpointCredentialService
-	SSHEndpointCredentialSharing *computesvc.SSHEndpointCredentialSharingService
-	CredentialAccess             *computesvc.CredentialAccess
+	Cluster          *computesvc.ClusterService
+	ClusterPartition *computesvc.ClusterPartitionService
 
 	// Application catalogue.
 	Template        *applicationsvc.TemplateService
@@ -86,11 +86,11 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 	groupMembers := iamrepo.NewGroupMemberRepository(db)
 	sshKeys := credentialsrepo.NewSSHKeyRepository(db)
 	sshCreds := credentialsrepo.NewSSHUserCredentialRepository(db)
-	endpoints := computerepo.NewSSHEndpointRepository(db)
+	endpoints := credentialsrepo.NewSSHEndpointRepository(db)
+	bindings := credentialsrepo.NewSSHEndpointCredentialRepository(db)
+	bindingShares := credentialsrepo.NewSSHEndpointCredentialSharingRepository(db)
 	clusters := computerepo.NewClusterRepository(db)
 	partitions := computerepo.NewClusterPartitionRepository(db)
-	bindings := computerepo.NewSSHEndpointCredentialRepository(db)
-	bindingShares := computerepo.NewSSHEndpointCredentialSharingRepository(db)
 	templates := applicationrepo.NewTemplateRepository(db)
 	deployments := applicationrepo.NewBatchDeploymentRepository(db)
 	storages := datarepo.NewSCPDataStorageRepository(db)
@@ -109,7 +109,7 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 	// the same transaction, and CredentialAccess because data products resolve
 	// access to their storage's submission credential through it.
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
-	bindingAccess := computesvc.NewCredentialAccess(bindings, bindingShares, groupMembers)
+	bindingAccess := credentialssvc.NewCredentialAccess(bindings, bindingShares, groupMembers)
 
 	return &Services{
 		Config: cfg,
@@ -119,15 +119,15 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 		Group:       iamsvc.NewGroupService(db, groups, groupMembers, users),
 		GroupMember: iamsvc.NewGroupMemberService(db, groups, groupMembers, users),
 
-		SSHKey:            credentialssvc.NewSSHKeyService(db, sshKeys, sshCreds),
-		SSHUserCredential: credentialssvc.NewSSHUserCredentialService(db, sshCreds, sshKeys),
-
-		SSHEndpoint:                  computesvc.NewSSHEndpointService(db, endpoints, clusters, bindings),
-		Cluster:                      computesvc.NewClusterService(db, clusters, endpoints),
-		ClusterPartition:             computesvc.NewClusterPartitionService(db, partitions, clusters),
-		SSHEndpointCredential:        computesvc.NewSSHEndpointCredentialService(db, bindings, bindingShares, endpoints, sshCreds, users, groupMembers),
-		SSHEndpointCredentialSharing: computesvc.NewSSHEndpointCredentialSharingService(db, bindings, bindingShares, groups, users, groupMembers),
+		SSHKey:                       credentialssvc.NewSSHKeyService(db, sshKeys, sshCreds),
+		SSHUserCredential:            credentialssvc.NewSSHUserCredentialService(db, sshCreds, sshKeys),
+		SSHEndpoint:                  credentialssvc.NewSSHEndpointService(db, endpoints, clusters, bindings),
+		SSHEndpointCredential:        credentialssvc.NewSSHEndpointCredentialService(db, bindings, bindingShares, endpoints, sshCreds, users, groupMembers),
+		SSHEndpointCredentialSharing: credentialssvc.NewSSHEndpointCredentialSharingService(db, bindings, bindingShares, groups, users, groupMembers),
 		CredentialAccess:             bindingAccess,
+
+		Cluster:          computesvc.NewClusterService(db, clusters, endpoints),
+		ClusterPartition: computesvc.NewClusterPartitionService(db, partitions, clusters),
 
 		Template:        applicationsvc.NewTemplateService(db, templates, deployments),
 		BatchDeployment: applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters, bindings),
@@ -137,7 +137,7 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 		DataProduct:           datasvc.NewDataProductService(db, products, productShares, storages, storageShares, bindingAccess, users, groupMembers),
 		DataProductSharing:    datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers),
 
-		Process:                processsvc.NewProcessService(db, processes, deployments, users, statusSvc),
+		Process:                processsvc.NewProcessService(db, processes, deployments, bindingAccess, users, statusSvc),
 		ProcessStatus:          statusSvc,
 		DataStagingTask:        processsvc.NewDataStagingTaskService(db, stagingTasks, processes),
 		JobSubmissionTask:      processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes),

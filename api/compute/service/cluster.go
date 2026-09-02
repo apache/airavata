@@ -1,5 +1,5 @@
-// Package service holds the compute vertical's business rules, including the sharing
-// model that decides who may use an SSH endpoint credential.
+// Package service holds the compute vertical's business rules: the cluster catalogue
+// and the partitions it is carved into.
 package service
 
 import (
@@ -14,6 +14,7 @@ import (
 	dto "github.com/apache/airavata/api/compute/dto"
 	model "github.com/apache/airavata/api/compute/model"
 	"github.com/apache/airavata/api/compute/repository"
+	credrepo "github.com/apache/airavata/api/credentials/repository"
 )
 
 func notFoundAs(err error, format string, args ...any) error {
@@ -27,11 +28,11 @@ func notFoundAs(err error, format string, args ...any) error {
 type ClusterService struct {
 	db        *gorm.DB
 	clusters  *repository.ClusterRepository
-	endpoints *repository.SSHEndpointRepository
+	endpoints *credrepo.SSHEndpointRepository
 }
 
 // NewClusterService returns a cluster service.
-func NewClusterService(db *gorm.DB, clusters *repository.ClusterRepository, endpoints *repository.SSHEndpointRepository) *ClusterService {
+func NewClusterService(db *gorm.DB, clusters *repository.ClusterRepository, endpoints *credrepo.SSHEndpointRepository) *ClusterService {
 	return &ClusterService{db: db, clusters: clusters, endpoints: endpoints}
 }
 

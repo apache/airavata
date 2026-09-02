@@ -4,6 +4,7 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	model "github.com/apache/airavata/api/compute/model"
+	creddto "github.com/apache/airavata/api/credentials/dto"
 )
 
 // ClusterRequest is the create/update payload for a cluster.
@@ -36,13 +37,13 @@ func (r *ClusterRequest) Validate() []httpx.FieldError {
 //
 // Java: org.apache.airavata.compute.dto.ClusterResponseDto
 type ClusterResponse struct {
-	ClusterID          string                     `json:"clusterId"`
-	ClusterName        string                     `json:"clusterName"`
-	ClusterDescription *string                    `json:"clusterDescription"`
-	SSHEndpointID      *string                    `json:"sshEndpointId"`
-	SSHEndpoint        *SSHEndpointResponse       `json:"sshEndpoint"`
-	SlurmHome          string                     `json:"slurmHome"`
-	Partitions         []ClusterPartitionResponse `json:"partitions"`
+	ClusterID          string                       `json:"clusterId"`
+	ClusterName        string                       `json:"clusterName"`
+	ClusterDescription *string                      `json:"clusterDescription"`
+	SSHEndpointID      *string                      `json:"sshEndpointId"`
+	SSHEndpoint        *creddto.SSHEndpointResponse `json:"sshEndpoint"`
+	SlurmHome          string                       `json:"slurmHome"`
+	Partitions         []ClusterPartitionResponse   `json:"partitions"`
 }
 
 // ApplyClusterRequest copies the mutable fields of a request onto an entity. The id
@@ -70,7 +71,7 @@ func ToClusterResponse(c *model.Cluster) ClusterResponse {
 		Partitions:         partitions,
 	}
 	if c.SSHEndpoint != nil {
-		endpoint := ToSSHEndpointResponse(c.SSHEndpoint)
+		endpoint := creddto.ToSSHEndpointResponse(c.SSHEndpoint)
 		out.SSHEndpoint = &endpoint
 	}
 	return out

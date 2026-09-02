@@ -1,4 +1,5 @@
-// Package credentials holds the SSH key and SSH user-credential entities.
+// Package model holds the SSH key, SSH user-credential, SSH endpoint and
+// endpoint-credential entities.
 package model
 
 import (

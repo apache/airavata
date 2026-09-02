@@ -3,6 +3,7 @@ package dto
 import (
 	"github.com/apache/airavata/internal/httpx"
 
+	data "github.com/apache/airavata/api/data/model"
 	model "github.com/apache/airavata/api/process/model"
 )
 
@@ -29,7 +30,7 @@ func taskCommon(c *httpx.Constraints, onFailure *model.OnFailureAction, retryCou
 	}
 }
 
-func validateStorageType(c *httpx.Constraints, field string, t *model.DataStorageType) {
+func validateStorageType(c *httpx.Constraints, field string, t *data.DataStorageType) {
 	if t != nil && !t.Valid() {
 		c.Add(field, "Data storage type must be one of SCP, S3")
 	}
@@ -37,13 +38,13 @@ func validateStorageType(c *httpx.Constraints, field string, t *model.DataStorag
 
 // DataStagingTaskRequest is the create/update payload for a staging task.
 type DataStagingTaskRequest struct {
-	SourceDataStorageID   *string                `json:"sourceDataStorageId"`
-	SourceCredentialID    *string                `json:"sourceCredentialId"`
-	SourceDataStorageType *model.DataStorageType `json:"sourceDataStorageType"`
+	SourceDataStorageID   *string               `json:"sourceDataStorageId"`
+	SourceCredentialID    *string               `json:"sourceCredentialId"`
+	SourceDataStorageType *data.DataStorageType `json:"sourceDataStorageType"`
 
-	DestinationDataStorageID   *string                `json:"destinationDataStorageId"`
-	DestinationCredentialID    *string                `json:"destinationCredentialId"`
-	DestinationDataStorageType *model.DataStorageType `json:"destinationDataStorageType"`
+	DestinationDataStorageID   *string               `json:"destinationDataStorageId"`
+	DestinationCredentialID    *string               `json:"destinationCredentialId"`
+	DestinationDataStorageType *data.DataStorageType `json:"destinationDataStorageType"`
 
 	SourcePath      *string `json:"sourcePath"`
 	DestinationPath *string `json:"destinationPath"`
@@ -86,13 +87,13 @@ type DataStagingTaskResponse struct {
 	TaskID    string  `json:"taskId"`
 	ProcessID *string `json:"processId"`
 
-	SourceDataStorageID   *string                `json:"sourceDataStorageId"`
-	SourceCredentialID    *string                `json:"sourceCredentialId"`
-	SourceDataStorageType *model.DataStorageType `json:"sourceDataStorageType"`
+	SourceDataStorageID   *string               `json:"sourceDataStorageId"`
+	SourceCredentialID    *string               `json:"sourceCredentialId"`
+	SourceDataStorageType *data.DataStorageType `json:"sourceDataStorageType"`
 
-	DestinationDataStorageID   *string                `json:"destinationDataStorageId"`
-	DestinationCredentialID    *string                `json:"destinationCredentialId"`
-	DestinationDataStorageType *model.DataStorageType `json:"destinationDataStorageType"`
+	DestinationDataStorageID   *string               `json:"destinationDataStorageId"`
+	DestinationCredentialID    *string               `json:"destinationCredentialId"`
+	DestinationDataStorageType *data.DataStorageType `json:"destinationDataStorageType"`
 
 	SourcePath      *string `json:"sourcePath"`
 	DestinationPath *string `json:"destinationPath"`

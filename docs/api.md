@@ -922,9 +922,9 @@ carries hangs off it, and nothing that hangs off it is addressable on its own.
 
 What a run needs beyond an owner and a type depends on what kind of run it is, and that
 is carried in a **section** of the process body rather than in a resource of its own. A
-`BATCH_JOB` carries a `batchProcess` section — the deployment being run, the resources
-this run asks for, and the values it supplies for the deployment template's declared
-inputs and outputs. Those `inputMappings` and `outputMappings` sit inside the section
+`BATCH_JOB` carries a `batchProcess` section — the deployment being run, the credential
+it submits under, the resources this run asks for, and the values it supplies for the
+deployment template's declared inputs and outputs. Those `inputMappings` and `outputMappings` sit inside the section
 rather than beside it, since the declarations they name come from the deployment's
 template, which only a `BATCH_JOB` has. A process carrying no `batchProcess` therefore
 has nowhere to carry mappings at all.
@@ -996,6 +996,7 @@ There is no `userId`: ownership comes from the token.
 |---|---|---|
 | `deploymentId` | string | required, cannot be blank |
 | `batchJobConfig` | object | required — the same shape a deployment carries |
+| `submissionCredentialId` | string \| null | optional; the SSH endpoint credential binding this run submits under. Omitted, the run inherits the deployment's `defaultSubmissionCredentialId` |
 | `jobName` | string \| null | optional |
 | `jobId` | string \| null | optional. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded afterwards |
 | `inputMappings` | array | optional; replaced wholesale by a `PUT` |
@@ -1005,6 +1006,15 @@ The resource request is carried here rather than copied from the deployment's de
 which is what lets a caller ask for different resources for a particular run. Each run
 owns its own `batchJobConfig` row, distinct from the deployment's, and deleting the
 process deletes it.
+
+`submissionCredentialId` is the one field of a self-service submission that names an
+identity to act under, so it is authorized against the caller: a binding that does not
+exist is `404`, and one that is neither theirs nor shared with them is `403`. The
+deployment's default is exempt from that check — an admin configured it as how that
+deployment submits, and requiring every user to hold it directly would leave ordinary
+submissions rejected. A `PUT` re-resolves the field the same way, so omitting it falls
+back to the deployment's default rather than keeping what the run was created with. The
+response always carries the binding the run actually submits under, inherited or named.
 
 **`batchProcess.inputMappings` / `batchProcess.outputMappings`**
 
@@ -1033,6 +1043,7 @@ Deleting the process deletes the batch section, and the mappings with it.
   "batchProcess": {
     "batchProcessId": "7e6d5c4b-3a29-4187-9605-4b3a2c1d0e9f",
     "deploymentId": "c3d4e5f6-a7b8-4901-a2b3-c4d5e6f7a8b9",
+    "submissionCredentialId": "5f4e3d2c-1b0a-4998-8776-6a5b4c3d2e1f",
     "jobId": null,
     "jobName": "alphafold-run-1",
     "batchJobConfig": {

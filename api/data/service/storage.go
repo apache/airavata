@@ -9,7 +9,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
-	computerepo "github.com/apache/airavata/api/compute/repository"
+	credrepo "github.com/apache/airavata/api/credentials/repository"
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
@@ -110,7 +110,7 @@ func requireStorageReadable(ctx context.Context, base access, sharing *repositor
 type SCPDataStorageService struct {
 	storageAccess
 	db        *gorm.DB
-	endpoints *computerepo.SSHEndpointRepository
+	endpoints *credrepo.SSHEndpointRepository
 	products  *repository.DataProductRepository
 	users     *iamrepo.UserRepository
 }
@@ -120,7 +120,7 @@ func NewSCPDataStorageService(
 	db *gorm.DB,
 	storages *repository.SCPDataStorageRepository,
 	sharing *repository.SCPDataStorageSharingRepository,
-	endpoints *computerepo.SSHEndpointRepository,
+	endpoints *credrepo.SSHEndpointRepository,
 	products *repository.DataProductRepository,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,

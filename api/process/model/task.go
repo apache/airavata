@@ -1,6 +1,7 @@
 package model
 
 import (
+	data "github.com/apache/airavata/api/data/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -22,35 +23,19 @@ func (a OnFailureAction) Valid() bool {
 	return false
 }
 
-type DataStorageType string
-
-const (
-	DataStorageTypeSCP DataStorageType = "SCP"
-	DataStorageTypeS3  DataStorageType = "S3"
-)
-
-// Valid reports whether t is a recognised storage type.
-func (t DataStorageType) Valid() bool {
-	switch t {
-	case DataStorageTypeSCP, DataStorageTypeS3:
-		return true
-	}
-	return false
-}
-
 type DataStagingTask struct {
 	ID string `gorm:"column:task_id;primaryKey;type:varchar(36)" json:"taskId"`
 
 	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
 	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"process,omitempty"`
 
-	SourceDataStorageID   *string          `gorm:"column:source_data_storage_id;type:varchar(36);index" json:"sourceDataStorageId,omitempty"`
-	SourceCredentialID    *string          `gorm:"column:source_credential_id;type:varchar(36);index" json:"sourceCredentialId,omitempty"`
-	SourceDataStorageType *DataStorageType `gorm:"column:source_data_storage_type;type:varchar(32)" json:"sourceDataStorageType,omitempty"`
+	SourceDataStorageID   *string               `gorm:"column:source_data_storage_id;type:varchar(36);index" json:"sourceDataStorageId,omitempty"`
+	SourceCredentialID    *string               `gorm:"column:source_credential_id;type:varchar(36);index" json:"sourceCredentialId,omitempty"`
+	SourceDataStorageType *data.DataStorageType `gorm:"column:source_data_storage_type;type:varchar(32)" json:"sourceDataStorageType,omitempty"`
 
-	DestinationDataStorageID   *string          `gorm:"column:destination_data_storage_id;type:varchar(36);index" json:"destinationDataStorageId,omitempty"`
-	DestinationCredentialID    *string          `gorm:"column:destination_credential_id;type:varchar(36);index" json:"destinationCredentialId,omitempty"`
-	DestinationDataStorageType *DataStorageType `gorm:"column:destination_data_storage_type;type:varchar(32)" json:"destinationDataStorageType,omitempty"`
+	DestinationDataStorageID   *string               `gorm:"column:destination_data_storage_id;type:varchar(36);index" json:"destinationDataStorageId,omitempty"`
+	DestinationCredentialID    *string               `gorm:"column:destination_credential_id;type:varchar(36);index" json:"destinationCredentialId,omitempty"`
+	DestinationDataStorageType *data.DataStorageType `gorm:"column:destination_data_storage_type;type:varchar(32)" json:"destinationDataStorageType,omitempty"`
 
 	// This could be a json array of file paths, or a single file path
 	SourcePath *string `gorm:"column:source_path;type:text" json:"sourcePath,omitempty"`

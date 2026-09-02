@@ -3,7 +3,7 @@ package dto
 import (
 	"github.com/apache/airavata/internal/httpx"
 
-	computedto "github.com/apache/airavata/api/compute/dto"
+	creddto "github.com/apache/airavata/api/credentials/dto"
 	model "github.com/apache/airavata/api/data/model"
 )
 
@@ -37,11 +37,11 @@ func ApplySCPDataStorageRequest(dst *model.SCPDataStorage, src *SCPDataStorageRe
 // The endpoint is inlined for the same reason a cluster inlines it: a storage is only
 // meaningful together with the host it stages through.
 type SCPDataStorageResponse struct {
-	DataID        string                          `json:"dataId"`
-	DataName      *string                         `json:"dataName"`
-	OwnerID       *string                         `json:"ownerId"`
-	SSHEndpointID *string                         `json:"sshEndpointId"`
-	SSHEndpoint   *computedto.SSHEndpointResponse `json:"sshEndpoint"`
+	DataID        string                       `json:"dataId"`
+	DataName      *string                      `json:"dataName"`
+	OwnerID       *string                      `json:"ownerId"`
+	SSHEndpointID *string                      `json:"sshEndpointId"`
+	SSHEndpoint   *creddto.SSHEndpointResponse `json:"sshEndpoint"`
 
 	Permission *string `json:"permission,omitempty"`
 }
@@ -54,7 +54,7 @@ func ToSCPDataStorageResponse(s *model.SCPDataStorage) SCPDataStorageResponse {
 		SSHEndpointID: s.SSHEndpointID,
 	}
 	if s.SSHEndpoint != nil {
-		endpoint := computedto.ToSSHEndpointResponse(s.SSHEndpoint)
+		endpoint := creddto.ToSSHEndpointResponse(s.SSHEndpoint)
 		out.SSHEndpoint = &endpoint
 	}
 	return out

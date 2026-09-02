@@ -1,4 +1,4 @@
-// Package controller serves the SSH endpoint, cluster and endpoint-credential routes.
+// Package controller serves the cluster and cluster-partition routes.
 package controller
 
 import (

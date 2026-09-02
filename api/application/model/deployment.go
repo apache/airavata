@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 
 	computemodel "github.com/apache/airavata/api/compute/model"
+	cred "github.com/apache/airavata/api/credentials/model"
 )
 
 // BatchJobConfig is a batch-scheduler resource request.
@@ -81,8 +82,8 @@ type BatchDeployment struct {
 	// The default submission credential is an SSH endpoint credential binding rather
 	// than a bare SSH credential: it ties the submitting identity to a specific host
 	// and owner, the same association a job submitted under it will run as.
-	DefaultSubmissionCredentialID string                              `gorm:"column:default_submission_credential_id;type:varchar(36);not null;index" json:"defaultSubmissionCredentialId"`
-	DefaultSubmissionCredential   *computemodel.SSHEndpointCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	DefaultSubmissionCredentialID string                      `gorm:"column:default_submission_credential_id;type:varchar(36);not null;index" json:"defaultSubmissionCredentialId"`
+	DefaultSubmissionCredential   *cred.SSHEndpointCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
 	// WorkDir is a parent directory; each execution gets a subdirectory beneath it.
 	WorkDir   *string `gorm:"column:work_dir;type:varchar(1024)" json:"workDir,omitempty"`

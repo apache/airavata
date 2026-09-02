@@ -4,36 +4,43 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	credentialsmodel "github.com/apache/airavata/api/credentials/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
+// SSHEndpoint is a host reachable over SSH.
+//
+// It was split out of Cluster, which used to carry a bare host name. Separating it
+// lets several clusters share one login host, and lets a credential be held against
+// the host itself rather than against one cluster's view of it.
+type SSHEndpoint struct {
+	ID       string `gorm:"column:ssh_endpoint_id;primaryKey;type:varchar(36)" json:"sshEndpointId"`
+	Name     string `gorm:"column:name;type:varchar(255);not null" json:"name"`
+	HostName string `gorm:"column:host_name;type:varchar(255);not null" json:"hostName"`
+	Port     int    `gorm:"column:port;not null" json:"port"`
+}
+
+// TableName returns the table backing SSHEndpoint.
+func (SSHEndpoint) TableName() string { return "ssh_endpoints" }
+
+// BeforeCreate assigns a UUID when none was supplied.
+func (e *SSHEndpoint) BeforeCreate(*gorm.DB) error {
+	if e.ID == "" {
+		e.ID = uuid.NewString()
+	}
+	return nil
+}
+
 // SSHEndpointCredential binds a user's SSH credential to an SSH endpoint: it is what
 // lets a given user act on a given host.
-//
-// The owner is always derived from the access token, never from the request body —
-// the create DTO has no user field at all. Ownership is also immutable: updates
-// re-resolve the endpoint and the SSH credential but never touch the owner.
-//
-// There is deliberately no uniqueness on (owner, endpoint); a user may hold several
-// bindings to the same endpoint with different SSH identities.
-//
-// Access beyond the owner comes from the sharing tables below rather than from any
-// role: SSHEndpointCredentialUserSharing names one user, SSHEndpointCredentialGroupSharing
-// names a group, and each carries the permission it grants.
-//
-// Java: org.apache.airavata.compute.model.SSHEndpointCredentialEntity
 type SSHEndpointCredential struct {
 	ID string `gorm:"column:ssh_endpoint_credential_id;primaryKey;type:varchar(36)" json:"sshEndpointCredentialId"`
 
 	SSHEndpointID *string      `gorm:"column:ssh_endpoint_id;type:varchar(36);index" json:"sshEndpointId,omitempty"`
 	SSHEndpoint   *SSHEndpoint `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshEndpoint,omitempty"`
 
-	SSHCredentialID *string                             `gorm:"column:ssh_credential_id;type:varchar(36);index" json:"sshCredentialId,omitempty"`
-	SSHCredential   *credentialsmodel.SSHUserCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	SSHCredentialID *string            `gorm:"column:ssh_credential_id;type:varchar(36);index" json:"sshCredentialId,omitempty"`
+	SSHCredential   *SSHUserCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
-	// OwnerID is the Java entity's "user" association. It is named for its role
-	// because ownership, not mere reference, is what the authorisation checks read.
 	OwnerID *string        `gorm:"column:user_id;type:varchar(255);index" json:"userId,omitempty"`
 	Owner   *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 }

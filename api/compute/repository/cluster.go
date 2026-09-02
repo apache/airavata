@@ -1,5 +1,4 @@
-// Package repository reads and writes SSH endpoints, clusters, partitions and the
-// credential bindings that let a user act on a host.
+// Package repository reads and writes clusters and their partitions.
 package repository
 
 import (

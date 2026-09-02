@@ -1,5 +1,6 @@
-// Package service holds the credential vertical's business rules, including the
-// write-only handling that keeps a stored private key from ever being read back.
+// Package service holds the credential vertical's business rules: the write-only
+// handling that keeps a stored private key from ever being read back, and the sharing
+// model that decides who may use an SSH endpoint credential.
 package service
 
 import (

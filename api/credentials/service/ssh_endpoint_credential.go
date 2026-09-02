@@ -9,10 +9,9 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
-	dto "github.com/apache/airavata/api/compute/dto"
-	model "github.com/apache/airavata/api/compute/model"
-	"github.com/apache/airavata/api/compute/repository"
-	credentialsrepo "github.com/apache/airavata/api/credentials/repository"
+	dto "github.com/apache/airavata/api/credentials/dto"
+	model "github.com/apache/airavata/api/credentials/model"
+	"github.com/apache/airavata/api/credentials/repository"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
 
@@ -149,7 +148,7 @@ func verbFor(want model.SSHEndpointCredentialPermission) string {
 }
 
 // CredentialAccess answers "may this caller act under this binding?" for services
-// outside the compute package.
+// outside the credentials package.
 //
 // The data vertical asks it before letting a dataset be registered under a credential.
 // Exposing the question rather than the tables is what keeps one definition of who may
@@ -193,7 +192,7 @@ type SSHEndpointCredentialService struct {
 	credentialAccess
 	db        *gorm.DB
 	endpoints *repository.SSHEndpointRepository
-	sshCreds  *credentialsrepo.SSHUserCredentialRepository
+	sshCreds  *repository.SSHUserCredentialRepository
 	users     *iamrepo.UserRepository
 }
 
@@ -203,7 +202,7 @@ func NewSSHEndpointCredentialService(
 	bindings *repository.SSHEndpointCredentialRepository,
 	sharing *repository.SSHEndpointCredentialSharingRepository,
 	endpoints *repository.SSHEndpointRepository,
-	sshCreds *credentialsrepo.SSHUserCredentialRepository,
+	sshCreds *repository.SSHUserCredentialRepository,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
 ) *SSHEndpointCredentialService {

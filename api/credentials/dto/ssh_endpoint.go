@@ -3,7 +3,7 @@ package dto
 import (
 	"github.com/apache/airavata/internal/httpx"
 
-	model "github.com/apache/airavata/api/compute/model"
+	model "github.com/apache/airavata/api/credentials/model"
 )
 
 // defaultSSHPort is used when a request omits the port, so the common case of a

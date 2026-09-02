@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	computemodel "github.com/apache/airavata/api/compute/model"
+	cred "github.com/apache/airavata/api/credentials/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
@@ -15,6 +15,20 @@ const (
 	DataStoragePermissionRead  DataStoragePermission = "READ"
 	DataStoragePermissionWrite DataStoragePermission = "WRITE"
 )
+
+type DataStorageType string
+
+const (
+	DataStorageTypeSCP DataStorageType = "SCP"
+)
+
+func (t DataStorageType) Valid() bool {
+	switch t {
+	case DataStorageTypeSCP:
+		return true
+	}
+	return false
+}
 
 func (p DataStoragePermission) Valid() bool {
 	switch p {
@@ -34,8 +48,8 @@ type SCPDataStorage struct {
 	ID   string  `gorm:"column:data_id;primaryKey;type:varchar(36)" json:"dataId"`
 	Name *string `gorm:"column:data_name;type:varchar(255)" json:"dataName,omitempty"`
 
-	SSHEndpointID *string                   `gorm:"column:ssh_endpoint_id;type:varchar(36);index" json:"sshEndpointId,omitempty"`
-	SSHEndpoint   *computemodel.SSHEndpoint `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshEndpoint,omitempty"`
+	SSHEndpointID *string           `gorm:"column:ssh_endpoint_id;type:varchar(36);index" json:"sshEndpointId,omitempty"`
+	SSHEndpoint   *cred.SSHEndpoint `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshEndpoint,omitempty"`
 
 	// OwnerID is named for its role because ownership, not mere reference, is what the
 	// authorisation checks read. RESTRICT: a user who still owns storages cannot be

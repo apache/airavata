@@ -8,9 +8,10 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
-	dto "github.com/apache/airavata/api/compute/dto"
-	model "github.com/apache/airavata/api/compute/model"
-	"github.com/apache/airavata/api/compute/repository"
+	computerepo "github.com/apache/airavata/api/compute/repository"
+	dto "github.com/apache/airavata/api/credentials/dto"
+	model "github.com/apache/airavata/api/credentials/model"
+	"github.com/apache/airavata/api/credentials/repository"
 )
 
 // SSHEndpointService manages the hosts clusters and credentials are reached through.
@@ -18,10 +19,13 @@ import (
 // It follows the cluster catalog's rules rather than the credential's: an endpoint is
 // a piece of deployment topology holding no secret, so reads are open and writes are
 // administrative.
+//
+// The cluster repository is the one thing it reaches outside this vertical, and only
+// to read: deleting an endpoint has to know whether a cluster still names it.
 type SSHEndpointService struct {
 	db          *gorm.DB
 	endpoints   *repository.SSHEndpointRepository
-	clusters    *repository.ClusterRepository
+	clusters    *computerepo.ClusterRepository
 	credentials *repository.SSHEndpointCredentialRepository
 }
 
@@ -29,7 +33,7 @@ type SSHEndpointService struct {
 func NewSSHEndpointService(
 	db *gorm.DB,
 	endpoints *repository.SSHEndpointRepository,
-	clusters *repository.ClusterRepository,
+	clusters *computerepo.ClusterRepository,
 	credentials *repository.SSHEndpointCredentialRepository,
 ) *SSHEndpointService {
 	return &SSHEndpointService{db: db, endpoints: endpoints, clusters: clusters, credentials: credentials}

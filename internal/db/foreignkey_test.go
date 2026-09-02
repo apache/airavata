@@ -55,6 +55,7 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"processes", "user_id", "users", "user_id"},
 		{"batch_processes", "parent_process_id", "processes", "process_id"},
 		{"batch_processes", "deployment_id", "batch_application_deployments", "deployment_id"},
+		{"batch_processes", "submission_credential_id", "ssh_endpoint_credentials", "ssh_endpoint_credential_id"},
 		{"batch_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
 		{"process_statuses", "process_id", "processes", "process_id"},
 		{"process_template_input_mappings", "batch_process_id", "batch_processes", "batch_process_id"},

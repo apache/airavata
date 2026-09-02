@@ -5,6 +5,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 
@@ -14,6 +15,7 @@ import (
 	applicationdto "github.com/apache/airavata/api/application/dto"
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	applicationrepo "github.com/apache/airavata/api/application/repository"
+	credsvc "github.com/apache/airavata/api/credentials/service"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 	dto "github.com/apache/airavata/api/process/dto"
 	model "github.com/apache/airavata/api/process/model"
@@ -42,6 +44,7 @@ type ProcessService struct {
 	db          *gorm.DB
 	processes   *repository.ProcessRepository
 	deployments *applicationrepo.BatchDeploymentRepository
+	credentials *credsvc.CredentialAccess
 	users       *iamrepo.UserRepository
 	statuses    *StatusService
 }
@@ -51,10 +54,18 @@ func NewProcessService(
 	db *gorm.DB,
 	processes *repository.ProcessRepository,
 	deployments *applicationrepo.BatchDeploymentRepository,
+	credentials *credsvc.CredentialAccess,
 	users *iamrepo.UserRepository,
 	statuses *StatusService,
 ) *ProcessService {
-	return &ProcessService{db: db, processes: processes, deployments: deployments, users: users, statuses: statuses}
+	return &ProcessService{
+		db:          db,
+		processes:   processes,
+		deployments: deployments,
+		credentials: credentials,
+		users:       users,
+		statuses:    statuses,
+	}
 }
 
 // List returns every process across every user. Admin only.
@@ -216,6 +227,10 @@ func (s *ProcessService) saveBatchProcess(
 	if err != nil {
 		return nil, notFoundAs(err, "Deployment not found: %s", req.DeploymentID)
 	}
+	submissionCredentialID, err := s.resolveSubmissionCredential(ctx, tx, deployment, req)
+	if err != nil {
+		return nil, err
+	}
 
 	batch := &model.BatchJobProcess{ProcessID: &processID}
 	config := &applicationmodel.BatchJobConfig{}
@@ -236,11 +251,37 @@ func (s *ProcessService) saveBatchProcess(
 
 	dto.ApplyBatchProcessRequest(batch, req)
 	batch.DeploymentID = &deployment.ID
+	batch.SubmissionCredentialID = submissionCredentialID
 	batch.BatchJobConfigID = config.ID
 	if err := processes.SaveBatchProcess(ctx, batch); err != nil {
 		return nil, err
 	}
 	return batch, nil
+}
+
+// resolveSubmissionCredential decides which SSH endpoint credential binding this run
+// submits under: the one it named, or the deployment's default when it named none.
+//
+// Only a named binding is authorised, and it is authorised against the caller — this is
+// the one place in a self-service submission where a caller supplies an identity to act
+// under, so RequireUsable is what keeps them to their own bindings and the ones shared
+// with them. The deployment's default is exempt because it is not the caller's choice
+// at all: an admin configured it as how that deployment submits, and requiring every
+// user to hold it directly would leave ordinary submissions rejected.
+func (s *ProcessService) resolveSubmissionCredential(
+	ctx context.Context,
+	tx *gorm.DB,
+	deployment *applicationmodel.BatchDeployment,
+	req *dto.BatchProcessRequest,
+) (string, error) {
+	if req.SubmissionCredentialID == nil || strings.TrimSpace(*req.SubmissionCredentialID) == "" {
+		return deployment.DefaultSubmissionCredentialID, nil
+	}
+	credential, err := s.credentials.WithTx(tx).RequireUsable(ctx, *req.SubmissionCredentialID)
+	if err != nil {
+		return "", err
+	}
+	return credential.ID, nil
 }
 
 // saveMappings replaces a batch process's template input and output mapping sets.

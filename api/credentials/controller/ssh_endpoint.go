@@ -5,8 +5,8 @@ import (
 
 	"github.com/apache/airavata/internal/httpx"
 
-	dto "github.com/apache/airavata/api/compute/dto"
-	"github.com/apache/airavata/api/compute/service"
+	dto "github.com/apache/airavata/api/credentials/dto"
+	"github.com/apache/airavata/api/credentials/service"
 )
 
 // SSHEndpointController serves /api/v1/ssh-endpoints.

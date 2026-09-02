@@ -5,7 +5,7 @@ import (
 
 	"gorm.io/gorm"
 
-	model "github.com/apache/airavata/api/compute/model"
+	model "github.com/apache/airavata/api/credentials/model"
 )
 
 // SSHEndpointRepository reads and writes SSH endpoints.

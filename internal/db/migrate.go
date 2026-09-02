@@ -21,7 +21,7 @@ func Entities() []any {
 		// No outbound references.
 		&iammodel.User{},
 		&credentialsmodel.SSHKey{},
-		&computemodel.SSHEndpoint{},
+		&credentialsmodel.SSHEndpoint{},
 		&applicationmodel.Template{},
 		&applicationmodel.BatchJobConfig{},
 
@@ -38,15 +38,15 @@ func Entities() []any {
 		// Depend on the above.
 		&iammodel.GroupMember{},
 		&computemodel.ClusterPartition{},
-		&computemodel.SSHEndpointCredential{},
+		&credentialsmodel.SSHEndpointCredential{},
 		&applicationmodel.BatchDeployment{},
 
 		// A run. Everything below in this package hangs off it.
 		&processmodel.Process{},
 
 		// Sharing rows reference the record they open up, and a group or a user.
-		&computemodel.SSHEndpointCredentialGroupSharing{},
-		&computemodel.SSHEndpointCredentialUserSharing{},
+		&credentialsmodel.SSHEndpointCredentialGroupSharing{},
+		&credentialsmodel.SSHEndpointCredentialUserSharing{},
 		&datamodel.SCPDataStorageGroupSharing{},
 		&datamodel.SCPDataStorageUserSharing{},
 		&datamodel.DataProductGroupSharing{},

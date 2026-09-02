@@ -10,7 +10,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
-	computesvc "github.com/apache/airavata/api/compute/service"
+	credsvc "github.com/apache/airavata/api/credentials/service"
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
@@ -108,7 +108,7 @@ type DataProductService struct {
 	db             *gorm.DB
 	storages       *repository.SCPDataStorageRepository
 	storageSharing *repository.SCPDataStorageSharingRepository
-	credentials    *computesvc.CredentialAccess
+	credentials    *credsvc.CredentialAccess
 	users          *iamrepo.UserRepository
 }
 
@@ -119,7 +119,7 @@ func NewDataProductService(
 	sharing *repository.DataProductSharingRepository,
 	storages *repository.SCPDataStorageRepository,
 	storageSharing *repository.SCPDataStorageSharingRepository,
-	credentials *computesvc.CredentialAccess,
+	credentials *credsvc.CredentialAccess,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
 ) *DataProductService {

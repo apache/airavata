@@ -40,9 +40,9 @@ func newTestDB(t *testing.T) *gorm.DB {
 
 // seedSSHEndpoint creates the host a cluster or a credential binding points at. It
 // exists because the host name clusters used to carry is now an entity of its own.
-func seedSSHEndpoint(t *testing.T, gdb *gorm.DB, name string) *computemodel.SSHEndpoint {
+func seedSSHEndpoint(t *testing.T, gdb *gorm.DB, name string) *credentialsmodel.SSHEndpoint {
 	t.Helper()
-	endpoint := &computemodel.SSHEndpoint{Name: name, HostName: name + ".example.edu", Port: 22}
+	endpoint := &credentialsmodel.SSHEndpoint{Name: name, HostName: name + ".example.edu", Port: 22}
 	if err := gdb.Create(endpoint).Error; err != nil {
 		t.Fatalf("create ssh endpoint: %v", err)
 	}
@@ -245,7 +245,7 @@ func TestDeletingDeploymentRemovesOwnedBatchJobConfig(t *testing.T) {
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
-	binding := &computemodel.SSHEndpointCredential{SSHEndpointID: &endpoint.ID, SSHCredentialID: &cred.ID}
+	binding := &credentialsmodel.SSHEndpointCredential{SSHEndpointID: &endpoint.ID, SSHCredentialID: &cred.ID}
 	if err := gdb.Create(binding).Error; err != nil {
 		t.Fatalf("create ssh endpoint credential: %v", err)
 	}
@@ -340,7 +340,7 @@ func TestNullableColumnsRoundTripAsNil(t *testing.T) {
 // Ownership drives authorisation on credentials, datasets and processes, so the
 // helpers must not treat a missing owner as a match for the empty principal.
 func TestOwnedByRejectsUnownedRows(t *testing.T) {
-	cred := &computemodel.SSHEndpointCredential{}
+	cred := &credentialsmodel.SSHEndpointCredential{}
 	if cred.OwnedBy("") {
 		t.Error("a credential with no owner reported ownership by the empty user id")
 	}

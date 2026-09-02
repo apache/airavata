@@ -15,8 +15,9 @@ import (
 	dto "github.com/apache/airavata/api/application/dto"
 	model "github.com/apache/airavata/api/application/model"
 	"github.com/apache/airavata/api/application/repository"
-	computemodel "github.com/apache/airavata/api/compute/model"
 	computerepo "github.com/apache/airavata/api/compute/repository"
+	cred "github.com/apache/airavata/api/credentials/model"
+	credrepo "github.com/apache/airavata/api/credentials/repository"
 )
 
 func notFoundAs(err error, format string, args ...any) error {
@@ -169,7 +170,7 @@ type BatchDeploymentService struct {
 	deployments   *repository.BatchDeploymentRepository
 	templates     *repository.TemplateRepository
 	clusters      *computerepo.ClusterRepository
-	endpointCreds *computerepo.SSHEndpointCredentialRepository
+	endpointCreds *credrepo.SSHEndpointCredentialRepository
 }
 
 // NewBatchDeploymentService returns a deployment service.
@@ -178,7 +179,7 @@ func NewBatchDeploymentService(
 	deployments *repository.BatchDeploymentRepository,
 	templates *repository.TemplateRepository,
 	clusters *computerepo.ClusterRepository,
-	endpointCreds *computerepo.SSHEndpointCredentialRepository,
+	endpointCreds *credrepo.SSHEndpointCredentialRepository,
 ) *BatchDeploymentService {
 	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters, endpointCreds: endpointCreds}
 }
@@ -325,7 +326,7 @@ func (s *BatchDeploymentService) Delete(ctx context.Context, id string) error {
 // The cluster is the only optional one: an absent or blank id is legitimate and
 // leaves the deployment unbound to a cluster, while an id that is supplied but
 // unknown is an error. Conflating those would let a typo silently unbind a deployment.
-func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, *computemodel.SSHEndpointCredential, error) {
+func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, *cred.SSHEndpointCredential, error) {
 	template, err := s.templates.WithTx(tx).FindByID(ctx, req.TemplateID)
 	if err != nil {
 		return nil, nil, nil, notFoundAs(err, "Template not found: %s", req.TemplateID)

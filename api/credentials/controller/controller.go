@@ -1,4 +1,5 @@
-// Package controller serves the SSH key and SSH credential routes.
+// Package controller serves the SSH key, SSH credential, SSH endpoint and
+// endpoint-credential routes.
 package controller
 
 import (

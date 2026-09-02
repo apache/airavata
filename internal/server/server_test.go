@@ -20,7 +20,7 @@ import (
 	"github.com/apache/airavata/internal/role"
 	"github.com/apache/airavata/internal/server"
 
-	computemodel "github.com/apache/airavata/api/compute/model"
+	credentialsmodel "github.com/apache/airavata/api/credentials/model"
 	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
@@ -832,12 +832,12 @@ func TestDeletingEndpointCredentialRemovesItsShares(t *testing.T) {
 	h.mustDo(http.MethodDelete, base, tokenAlice, nil, http.StatusNoContent)
 
 	var remaining int64
-	h.db.Model(&computemodel.SSHEndpointCredentialUserSharing{}).
+	h.db.Model(&credentialsmodel.SSHEndpointCredentialUserSharing{}).
 		Where("ssh_endpoint_credential_id = ?", bindingID).Count(&remaining)
 	if remaining != 0 {
 		t.Errorf("%d user shares survived the delete, want 0", remaining)
 	}
-	h.db.Model(&computemodel.SSHEndpointCredentialGroupSharing{}).
+	h.db.Model(&credentialsmodel.SSHEndpointCredentialGroupSharing{}).
 		Where("ssh_endpoint_credential_id = ?", bindingID).Count(&remaining)
 	if remaining != 0 {
 		t.Errorf("%d group shares survived the delete, want 0", remaining)
@@ -1459,6 +1459,64 @@ func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 	// The process owns its own config, distinct from the deployment's.
 	if cfg["batchJobConfigId"] == deployment["batchJobConfig"].(map[string]any)["batchJobConfigId"] {
 		t.Error("process and deployment share one batch job config; each must own its own")
+	}
+}
+
+// Which SSH endpoint credential a run submits under is the one place a self-service
+// submission names an identity to act under, so it is authorised against the caller —
+// while the deployment's default, which an admin chose, is not.
+func TestProcessSubmitsUnderACredentialTheCallerMayUse(t *testing.T) {
+	h := newHarness(t)
+	deployment, _, _ := h.seedDeploymentWithIO("submission")
+	deploymentDefault := deployment["defaultSubmissionCredentialId"].(string)
+	batch := func(credentialID any) map[string]any {
+		body := map[string]any{
+			"deploymentId":   deployment["deploymentId"],
+			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+		}
+		if credentialID != nil {
+			body["submissionCredentialId"] = credentialID
+		}
+		return body
+	}
+	create := func(token string, credentialID any) *httptest.ResponseRecorder {
+		return h.do(http.MethodPost, "/api/v1/processes", token,
+			map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(credentialID)})
+	}
+
+	// Naming none submits under the deployment's default, which is the ordinary case:
+	// alice holds no binding of her own here, and the deployment's belongs to admin.
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice,
+		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(nil)}, http.StatusCreated)
+	if got := created["batchProcess"].(map[string]any)["submissionCredentialId"]; got != deploymentDefault {
+		t.Errorf("submissionCredentialId = %v, want the deployment default %s", got, deploymentDefault)
+	}
+
+	// Naming one of her own submits under that instead.
+	_, aliceBinding := h.seedEndpointCredential("alice-submits", tokenAlice)
+	own := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice,
+		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(aliceBinding)}, http.StatusCreated)
+	if got := own["batchProcess"].(map[string]any)["submissionCredentialId"]; got != aliceBinding {
+		t.Errorf("submissionCredentialId = %v, want the named binding %s", got, aliceBinding)
+	}
+
+	// A binding that does not exist is a 404, and one that is neither hers nor shared
+	// with her is a 403 — she must not submit under bob's identity.
+	if rec := create(tokenAlice, "nope"); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown credential: status = %d, want 404", rec.Code)
+	}
+	_, bobBinding := h.seedEndpointCredential("bob-submits", tokenBob)
+	if rec := create(tokenAlice, bobBinding); rec.Code != http.StatusForbidden {
+		t.Errorf("another user's credential: status = %d, want 403", rec.Code)
+	}
+
+	// An update re-resolves it the same way, so dropping the field falls back to the
+	// deployment's default rather than keeping what the run was created with.
+	processID := own["processId"].(string)
+	updated := h.mustDo(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin,
+		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(nil)}, http.StatusOK)
+	if got := updated["batchProcess"].(map[string]any)["submissionCredentialId"]; got != deploymentDefault {
+		t.Errorf("submissionCredentialId after update = %v, want the deployment default", got)
 	}
 }
 

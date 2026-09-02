@@ -2,6 +2,7 @@ package model
 
 import (
 	applicationmodel "github.com/apache/airavata/api/application/model"
+	cred "github.com/apache/airavata/api/credentials/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -23,6 +24,10 @@ type BatchJobProcess struct {
 
 	DeploymentID *string                           `gorm:"column:deployment_id;type:varchar(36);index" json:"deploymentId,omitempty"`
 	Deployment   *applicationmodel.BatchDeployment `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+
+	// The credential used to submit this batch job. It must be an SSH endpoint credential.
+	SubmissionCredentialID string                      `gorm:"column:submission_credential_id;type:varchar(36);not null;index" json:"submissionCredentialId"`
+	SubmissionCredential   *cred.SSHEndpointCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
 	// Owned one-to-one, as on BatchDeployment: unique foreign key on this side, with
 	// the orphan removed by AfterDelete since the database cannot cascade outward.

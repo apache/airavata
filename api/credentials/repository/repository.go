@@ -1,4 +1,5 @@
-// Package repository reads and writes SSH keys and the user credentials using them.
+// Package repository reads and writes SSH keys, the user credentials using them, the
+// endpoints they reach, and the bindings that let a user act on one.
 package repository
 
 import (

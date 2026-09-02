@@ -32,6 +32,16 @@ type BatchProcessRequest struct {
 	JobName        *string                               `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigRequest `json:"batchJobConfig"`
 
+	// SubmissionCredentialID names the SSH endpoint credential binding this run submits
+	// under — the id returned by POST /api/v1/ssh-endpoint-credentials, not a bare SSH
+	// credential.
+	//
+	// Optional, and the reason the deployment's is called a *default*: a run that names
+	// none submits under the deployment's, which is the ordinary case. Naming one is how
+	// a caller submits under their own identity instead, and only a binding they own or
+	// that is shared with them will be accepted.
+	SubmissionCredentialID *string `json:"submissionCredentialId"`
+
 	// The values this run supplies for the deployment template's declared inputs and
 	// outputs. Both sets are replaced wholesale by an update.
 	InputMappings  []InputMapping  `json:"inputMappings"`
@@ -64,6 +74,9 @@ type BatchProcessResponse struct {
 	JobID          *string                                `json:"jobId"`
 	JobName        *string                                `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigResponse `json:"batchJobConfig"`
+
+	// Always set, whether the run named a credential or inherited the deployment's.
+	SubmissionCredentialID string `json:"submissionCredentialId"`
 
 	InputMappings  []InputMapping  `json:"inputMappings"`
 	OutputMappings []OutputMapping `json:"outputMappings"`
@@ -179,13 +192,14 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		return nil
 	}
 	return &BatchProcessResponse{
-		BatchProcessID: b.ID,
-		DeploymentID:   b.DeploymentID,
-		JobID:          b.JobID,
-		JobName:        b.JobName,
-		BatchJobConfig: applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
-		InputMappings:  ToInputMappings(b.InputMappings),
-		OutputMappings: ToOutputMappings(b.OutputMappings),
+		BatchProcessID:         b.ID,
+		DeploymentID:           b.DeploymentID,
+		JobID:                  b.JobID,
+		JobName:                b.JobName,
+		SubmissionCredentialID: b.SubmissionCredentialID,
+		BatchJobConfig:         applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
+		InputMappings:          ToInputMappings(b.InputMappings),
+		OutputMappings:         ToOutputMappings(b.OutputMappings),
 	}
 }
 

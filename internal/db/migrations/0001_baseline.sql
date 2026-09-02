@@ -18,6 +18,14 @@
 -- had run outside development, so the baseline was re-recorded rather than migrated
 -- forward from a shape no deployment held.
 --
+-- Re-recorded again, for the same reason, when the template mappings moved from the
+-- process to its batch section: process_template_input_mappings.process_id and its
+-- output counterpart became batch_process_id, pointing at batch_processes rather than
+-- processes. That reached development as a 0002 migration first and was folded back in
+-- here — still development-only, so there was nothing for a second file to migrate.
+-- batch_processes.submission_credential_id, the binding a run submits under, was folded
+-- in the same way.
+--
 -- Do not hand-edit this file once it has run anywhere outside development: a change to
 -- a table's shape belongs in a new migration (0002_..., 0003_..., ...), the same way
 -- ddl-auto never narrows a column and this framework never rewrites history.
@@ -139,11 +147,13 @@ CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_user_id" ON "data_pro
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_data_product_id" ON "data_product_user_sharings" ("data_product_id");
 
-CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"job_name" varchar(255),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"submission_credential_id" varchar(36) NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"job_name" varchar(255),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_submission_credential" FOREIGN KEY ("submission_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_batch_job_config_id" ON "batch_processes" ("batch_job_config_id");
 
 CREATE INDEX IF NOT EXISTS "idx_batch_processes_deployment_id" ON "batch_processes" ("deployment_id");
+
+CREATE INDEX IF NOT EXISTS "idx_batch_processes_submission_credential_id" ON "batch_processes" ("submission_credential_id");
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_process_id" ON "batch_processes" ("parent_process_id");
 
@@ -151,15 +161,15 @@ CREATE TABLE "process_statuses" ("process_status_id" varchar(36),"process_id" va
 
 CREATE INDEX IF NOT EXISTS "idx_process_statuses_process_id" ON "process_statuses" ("process_id");
 
-CREATE TABLE "process_template_input_mappings" ("template_input_mapping_id" varchar(36),"template_input_id" varchar(36),"process_id" varchar(36),"value" text,PRIMARY KEY ("template_input_mapping_id"),CONSTRAINT "fk_process_template_input_mappings_template_input" FOREIGN KEY ("template_input_id") REFERENCES "application_template_inputs"("input_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_processes_input_mappings" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE "process_template_input_mappings" ("template_input_mapping_id" varchar(36),"template_input_id" varchar(36),"batch_process_id" varchar(36),"value" text,PRIMARY KEY ("template_input_mapping_id"),CONSTRAINT "fk_process_template_input_mappings_template_input" FOREIGN KEY ("template_input_id") REFERENCES "application_template_inputs"("input_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_input_mappings" FOREIGN KEY ("batch_process_id") REFERENCES "batch_processes"("batch_process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
-CREATE INDEX IF NOT EXISTS "idx_process_template_input_mappings_process_id" ON "process_template_input_mappings" ("process_id");
+CREATE INDEX IF NOT EXISTS "idx_process_template_input_mappings_batch_process_id" ON "process_template_input_mappings" ("batch_process_id");
 
 CREATE INDEX IF NOT EXISTS "idx_process_template_input_mappings_template_input_id" ON "process_template_input_mappings" ("template_input_id");
 
-CREATE TABLE "process_template_output_mappings" ("template_output_mapping_id" varchar(36),"template_output_id" varchar(36),"process_id" varchar(36),"value" text,PRIMARY KEY ("template_output_mapping_id"),CONSTRAINT "fk_process_template_output_mappings_template_output" FOREIGN KEY ("template_output_id") REFERENCES "application_template_outputs"("output_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_processes_output_mappings" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE "process_template_output_mappings" ("template_output_mapping_id" varchar(36),"template_output_id" varchar(36),"batch_process_id" varchar(36),"value" text,PRIMARY KEY ("template_output_mapping_id"),CONSTRAINT "fk_process_template_output_mappings_template_output" FOREIGN KEY ("template_output_id") REFERENCES "application_template_outputs"("output_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_output_mappings" FOREIGN KEY ("batch_process_id") REFERENCES "batch_processes"("batch_process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
-CREATE INDEX IF NOT EXISTS "idx_process_template_output_mappings_process_id" ON "process_template_output_mappings" ("process_id");
+CREATE INDEX IF NOT EXISTS "idx_process_template_output_mappings_batch_process_id" ON "process_template_output_mappings" ("batch_process_id");
 
 CREATE INDEX IF NOT EXISTS "idx_process_template_output_mappings_template_output_id" ON "process_template_output_mappings" ("template_output_id");
 

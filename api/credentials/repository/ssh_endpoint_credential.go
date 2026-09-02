@@ -5,7 +5,7 @@ import (
 
 	"gorm.io/gorm"
 
-	model "github.com/apache/airavata/api/compute/model"
+	model "github.com/apache/airavata/api/credentials/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
