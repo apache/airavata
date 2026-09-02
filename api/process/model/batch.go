@@ -42,6 +42,8 @@ type BatchJobProcess struct {
 	// declarations they name belong to the deployment, which only a BATCH_JOB has.
 	InputMappings  []*TemplateInputMapping  `gorm:"foreignKey:BatchProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"inputMappings,omitempty"`
 	OutputMappings []*TemplateOutputMapping `gorm:"foreignKey:BatchProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"outputMappings,omitempty"`
+
+	BaseWorkDir *string `gorm:"column:base_work_dir;type:varchar(1024)" json:"baseWorkDir,omitempty"`
 }
 
 // TableName returns the table backing BatchJobProcess.

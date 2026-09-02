@@ -85,8 +85,6 @@ type BatchDeployment struct {
 	DefaultSubmissionCredentialID string                      `gorm:"column:default_submission_credential_id;type:varchar(36);not null;index" json:"defaultSubmissionCredentialId"`
 	DefaultSubmissionCredential   *cred.SSHEndpointCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
-	// WorkDir is a parent directory; each execution gets a subdirectory beneath it.
-	WorkDir   *string `gorm:"column:work_dir;type:varchar(1024)" json:"workDir,omitempty"`
 	Partition *string `gorm:"column:partition;type:varchar(255)" json:"partition,omitempty"`
 }
 

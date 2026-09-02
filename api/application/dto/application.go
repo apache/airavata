@@ -286,7 +286,6 @@ type BatchDeploymentRequest struct {
 	// a binding ties the submitting identity to both a host and an owner.
 	DefaultSubmissionCredentialID string `json:"defaultSubmissionCredentialId"`
 
-	WorkDir   *string `json:"workDir"`
 	Partition *string `json:"partition"`
 }
 
@@ -314,7 +313,6 @@ type BatchDeploymentResponse struct {
 	SlurmRunSection               string                  `json:"slurmRunSection"`
 	BatchJobConfig                *BatchJobConfigResponse `json:"batchJobConfig"`
 	DefaultSubmissionCredentialID string                  `json:"defaultSubmissionCredentialId"`
-	WorkDir                       *string                 `json:"workDir"`
 	Partition                     *string                 `json:"partition"`
 }
 
@@ -326,7 +324,6 @@ func ToBatchDeploymentResponse(d *model.BatchDeployment) BatchDeploymentResponse
 		SlurmRunSection:               d.SlurmRunSection,
 		BatchJobConfig:                ToBatchJobConfigResponse(d.BatchJobConfig),
 		DefaultSubmissionCredentialID: d.DefaultSubmissionCredentialID,
-		WorkDir:                       d.WorkDir,
 		Partition:                     d.Partition,
 	}
 }

@@ -811,7 +811,6 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
       "gpus": 1
     },
     "defaultSubmissionCredentialId": "'"$ENDPOINT_CREDENTIAL_ID"'",
-    "workDir": "/scratch/$USER/alphafold",
     "partition": "gpu"
   }'
 ```
@@ -840,7 +839,6 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `batchJobConfig.gpusPerNode` | integer \| null | optional |
 | `batchJobConfig.constraints` | string \| null | optional |
 | `defaultSubmissionCredentialId` | string | required, must reference an existing SSH endpoint credential binding (see [Create SSH Endpoint Credential](#create-ssh-endpoint-credential)), not a bare SSH credential |
-| `workDir` | string \| null | optional |
 | `partition` | string \| null | optional |
 
 ```json
@@ -859,7 +857,6 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "gpus": 1
   },
   "defaultSubmissionCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
-  "workDir": "/scratch/$USER/alphafold",
   "partition": "gpu"
 }
 ```
@@ -893,7 +890,6 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "constraints": null
   },
   "defaultSubmissionCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
-  "workDir": "/scratch/$USER/alphafold",
   "partition": "gpu"
 }
 ```
@@ -967,6 +963,7 @@ curl -s -X POST localhost:9095/api/v1/processes \
     "batchProcess": {
       "deploymentId": "'"$DEPLOYMENT_ID"'",
       "jobName": "alphafold-run-1",
+      "baseWorkDir": "/scratch/$USER/alphafold",
       "batchJobConfig": {
         "wallTimeMinutes": 120,
         "allocation": "MY-ALLOC",
@@ -999,6 +996,7 @@ There is no `userId`: ownership comes from the token.
 | `submissionCredentialId` | string \| null | optional; the SSH endpoint credential binding this run submits under. Omitted, the run inherits the deployment's `defaultSubmissionCredentialId` |
 | `jobName` | string \| null | optional |
 | `jobId` | string \| null | optional. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded afterwards |
+| `baseWorkDir` | string \| null | optional; the parent directory on the cluster this run works under. Launching a run that omits it fails, since there is nowhere to stage its files |
 | `inputMappings` | array | optional; replaced wholesale by a `PUT` |
 | `outputMappings` | array | optional; replaced wholesale by a `PUT` |
 
@@ -1006,6 +1004,11 @@ The resource request is carried here rather than copied from the deployment's de
 which is what lets a caller ask for different resources for a particular run. Each run
 owns its own `batchJobConfig` row, distinct from the deployment's, and deleting the
 process deletes it.
+
+`baseWorkDir` is carried here for the same reason, and used the same way: the run works
+in a subdirectory of it named for its `processId`, which is where the template's file
+inputs are staged to and its file outputs staged from. It replaces the deployment's
+former `workDir`, so two runs of one deployment can work under different directories.
 
 `submissionCredentialId` is the one field of a self-service submission that names an
 identity to act under, so it is authorized against the caller: a binding that does not
@@ -1046,6 +1049,7 @@ Deleting the process deletes the batch section, and the mappings with it.
     "submissionCredentialId": "5f4e3d2c-1b0a-4998-8776-6a5b4c3d2e1f",
     "jobId": null,
     "jobName": "alphafold-run-1",
+    "baseWorkDir": "/scratch/$USER/alphafold",
     "batchJobConfig": {
       "batchJobConfigId": "20e56e93-cf74-4834-a7b3-877df2663257",
       "wallTimeMinutes": 120,

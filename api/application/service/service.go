@@ -243,7 +243,6 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 			BatchJobConfigID:              config.ID,
 			BatchJobConfig:                config,
 			DefaultSubmissionCredentialID: endpointCred.ID,
-			WorkDir:                       req.WorkDir,
 			Partition:                     req.Partition,
 		}
 		if err := deployments.Save(ctx, deployment); err != nil {
@@ -293,7 +292,6 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		deployment.BatchJobConfigID = config.ID
 		deployment.BatchJobConfig = config
 		deployment.DefaultSubmissionCredentialID = endpointCred.ID
-		deployment.WorkDir = req.WorkDir
 		deployment.Partition = req.Partition
 
 		if err := deployments.Save(ctx, deployment); err != nil {

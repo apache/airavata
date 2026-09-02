@@ -42,6 +42,15 @@ type BatchProcessRequest struct {
 	// that is shared with them will be accepted.
 	SubmissionCredentialID *string `json:"submissionCredentialId"`
 
+	// BaseWorkDir is the parent directory on the cluster this run works under; it gets
+	// a subdirectory of its own beneath it, named for the process id, which is where
+	// the template's file inputs are staged to and its file outputs staged from.
+	//
+	// Carried here rather than on the deployment, for the same reason the resource
+	// request is: where a run works is a property of the run, so two runs of one
+	// deployment can work under different directories.
+	BaseWorkDir *string `json:"baseWorkDir"`
+
 	// The values this run supplies for the deployment template's declared inputs and
 	// outputs. Both sets are replaced wholesale by an update.
 	InputMappings  []InputMapping  `json:"inputMappings"`
@@ -77,6 +86,8 @@ type BatchProcessResponse struct {
 
 	// Always set, whether the run named a credential or inherited the deployment's.
 	SubmissionCredentialID string `json:"submissionCredentialId"`
+
+	BaseWorkDir *string `json:"baseWorkDir"`
 
 	InputMappings  []InputMapping  `json:"inputMappings"`
 	OutputMappings []OutputMapping `json:"outputMappings"`
@@ -197,6 +208,7 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		JobID:                  b.JobID,
 		JobName:                b.JobName,
 		SubmissionCredentialID: b.SubmissionCredentialID,
+		BaseWorkDir:            b.BaseWorkDir,
 		BatchJobConfig:         applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
 		InputMappings:          ToInputMappings(b.InputMappings),
 		OutputMappings:         ToOutputMappings(b.OutputMappings),
@@ -209,6 +221,7 @@ func ApplyBatchProcessRequest(dst *model.BatchJobProcess, src *BatchProcessReque
 	dst.DeploymentID = &src.DeploymentID
 	dst.JobID = src.JobID
 	dst.JobName = src.JobName
+	dst.BaseWorkDir = src.BaseWorkDir
 }
 
 func ToInputMappings(in []*model.TemplateInputMapping) []InputMapping {
