@@ -1,6 +1,8 @@
 package dto
 
 import (
+	"strconv"
+
 	"github.com/apache/airavata/internal/httpx"
 
 	model "github.com/apache/airavata/api/compute/model"
@@ -12,13 +14,22 @@ import (
 // The host name it used to carry is now an SSH endpoint of its own, named by id. The
 // field is required for the same reason the host name was: a cluster nothing can log
 // in to cannot be submitted to.
-//
-// Java: org.apache.airavata.compute.dto.ClusterRequestDto
 type ClusterRequest struct {
 	ClusterName        string  `json:"clusterName"`
 	ClusterDescription *string `json:"clusterDescription"`
 	SSHEndpointID      string  `json:"sshEndpointId"`
 	SlurmHome          string  `json:"slurmHome"`
+
+	// Partitions are the partitions to carve the cluster into as it is registered, so
+	// a cluster whose layout is already known arrives complete rather than needing a
+	// follow-up call per partition.
+	//
+	// Accepted on create only. An update that carries them is rejected rather than
+	// obeyed: the set has no ids in it, so there would be nothing to match an incoming
+	// partition to an existing row by, and replacing the collection wholesale would
+	// delete partitions the caller never mentioned. Adding, changing and removing them
+	// afterwards is what /api/v1/clusters/{clusterId}/partitions is for.
+	Partitions []ClusterPartitionRequest `json:"partitions"`
 }
 
 // Validate implements httpx.Validator.
@@ -27,7 +38,14 @@ func (r *ClusterRequest) Validate() []httpx.FieldError {
 	c.NotBlank("clusterName", "Cluster name cannot be blank", r.ClusterName)
 	c.NotBlank("sshEndpointId", "SSH endpoint id cannot be blank", r.SSHEndpointID)
 	c.NotBlank("slurmHome", "Slurm home cannot be blank", r.SlurmHome)
+	for i := range r.Partitions {
+		c.Nested(indexed("partitions", i), &r.Partitions[i])
+	}
 	return c.Fields()
+}
+
+func indexed(field string, i int) string {
+	return field + "[" + strconv.Itoa(i) + "]"
 }
 
 // ClusterResponse is the read model for a cluster.
@@ -51,6 +69,10 @@ type ClusterResponse struct {
 // their own endpoints, and overwriting the collection here would risk removing rows
 // the caller never mentioned. The SSH endpoint is resolved by the service, which is
 // what turns an unknown id into a 404 rather than a dangling reference.
+//
+// A create request's inline partitions are written by the service through the
+// partition repository, one row at a time, for that same reason — this function stays
+// out of the collection on every path.
 func ApplyClusterRequest(dst *model.Cluster, src *ClusterRequest) {
 	dst.ClusterName = src.ClusterName
 	dst.ClusterDescription = src.ClusterDescription

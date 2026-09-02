@@ -26,14 +26,20 @@ func notFoundAs(err error, format string, args ...any) error {
 
 // ClusterService manages Slurm clusters. Reads are open; writes are administrative.
 type ClusterService struct {
-	db        *gorm.DB
-	clusters  *repository.ClusterRepository
-	endpoints *credrepo.SSHEndpointRepository
+	db         *gorm.DB
+	clusters   *repository.ClusterRepository
+	partitions *repository.ClusterPartitionRepository
+	endpoints  *credrepo.SSHEndpointRepository
 }
 
 // NewClusterService returns a cluster service.
-func NewClusterService(db *gorm.DB, clusters *repository.ClusterRepository, endpoints *credrepo.SSHEndpointRepository) *ClusterService {
-	return &ClusterService{db: db, clusters: clusters, endpoints: endpoints}
+//
+// It holds the partition repository so a create can register a cluster's partitions in
+// the same transaction as the cluster itself. Writes still go through that repository
+// rather than through the cluster's owned collection, the same discipline the partition
+// service keeps.
+func NewClusterService(db *gorm.DB, clusters *repository.ClusterRepository, partitions *repository.ClusterPartitionRepository, endpoints *credrepo.SSHEndpointRepository) *ClusterService {
+	return &ClusterService{db: db, clusters: clusters, partitions: partitions, endpoints: endpoints}
 }
 
 // List returns every cluster.
@@ -59,11 +65,16 @@ func (s *ClusterService) Get(ctx context.Context, id string) (*dto.ClusterRespon
 	return &out, nil
 }
 
-// Create registers a cluster.
+// Create registers a cluster, along with any partitions the request carves it into.
 //
 // The named SSH endpoint must already exist: a cluster pointing at a host nothing
 // knows about could never be submitted to, so an unknown id is a 404 rather than a
 // dangling reference.
+//
+// The partitions are written in the same transaction as the cluster, so a cluster
+// never becomes visible carrying half the layout it was registered with. A cluster
+// that gains partitions later adds them through
+// POST /api/v1/clusters/{clusterId}/partitions instead.
 func (s *ClusterService) Create(ctx context.Context, req *dto.ClusterRequest) (*dto.ClusterResponse, error) {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return nil, err
@@ -72,6 +83,7 @@ func (s *ClusterService) Create(ctx context.Context, req *dto.ClusterRequest) (*
 	var out dto.ClusterResponse
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		clusters, endpoints := s.clusters.WithTx(tx), s.endpoints.WithTx(tx)
+		partitions := s.partitions.WithTx(tx)
 
 		endpoint, err := endpoints.FindByID(ctx, req.SSHEndpointID)
 		if err != nil {
@@ -83,6 +95,20 @@ func (s *ClusterService) Create(ctx context.Context, req *dto.ClusterRequest) (*
 		if err := clusters.Save(ctx, cluster); err != nil {
 			return err
 		}
+
+		// Saved one at a time through the partition repository rather than through
+		// cluster.Partitions: the collection cascades on delete, and writing it as an
+		// association is what the model warns against. Each saved row is appended to
+		// the read-side projection so the response carries the ids just generated.
+		for i := range req.Partitions {
+			partition := &model.ClusterPartition{ClusterID: &cluster.ID}
+			dto.ApplyClusterPartitionRequest(partition, &req.Partitions[i])
+			if err := partitions.Save(ctx, partition); err != nil {
+				return err
+			}
+			cluster.Partitions = append(cluster.Partitions, *partition)
+		}
+
 		out = dto.ToClusterResponse(cluster)
 		return nil
 	})
@@ -93,9 +119,21 @@ func (s *ClusterService) Create(ctx context.Context, req *dto.ClusterRequest) (*
 }
 
 // Update changes a cluster's own fields, leaving its partitions untouched.
+//
+// A body carrying partitions is rejected rather than ignored. They have no ids, so
+// there is nothing to match an incoming partition to an existing row by: obeying the
+// field would mean replacing the collection wholesale and deleting partitions the
+// caller never mentioned, and ignoring it would silently drop what the caller asked
+// for. The partition endpoints are where a cluster's layout changes.
 func (s *ClusterService) Update(ctx context.Context, id string, req *dto.ClusterRequest) (*dto.ClusterResponse, error) {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return nil, err
+	}
+	if len(req.Partitions) > 0 {
+		return nil, httpx.Invalid([]httpx.FieldError{{
+			Field:   "partitions",
+			Message: "Partitions are only accepted when a cluster is created; use /api/v1/clusters/{clusterId}/partitions to change them",
+		}})
 	}
 
 	var out dto.ClusterResponse

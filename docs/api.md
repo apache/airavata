@@ -123,6 +123,8 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) above, and captures `clusterId` into `$CLUSTER_ID` (requires `jq`) for the batch deployment step further down.
 
+A cluster whose layout is already known can be carved into partitions in the same call, by carrying them in `partitions`. They are written in the same transaction as the cluster, so a cluster is never visible carrying half the layout it was registered with. A cluster that gains partitions later adds them one at a time through [Create Cluster Partition](#create-cluster-partition) instead.
+
 ```bash
 CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/clusters \
   -H "Authorization: Bearer $TOKEN" \
@@ -131,7 +133,20 @@ CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/clusters \
     "clusterName": "expanse",
     "clusterDescription": "SDSC Expanse HPC cluster",
     "sshEndpointId": "'"$SSH_ENDPOINT_ID"'",
-    "slurmHome": "/usr/bin"
+    "slurmHome": "/usr/bin",
+    "partitions": [
+      {
+        "name": "compute",
+        "description": "General-purpose CPU partition",
+        "maxRunTime": 2880,
+        "maxNodes": 32,
+        "cpuPerNode": 128,
+        "defaultNodeCount": 1,
+        "defaultCpuCount": 16,
+        "defaultWalltime": 240,
+        "isDefaultQueue": true
+      }
+    ]
   }' | jq -r '.clusterId')
 
 echo "$CLUSTER_ID"
@@ -145,19 +160,33 @@ echo "$CLUSTER_ID"
 | `clusterDescription` | string \| null | optional |
 | `sshEndpointId` | string | required, must reference an existing SSH endpoint |
 | `slurmHome` | string | required, cannot be blank |
+| `partitions` | array \| null | optional, create only. Each element takes the same shape as a [Create Cluster Partition](#create-cluster-partition) body. A `PUT` carrying this field is rejected — see [Read, Update and Delete Clusters](#read-update-and-delete-clusters) |
 
 ```json
 {
   "clusterName": "expanse",
   "clusterDescription": "SDSC Expanse HPC cluster",
   "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "slurmHome": "/usr/bin"
+  "slurmHome": "/usr/bin",
+  "partitions": [
+    {
+      "name": "compute",
+      "description": "General-purpose CPU partition",
+      "maxRunTime": 2880,
+      "maxNodes": 32,
+      "cpuPerNode": 128,
+      "defaultNodeCount": 1,
+      "defaultCpuCount": 16,
+      "defaultWalltime": 240,
+      "isDefaultQueue": true
+    }
+  ]
 }
 ```
 
 **Response — `201 Created`**
 
-`clusterId` is server-generated (UUID). The endpoint is inlined, since every caller that wants a cluster wants the host it lives on. `partitions` is empty until partitions are added via `/api/v1/clusters/{clusterId}/partitions`.
+`clusterId` is server-generated (UUID), as is every `partitionId`. The endpoint is inlined, since every caller that wants a cluster wants the host it lives on. `partitions` carries whatever the request asked for, and is `[]` for a cluster registered without any — those are added afterwards via `/api/v1/clusters/{clusterId}/partitions`.
 
 ```json
 {
@@ -172,13 +201,33 @@ echo "$CLUSTER_ID"
     "port": 22
   },
   "slurmHome": "/usr/bin",
-  "partitions": []
+  "partitions": [
+    {
+      "partitionId": "4b3a2c1d-0e9f-4876-a5b4-c3d2e1f0a9b8",
+      "clusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
+      "name": "compute",
+      "description": "General-purpose CPU partition",
+      "maxRunTime": 2880,
+      "maxNodes": 32,
+      "maxProcessors": null,
+      "maxJobsInQueue": null,
+      "maxMemory": null,
+      "cpuPerNode": 128,
+      "defaultNodeCount": 1,
+      "defaultCpuCount": 16,
+      "defaultWalltime": 240,
+      "gres": null,
+      "nodes": null,
+      "isDefaultQueue": true,
+      "isCheckpointable": null
+    }
+  ]
 }
 ```
 
 **Validation errors — `400 Bad Request`**
 
-Returned when `clusterName`, `sshEndpointId` or `slurmHome` is blank. An `sshEndpointId` that does not resolve to an existing endpoint is returned as `404 Not Found` instead.
+Returned when `clusterName`, `sshEndpointId` or `slurmHome` is blank, or when an inline partition fails its own constraints — those are reported under the element that carries them, as `partitions[0].name`. An `sshEndpointId` that does not resolve to an existing endpoint is returned as `404 Not Found` instead.
 
 ```json
 {
@@ -192,6 +241,35 @@ Returned when `clusterName`, `sshEndpointId` or `slurmHome` is blank. An `sshEnd
 }
 ```
 
+### Read, Update and Delete Clusters
+
+```
+GET    /api/v1/clusters
+GET    /api/v1/clusters/{clusterId}
+PUT    /api/v1/clusters/{clusterId}
+DELETE /api/v1/clusters/{clusterId}
+```
+
+Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read carries the cluster's partitions and its SSH endpoint inline, so a caller that wants the layout never needs a second call.
+
+`PUT` changes a cluster's own fields and leaves its partitions alone. A body carrying `partitions` is **rejected** rather than obeyed:
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
+    { "field": "partitions", "message": "Partitions are only accepted when a cluster is created; use /api/v1/clusters/{clusterId}/partitions to change them" }
+  ]
+}
+```
+
+The elements of that array carry no ids, so there is nothing to match an incoming partition to an existing row by. Obeying the field would mean replacing the collection wholesale and deleting partitions the caller never mentioned; ignoring it would silently discard what they asked for. Rejecting it says which endpoint to use instead.
+
+`DELETE` returns `204 No Content` and takes the cluster's partitions with it — that foreign key cascades, unlike the `RESTRICT` ones guarding endpoints and credentials.
+
+
 ### Create Cluster Partition
 
 ```
@@ -202,10 +280,11 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$CLUSTER_ID` from [Create Cluster](#create-cluster) above.
+Uses `$CLUSTER_ID` from [Create Cluster](#create-cluster) above, and captures
+`partitionId` into `$PARTITION_ID` (requires `jq`).
 
 ```bash
-curl -s -X POST localhost:9095/api/v1/clusters/"$CLUSTER_ID"/partitions \
+PARTITION_ID=$(curl -s -X POST localhost:9095/api/v1/clusters/"$CLUSTER_ID"/partitions \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -224,7 +303,9 @@ curl -s -X POST localhost:9095/api/v1/clusters/"$CLUSTER_ID"/partitions \
     "nodes": "gpu-node-[01-04]",
     "isDefaultQueue": false,
     "isCheckpointable": true
-  }'
+  }' | jq -r '.partitionId')
+
+echo "$PARTITION_ID"
 ```
 
 **Request body**
@@ -307,6 +388,35 @@ Returned when `name` is blank.
   ]
 }
 ```
+
+### Read, Update and Delete Cluster Partitions
+
+```
+GET    /api/v1/clusters/{clusterId}/partitions
+GET    /api/v1/clusters/{clusterId}/partitions/{partitionId}
+PUT    /api/v1/clusters/{clusterId}/partitions/{partitionId}
+DELETE /api/v1/clusters/{clusterId}/partitions/{partitionId}
+```
+
+Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. `PUT` takes the same body as [Create Cluster Partition](#create-cluster-partition).
+
+**Adding partitions to a cluster that already exists.** This is the ordinary case for a cluster that gains a partition after it was registered — a new queue, a GPU rack added later — and it is what [Create Cluster Partition](#create-cluster-partition) is for. A partition belongs to its cluster from the moment it is created: the `clusterId` in the path is the assignment, so there is no separate step that attaches one afterwards, and each call adds a partition without disturbing the ones already there.
+
+```bash
+# $CLUSTER_ID was registered earlier, with or without partitions of its own.
+curl -s -X POST localhost:9095/api/v1/clusters/"$CLUSTER_ID"/partitions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "largemem", "maxMemory": 2048000, "maxNodes": 2 }'
+
+# The cluster now carries every partition it has been given.
+curl -s localhost:9095/api/v1/clusters/"$CLUSTER_ID" \
+  -H "Authorization: Bearer $TOKEN" | jq -r '.partitions[].name'
+```
+
+Every path is scoped by its cluster, so a `partitionId` belonging to one cluster is a `404` when reached through another — an id alone is never enough to move or read a partition across clusters.
+
+`DELETE` returns `204 No Content`. Nothing holds a foreign key to a partition, so removing one never conflicts; note that a deployment names its partition by name rather than by id, and deleting the partition it names is not detected here.
 
 ### Create SSH Key
 
@@ -518,6 +628,148 @@ DELETE /api/v1/ssh-endpoint-credentials/{id}
 `PUT` repoints a binding at a different endpoint or SSH credential and needs `WRITE`. The owner is never re-derived from the caller's token, so an admin — or a grantee — editing someone's binding does not acquire it.
 
 `DELETE` returns `204 No Content` and removes the binding's shares with it. It is refused for anyone but the owner and platform admins, even a grantee holding `WRITE`.
+
+### Create Group
+
+```
+POST /api/v1/groups
+```
+
+Requires any authenticated principal. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards.
+
+**curl example**
+
+The example below captures `groupId` into `$GROUP_ID` (requires `jq`), so it can be reused when managing members further down.
+
+```bash
+TOKEN='<a user token>'
+
+GROUP_ID=$(curl -s -X POST localhost:9095/api/v1/groups \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "groupName": "molecular-dynamics" }' | jq -r '.groupId')
+
+echo "$GROUP_ID"
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `groupName` | string | required, cannot be blank |
+
+**Response — `201 Created`**
+
+`groupId` is server-generated (UUID) and `createdAt` is epoch milliseconds. The creator is admitted as an `ACTIVE` member with group role `ADMIN` in the same transaction, so a group is never left with nobody able to administer it.
+
+```json
+{
+  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
+  "groupName": "molecular-dynamics",
+  "ownerId": "cilogon:12345",
+  "createdAt": 1755043200000
+}
+```
+
+**Validation errors — `400 Bad Request`**
+
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "Validation failed",
+  "fieldErrors": [
+    { "field": "groupName", "message": "Group name cannot be blank" }
+  ]
+}
+```
+
+### Read and Update Groups
+
+```
+GET    /api/v1/groups
+GET    /api/v1/groups/me
+GET    /api/v1/groups/{groupId}
+PUT    /api/v1/groups/{groupId}
+DELETE /api/v1/groups/{groupId}
+```
+
+`GET /api/v1/groups` lists every group in the deployment and requires `ADMIN` or `SUPER_ADMIN`; `GET /api/v1/groups/me` is the ordinary caller's equivalent and returns the groups they own or hold a membership in (including suspended ones — a suspended member can still see that the group exists).
+
+`PUT` takes the same body as create and renames the group; `DELETE` returns `204 No Content` and takes the group's membership rows with it.
+
+```bash
+curl -s localhost:9095/api/v1/groups/me -H "Authorization: Bearer $TOKEN"
+```
+
+### Add Group Member
+
+```
+POST /api/v1/groups/{groupId}/members
+```
+
+Requires member-manager standing. The user must already be registered.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/groups/"$GROUP_ID"/members \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "cilogon:67890",
+    "groupRole": "MEMBER"
+  }'
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `userId` | string | required, must reference a registered user |
+| `groupRole` | string \| null | optional, one of `ADMIN`, `MODERATOR`, `MEMBER`; defaults to `MEMBER` |
+| `groupMemberStatus` | string \| null | optional, one of `ACTIVE`, `INACTIVE`; defaults to `ACTIVE` |
+
+**Response — `201 Created`**
+
+```json
+{
+  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
+  "userId": "cilogon:67890",
+  "groupRole": "MEMBER",
+  "groupMemberStatus": "ACTIVE"
+}
+```
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `userId` blank, or an unrecognised `groupRole`/`groupMemberStatus` |
+| `404 Not Found` | the group is not visible to the caller, or `userId` names no registered user |
+| `409 Conflict` | the user is already a member — change the existing membership instead of re-adding it |
+
+### Read, Update and Remove Group Members
+
+```
+GET    /api/v1/groups/{groupId}/members
+GET    /api/v1/groups/{groupId}/members/{userId}
+PUT    /api/v1/groups/{groupId}/members/{userId}
+DELETE /api/v1/groups/{groupId}/members/{userId}
+```
+
+Reads need reader standing; `PUT` and `DELETE` need member-manager standing, except that any member may remove themselves — leaving a group needs nobody's permission, and works from a suspended membership too.
+
+`PUT` accepts `groupRole` and `groupMemberStatus`, both optional; an omitted field is left as it stands, so a member can be suspended without restating their role. The membership's user comes from the path, so a membership can be changed but never moved to another user.
+
+```bash
+# Promote a member to moderator, leaving their status alone.
+curl -s -X PUT localhost:9095/api/v1/groups/"$GROUP_ID"/members/cilogon:67890 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "groupRole": "MODERATOR" }'
+```
+
+`DELETE` returns `204 No Content`, or `409 Conflict` when the named user owns the group.
+
 
 ### Share an SSH Endpoint Credential
 
@@ -1518,144 +1770,3 @@ A group is a named collection of users that resources can be shared with. Unlike
 A caller with no standing at all gets `404 Not Found` rather than `403 Forbidden`: group names are chosen by users and may say who is working with whom, so an outsider cannot confirm that a given group id exists.
 
 Two rules keep a group from being taken over through its own membership list. The owner's membership can only be changed by the owner (or a platform admin), so a moderator cannot suspend them out of their own group; and the owner's membership cannot be removed at all — delete the group instead.
-
-### Create Group
-
-```
-POST /api/v1/groups
-```
-
-Requires any authenticated principal. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards.
-
-**curl example**
-
-The example below captures `groupId` into `$GROUP_ID` (requires `jq`), so it can be reused when managing members further down.
-
-```bash
-TOKEN='<a user token>'
-
-GROUP_ID=$(curl -s -X POST localhost:9095/api/v1/groups \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ "groupName": "molecular-dynamics" }' | jq -r '.groupId')
-
-echo "$GROUP_ID"
-```
-
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `groupName` | string | required, cannot be blank |
-
-**Response — `201 Created`**
-
-`groupId` is server-generated (UUID) and `createdAt` is epoch milliseconds. The creator is admitted as an `ACTIVE` member with group role `ADMIN` in the same transaction, so a group is never left with nobody able to administer it.
-
-```json
-{
-  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
-  "groupName": "molecular-dynamics",
-  "ownerId": "cilogon:12345",
-  "createdAt": 1755043200000
-}
-```
-
-**Validation errors — `400 Bad Request`**
-
-```json
-{
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Validation failed",
-  "fieldErrors": [
-    { "field": "groupName", "message": "Group name cannot be blank" }
-  ]
-}
-```
-
-### Read and Update Groups
-
-```
-GET    /api/v1/groups
-GET    /api/v1/groups/me
-GET    /api/v1/groups/{groupId}
-PUT    /api/v1/groups/{groupId}
-DELETE /api/v1/groups/{groupId}
-```
-
-`GET /api/v1/groups` lists every group in the deployment and requires `ADMIN` or `SUPER_ADMIN`; `GET /api/v1/groups/me` is the ordinary caller's equivalent and returns the groups they own or hold a membership in (including suspended ones — a suspended member can still see that the group exists).
-
-`PUT` takes the same body as create and renames the group; `DELETE` returns `204 No Content` and takes the group's membership rows with it.
-
-```bash
-curl -s localhost:9095/api/v1/groups/me -H "Authorization: Bearer $TOKEN"
-```
-
-### Add Group Member
-
-```
-POST /api/v1/groups/{groupId}/members
-```
-
-Requires member-manager standing. The user must already be registered.
-
-```bash
-curl -s -X POST localhost:9095/api/v1/groups/"$GROUP_ID"/members \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "userId": "cilogon:67890",
-    "groupRole": "MEMBER"
-  }'
-```
-
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `userId` | string | required, must reference a registered user |
-| `groupRole` | string \| null | optional, one of `ADMIN`, `MODERATOR`, `MEMBER`; defaults to `MEMBER` |
-| `groupMemberStatus` | string \| null | optional, one of `ACTIVE`, `INACTIVE`; defaults to `ACTIVE` |
-
-**Response — `201 Created`**
-
-```json
-{
-  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
-  "userId": "cilogon:67890",
-  "groupRole": "MEMBER",
-  "groupMemberStatus": "ACTIVE"
-}
-```
-
-**Errors**
-
-| Status | Cause |
-|---|---|
-| `400 Bad Request` | `userId` blank, or an unrecognised `groupRole`/`groupMemberStatus` |
-| `404 Not Found` | the group is not visible to the caller, or `userId` names no registered user |
-| `409 Conflict` | the user is already a member — change the existing membership instead of re-adding it |
-
-### Read, Update and Remove Group Members
-
-```
-GET    /api/v1/groups/{groupId}/members
-GET    /api/v1/groups/{groupId}/members/{userId}
-PUT    /api/v1/groups/{groupId}/members/{userId}
-DELETE /api/v1/groups/{groupId}/members/{userId}
-```
-
-Reads need reader standing; `PUT` and `DELETE` need member-manager standing, except that any member may remove themselves — leaving a group needs nobody's permission, and works from a suspended membership too.
-
-`PUT` accepts `groupRole` and `groupMemberStatus`, both optional; an omitted field is left as it stands, so a member can be suspended without restating their role. The membership's user comes from the path, so a membership can be changed but never moved to another user.
-
-```bash
-# Promote a member to moderator, leaving their status alone.
-curl -s -X PUT localhost:9095/api/v1/groups/"$GROUP_ID"/members/cilogon:67890 \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{ "groupRole": "MODERATOR" }'
-```
-
-`DELETE` returns `204 No Content`, or `409 Conflict` when the named user owns the group.

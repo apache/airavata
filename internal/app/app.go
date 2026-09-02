@@ -126,7 +126,7 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 		SSHEndpointCredentialSharing: credentialssvc.NewSSHEndpointCredentialSharingService(db, bindings, bindingShares, groups, users, groupMembers),
 		CredentialAccess:             bindingAccess,
 
-		Cluster:          computesvc.NewClusterService(db, clusters, endpoints),
+		Cluster:          computesvc.NewClusterService(db, clusters, partitions, endpoints),
 		ClusterPartition: computesvc.NewClusterPartitionService(db, partitions, clusters),
 
 		Template:        applicationsvc.NewTemplateService(db, templates, deployments),
