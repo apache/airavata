@@ -201,8 +201,7 @@ func (h *harness) seedSSHKeyAndCredential(name string) (keyID, credentialID stri
 }
 
 // seedEndpointCredential creates an endpoint, an SSH credential, and a binding between
-// them, returning the binding's id — what a deployment's defaultSubmissionCredentialId
-// points at.
+// them, returning the binding's id — what a run's submissionCredentialId points at.
 func (h *harness) seedEndpointCredential(name, token string) (endpointID, bindingID string) {
 	h.t.Helper()
 	endpointID = h.seedSSHEndpoint(name)
@@ -396,7 +395,6 @@ func TestDeletingSSHKeyInUseConflicts(t *testing.T) {
 
 func TestDeletingTemplateWithDeploymentsConflicts(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("deploy", tokenAdmin)
 
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin, map[string]any{
 		"templateName": "gromacs",
@@ -408,8 +406,7 @@ func TestDeletingTemplateWithDeploymentsConflicts(t *testing.T) {
 
 	h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": templateID, "slurmRunSection": "gmx mdrun",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "TG-1"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "TG-1"},
 	}, http.StatusCreated)
 
 	if rec := h.do(http.MethodDelete, "/api/v1/application-templates/"+templateID, tokenAdmin, nil); rec.Code != http.StatusConflict {
@@ -469,14 +466,12 @@ func TestDuplicateTemplateInputNamesAreRejected(t *testing.T) {
 // unknown is an error rather than silently ignored.
 func TestDeploymentClusterIsOptionalButValidatedWhenPresent(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("optional-cluster", tokenAdmin)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "t"}, http.StatusCreated)
 
 	base := map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 30, "allocation": "TG-2"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 30, "allocation": "TG-2"},
 	}
 
 	// Absent cluster: accepted.
@@ -1244,19 +1239,19 @@ func TestDataSharingRejectsBadRequests(t *testing.T) {
 // seedProcess submits a process owned by the caller of token and returns its id.
 func (h *harness) seedProcess(name, token string) string {
 	h.t.Helper()
-	_, bindingID := h.seedEndpointCredential(name, tokenAdmin)
+	_, bindingID := h.seedEndpointCredential(name, token)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": name}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
 	proc := h.mustDo(http.MethodPost, "/api/v1/processes", token, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "ALLOC"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 60, "allocation": "ALLOC"},
 		},
 	}, http.StatusCreated)
 	return proc["processId"].(string)
@@ -1431,20 +1426,20 @@ func TestProcessTaskRejectsBadRequests(t *testing.T) {
 
 func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("proc", tokenAdmin)
+	_, bindingID := h.seedEndpointCredential("proc", tokenAlice)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "proc"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
 
 	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 120, "allocation": "ALICE-ALLOC", "gpus": 2},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 120, "allocation": "ALICE-ALLOC", "gpus": 2},
 		},
 	}, http.StatusCreated)
 
@@ -1457,18 +1452,17 @@ func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 		t.Errorf("config = %v, want the values from the request, not the deployment default", cfg)
 	}
 	// The process owns its own config, distinct from the deployment's.
-	if cfg["batchJobConfigId"] == deployment["batchJobConfig"].(map[string]any)["batchJobConfigId"] {
+	if cfg["batchJobConfigId"] == deployment["defaultBatchJobConfig"].(map[string]any)["batchJobConfigId"] {
 		t.Error("process and deployment share one batch job config; each must own its own")
 	}
 }
 
 // Which SSH endpoint credential a run submits under is the one place a self-service
-// submission names an identity to act under, so it is authorised against the caller —
-// while the deployment's default, which an admin chose, is not.
+// submission names an identity to act under, so it is authorised against the caller.
+// A deployment carries no default to fall back on, so naming one is required.
 func TestProcessSubmitsUnderACredentialTheCallerMayUse(t *testing.T) {
 	h := newHarness(t)
-	deployment, _, _ := h.seedDeploymentWithIO("submission")
-	deploymentDefault := deployment["defaultSubmissionCredentialId"].(string)
+	deployment, bindingID, _, _ := h.seedDeploymentWithIO("submission")
 	batch := func(credentialID any) map[string]any {
 		body := map[string]any{
 			"deploymentId":   deployment["deploymentId"],
@@ -1484,20 +1478,19 @@ func TestProcessSubmitsUnderACredentialTheCallerMayUse(t *testing.T) {
 			map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(credentialID)})
 	}
 
-	// Naming none submits under the deployment's default, which is the ordinary case:
-	// alice holds no binding of her own here, and the deployment's belongs to admin.
-	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice,
-		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(nil)}, http.StatusCreated)
-	if got := created["batchProcess"].(map[string]any)["submissionCredentialId"]; got != deploymentDefault {
-		t.Errorf("submissionCredentialId = %v, want the deployment default %s", got, deploymentDefault)
+	// Naming her own binding submits under it.
+	own := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice,
+		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(bindingID)}, http.StatusCreated)
+	if got := own["batchProcess"].(map[string]any)["submissionCredentialId"]; got != bindingID {
+		t.Errorf("submissionCredentialId = %v, want the named binding %s", got, bindingID)
 	}
 
-	// Naming one of her own submits under that instead.
-	_, aliceBinding := h.seedEndpointCredential("alice-submits", tokenAlice)
-	own := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice,
-		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(aliceBinding)}, http.StatusCreated)
-	if got := own["batchProcess"].(map[string]any)["submissionCredentialId"]; got != aliceBinding {
-		t.Errorf("submissionCredentialId = %v, want the named binding %s", got, aliceBinding)
+	// Naming none is a validation error rather than a run with no identity behind it.
+	rec := create(tokenAlice, nil)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("no credential: status = %d, want 400", rec.Code)
+	} else if field := firstFieldError(t, rec); field != "batchProcess.submissionCredentialId" {
+		t.Errorf("field = %q, want it reported under the section", field)
 	}
 
 	// A binding that does not exist is a 404, and one that is neither hers nor shared
@@ -1510,13 +1503,16 @@ func TestProcessSubmitsUnderACredentialTheCallerMayUse(t *testing.T) {
 		t.Errorf("another user's credential: status = %d, want 403", rec.Code)
 	}
 
-	// An update re-resolves it the same way, so dropping the field falls back to the
-	// deployment's default rather than keeping what the run was created with.
+	// An update re-resolves it the same way, so it is required there too.
 	processID := own["processId"].(string)
+	if rec := h.do(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin,
+		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(nil)}); rec.Code != http.StatusBadRequest {
+		t.Errorf("update with no credential: status = %d, want 400", rec.Code)
+	}
 	updated := h.mustDo(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin,
-		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(nil)}, http.StatusOK)
-	if got := updated["batchProcess"].(map[string]any)["submissionCredentialId"]; got != deploymentDefault {
-		t.Errorf("submissionCredentialId after update = %v, want the deployment default", got)
+		map[string]any{"processType": "BATCH_JOB", "batchProcess": batch(bindingID)}, http.StatusOK)
+	if got := updated["batchProcess"].(map[string]any)["submissionCredentialId"]; got != bindingID {
+		t.Errorf("submissionCredentialId after update = %v, want the named binding", got)
 	}
 }
 
@@ -1524,9 +1520,9 @@ func TestProcessSubmitsUnderACredentialTheCallerMayUse(t *testing.T) {
 // output, and returns the deployment together with those two declaration ids. The
 // mapping tests need real declarations to point at: a mapping carries a foreign key to
 // the template input it supplies a value for.
-func (h *harness) seedDeploymentWithIO(name string) (deployment map[string]any, inputID, outputID string) {
+func (h *harness) seedDeploymentWithIO(name string) (deployment map[string]any, bindingID, inputID, outputID string) {
 	h.t.Helper()
-	_, bindingID := h.seedEndpointCredential(name, tokenAdmin)
+	_, bindingID = h.seedEndpointCredential(name, tokenAlice)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin, map[string]any{
 		"templateName": name,
 		"inputs":       []any{map[string]any{"inputName": "sequence", "inputType": "FILE"}},
@@ -1534,23 +1530,23 @@ func (h *harness) seedDeploymentWithIO(name string) (deployment map[string]any, 
 	}, http.StatusCreated)
 	deployment = h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
 
 	inputs := tmpl["inputs"].([]any)
 	outputs := tmpl["outputs"].([]any)
-	return deployment, inputs[0].(map[string]any)["inputId"].(string), outputs[0].(map[string]any)["outputId"].(string)
+	return deployment, bindingID, inputs[0].(map[string]any)["inputId"].(string), outputs[0].(map[string]any)["outputId"].(string)
 }
 
 // A batch job is not a resource of its own: it is configured as a section of the
 // process body, so which sections a body may carry follows from its process type.
 func TestProcessRejectsSectionsThatDoNotMatchItsType(t *testing.T) {
 	h := newHarness(t)
-	deployment, _, _ := h.seedDeploymentWithIO("sections")
+	deployment, bindingID, _, _ := h.seedDeploymentWithIO("sections")
 	batch := map[string]any{
-		"deploymentId":   deployment["deploymentId"],
-		"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+		"deploymentId":           deployment["deploymentId"],
+		"submissionCredentialId": bindingID,
+		"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
 	}
 
 	for _, tc := range []struct {
@@ -1578,8 +1574,9 @@ func TestProcessRejectsSectionsThatDoNotMatchItsType(t *testing.T) {
 	if rec := h.do(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   "nope",
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+			"deploymentId":           "nope",
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
 		},
 	}); rec.Code != http.StatusNotFound {
 		t.Errorf("unknown deployment: status = %d, want 404", rec.Code)
@@ -1611,11 +1608,12 @@ func TestProcessWithoutABatchSectionIsStillAProcess(t *testing.T) {
 // back nested in it, and replaced wholesale by an update.
 func TestProcessCarriesItsTemplateMappings(t *testing.T) {
 	h := newHarness(t)
-	deployment, inputID, outputID := h.seedDeploymentWithIO("mappings")
+	deployment, bindingID, inputID, outputID := h.seedDeploymentWithIO("mappings")
 	batch := func(extra map[string]any) map[string]any {
 		body := map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
 		}
 		for k, v := range extra {
 			body[k] = v
@@ -1712,13 +1710,14 @@ func TestProcessCarriesItsTemplateMappings(t *testing.T) {
 // one orphaned with nothing pointing at it.
 func TestUpdatingProcessKeepsItsOwnedConfig(t *testing.T) {
 	h := newHarness(t)
-	deployment, _, _ := h.seedDeploymentWithIO("update")
+	deployment, bindingID, _, _ := h.seedDeploymentWithIO("update")
 
 	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
 		},
 	}, http.StatusCreated)
 	processID := created["processId"].(string)
@@ -1727,10 +1726,11 @@ func TestUpdatingProcessKeepsItsOwnedConfig(t *testing.T) {
 	updated := h.mustDo(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 90, "allocation": "B"},
-			"jobId":          "4821577",
-			"jobName":        "fold-1",
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 90, "allocation": "B"},
+			"jobId":                  "4821577",
+			"jobName":                "fold-1",
 		},
 	}, http.StatusOK)
 
@@ -1766,8 +1766,9 @@ func TestUpdatingProcessKeepsItsOwnedConfig(t *testing.T) {
 	if rec := h.do(http.MethodPut, "/api/v1/processes/"+processID, tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 90, "allocation": "B"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 90, "allocation": "B"},
 		},
 	}); rec.Code != http.StatusForbidden {
 		t.Errorf("update by the owner: status = %d, want 403", rec.Code)
@@ -1778,12 +1779,13 @@ func TestUpdatingProcessKeepsItsOwnedConfig(t *testing.T) {
 // named there rather than on the process.
 func TestListingProcessesByDeployment(t *testing.T) {
 	h := newHarness(t)
-	deployment, _, _ := h.seedDeploymentWithIO("by-deployment")
+	deployment, bindingID, _, _ := h.seedDeploymentWithIO("by-deployment")
 	body := map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
 		},
 	}
 	h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, body, http.StatusCreated)
@@ -1812,19 +1814,19 @@ func TestListingProcessesByDeployment(t *testing.T) {
 // outward and the database cannot cascade in that direction.
 func TestDeletingProcessRemovesItsOwnedConfig(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("cleanup", tokenAdmin)
+	_, bindingID := h.seedEndpointCredential("cleanup", tokenAlice)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "cleanup"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
 	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
 		},
 	}, http.StatusCreated)
 
@@ -1844,19 +1846,19 @@ func TestDeletingProcessRemovesItsOwnedConfig(t *testing.T) {
 // reference before removing its statuses, or the RESTRICT constraints deadlock.
 func TestDeletingProcessRemovesItsStatuses(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("status-cleanup", tokenAdmin)
+	_, bindingID := h.seedEndpointCredential("status-cleanup", tokenAlice)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "status-cleanup"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
 	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
 		},
 	}, http.StatusCreated)
 	processID := proc["processId"].(string)
@@ -1874,19 +1876,19 @@ func TestDeletingProcessRemovesItsStatuses(t *testing.T) {
 // a caller never observes a process that exists but has no status history yet.
 func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("initial-status", tokenAdmin)
+	_, bindingID := h.seedEndpointCredential("initial-status", tokenAlice)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "initial-status"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
 	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
 		},
 	}, http.StatusCreated)
 	processID := proc["processId"].(string)
@@ -1918,19 +1920,19 @@ func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 // it — so the two write methods on the same path must fail, not silently succeed.
 func TestProcessStatusWritesAreNotExposed(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("status-readonly", tokenAdmin)
+	_, bindingID := h.seedEndpointCredential("status-readonly", tokenAlice)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "status-readonly"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
 	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
 		},
 	}, http.StatusCreated)
 	processID := proc["processId"].(string)
@@ -1948,27 +1950,28 @@ func TestProcessStatusWritesAreNotExposed(t *testing.T) {
 // the same scoping ClusterPartition already applies to its cluster.
 func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
 	h := newHarness(t)
-	_, bindingID := h.seedEndpointCredential("status-scope", tokenAdmin)
+	_, bindingID := h.seedEndpointCredential("status-scope", tokenAlice)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": "status-scope"}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
-		"defaultSubmissionCredentialId": bindingID,
-		"batchJobConfig":                map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
 	}, http.StatusCreated)
 
 	procA := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
 		},
 	}, http.StatusCreated)
 	procB := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
 		"processType": "BATCH_JOB",
 		"batchProcess": map[string]any{
-			"deploymentId":   deployment["deploymentId"],
-			"batchJobConfig": map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
+			"deploymentId":           deployment["deploymentId"],
+			"submissionCredentialId": bindingID,
+			"batchJobConfig":         map[string]any{"wallTimeMinutes": 10, "allocation": "B"},
 		},
 	}, http.StatusCreated)
 

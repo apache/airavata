@@ -110,14 +110,14 @@ func (r *BatchDeploymentRepository) WithTx(tx *gorm.DB) *BatchDeploymentReposito
 // FindAll returns every deployment with its owned batch job config.
 func (r *BatchDeploymentRepository) FindAll(ctx context.Context) ([]model.BatchDeployment, error) {
 	var out []model.BatchDeployment
-	err := r.db.WithContext(ctx).Preload("BatchJobConfig").Find(&out).Error
+	err := r.db.WithContext(ctx).Preload("DefaultBatchJobConfig").Find(&out).Error
 	return out, err
 }
 
 // FindByTemplateID returns every deployment of one template.
 func (r *BatchDeploymentRepository) FindByTemplateID(ctx context.Context, templateID string) ([]model.BatchDeployment, error) {
 	var out []model.BatchDeployment
-	err := r.db.WithContext(ctx).Preload("BatchJobConfig").
+	err := r.db.WithContext(ctx).Preload("DefaultBatchJobConfig").
 		Where("template_id = ?", templateID).Find(&out).Error
 	return out, err
 }
@@ -125,7 +125,7 @@ func (r *BatchDeploymentRepository) FindByTemplateID(ctx context.Context, templa
 // FindByID returns one deployment, or gorm.ErrRecordNotFound.
 func (r *BatchDeploymentRepository) FindByID(ctx context.Context, id string) (*model.BatchDeployment, error) {
 	var out model.BatchDeployment
-	err := r.db.WithContext(ctx).Preload("BatchJobConfig").
+	err := r.db.WithContext(ctx).Preload("DefaultBatchJobConfig").
 		First(&out, "deployment_id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -146,7 +146,7 @@ func (r *BatchDeploymentRepository) ExistsByTemplateID(ctx context.Context, temp
 // SaveConfig, so that an update mutates the existing config row rather than
 // replacing it and leaving an orphan.
 func (r *BatchDeploymentRepository) Save(ctx context.Context, d *model.BatchDeployment) error {
-	return r.db.WithContext(ctx).Omit("BatchJobConfig").Save(d).Error
+	return r.db.WithContext(ctx).Omit("DefaultBatchJobConfig").Save(d).Error
 }
 
 // SaveConfig inserts or updates an owned batch job config.

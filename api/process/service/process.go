@@ -227,7 +227,7 @@ func (s *ProcessService) saveBatchProcess(
 	if err != nil {
 		return nil, notFoundAs(err, "Deployment not found: %s", req.DeploymentID)
 	}
-	submissionCredentialID, err := s.resolveSubmissionCredential(ctx, tx, deployment, req)
+	submissionCredentialID, err := s.resolveSubmissionCredential(ctx, tx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -259,23 +259,21 @@ func (s *ProcessService) saveBatchProcess(
 	return batch, nil
 }
 
-// resolveSubmissionCredential decides which SSH endpoint credential binding this run
-// submits under: the one it named, or the deployment's default when it named none.
+// resolveSubmissionCredential authorises the SSH endpoint credential binding this run
+// submits under.
 //
-// Only a named binding is authorised, and it is authorised against the caller — this is
-// the one place in a self-service submission where a caller supplies an identity to act
-// under, so RequireUsable is what keeps them to their own bindings and the ones shared
-// with them. The deployment's default is exempt because it is not the caller's choice
-// at all: an admin configured it as how that deployment submits, and requiring every
-// user to hold it directly would leave ordinary submissions rejected.
+// The binding is authorised against the caller — this is the one place in a
+// self-service submission where a caller supplies an identity to act under, so
+// RequireUsable is what keeps them to their own bindings and the ones shared with
+// them. A deployment carries no default to fall back on, so validation already
+// rejects a request that names none.
 func (s *ProcessService) resolveSubmissionCredential(
 	ctx context.Context,
 	tx *gorm.DB,
-	deployment *applicationmodel.BatchDeployment,
 	req *dto.BatchProcessRequest,
 ) (string, error) {
 	if req.SubmissionCredentialID == nil || strings.TrimSpace(*req.SubmissionCredentialID) == "" {
-		return deployment.DefaultSubmissionCredentialID, nil
+		return "", httpx.BadRequest("Submission credential id cannot be blank")
 	}
 	credential, err := s.credentials.WithTx(tx).RequireUsable(ctx, *req.SubmissionCredentialID)
 	if err != nil {

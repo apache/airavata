@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm"
 
 	computemodel "github.com/apache/airavata/api/compute/model"
-	cred "github.com/apache/airavata/api/credentials/model"
 )
 
 // BatchJobConfig is a batch-scheduler resource request.
@@ -76,16 +75,13 @@ type BatchDeployment struct {
 	// Owned one-to-one. The foreign key lives on this side and is unique, so no two
 	// deployments can share a config. Because the key points outward, the orphaned
 	// config row is removed by AfterDelete rather than by a database cascade.
-	BatchJobConfigID string          `gorm:"column:batch_job_config_id;type:varchar(36);not null;uniqueIndex" json:"batchJobConfigId"`
-	BatchJobConfig   *BatchJobConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"batchJobConfig,omitempty"`
+	//
+	// It is the deployment's default: a run copies it into a config of its own and may
+	// depart from it, which is why the run's snapshot is what a job is submitted with.
+	DefaultBatchJobConfigID string          `gorm:"column:default_batch_job_config_id;type:varchar(36);not null;uniqueIndex" json:"defaultBatchJobConfigId"`
+	DefaultBatchJobConfig   *BatchJobConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"defaultBatchJobConfig,omitempty"`
 
-	// The default submission credential is an SSH endpoint credential binding rather
-	// than a bare SSH credential: it ties the submitting identity to a specific host
-	// and owner, the same association a job submitted under it will run as.
-	DefaultSubmissionCredentialID string                      `gorm:"column:default_submission_credential_id;type:varchar(36);not null;index" json:"defaultSubmissionCredentialId"`
-	DefaultSubmissionCredential   *cred.SSHEndpointCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	Partition *string `gorm:"column:partition;type:varchar(255)" json:"partition,omitempty"`
+	DefaultPartition *string `gorm:"column:default_partition;type:varchar(255)" json:"defaultPartition,omitempty"`
 }
 
 // TableName returns the table backing BatchDeployment.
@@ -103,9 +99,9 @@ func (d *BatchDeployment) BeforeCreate(*gorm.DB) error {
 // orphanRemoval: the foreign key points from the deployment to the config, so the
 // database cannot cascade in this direction and the cleanup has to be explicit.
 func (d *BatchDeployment) AfterDelete(tx *gorm.DB) error {
-	if d.BatchJobConfigID == "" {
+	if d.DefaultBatchJobConfigID == "" {
 		return nil
 	}
-	return tx.Where("batch_job_config_id = ?", d.BatchJobConfigID).
+	return tx.Where("batch_job_config_id = ?", d.DefaultBatchJobConfigID).
 		Delete(&BatchJobConfig{}).Error
 }

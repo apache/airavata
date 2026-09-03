@@ -232,23 +232,6 @@ func TestDeletingClusterCascadesToPartitions(t *testing.T) {
 func TestDeletingDeploymentRemovesOwnedBatchJobConfig(t *testing.T) {
 	gdb := newTestDB(t)
 
-	key := &credentialsmodel.SSHKey{SSHKeyName: "k", PublicKey: "ssh-ed25519 AAAA", PrivateKey: "secret"}
-	if err := gdb.Create(key).Error; err != nil {
-		t.Fatalf("create ssh key: %v", err)
-	}
-	cred := &credentialsmodel.SSHUserCredential{Username: "dimuthu", SSHKeyID: &key.ID}
-	if err := gdb.Create(cred).Error; err != nil {
-		t.Fatalf("create ssh credential: %v", err)
-	}
-	endpoint := seedSSHEndpoint(t, gdb, "anvil")
-	cluster := &computemodel.Cluster{ClusterName: "anvil", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
-	if err := gdb.Create(cluster).Error; err != nil {
-		t.Fatalf("create cluster: %v", err)
-	}
-	binding := &credentialsmodel.SSHEndpointCredential{SSHEndpointID: &endpoint.ID, SSHCredentialID: &cred.ID}
-	if err := gdb.Create(binding).Error; err != nil {
-		t.Fatalf("create ssh endpoint credential: %v", err)
-	}
 	tmpl := &applicationmodel.Template{TemplateName: ptr.To("gromacs")}
 	if err := gdb.Create(tmpl).Error; err != nil {
 		t.Fatalf("create template: %v", err)
@@ -259,10 +242,9 @@ func TestDeletingDeploymentRemovesOwnedBatchJobConfig(t *testing.T) {
 	}
 
 	dep := &applicationmodel.BatchDeployment{
-		TemplateID:                    &tmpl.ID,
-		SlurmRunSection:               "module load gromacs\ngmx mdrun",
-		BatchJobConfigID:              cfg.ID,
-		DefaultSubmissionCredentialID: binding.ID,
+		TemplateID:              &tmpl.ID,
+		SlurmRunSection:         "module load gromacs\ngmx mdrun",
+		DefaultBatchJobConfigID: cfg.ID,
 	}
 	if err := gdb.Create(dep).Error; err != nil {
 		t.Fatalf("create deployment: %v", err)

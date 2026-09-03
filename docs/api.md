@@ -29,7 +29,7 @@ Every failure — validation, authorization, missing record — comes back in th
 }
 ```
 
-`fieldErrors` is omitted on every other kind of failure. Field names are the JSON paths of the request body, including indexes and nesting — `inputs[0].inputType`, `batchJobConfig.wallTimeMinutes`.
+`fieldErrors` is omitted on every other kind of failure. Field names are the JSON paths of the request body, including indexes and nesting — `inputs[0].inputType`, `defaultBatchJobConfig.wallTimeMinutes`.
 
 The statuses in use:
 
@@ -416,7 +416,7 @@ curl -s localhost:9095/api/v1/clusters/"$CLUSTER_ID" \
 
 Every path is scoped by its cluster, so a `partitionId` belonging to one cluster is a `404` when reached through another — an id alone is never enough to move or read a partition across clusters.
 
-`DELETE` returns `204 No Content`. Nothing holds a foreign key to a partition, so removing one never conflicts; note that a deployment names its partition by name rather than by id, and deleting the partition it names is not detected here.
+`DELETE` returns `204 No Content`. Nothing holds a foreign key to a partition, so removing one never conflicts; note that a deployment names its default partition by name rather than by id, and deleting the partition it names is not detected here.
 
 ### Create SSH Key
 
@@ -568,11 +568,11 @@ POST /api/v1/ssh-endpoint-credentials
 
 Binds an SSH credential to an [SSH endpoint](#ssh-endpoints) so the caller can act on that host. Requires only an authenticated principal — not admin — but that principal must have a matching row in `users` (see INSTALL.md's "Owning resources requires a matching `users` row"), since the binding's owner is resolved from the token rather than accepted as a request field.
 
-The resulting binding id is what [Create Batch Deployment](#create-batch-deployment) below uses as `defaultSubmissionCredentialId`: a deployment submits under a specific endpoint credential, not a bare SSH credential, since the binding is what ties the submitting identity to both a host and an owner.
+The resulting binding id is what [Create Process](#create-process) below uses as `submissionCredentialId`: a run submits under a specific endpoint credential, not a bare SSH credential, since the binding is what ties the submitting identity to both a host and an owner.
 
 **curl example**
 
-Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `sshEndpointCredentialId` into `$ENDPOINT_CREDENTIAL_ID` for the batch deployment step.
+Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `sshEndpointCredentialId` into `$ENDPOINT_CREDENTIAL_ID` for the process submission step.
 
 ```bash
 ENDPOINT_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoint-credentials \
@@ -1028,7 +1028,7 @@ Returned when e.g. `templateName` is blank, an `inputType`/`outputType` is missi
 
 ## Batch Deployments
 
-A batch deployment binds an application template to a Slurm cluster: the run script section, resource request (walltime, nodes, GPUs, ...) and the credential used to submit jobs. Deployments reference a template by id (see [Create Application Template](#create-application-template)).
+A batch deployment binds an application template to a Slurm cluster: the run script section and the resource request (walltime, nodes, GPUs, ...) a run of it starts from. Which identity a job submits under is a property of the run, not of the deployment, so it is named on the process instead. Deployments reference a template by id (see [Create Application Template](#create-application-template)).
 
 ### Create Batch Deployment
 
@@ -1040,7 +1040,7 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$TEMPLATE_ID` from [Create Application Template](#create-application-template), `$CLUSTER_ID` from [Create Cluster](#create-cluster), and `$ENDPOINT_CREDENTIAL_ID` from [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) above.
+Uses `$TEMPLATE_ID` from [Create Application Template](#create-application-template) and `$CLUSTER_ID` from [Create Cluster](#create-cluster) above.
 
 ```bash
 TOKEN='<the token printed at startup>'
@@ -1052,7 +1052,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "templateId": "'"$TEMPLATE_ID"'",
     "slurmClusterId": "'"$CLUSTER_ID"'",
     "slurmRunSection": "module load alphafold\nrun_alphafold.sh --fasta_paths=$fastaFile --model_preset=$modelPreset",
-    "batchJobConfig": {
+    "defaultBatchJobConfig": {
       "wallTimeMinutes": 720,
       "allocation": "TG-BIO210001",
       "cpus": 8,
@@ -1062,8 +1062,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
       "gres": "gpu:1",
       "gpus": 1
     },
-    "defaultSubmissionCredentialId": "'"$ENDPOINT_CREDENTIAL_ID"'",
-    "partition": "gpu"
+    "defaultPartition": "gpu"
   }'
 ```
 
@@ -1074,31 +1073,30 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `templateId` | string | required, must reference an existing application template |
 | `slurmClusterId` | string \| null | optional; if supplied, must reference an existing cluster — a typo is an error, not a silent unbind |
 | `slurmRunSection` | string | required, cannot be blank |
-| `batchJobConfig` | object | required |
-| `batchJobConfig.wallTimeMinutes` | integer | required, must be positive |
-| `batchJobConfig.allocation` | string | required, cannot be blank |
-| `batchJobConfig.cpus` | integer \| null | optional |
-| `batchJobConfig.mem` | string \| null | optional |
-| `batchJobConfig.memPerCpu` | string \| null | optional |
-| `batchJobConfig.ntasksPerNode` | integer \| null | optional |
-| `batchJobConfig.cpusPerTask` | integer \| null | optional |
-| `batchJobConfig.nodes` | integer \| null | optional |
-| `batchJobConfig.ntasks` | integer \| null | optional |
-| `batchJobConfig.gres` | string \| null | optional |
-| `batchJobConfig.gpus` | integer \| null | optional |
-| `batchJobConfig.memPerGpu` | string \| null | optional |
-| `batchJobConfig.cpusPerGpu` | string \| null | optional |
-| `batchJobConfig.gpusPerNode` | integer \| null | optional |
-| `batchJobConfig.constraints` | string \| null | optional |
-| `defaultSubmissionCredentialId` | string | required, must reference an existing SSH endpoint credential binding (see [Create SSH Endpoint Credential](#create-ssh-endpoint-credential)), not a bare SSH credential |
-| `partition` | string \| null | optional |
+| `defaultBatchJobConfig` | object | required — the resource request a run of this deployment starts from |
+| `defaultBatchJobConfig.wallTimeMinutes` | integer | required, must be positive |
+| `defaultBatchJobConfig.allocation` | string | required, cannot be blank |
+| `defaultBatchJobConfig.cpus` | integer \| null | optional |
+| `defaultBatchJobConfig.mem` | string \| null | optional |
+| `defaultBatchJobConfig.memPerCpu` | string \| null | optional |
+| `defaultBatchJobConfig.ntasksPerNode` | integer \| null | optional |
+| `defaultBatchJobConfig.cpusPerTask` | integer \| null | optional |
+| `defaultBatchJobConfig.nodes` | integer \| null | optional |
+| `defaultBatchJobConfig.ntasks` | integer \| null | optional |
+| `defaultBatchJobConfig.gres` | string \| null | optional |
+| `defaultBatchJobConfig.gpus` | integer \| null | optional |
+| `defaultBatchJobConfig.memPerGpu` | string \| null | optional |
+| `defaultBatchJobConfig.cpusPerGpu` | string \| null | optional |
+| `defaultBatchJobConfig.gpusPerNode` | integer \| null | optional |
+| `defaultBatchJobConfig.constraints` | string \| null | optional |
+| `defaultPartition` | string \| null | optional |
 
 ```json
 {
   "templateId": "b6f1c2de-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
   "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
   "slurmRunSection": "module load alphafold\nrun_alphafold.sh --fasta_paths=$fastaFile --model_preset=$modelPreset",
-  "batchJobConfig": {
+  "defaultBatchJobConfig": {
     "wallTimeMinutes": 720,
     "allocation": "TG-BIO210001",
     "cpus": 8,
@@ -1108,14 +1106,13 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "gres": "gpu:1",
     "gpus": 1
   },
-  "defaultSubmissionCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
-  "partition": "gpu"
+  "defaultPartition": "gpu"
 }
 ```
 
 **Response — `201 Created`**
 
-`deploymentId` and `batchJobConfig.batchJobConfigId` are server-generated (UUIDs).
+`deploymentId` and `defaultBatchJobConfig.batchJobConfigId` are server-generated (UUIDs).
 
 ```json
 {
@@ -1123,7 +1120,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
   "templateId": "b6f1c2de-3a4b-4c5d-8e6f-7a8b9c0d1e2f",
   "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
   "slurmRunSection": "module load alphafold\nrun_alphafold.sh --fasta_paths=$fastaFile --model_preset=$modelPreset",
-  "batchJobConfig": {
+  "defaultBatchJobConfig": {
     "batchJobConfigId": "f6a7b8c9-de01-4f23-9456-789abcdef012",
     "wallTimeMinutes": 720,
     "allocation": "TG-BIO210001",
@@ -1141,14 +1138,13 @@ curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "gpusPerNode": null,
     "constraints": null
   },
-  "defaultSubmissionCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
-  "partition": "gpu"
+  "defaultPartition": "gpu"
 }
 ```
 
 **Validation errors — `400 Bad Request`**
 
-Returned when e.g. `templateId`, `slurmRunSection` or `defaultSubmissionCredentialId` is blank, `batchJobConfig` is missing, or `batchJobConfig.wallTimeMinutes`/`allocation` fail their checks. A `templateId`, `slurmClusterId` or `defaultSubmissionCredentialId` that does not resolve to an existing record is returned as `404 Not Found` instead.
+Returned when e.g. `templateId` or `slurmRunSection` is blank, `defaultBatchJobConfig` is missing, or `defaultBatchJobConfig.wallTimeMinutes`/`allocation` fail their checks. A `templateId` or `slurmClusterId` that does not resolve to an existing record is returned as `404 Not Found` instead.
 
 ```json
 {
@@ -1157,7 +1153,7 @@ Returned when e.g. `templateId`, `slurmRunSection` or `defaultSubmissionCredenti
   "message": "Validation failed",
   "fieldErrors": [
     { "field": "templateId", "message": "Template id cannot be blank" },
-    { "field": "batchJobConfig.wallTimeMinutes", "message": "Wall time must be positive" }
+    { "field": "defaultBatchJobConfig.wallTimeMinutes", "message": "Wall time must be positive" }
   ]
 }
 ```
@@ -1202,8 +1198,9 @@ Java service, which did the same.
 POST /api/v1/processes
 ```
 
-Uses `$DEPLOYMENT_ID` from [Create Batch Deployment](#create-batch-deployment), and the
-`inputId`/`outputId` values returned by
+Uses `$DEPLOYMENT_ID` from [Create Batch Deployment](#create-batch-deployment),
+`$ENDPOINT_CREDENTIAL_ID` from [Create SSH Endpoint Credential](#create-ssh-endpoint-credential),
+and the `inputId`/`outputId` values returned by
 [Create Application Template](#create-application-template).
 
 ```bash
@@ -1214,6 +1211,7 @@ curl -s -X POST localhost:9095/api/v1/processes \
     "processType": "BATCH_JOB",
     "batchProcess": {
       "deploymentId": "'"$DEPLOYMENT_ID"'",
+      "submissionCredentialId": "'"$ENDPOINT_CREDENTIAL_ID"'",
       "jobName": "alphafold-run-1",
       "baseWorkDir": "/scratch/$USER/alphafold",
       "batchJobConfig": {
@@ -1244,18 +1242,18 @@ There is no `userId`: ownership comes from the token.
 | Field | Type | Notes |
 |---|---|---|
 | `deploymentId` | string | required, cannot be blank |
-| `batchJobConfig` | object | required — the same shape a deployment carries |
-| `submissionCredentialId` | string \| null | optional; the SSH endpoint credential binding this run submits under. Omitted, the run inherits the deployment's `defaultSubmissionCredentialId` |
+| `batchJobConfig` | object | required — the same shape a deployment's `defaultBatchJobConfig` carries |
+| `submissionCredentialId` | string | required, cannot be blank; the SSH endpoint credential binding this run submits under |
 | `jobName` | string \| null | optional |
 | `jobId` | string \| null | optional. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded afterwards |
 | `baseWorkDir` | string \| null | optional; the parent directory on the cluster this run works under. Launching a run that omits it fails, since there is nowhere to stage its files |
 | `inputMappings` | array | optional; replaced wholesale by a `PUT` |
 | `outputMappings` | array | optional; replaced wholesale by a `PUT` |
 
-The resource request is carried here rather than copied from the deployment's default,
-which is what lets a caller ask for different resources for a particular run. Each run
-owns its own `batchJobConfig` row, distinct from the deployment's, and deleting the
-process deletes it.
+The resource request is carried here rather than copied from the deployment's
+`defaultBatchJobConfig`, which is what lets a caller ask for different resources for a
+particular run. Each run owns its own `batchJobConfig` row, distinct from the
+deployment's, and deleting the process deletes it.
 
 `baseWorkDir` is carried here for the same reason, and used the same way: the run works
 in a subdirectory of it named for its `processId`, which is where the template's file
@@ -1264,12 +1262,10 @@ former `workDir`, so two runs of one deployment can work under different directo
 
 `submissionCredentialId` is the one field of a self-service submission that names an
 identity to act under, so it is authorized against the caller: a binding that does not
-exist is `404`, and one that is neither theirs nor shared with them is `403`. The
-deployment's default is exempt from that check — an admin configured it as how that
-deployment submits, and requiring every user to hold it directly would leave ordinary
-submissions rejected. A `PUT` re-resolves the field the same way, so omitting it falls
-back to the deployment's default rather than keeping what the run was created with. The
-response always carries the binding the run actually submits under, inherited or named.
+exist is `404`, and one that is neither theirs nor shared with them is `403`. A
+deployment carries no credential to fall back on, which is why the field is required
+rather than optional. A `PUT` re-resolves it the same way, so a body that omits it is
+rejected rather than keeping what the run was created with.
 
 **`batchProcess.inputMappings` / `batchProcess.outputMappings`**
 

@@ -276,17 +276,15 @@ func ToBatchJobConfigResponse(c *model.BatchJobConfig) *BatchJobConfigResponse {
 //
 // Java: org.apache.airavata.application.dto.deployment.BatchApplicationDeploymentRequestDto
 type BatchDeploymentRequest struct {
-	TemplateID      string                 `json:"templateId"`
-	SlurmClusterID  *string                `json:"slurmClusterId"`
-	SlurmRunSection string                 `json:"slurmRunSection"`
-	BatchJobConfig  *BatchJobConfigRequest `json:"batchJobConfig"`
+	TemplateID      string  `json:"templateId"`
+	SlurmClusterID  *string `json:"slurmClusterId"`
+	SlurmRunSection string  `json:"slurmRunSection"`
 
-	// DefaultSubmissionCredentialID names an SSH endpoint credential binding (the id
-	// returned by POST /api/v1/ssh-endpoint-credentials), not a bare SSH credential —
-	// a binding ties the submitting identity to both a host and an owner.
-	DefaultSubmissionCredentialID string `json:"defaultSubmissionCredentialId"`
-
-	Partition *string `json:"partition"`
+	// The resource request and partition a run of this deployment starts from. A run
+	// carries its own copy and may depart from both, so these are defaults rather than
+	// what any particular job is submitted with.
+	DefaultBatchJobConfig *BatchJobConfigRequest `json:"defaultBatchJobConfig"`
+	DefaultPartition      *string                `json:"defaultPartition"`
 }
 
 // Validate implements httpx.Validator.
@@ -294,11 +292,10 @@ func (r *BatchDeploymentRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlank("templateId", "Template id cannot be blank", r.TemplateID)
 	c.NotBlank("slurmRunSection", "Slurm run section cannot be blank", r.SlurmRunSection)
-	c.NotBlank("defaultSubmissionCredentialId", "Default submission credential id cannot be blank", r.DefaultSubmissionCredentialID)
-	if r.BatchJobConfig == nil {
-		c.Add("batchJobConfig", "Batch job config cannot be null")
+	if r.DefaultBatchJobConfig == nil {
+		c.Add("defaultBatchJobConfig", "Default batch job config cannot be null")
 	} else {
-		c.Nested("batchJobConfig", r.BatchJobConfig)
+		c.Nested("defaultBatchJobConfig", r.DefaultBatchJobConfig)
 	}
 	return c.Fields()
 }
@@ -307,24 +304,22 @@ func (r *BatchDeploymentRequest) Validate() []httpx.FieldError {
 //
 // Java: org.apache.airavata.application.dto.deployment.BatchApplicationDeploymentResponseDto
 type BatchDeploymentResponse struct {
-	DeploymentID                  string                  `json:"deploymentId"`
-	TemplateID                    *string                 `json:"templateId"`
-	SlurmClusterID                *string                 `json:"slurmClusterId"`
-	SlurmRunSection               string                  `json:"slurmRunSection"`
-	BatchJobConfig                *BatchJobConfigResponse `json:"batchJobConfig"`
-	DefaultSubmissionCredentialID string                  `json:"defaultSubmissionCredentialId"`
-	Partition                     *string                 `json:"partition"`
+	DeploymentID          string                  `json:"deploymentId"`
+	TemplateID            *string                 `json:"templateId"`
+	SlurmClusterID        *string                 `json:"slurmClusterId"`
+	SlurmRunSection       string                  `json:"slurmRunSection"`
+	DefaultBatchJobConfig *BatchJobConfigResponse `json:"defaultBatchJobConfig"`
+	DefaultPartition      *string                 `json:"defaultPartition"`
 }
 
 func ToBatchDeploymentResponse(d *model.BatchDeployment) BatchDeploymentResponse {
 	return BatchDeploymentResponse{
-		DeploymentID:                  d.ID,
-		TemplateID:                    d.TemplateID,
-		SlurmClusterID:                d.ClusterID,
-		SlurmRunSection:               d.SlurmRunSection,
-		BatchJobConfig:                ToBatchJobConfigResponse(d.BatchJobConfig),
-		DefaultSubmissionCredentialID: d.DefaultSubmissionCredentialID,
-		Partition:                     d.Partition,
+		DeploymentID:          d.ID,
+		TemplateID:            d.TemplateID,
+		SlurmClusterID:        d.ClusterID,
+		SlurmRunSection:       d.SlurmRunSection,
+		DefaultBatchJobConfig: ToBatchJobConfigResponse(d.DefaultBatchJobConfig),
+		DefaultPartition:      d.DefaultPartition,
 	}
 }
 

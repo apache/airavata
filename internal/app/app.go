@@ -130,7 +130,7 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 		ClusterPartition: computesvc.NewClusterPartitionService(db, partitions, clusters),
 
 		Template:        applicationsvc.NewTemplateService(db, templates, deployments),
-		BatchDeployment: applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters, bindings),
+		BatchDeployment: applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters),
 
 		SCPDataStorage:        datasvc.NewSCPDataStorageService(db, storages, storageShares, endpoints, products, users, groupMembers),
 		SCPDataStorageSharing: datasvc.NewSCPDataStorageSharingService(db, storages, storageShares, groups, users, groupMembers),

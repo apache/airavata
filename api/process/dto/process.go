@@ -36,10 +36,9 @@ type BatchProcessRequest struct {
 	// under — the id returned by POST /api/v1/ssh-endpoint-credentials, not a bare SSH
 	// credential.
 	//
-	// Optional, and the reason the deployment's is called a *default*: a run that names
-	// none submits under the deployment's, which is the ordinary case. Naming one is how
-	// a caller submits under their own identity instead, and only a binding they own or
-	// that is shared with them will be accepted.
+	// Required: a deployment carries no credential to fall back on, so every run says
+	// which identity it submits under, and only a binding the caller owns or that is
+	// shared with them will be accepted.
 	SubmissionCredentialID *string `json:"submissionCredentialId"`
 
 	// BaseWorkDir is the parent directory on the cluster this run works under; it gets
@@ -61,6 +60,7 @@ type BatchProcessRequest struct {
 func (r *BatchProcessRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlank("deploymentId", "Deployment id cannot be blank", r.DeploymentID)
+	c.NotBlankPtr("submissionCredentialId", "Submission credential id cannot be blank", r.SubmissionCredentialID)
 	if r.BatchJobConfig == nil {
 		c.Add("batchJobConfig", "Batch job config cannot be null")
 	} else {
@@ -84,7 +84,6 @@ type BatchProcessResponse struct {
 	JobName        *string                                `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigResponse `json:"batchJobConfig"`
 
-	// Always set, whether the run named a credential or inherited the deployment's.
 	SubmissionCredentialID string `json:"submissionCredentialId"`
 
 	BaseWorkDir *string `json:"baseWorkDir"`

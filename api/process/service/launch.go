@@ -61,11 +61,6 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *model.P
 	clusterStorage := cluster.SCPDataStorage
 
 	if sshCredential == nil {
-		// TODO: Validate the access to this submittion credential before using it
-		sshCredential = batchDeployment.DefaultSubmissionCredential
-	}
-
-	if sshCredential == nil {
 		return fmt.Errorf("No SSH credential available for batch process")
 	}
 

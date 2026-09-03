@@ -16,8 +16,6 @@ import (
 	model "github.com/apache/airavata/api/application/model"
 	"github.com/apache/airavata/api/application/repository"
 	computerepo "github.com/apache/airavata/api/compute/repository"
-	cred "github.com/apache/airavata/api/credentials/model"
-	credrepo "github.com/apache/airavata/api/credentials/repository"
 )
 
 func notFoundAs(err error, format string, args ...any) error {
@@ -166,11 +164,10 @@ func (s *TemplateService) Delete(ctx context.Context, id string) error {
 
 // BatchDeploymentService manages deployments: a template made runnable somewhere.
 type BatchDeploymentService struct {
-	db            *gorm.DB
-	deployments   *repository.BatchDeploymentRepository
-	templates     *repository.TemplateRepository
-	clusters      *computerepo.ClusterRepository
-	endpointCreds *credrepo.SSHEndpointCredentialRepository
+	db          *gorm.DB
+	deployments *repository.BatchDeploymentRepository
+	templates   *repository.TemplateRepository
+	clusters    *computerepo.ClusterRepository
 }
 
 // NewBatchDeploymentService returns a deployment service.
@@ -179,9 +176,8 @@ func NewBatchDeploymentService(
 	deployments *repository.BatchDeploymentRepository,
 	templates *repository.TemplateRepository,
 	clusters *computerepo.ClusterRepository,
-	endpointCreds *credrepo.SSHEndpointCredentialRepository,
 ) *BatchDeploymentService {
-	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters, endpointCreds: endpointCreds}
+	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters}
 }
 
 // List returns every deployment, or only those of templateID when it is non-empty.
@@ -225,25 +221,24 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		deployments := s.deployments.WithTx(tx)
 
-		template, cluster, endpointCred, err := s.resolveReferences(ctx, tx, req)
+		template, cluster, err := s.resolveReferences(ctx, tx, req)
 		if err != nil {
 			return err
 		}
 
 		config := &model.BatchJobConfig{}
-		dto.ApplyBatchJobConfigRequest(config, req.BatchJobConfig)
+		dto.ApplyBatchJobConfigRequest(config, req.DefaultBatchJobConfig)
 		if err := deployments.SaveConfig(ctx, config); err != nil {
 			return err
 		}
 
 		deployment := &model.BatchDeployment{
-			TemplateID:                    &template.ID,
-			ClusterID:                     cluster,
-			SlurmRunSection:               req.SlurmRunSection,
-			BatchJobConfigID:              config.ID,
-			BatchJobConfig:                config,
-			DefaultSubmissionCredentialID: endpointCred.ID,
-			Partition:                     req.Partition,
+			TemplateID:              &template.ID,
+			ClusterID:               cluster,
+			SlurmRunSection:         req.SlurmRunSection,
+			DefaultBatchJobConfigID: config.ID,
+			DefaultBatchJobConfig:   config,
+			DefaultPartition:        req.DefaultPartition,
 		}
 		if err := deployments.Save(ctx, deployment); err != nil {
 			return err
@@ -272,16 +267,16 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		if err != nil {
 			return notFoundAs(err, "Deployment not found: %s", id)
 		}
-		template, cluster, endpointCred, err := s.resolveReferences(ctx, tx, req)
+		template, cluster, err := s.resolveReferences(ctx, tx, req)
 		if err != nil {
 			return err
 		}
 
-		config := deployment.BatchJobConfig
+		config := deployment.DefaultBatchJobConfig
 		if config == nil {
-			config = &model.BatchJobConfig{ID: deployment.BatchJobConfigID}
+			config = &model.BatchJobConfig{ID: deployment.DefaultBatchJobConfigID}
 		}
-		dto.ApplyBatchJobConfigRequest(config, req.BatchJobConfig)
+		dto.ApplyBatchJobConfigRequest(config, req.DefaultBatchJobConfig)
 		if err := deployments.SaveConfig(ctx, config); err != nil {
 			return err
 		}
@@ -289,10 +284,9 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		deployment.TemplateID = &template.ID
 		deployment.ClusterID = cluster
 		deployment.SlurmRunSection = req.SlurmRunSection
-		deployment.BatchJobConfigID = config.ID
-		deployment.BatchJobConfig = config
-		deployment.DefaultSubmissionCredentialID = endpointCred.ID
-		deployment.Partition = req.Partition
+		deployment.DefaultBatchJobConfigID = config.ID
+		deployment.DefaultBatchJobConfig = config
+		deployment.DefaultPartition = req.DefaultPartition
 
 		if err := deployments.Save(ctx, deployment); err != nil {
 			return err
@@ -318,31 +312,26 @@ func (s *BatchDeploymentService) Delete(ctx context.Context, id string) error {
 	return s.deployments.Delete(ctx, deployment)
 }
 
-// resolveReferences looks up the template, optional cluster and submission credential
-// a deployment request names.
+// resolveReferences looks up the template and the optional cluster a deployment
+// request names.
 //
-// The cluster is the only optional one: an absent or blank id is legitimate and
-// leaves the deployment unbound to a cluster, while an id that is supplied but
-// unknown is an error. Conflating those would let a typo silently unbind a deployment.
-func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, *cred.SSHEndpointCredential, error) {
+// The cluster is the optional one: an absent or blank id is legitimate and leaves the
+// deployment unbound to a cluster, while an id that is supplied but unknown is an
+// error. Conflating those would let a typo silently unbind a deployment.
+func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.BatchDeploymentRequest) (*model.Template, *string, error) {
 	template, err := s.templates.WithTx(tx).FindByID(ctx, req.TemplateID)
 	if err != nil {
-		return nil, nil, nil, notFoundAs(err, "Template not found: %s", req.TemplateID)
+		return nil, nil, notFoundAs(err, "Template not found: %s", req.TemplateID)
 	}
 
 	var clusterID *string
 	if req.SlurmClusterID != nil && strings.TrimSpace(*req.SlurmClusterID) != "" {
 		cluster, err := s.clusters.WithTx(tx).FindByID(ctx, *req.SlurmClusterID)
 		if err != nil {
-			return nil, nil, nil, notFoundAs(err, "Cluster not found: %s", *req.SlurmClusterID)
+			return nil, nil, notFoundAs(err, "Cluster not found: %s", *req.SlurmClusterID)
 		}
 		clusterID = &cluster.ID
 	}
 
-	endpointCred, err := s.endpointCreds.WithTx(tx).FindByID(ctx, req.DefaultSubmissionCredentialID)
-	if err != nil {
-		return nil, nil, nil, notFoundAs(err, "SSH endpoint credential not found: %s", req.DefaultSubmissionCredentialID)
-	}
-
-	return template, clusterID, endpointCred, nil
+	return template, clusterID, nil
 }
