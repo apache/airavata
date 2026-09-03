@@ -109,7 +109,58 @@ Updating an endpoint silently redirects every cluster and credential that names 
 
 ## Clusters
 
-A cluster is a Slurm-managed HPC resource that batch deployments submit jobs to. It is reached through an [SSH endpoint](#ssh-endpoints), named by id.
+A cluster is a Slurm-managed HPC resource that batch deployments submit jobs to. It is reached through an [SSH endpoint](#ssh-endpoints) and stages files through an [SCP data storage](#scp-data-storages), both named by id.
+
+The storage is registered first, since a cluster names one as it is created — its create call is documented immediately below, out of the [SCP Data Storages](#scp-data-storages) section further down, which carries the rest of the resource: its routes, its sharing rules and how it is read back.
+
+### Create SCP Data Storage
+
+```
+POST /api/v1/scp-data-storages
+```
+
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint), and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the cluster below.
+
+A cluster's storage is the login host's own filesystem — where a run's work directory lives, where its file inputs are staged to and its outputs staged from — so this one points at the same endpoint the cluster does. A storage on any other host is an ordinary dataset location, like the FASTA host in [Register the Run's Data Products](#register-the-runs-data-products).
+
+```bash
+STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "expanse-scratch",
+    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'"
+  }' | jq -r '.dataId')
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `dataName` | string | required, cannot be blank |
+| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
+
+**Response — `201 Created`**
+
+The endpoint is inlined, for the same reason a cluster inlines it. `permission` is what the calling principal may do with the storage.
+
+```json
+{
+  "dataId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+  "dataName": "expanse-scratch",
+  "ownerId": "cilogon:12345",
+  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+  "sshEndpoint": {
+    "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+    "name": "expanse-login",
+    "hostName": "login.expanse.sdsc.edu",
+    "port": 22
+  },
+  "permission": "WRITE"
+}
+```
+
+`DELETE` returns `204 No Content`, or `409 Conflict` when data products are still registered on the storage or a cluster still stages through it. Deleting one takes its shares with it.
 
 ### Create Cluster
 
@@ -121,7 +172,7 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) above, and captures `clusterId` into `$CLUSTER_ID` (requires `jq`) for the batch deployment step further down.
+Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$STORAGE_ID` from [Create SCP Data Storage](#create-scp-data-storage) above, and captures `clusterId` into `$CLUSTER_ID` (requires `jq`) for the batch deployment step further down.
 
 A cluster whose layout is already known can be carved into partitions in the same call, by carrying them in `partitions`. They are written in the same transaction as the cluster, so a cluster is never visible carrying half the layout it was registered with. A cluster that gains partitions later adds them one at a time through [Create Cluster Partition](#create-cluster-partition) instead.
 
@@ -133,6 +184,7 @@ CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/clusters \
     "clusterName": "expanse",
     "clusterDescription": "SDSC Expanse HPC cluster",
     "sshEndpointId": "'"$SSH_ENDPOINT_ID"'",
+    "scpDataStorageId": "'"$STORAGE_ID"'",
     "slurmHome": "/usr/bin",
     "partitions": [
       {
@@ -159,6 +211,7 @@ echo "$CLUSTER_ID"
 | `clusterName` | string | required, cannot be blank |
 | `clusterDescription` | string \| null | optional |
 | `sshEndpointId` | string | required, must reference an existing SSH endpoint |
+| `scpDataStorageId` | string | required, must reference an existing [SCP data storage](#create-scp-data-storage) the caller can reach |
 | `slurmHome` | string | required, cannot be blank |
 | `partitions` | array \| null | optional, create only. Each element takes the same shape as a [Create Cluster Partition](#create-cluster-partition) body. A `PUT` carrying this field is rejected — see [Read, Update and Delete Clusters](#read-update-and-delete-clusters) |
 
@@ -167,6 +220,7 @@ echo "$CLUSTER_ID"
   "clusterName": "expanse",
   "clusterDescription": "SDSC Expanse HPC cluster",
   "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
+  "scpDataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
   "slurmHome": "/usr/bin",
   "partitions": [
     {
@@ -186,7 +240,7 @@ echo "$CLUSTER_ID"
 
 **Response — `201 Created`**
 
-`clusterId` is server-generated (UUID), as is every `partitionId`. The endpoint is inlined, since every caller that wants a cluster wants the host it lives on. `partitions` carries whatever the request asked for, and is `[]` for a cluster registered without any — those are added afterwards via `/api/v1/clusters/{clusterId}/partitions`.
+`clusterId` is server-generated (UUID), as is every `partitionId`. The endpoint is inlined, since every caller that wants a cluster wants the host it lives on. The storage is not: it is named by id and read through its own endpoint, since it carries an owner and a permission of its own that a cluster read has no business asserting. `partitions` carries whatever the request asked for, and is `[]` for a cluster registered without any — those are added afterwards via `/api/v1/clusters/{clusterId}/partitions`.
 
 ```json
 {
@@ -200,6 +254,7 @@ echo "$CLUSTER_ID"
     "hostName": "login.expanse.sdsc.edu",
     "port": 22
   },
+  "scpDataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
   "slurmHome": "/usr/bin",
   "partitions": [
     {
@@ -227,7 +282,7 @@ echo "$CLUSTER_ID"
 
 **Validation errors — `400 Bad Request`**
 
-Returned when `clusterName`, `sshEndpointId` or `slurmHome` is blank, or when an inline partition fails its own constraints — those are reported under the element that carries them, as `partitions[0].name`. An `sshEndpointId` that does not resolve to an existing endpoint is returned as `404 Not Found` instead.
+Returned when `clusterName`, `sshEndpointId`, `scpDataStorageId` or `slurmHome` is blank, or when an inline partition fails its own constraints — those are reported under the element that carries them, as `partitions[0].name`. An `sshEndpointId` or `scpDataStorageId` that does not resolve to an existing record is returned as `404 Not Found` instead, and a storage the caller cannot reach as `403 Forbidden`.
 
 ```json
 {
@@ -236,7 +291,8 @@ Returned when `clusterName`, `sshEndpointId` or `slurmHome` is blank, or when an
   "message": "Validation failed",
   "fieldErrors": [
     { "field": "clusterName", "message": "Cluster name cannot be blank" },
-    { "field": "sshEndpointId", "message": "SSH endpoint id cannot be blank" }
+    { "field": "sshEndpointId", "message": "SSH endpoint id cannot be blank" },
+    { "field": "scpDataStorageId", "message": "SCP data storage id cannot be blank" }
   ]
 }
 ```
@@ -252,7 +308,7 @@ DELETE /api/v1/clusters/{clusterId}
 
 Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read carries the cluster's partitions and its SSH endpoint inline, so a caller that wants the layout never needs a second call.
 
-`PUT` changes a cluster's own fields and leaves its partitions alone. A body carrying `partitions` is **rejected** rather than obeyed:
+`PUT` changes a cluster's own fields — including repointing it at a different SSH endpoint or SCP data storage, each re-resolved the way a create resolves it — and leaves its partitions alone. A body carrying `partitions` is **rejected** rather than obeyed:
 
 ```json
 {
@@ -267,7 +323,7 @@ Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read 
 
 The elements of that array carry no ids, so there is nothing to match an incoming partition to an existing row by. Obeying the field would mean replacing the collection wholesale and deleting partitions the caller never mentioned; ignoring it would silently discard what they asked for. Rejecting it says which endpoint to use instead.
 
-`DELETE` returns `204 No Content` and takes the cluster's partitions with it — that foreign key cascades, unlike the `RESTRICT` ones guarding endpoints and credentials.
+`DELETE` returns `204 No Content` and takes the cluster's partitions with it — that foreign key cascades, unlike the `RESTRICT` ones guarding endpoints, credentials and data storages.
 
 
 ### Create Cluster Partition
@@ -1192,6 +1248,124 @@ listing, `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Reading one proces
 listing the runs of a deployment, carry no authorization at all — carried over from the
 Java service, which did the same.
 
+### Register the Run's Data Products
+
+A run does not carry paths for its file-typed inputs and outputs: it carries
+[data products](#data-products). Launching resolves each one into a data staging task —
+an input product is copied onto the cluster before the job runs, an output product is
+where the job's result is copied to afterwards — which is why a bare path would not do:
+a transfer needs the host, the storage and the credential to reach them under, and a
+product is what holds all three together.
+
+So the three file declarations of the [AlphaFold2 template](#create-application-template)
+need a registered product each before a run can name them: `fastaFile` in, and
+`rankedModels` and `confidenceScores` out. They do not all live in the same place. The
+FASTA sequence sits on a lab data host the group already stages sequences through, while
+the two outputs are written by the job itself and stay on the cluster, so their products
+are registered against the cluster's own storage.
+
+**The FASTA host.** A second storage means a second [SSH endpoint](#create-ssh-endpoint)
+and a [credential binding](#create-ssh-endpoint-credential) on it — a product's
+credential must be for the same host its storage stages through, so the cluster binding
+from earlier cannot be reused here. The SSH credential itself can be: `$SSH_CREDENTIAL_ID`
+is a username and key, and binding it to a second endpoint is what gives the caller
+standing on that host.
+
+```bash
+FASTA_ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "lab-data",
+    "hostName": "data.lab.example.edu",
+    "port": 22
+  }' | jq -r '.sshEndpointId')
+
+FASTA_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoint-credentials \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "sshEndpointId": "'"$FASTA_ENDPOINT_ID"'",
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
+  }' | jq -r '.sshEndpointCredentialId')
+
+FASTA_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "lab-sequences",
+    "sshEndpointId": "'"$FASTA_ENDPOINT_ID"'"
+  }' | jq -r '.dataId')
+```
+
+**The cluster.** The outputs land on the login host the cluster is reached through, which
+is the storage registered in [Create SCP Data Storage](#create-scp-data-storage) —
+`expanse-scratch`, pointing at `$SSH_ENDPOINT_ID` — and they are reached under the same
+binding the run submits with:
+
+```bash
+CLUSTER_STORAGE_ID="$STORAGE_ID"
+```
+
+**The three products.** Each is a [data product](#create-data-product) on one of those two
+storages. `fastaFile` and `confidenceScores` are single files; `rankedModels` is the
+template's one `FILE_LIST` declaration, so its product is the directory the ranked
+structures are collected into rather than any one PDB file — hence `"isFile": false`.
+
+```bash
+FASTA_DATA_ID=$(curl -s -X POST localhost:9095/api/v1/data-products \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "T1050-sequence",
+    "dataDescription": "Target protein sequence in FASTA format",
+    "isFile": true,
+    "path": "/data/sequences/T1050.fasta",
+    "dataStorageId": "'"$FASTA_STORAGE_ID"'",
+    "credentialId": "'"$FASTA_CREDENTIAL_ID"'"
+  }' | jq -r '.dataId')
+
+RANKED_MODELS_DATA_ID=$(curl -s -X POST localhost:9095/api/v1/data-products \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "alphafold-run-1-ranked-models",
+    "dataDescription": "Ranked predicted structure PDB files for run 1",
+    "isFile": false,
+    "path": "/scratch/airavata/alphafold/results/run-1/ranked_models",
+    "dataStorageId": "'"$CLUSTER_STORAGE_ID"'",
+    "credentialId": "'"$ENDPOINT_CREDENTIAL_ID"'"
+  }' | jq -r '.dataId')
+
+CONFIDENCE_SCORES_DATA_ID=$(curl -s -X POST localhost:9095/api/v1/data-products \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "alphafold-run-1-confidence-scores",
+    "dataDescription": "Per-residue pLDDT scores for the top-ranked model of run 1",
+    "isFile": true,
+    "path": "/scratch/airavata/alphafold/results/run-1/confidence_scores.json",
+    "dataStorageId": "'"$CLUSTER_STORAGE_ID"'",
+    "credentialId": "'"$ENDPOINT_CREDENTIAL_ID"'"
+  }' | jq -r '.dataId')
+```
+
+| Declaration | Type | Product | Storage | Registered path |
+|---|---|---|---|---|
+| `fastaFile` (input) | `FILE` | `$FASTA_DATA_ID` | `lab-sequences` on `data.lab.example.edu` | `/data/sequences/T1050.fasta` |
+| `rankedModels` (output) | `FILE_LIST` | `$RANKED_MODELS_DATA_ID` | `expanse-scratch` on the cluster's login host | `/scratch/airavata/alphafold/results/run-1/ranked_models` |
+| `confidenceScores` (output) | `FILE` | `$CONFIDENCE_SCORES_DATA_ID` | `expanse-scratch` on the cluster's login host | `/scratch/airavata/alphafold/results/run-1/confidence_scores.json` |
+
+Note that launching currently builds staging tasks for the single-`FILE` declarations
+only: the `FILE_LIST` and `DIRECTORY` branches are stubs, so `rankedModels` is registered
+and carried by the run but not yet staged off the cluster by it.
+
+Registering a product records where a dataset is or will be; it does not touch the host,
+and an output product's path need not exist yet. The three `dataId` values are what the
+process below carries as its file mapping values — the run's `baseWorkDir` still decides
+where the job actually reads and writes during execution, and the input product is staged
+into it while the output products are staged out of it.
+
 ### Create Process
 
 ```
@@ -1200,8 +1374,19 @@ POST /api/v1/processes
 
 Uses `$DEPLOYMENT_ID` from [Create Batch Deployment](#create-batch-deployment),
 `$ENDPOINT_CREDENTIAL_ID` from [Create SSH Endpoint Credential](#create-ssh-endpoint-credential),
-and the `inputId`/`outputId` values returned by
-[Create Application Template](#create-application-template).
+the `inputId`/`outputId` values returned by
+[Create Application Template](#create-application-template), and the three `dataId`
+values from [Register the Run's Data Products](#register-the-runs-data-products) above.
+The declaration ids can be read back off the template rather than kept from its creation:
+
+```bash
+TEMPLATE=$(curl -s localhost:9095/api/v1/application-templates/"$TEMPLATE_ID")
+
+FASTA_INPUT_ID=$(echo "$TEMPLATE" | jq -r '.inputs[] | select(.inputName=="fastaFile") | .inputId')
+PRESET_INPUT_ID=$(echo "$TEMPLATE" | jq -r '.inputs[] | select(.inputName=="modelPreset") | .inputId')
+RANKED_MODELS_OUTPUT_ID=$(echo "$TEMPLATE" | jq -r '.outputs[] | select(.outputName=="rankedModels") | .outputId')
+CONFIDENCE_SCORES_OUTPUT_ID=$(echo "$TEMPLATE" | jq -r '.outputs[] | select(.outputName=="confidenceScores") | .outputId')
+```
 
 ```bash
 curl -s -X POST localhost:9095/api/v1/processes \
@@ -1221,10 +1406,12 @@ curl -s -X POST localhost:9095/api/v1/processes \
         "gpus": 2
       },
       "inputMappings": [
-        { "templateInputId": "'"$INPUT_ID"'", "value": "{\"value\": \"/scratch/input.fasta\"}" }
+        { "templateInputId": "'"$FASTA_INPUT_ID"'", "value": "'"$FASTA_DATA_ID"'" },
+        { "templateInputId": "'"$PRESET_INPUT_ID"'", "value": "{\"value\": \"monomer\"}" }
       ],
       "outputMappings": [
-        { "templateOutputId": "'"$OUTPUT_ID"'", "value": "{\"value\": \"/scratch/out/\"}" }
+        { "templateOutputId": "'"$RANKED_MODELS_OUTPUT_ID"'", "value": "'"$RANKED_MODELS_DATA_ID"'" },
+        { "templateOutputId": "'"$CONFIDENCE_SCORES_OUTPUT_ID"'", "value": "'"$CONFIDENCE_SCORES_DATA_ID"'" }
       ]
     }
   }'
@@ -1272,8 +1459,13 @@ rejected rather than keeping what the run was created with.
 | Field | Type | Notes |
 |---|---|---|
 | `templateInputId` / `templateOutputId` | string | required, cannot be blank. Names a declaration on the deployment's template |
-| `value` | string \| null | a JSON document: `{"value": "…"}` for a single value, `{"values": [...]}` for a list |
+| `value` | string \| null | for a `STRING`, `INTEGER`, `FLOAT` or `BOOLEAN` declaration, a JSON document: `{"value": "…"}` for a single value, `{"values": [...]}` for a list. For a `FILE`, `FILE_LIST` or `DIRECTORY` declaration, the `dataId` of a registered [data product](#register-the-runs-data-products) |
 | `templateInputMappingId` / `templateOutputMappingId` | string | echoed on reads, ignored on writes |
+
+Which of those two a mapping carries follows from the type of the declaration it names,
+not from the mapping itself: nothing on the wire distinguishes them, and the value is
+stored as given either way. A file mapping is resolved when the run is launched, so a
+`dataId` that names no product fails there rather than at submission time.
 
 A `PUT` replaces each set wholesale rather than merging into it, the same way a
 template's declarations are replaced — the mapping ids are not part of the request, so
@@ -1308,11 +1500,27 @@ Deleting the process deletes the batch section, and the mappings with it.
     "inputMappings": [
       {
         "templateInputMappingId": "1a2b3c4d-5e6f-4708-8192-a3b4c5d6e7f8",
-        "templateInputId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
-        "value": "{\"value\": \"/scratch/input.fasta\"}"
+        "templateInputId": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+        "value": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d"
+      },
+      {
+        "templateInputMappingId": "2b3c4d5e-6f70-4819-92a3-b4c5d6e7f8a9",
+        "templateInputId": "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+        "value": "{\"value\": \"monomer\"}"
       }
     ],
-    "outputMappings": []
+    "outputMappings": [
+      {
+        "templateOutputMappingId": "3c4d5e6f-7081-492a-b3c4-d5e6f7a8b9c0",
+        "templateOutputId": "3c4d5e6f-7a8b-4c9d-0e1f-2a3b4c5d6e7f",
+        "value": "8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e"
+      },
+      {
+        "templateOutputMappingId": "4d5e6f70-8192-4a3b-84c5-d6e7f8a9b0c1",
+        "templateOutputId": "4d5e6f7a-8b9c-4d0e-1f2a-3b4c5d6e7f8a",
+        "value": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f"
+      }
+    ]
   }
 }
 ```
@@ -1536,7 +1744,9 @@ Runs a command on the remote host — filtering the output of a running job, for
 
 ## SCP Data Storages
 
-An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) and belongs to whoever registered it.
+An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) and belongs to whoever registered it. A [cluster](#clusters) names one as the filesystem its runs work in, and a [data product](#data-products) names one as where its dataset lives.
+
+Registering one is documented up front, under [Create SCP Data Storage](#create-scp-data-storage), since a cluster cannot be created without one. What follows here is the rest of the resource.
 
 | Standing | May do |
 |---|---|
@@ -1567,53 +1777,6 @@ POST   /api/v1/scp-data-storages/{dataStorageId}/user-shares       (owner)
 PUT    /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}
 DELETE /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}
 ```
-
-### Create SCP Data Storage
-
-```
-POST /api/v1/scp-data-storages
-```
-
-Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint).
-
-```bash
-STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "dataName": "expanse-scratch",
-    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'"
-  }' | jq -r '.dataId')
-```
-
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `dataName` | string | required, cannot be blank |
-| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
-
-**Response — `201 Created`**
-
-The endpoint is inlined, for the same reason a cluster inlines it. `permission` is what the calling principal may do with the storage.
-
-```json
-{
-  "dataId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
-  "dataName": "expanse-scratch",
-  "ownerId": "cilogon:12345",
-  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "sshEndpoint": {
-    "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-    "name": "expanse-login",
-    "hostName": "login.expanse.sdsc.edu",
-    "port": 22
-  },
-  "permission": "WRITE"
-}
-```
-
-`DELETE` returns `204 No Content`, or `409 Conflict` when data products are still registered on the storage. Deleting one takes its shares with it.
 
 ### Share an SCP Data Storage
 
@@ -1652,6 +1815,8 @@ POST /api/v1/data-products
 ```
 
 Requires an authenticated principal with a `users` row. **The storage it names must already be reachable by the caller** — registering data into a storage nobody shared with them would be a way to have the platform touch a host they have no standing on.
+
+[Register the Run's Data Products](#register-the-runs-data-products) works a full example through: the products a run's file inputs and outputs are named by, across two storages.
 
 ```bash
 curl -s -X POST localhost:9095/api/v1/data-products \
