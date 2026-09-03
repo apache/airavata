@@ -839,14 +839,15 @@ func TestDeletingEndpointCredentialRemovesItsShares(t *testing.T) {
 	}
 }
 
-// seedStorage registers an SCP data storage owned by the caller of token.
-func (h *harness) seedStorage(name, token string) (endpointID, storageID string) {
+// seedStorage registers an SCP data storage owned by the caller of token, returning
+// the SSH credential it stages under along with its id.
+func (h *harness) seedStorage(name, token string) (credentialID, storageID string) {
 	h.t.Helper()
-	endpointID = h.seedSSHEndpoint(name)
+	_, credentialID = h.seedSSHKeyAndCredential(name)
 	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", token, map[string]any{
-		"dataName": name, "sshEndpointId": endpointID,
+		"dataName": name, "sshCredentialId": credentialID,
 	}, http.StatusCreated)
-	return endpointID, out["dataId"].(string)
+	return credentialID, out["dataId"].(string)
 }
 
 // seedProduct registers a dataset owned by the caller of token, on a storage shared
@@ -885,15 +886,15 @@ func principalOf(token string) string {
 // no share confers control.
 func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	h := newHarness(t)
-	endpointID, storageID := h.seedStorage("staging", tokenAlice)
+	credentialID, storageID := h.seedStorage("staging", tokenAlice)
 	base := "/api/v1/scp-data-storages/" + storageID
 
 	created := h.mustDo(http.MethodGet, base, tokenAlice, nil, http.StatusOK)
 	if created["ownerId"] != "alice" {
 		t.Errorf("ownerId = %v, want it taken from the token", created["ownerId"])
 	}
-	if created["sshEndpoint"] == nil {
-		t.Error("storage response did not inline its endpoint")
+	if created["sshCredential"] == nil {
+		t.Error("storage response did not inline its credential")
 	}
 
 	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
@@ -924,7 +925,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	}
 
 	// READ is not WRITE, and no share confers control.
-	repoint := map[string]any{"dataName": "renamed", "sshEndpointId": endpointID}
+	repoint := map[string]any{"dataName": "renamed", "sshCredentialId": credentialID}
 	if rec := h.do(http.MethodPut, base, tokenBob, repoint); rec.Code != http.StatusForbidden {
 		t.Errorf("update with READ: status = %d, want 403", rec.Code)
 	}
@@ -1075,13 +1076,14 @@ func TestProductIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 
 // A product's credential is the binding its data was staged under. It carries no
 // foreign key, so the service is the only thing keeping the reference honest: it must
-// exist, be usable by the caller, and be for the storage's own host.
-func TestProductCredentialMustBeUsableAndOnTheSameHost(t *testing.T) {
+// exist, be usable by the caller, and name the SSH credential its storage stages
+// under.
+func TestProductCredentialMustBeUsableAndForTheStoragesAccount(t *testing.T) {
 	h := newHarness(t)
-	endpointID, storageID := h.seedStorage("staged", tokenAlice)
-	_, credentialID := h.seedSSHKeyAndCredential("staged")
+	credentialID, storageID := h.seedStorage("staged", tokenAlice)
+	endpointID := h.seedSSHEndpoint("staged-host")
 
-	// Alice's own binding on the storage's endpoint.
+	// Alice's own binding under the storage's SSH credential.
 	aliceBinding := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
 		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
 	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
@@ -1110,20 +1112,29 @@ func TestProductCredentialMustBeUsableAndOnTheSameHost(t *testing.T) {
 		t.Errorf("someone else's credential: status = %d, want 403", rec.Code)
 	}
 
-	// A binding for a different host cannot move this data.
-	otherEndpoint := h.seedSSHEndpoint("elsewhere")
+	// A binding on a different host is fine as long as it is the same account: a
+	// storage names who its data is reached as, not where it sits.
 	elsewhere := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
-		"sshEndpointId": otherEndpoint, "sshCredentialId": credentialID,
+		"sshEndpointId": h.seedSSHEndpoint("elsewhere"), "sshCredentialId": credentialID,
 	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
-	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(elsewhere)); rec.Code != http.StatusBadRequest {
-		t.Errorf("credential for another host: status = %d, want 400", rec.Code)
+	h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, body(elsewhere), http.StatusCreated)
+
+	// A binding under a different account would reach the host as someone who cannot
+	// see this data.
+	_, otherCredential := h.seedSSHKeyAndCredential("other-account")
+	otherAccount := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
+		"sshEndpointId": endpointID, "sshCredentialId": otherCredential,
+	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
+	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(otherAccount)); rec.Code != http.StatusBadRequest {
+		t.Errorf("credential for another account: status = %d, want 400", rec.Code)
 	}
 
-	// Sharing bob's binding with alice makes it usable, once it is on the right host.
+	// Sharing bob's binding with alice makes it usable, but it is still a different
+	// account, so it is refused on that ground rather than let through.
 	h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials/"+bobsBinding+"/user-shares", tokenBob,
 		map[string]any{"userId": "alice", "permission": "READ"}, http.StatusCreated)
 	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(bobsBinding)); rec.Code != http.StatusBadRequest {
-		t.Errorf("shared credential on the wrong host: status = %d, want 400", rec.Code)
+		t.Errorf("shared credential for another account: status = %d, want 400", rec.Code)
 	}
 
 	// Omitting the credential is allowed: not every dataset has been staged yet.

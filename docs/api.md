@@ -113,15 +113,17 @@ A cluster is a Slurm-managed HPC resource that batch deployments submit jobs to.
 
 The storage is registered first, since a cluster names one as it is created — its create call is documented immediately below, out of the [SCP Data Storages](#scp-data-storages) section further down, which carries the rest of the resource: its routes, its sharing rules and how it is read back.
 
+A storage in turn names an SSH credential, so [Create SSH Key](#create-ssh-key) and [Create SSH Credential](#create-ssh-credential) — documented further down, since they belong to the credential resources rather than to a cluster — are the two calls to run before the one below.
+
 ### Create SCP Data Storage
 
 ```
 POST /api/v1/scp-data-storages
 ```
 
-Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint), and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the cluster below.
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential), and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the cluster below.
 
-A cluster's storage is the login host's own filesystem — where a run's work directory lives, where its file inputs are staged to and its outputs staged from — so this one points at the same endpoint the cluster does. A storage on any other host is an ordinary dataset location, like the FASTA host in [Register the Run's Data Products](#register-the-runs-data-products).
+A storage names the **account** its data is reached as — an SSH credential, which is a username paired with a key — and not a host. The host comes from the [endpoint credential](#create-ssh-endpoint-credential) whoever moves the data acts under, which is why one account can back both a storage on the login host and another on a lab data host, as the FASTA host in [Register the Run's Data Products](#register-the-runs-data-products) does. A cluster's storage is the login host's own filesystem: where a run's work directory lives, where its file inputs are staged to and its outputs staged from.
 
 ```bash
 STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
@@ -129,7 +131,7 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
   -H "Content-Type: application/json" \
   -d '{
     "dataName": "expanse-scratch",
-    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'"
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
   }' | jq -r '.dataId')
 ```
 
@@ -138,23 +140,26 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
 | Field | Type | Notes |
 |---|---|---|
 | `dataName` | string | required, cannot be blank |
-| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
+| `sshCredentialId` | string | required, must reference an existing [SSH credential](#create-ssh-credential) |
 
 **Response — `201 Created`**
 
-The endpoint is inlined, for the same reason a cluster inlines it. `permission` is what the calling principal may do with the storage.
+The credential is inlined, nesting the safe (public-only) summary of the key behind it — the private material is never returned. `permission` is what the calling principal may do with the storage.
 
 ```json
 {
   "dataId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
   "dataName": "expanse-scratch",
   "ownerId": "cilogon:12345",
-  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "sshEndpoint": {
-    "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-    "name": "expanse-login",
-    "hostName": "login.expanse.sdsc.edu",
-    "port": 22
+  "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f",
+  "sshCredential": {
+    "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f",
+    "username": "airavata",
+    "sshKey": {
+      "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+      "sshKeyName": "expanse-key",
+      "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
+    }
   },
   "permission": "WRITE"
 }
@@ -552,7 +557,7 @@ Returned when `sshKeyName` or `publicKey` is blank.
 POST /api/v1/ssh-credentials
 ```
 
-Requires `ADMIN` or `SUPER_ADMIN` authority. Pairs a login username with an SSH key, producing the id that [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) below binds to a host.
+Requires `ADMIN` or `SUPER_ADMIN` authority. Pairs a login username with an SSH key, producing the id that [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) below binds to a host and that [Create SCP Data Storage](#create-scp-data-storage) registers a storage under.
 
 **curl example**
 
@@ -1264,12 +1269,14 @@ FASTA sequence sits on a lab data host the group already stages sequences throug
 the two outputs are written by the job itself and stay on the cluster, so their products
 are registered against the cluster's own storage.
 
-**The FASTA host.** A second storage means a second [SSH endpoint](#create-ssh-endpoint)
-and a [credential binding](#create-ssh-endpoint-credential) on it — a product's
-credential must be for the same host its storage stages through, so the cluster binding
-from earlier cannot be reused here. The SSH credential itself can be: `$SSH_CREDENTIAL_ID`
-is a username and key, and binding it to a second endpoint is what gives the caller
-standing on that host.
+**The FASTA host.** A dataset on another host means a second [SSH endpoint](#create-ssh-endpoint)
+and a [credential binding](#create-ssh-endpoint-credential) on it — the binding is what
+carries the host, so the cluster binding from earlier cannot be reused here. The SSH
+credential itself is reused: `$SSH_CREDENTIAL_ID` is a username and key, binding it to a
+second endpoint is what gives the caller standing on that host, and registering the
+storage under it is what says the sequences are reached as that account. A product's
+credential must name the SSH credential its storage stages under, which is what makes
+`$FASTA_CREDENTIAL_ID` and `$FASTA_STORAGE_ID` go together below.
 
 ```bash
 FASTA_ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
@@ -1294,13 +1301,13 @@ FASTA_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
   -H "Content-Type: application/json" \
   -d '{
     "dataName": "lab-sequences",
-    "sshEndpointId": "'"$FASTA_ENDPOINT_ID"'"
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
   }' | jq -r '.dataId')
 ```
 
 **The cluster.** The outputs land on the login host the cluster is reached through, which
 is the storage registered in [Create SCP Data Storage](#create-scp-data-storage) —
-`expanse-scratch`, pointing at `$SSH_ENDPOINT_ID` — and they are reached under the same
+`expanse-scratch`, staged under `$SSH_CREDENTIAL_ID` — and they are reached under the same
 binding the run submits with:
 
 ```bash
@@ -1744,7 +1751,7 @@ Runs a command on the remote host — filtering the output of a running job, for
 
 ## SCP Data Storages
 
-An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) and belongs to whoever registered it. A [cluster](#clusters) names one as the filesystem its runs work in, and a [data product](#data-products) names one as where its dataset lives.
+An SCP data storage is a location that datasets are staged through. It points at an [SSH credential](#create-ssh-credential) — the account its data is reached as — and belongs to whoever registered it. It names no host of its own: the host comes from the [endpoint credential](#create-ssh-endpoint-credential) a transfer runs under. A [cluster](#clusters) names one as the filesystem its runs work in, and a [data product](#data-products) names one as where its dataset lives.
 
 Registering one is documented up front, under [Create SCP Data Storage](#create-scp-data-storage), since a cluster cannot be created without one. What follows here is the rest of the resource.
 
@@ -1842,7 +1849,7 @@ curl -s -X POST localhost:9095/api/v1/data-products \
 | `path` | string | required, cannot be blank |
 | `dataStorageId` | string | required, must reference a storage the caller can reach |
 | `dataStorageType` | string \| null | optional, `SCP`; defaults to `SCP` |
-| `credentialId` | string \| null | optional; the [SSH endpoint credential](#create-ssh-endpoint-credential) the data was staged under. Must be one the caller may use, and must be for the same host the storage stages through |
+| `credentialId` | string \| null | optional; the [SSH endpoint credential](#create-ssh-endpoint-credential) the data was staged under. Must be one the caller may use, and must name the SSH credential the storage stages under |
 
 There is no `ownerId` and no `provisionStatus`: ownership comes from the token, and the lifecycle state is the server's to move. A body carrying either is accepted and ignored.
 
@@ -1867,7 +1874,7 @@ There is no `ownerId` and no `provisionStatus`: ownership comes from the token, 
 
 `PUT` takes the same body and needs `WRITE` **plus** access to the storage and credential it names; the owner, provision status and creation time are never rewritten from a request.
 
-Neither `dataStorageId` nor `credentialId` carries a foreign key — the storage id is qualified by `dataStorageType` — so both are resolved by the service: an unknown id is `404`, one the caller cannot reach is `403`, and a credential for the wrong host is `400`.
+Neither `dataStorageId` nor `credentialId` carries a foreign key — the storage id is qualified by `dataStorageType` — so both are resolved by the service: an unknown id is `404`, one the caller cannot reach is `403`, and a binding under an account other than the storage's own is `400`. The binding's *host* is not constrained: the storage names an account, not a host, so the same account may be reached on whichever endpoint the binding points at.
 
 `DELETE` returns `204 No Content`, is refused for anyone but the owner and admins, and takes the product's shares with it.
 

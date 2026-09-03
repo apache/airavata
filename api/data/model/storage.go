@@ -38,7 +38,12 @@ func (p DataStoragePermission) Valid() bool {
 	return false
 }
 
-// SCPDataStorage is a host and account data products can be staged through.
+// SCPDataStorage is an account data products can be staged under.
+//
+// It names the SSH user credential — a username and key — that data on it is reached
+// as, not a host: the host comes from the SSH endpoint credential whoever moves the
+// data acts under, which is why several storages on different hosts can stage under
+// one account.
 //
 // It belongs to whoever registered it, and everyone else reaches it through the
 // sharing rows below. Ownership is not transferable through the API: products are
@@ -48,8 +53,8 @@ type SCPDataStorage struct {
 	ID   string  `gorm:"column:data_id;primaryKey;type:varchar(36)" json:"dataId"`
 	Name *string `gorm:"column:data_name;type:varchar(255)" json:"dataName,omitempty"`
 
-	SSHEndpointID *string           `gorm:"column:ssh_endpoint_id;type:varchar(36);index" json:"sshEndpointId,omitempty"`
-	SSHEndpoint   *cred.SSHEndpoint `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshEndpoint,omitempty"`
+	SSHUserCredentialID *string                 `gorm:"column:ssh_user_credential_id;type:varchar(36);index" json:"sshUserCredentialId,omitempty"`
+	SSHUserCredential   *cred.SSHUserCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshUserCredential,omitempty"`
 
 	// OwnerID is named for its role because ownership, not mere reference, is what the
 	// authorisation checks read. RESTRICT: a user who still owns storages cannot be

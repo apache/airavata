@@ -11,8 +11,9 @@ import (
 
 // SCPDataStorageRepository reads and writes SCP data storages.
 //
-// Reads preload the SSH endpoint because the response DTO always carries it: a storage
-// without its host is not much use to a caller deciding whether to stage data there.
+// Reads preload the SSH credential and the key behind it because the response DTO
+// always carries both: a storage without the account it stages under is not much use
+// to a caller deciding whether to put data there.
 type SCPDataStorageRepository struct{ db *gorm.DB }
 
 // NewSCPDataStorageRepository returns a repository backed by db.
@@ -25,17 +26,24 @@ func (r *SCPDataStorageRepository) WithTx(tx *gorm.DB) *SCPDataStorageRepository
 	return &SCPDataStorageRepository{db: tx}
 }
 
+// withCredential is the read scope every lookup that feeds a response DTO starts from.
+func (r *SCPDataStorageRepository) withCredential(ctx context.Context) *gorm.DB {
+	return r.db.WithContext(ctx).
+		Preload("SSHUserCredential").
+		Preload("SSHUserCredential.SSHKey")
+}
+
 // FindAll returns every storage.
 func (r *SCPDataStorageRepository) FindAll(ctx context.Context) ([]model.SCPDataStorage, error) {
 	var out []model.SCPDataStorage
-	err := r.db.WithContext(ctx).Preload("SSHEndpoint").Find(&out).Error
+	err := r.withCredential(ctx).Find(&out).Error
 	return out, err
 }
 
 // FindByID returns one storage, or gorm.ErrRecordNotFound.
 func (r *SCPDataStorageRepository) FindByID(ctx context.Context, id string) (*model.SCPDataStorage, error) {
 	var out model.SCPDataStorage
-	if err := r.db.WithContext(ctx).Preload("SSHEndpoint").First(&out, "data_id = ?", id).Error; err != nil {
+	if err := r.withCredential(ctx).First(&out, "data_id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &out, nil
@@ -44,14 +52,7 @@ func (r *SCPDataStorageRepository) FindByID(ctx context.Context, id string) (*mo
 // FindByOwnerID returns every storage owned by one user.
 func (r *SCPDataStorageRepository) FindByOwnerID(ctx context.Context, userID string) ([]model.SCPDataStorage, error) {
 	var out []model.SCPDataStorage
-	err := r.db.WithContext(ctx).Preload("SSHEndpoint").Where("user_id = ?", userID).Find(&out).Error
-	return out, err
-}
-
-// FindBySSHEndpointID returns every storage staged through one endpoint.
-func (r *SCPDataStorageRepository) FindBySSHEndpointID(ctx context.Context, endpointID string) ([]model.SCPDataStorage, error) {
-	var out []model.SCPDataStorage
-	err := r.db.WithContext(ctx).Where("ssh_endpoint_id = ?", endpointID).Find(&out).Error
+	err := r.withCredential(ctx).Where("user_id = ?", userID).Find(&out).Error
 	return out, err
 }
 
@@ -72,7 +73,7 @@ func (r *SCPDataStorageRepository) FindSharedWith(ctx context.Context, userID st
 			Where("user_id = ? AND group_member_status = ?", userID, iammodel.GroupMemberStatusActive))
 
 	var out []model.SCPDataStorage
-	err := r.db.WithContext(ctx).Preload("SSHEndpoint").
+	err := r.withCredential(ctx).
 		Where("(data_id IN (?) OR data_id IN (?)) AND (user_id IS NULL OR user_id <> ?)",
 			sharedDirectly, sharedByGroup, userID).
 		Find(&out).Error

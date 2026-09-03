@@ -306,10 +306,10 @@ func (s *DataProductService) Delete(ctx context.Context, id string) error {
 // resolveReferences checks the storage and credential a request names.
 //
 // Both have to be reachable by the caller, and neither carries a foreign key, so this
-// is the only thing standing between a request and a dangling reference. The
-// credential must also belong to the storage's own endpoint: one for a different host
-// could never move this data, and accepting it would leave a product that looks
-// transferable and is not.
+// is the only thing standing between a request and a dangling reference. The binding
+// must also be for the SSH credential the storage stages under: one naming a different
+// account would reach the host as someone who cannot see this data, and accepting it
+// would leave a product that looks transferable and is not.
 func (s *DataProductService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.DataProductRequest) error {
 	storage, err := s.storages.WithTx(tx).FindByID(ctx, req.DataStorageID)
 	if err != nil {
@@ -326,15 +326,15 @@ func (s *DataProductService) resolveReferences(ctx context.Context, tx *gorm.DB,
 	if err != nil {
 		return err
 	}
-	if !sameEndpoint(credential.SSHEndpointID, storage.SSHEndpointID) {
+	if !sameCredential(credential.SSHCredentialID, storage.SSHUserCredentialID) {
 		return httpx.BadRequest(
-			"SSH endpoint credential %s is not for the host SCP data storage %s stages through",
+			"SSH endpoint credential %s is not for the SSH credential SCP data storage %s stages under",
 			credential.ID, storage.ID)
 	}
 	return nil
 }
 
-func sameEndpoint(a, b *string) bool {
+func sameCredential(a, b *string) bool {
 	return a != nil && b != nil && *a == *b
 }
 

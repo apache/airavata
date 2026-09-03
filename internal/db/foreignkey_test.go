@@ -35,7 +35,7 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"ssh_endpoint_credential_group_sharings", "group_id", "groups", "group_id"},
 		{"ssh_endpoint_credential_user_sharings", "ssh_endpoint_credential_id", "ssh_endpoint_credentials", "ssh_endpoint_credential_id"},
 		{"ssh_endpoint_credential_user_sharings", "user_id", "users", "user_id"},
-		{"scp_data_storages", "ssh_endpoint_id", "ssh_endpoints", "ssh_endpoint_id"},
+		{"scp_data_storages", "ssh_user_credential_id", "ssh_user_credentials", "ssh_credential_id"},
 		{"scp_data_storages", "user_id", "users", "user_id"},
 		{"scp_data_storage_group_sharings", "data_storage_id", "scp_data_storages", "data_id"},
 		{"scp_data_storage_group_sharings", "group_id", "groups", "group_id"},

@@ -13,49 +13,49 @@ import (
 // a storage can neither be registered on someone else's behalf nor handed over by
 // editing it.
 type SCPDataStorageRequest struct {
-	DataName      *string `json:"dataName"`
-	SSHEndpointID string  `json:"sshEndpointId"`
+	DataName        *string `json:"dataName"`
+	SSHCredentialID string  `json:"sshCredentialId"`
 }
 
 // Validate implements httpx.Validator.
 func (r *SCPDataStorageRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlankPtr("dataName", "Data name cannot be blank", r.DataName)
-	c.NotBlank("sshEndpointId", "SSH endpoint id cannot be blank", r.SSHEndpointID)
+	c.NotBlank("sshCredentialId", "SSH credential id cannot be blank", r.SSHCredentialID)
 	return c.Fields()
 }
 
 // ApplySCPDataStorageRequest copies the mutable fields of a request onto an entity.
-// The SSH endpoint is resolved by the service, which is what turns an unknown id into
-// a 404 rather than a dangling reference.
+// The SSH credential is resolved by the service, which is what turns an unknown id
+// into a 404 rather than a dangling reference.
 func ApplySCPDataStorageRequest(dst *model.SCPDataStorage, src *SCPDataStorageRequest) {
 	dst.Name = src.DataName
 }
 
 // SCPDataStorageResponse is the read model for a storage.
 //
-// The endpoint is inlined for the same reason a cluster inlines it: a storage is only
-// meaningful together with the host it stages through.
+// The credential is inlined — key summary and all, never the private material — because
+// a storage is only meaningful together with the account it stages under.
 type SCPDataStorageResponse struct {
-	DataID        string                       `json:"dataId"`
-	DataName      *string                      `json:"dataName"`
-	OwnerID       *string                      `json:"ownerId"`
-	SSHEndpointID *string                      `json:"sshEndpointId"`
-	SSHEndpoint   *creddto.SSHEndpointResponse `json:"sshEndpoint"`
+	DataID          string                             `json:"dataId"`
+	DataName        *string                            `json:"dataName"`
+	OwnerID         *string                            `json:"ownerId"`
+	SSHCredentialID *string                            `json:"sshCredentialId"`
+	SSHCredential   *creddto.SSHUserCredentialResponse `json:"sshCredential"`
 
 	Permission *string `json:"permission,omitempty"`
 }
 
 func ToSCPDataStorageResponse(s *model.SCPDataStorage) SCPDataStorageResponse {
 	out := SCPDataStorageResponse{
-		DataID:        s.ID,
-		DataName:      s.Name,
-		OwnerID:       s.OwnerID,
-		SSHEndpointID: s.SSHEndpointID,
+		DataID:          s.ID,
+		DataName:        s.Name,
+		OwnerID:         s.OwnerID,
+		SSHCredentialID: s.SSHUserCredentialID,
 	}
-	if s.SSHEndpoint != nil {
-		endpoint := creddto.ToSSHEndpointResponse(s.SSHEndpoint)
-		out.SSHEndpoint = &endpoint
+	if s.SSHUserCredential != nil {
+		credential := creddto.ToSSHUserCredentialResponse(s.SSHUserCredential)
+		out.SSHCredential = &credential
 	}
 	return out
 }
