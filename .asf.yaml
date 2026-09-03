@@ -26,6 +26,10 @@ notifications:
   pullrequests_comment: issues@airavata.apache.org
 
 github:
+  features:
+    wiki: false
+    issues: true
+    projects: false
   description: "A general purpose Distributed Systems Framework"
   homepage: https://airavata.apache.org/
   labels:
@@ -52,7 +56,3 @@ github:
         - root
       restrict_deletion: true
       restrict_force_push: true
-features:
-  wiki: false
-  issues: true
-  projects: false
