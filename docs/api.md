@@ -1360,8 +1360,8 @@ RANKED_MODELS_DATA_ID=$(curl -s -X POST localhost:9095/api/v1/data-products \
     "dataName": "alphafold-run-1-ranked-models",
     "dataDescription": "Ranked predicted structure PDB files for run 1",
     "isFile": false,
-    "path": "/scratch/airavata/alphafold/results/run-1/ranked_models",
-    "dataStorageId": "'"$CLUSTER_STORAGE_ID"'"
+    "path": "/data/results/run-1/ranked_models",
+    "dataStorageId": "'"$FASTA_STORAGE_ID"'"
   }' | jq -r '.dataId')
 
 CONFIDENCE_SCORES_DATA_ID=$(curl -s -X POST localhost:9095/api/v1/data-products \
@@ -1371,8 +1371,8 @@ CONFIDENCE_SCORES_DATA_ID=$(curl -s -X POST localhost:9095/api/v1/data-products 
     "dataName": "alphafold-run-1-confidence-scores",
     "dataDescription": "Per-residue pLDDT scores for the top-ranked model of run 1",
     "isFile": true,
-    "path": "/scratch/airavata/alphafold/results/run-1/confidence_scores.json",
-    "dataStorageId": "'"$CLUSTER_STORAGE_ID"'"
+    "path": "/data/results/run-1/confidence_scores.json",
+    "dataStorageId": "'"$FASTA_STORAGE_ID"'"
   }' | jq -r '.dataId')
 ```
 
@@ -1402,8 +1402,10 @@ Uses `$DEPLOYMENT_ID` from [Create Batch Deployment](#create-batch-deployment),
 `$ENDPOINT_CREDENTIAL_ID` from [Create SSH Endpoint Credential](#create-ssh-endpoint-credential),
 the `inputId`/`outputId` values returned by
 [Create Application Template](#create-application-template), and the three `dataId`
-values from [Register the Run's Data Products](#register-the-runs-data-products) above.
-The declaration ids can be read back off the template rather than kept from its creation:
+values from [Register the Run's Data Products](#register-the-runs-data-products) above,
+and captures `processId` into `$PROCESS_ID` (requires `jq`) for the task steps further
+down. The declaration ids can be read back off the template rather than kept from its
+creation:
 
 ```bash
 TEMPLATE=$(curl -s localhost:9095/api/v1/application-templates/"$TEMPLATE_ID")
@@ -1415,7 +1417,7 @@ CONFIDENCE_SCORES_OUTPUT_ID=$(echo "$TEMPLATE" | jq -r '.outputs[] | select(.out
 ```
 
 ```bash
-curl -s -X POST localhost:9095/api/v1/processes \
+PROCESS_ID=$(curl -s -X POST localhost:9095/api/v1/processes \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -1440,7 +1442,7 @@ curl -s -X POST localhost:9095/api/v1/processes \
         { "templateOutputId": "'"$CONFIDENCE_SCORES_OUTPUT_ID"'", "value": "'"$CONFIDENCE_SCORES_DATA_ID"'" }
       ]
     }
-  }'
+  }' | jq -r '.processId')
 ```
 
 | Field | Type | Notes |
