@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"strings"
-
 	"github.com/apache/airavata/internal/httpx"
 
 	model "github.com/apache/airavata/api/data/model"
@@ -21,7 +19,6 @@ type DataProductRequest struct {
 	Path            *string                `json:"path"`
 	DataStorageID   string                 `json:"dataStorageId"`
 	DataStorageType *model.DataStorageType `json:"dataStorageType"`
-	CredentialID    *string                `json:"credentialId"`
 }
 
 // Validate implements httpx.Validator.
@@ -31,9 +28,6 @@ func (r *DataProductRequest) Validate() []httpx.FieldError {
 	c.NotNil("isFile", "isFile cannot be null", r.IsFile)
 	c.NotBlankPtr("path", "Path cannot be blank", r.Path)
 	c.NotBlank("dataStorageId", "Data storage id cannot be blank", r.DataStorageID)
-	if r.CredentialID != nil && strings.TrimSpace(*r.CredentialID) == "" {
-		c.Add("credentialId", "Credential id cannot be blank")
-	}
 	if r.DataStorageType != nil && !r.DataStorageType.Valid() {
 		c.Add("dataStorageType", "Data storage type must be SCP")
 	}
@@ -60,7 +54,6 @@ func ApplyDataProductRequest(dst *model.DataProduct, src *DataProductRequest) {
 	dst.Path = src.Path
 	dst.DataStorageID = &src.DataStorageID
 	dst.DataStorageType = src.StorageType()
-	dst.CredentialID = src.CredentialID
 }
 
 // DataProductResponse is the read model for a registered dataset.
@@ -78,7 +71,6 @@ type DataProductResponse struct {
 	OwnerID         *string                `json:"ownerId"`
 	DataStorageID   *string                `json:"dataStorageId"`
 	DataStorageType model.DataStorageType  `json:"dataStorageType"`
-	CredentialID    *string                `json:"credentialId"`
 	CreatedAt       int64                  `json:"createdAt"`
 
 	Permission *string `json:"permission,omitempty"`
@@ -95,7 +87,6 @@ func ToDataProductResponse(p *model.DataProduct) DataProductResponse {
 		OwnerID:         p.OwnerID,
 		DataStorageID:   p.DataStorageID,
 		DataStorageType: p.DataStorageType,
-		CredentialID:    p.CredentialID,
 		CreatedAt:       p.CreatedAt,
 	}
 }

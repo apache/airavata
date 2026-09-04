@@ -839,22 +839,23 @@ func TestDeletingEndpointCredentialRemovesItsShares(t *testing.T) {
 	}
 }
 
-// seedStorage registers an SCP data storage owned by the caller of token, returning
-// the SSH credential it stages under along with its id.
-func (h *harness) seedStorage(name, token string) (credentialID, storageID string) {
+// seedStorage registers an SCP data storage owned by the caller of token, returning the
+// endpoint and SSH credential it stages through along with its id.
+func (h *harness) seedStorage(name, token string) (endpointID, credentialID, storageID string) {
 	h.t.Helper()
+	endpointID = h.seedSSHEndpoint(name)
 	_, credentialID = h.seedSSHKeyAndCredential(name)
 	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", token, map[string]any{
-		"dataName": name, "sshCredentialId": credentialID,
+		"dataName": name, "sshEndpointId": endpointID, "sshCredentialId": credentialID,
 	}, http.StatusCreated)
-	return credentialID, out["dataId"].(string)
+	return endpointID, credentialID, out["dataId"].(string)
 }
 
 // seedProduct registers a dataset owned by the caller of token, on a storage shared
 // with them.
 func (h *harness) seedProduct(name, token string) (storageID, productID string) {
 	h.t.Helper()
-	_, storageID = h.seedStorage(name, token)
+	_, _, storageID = h.seedStorage(name, token)
 	out := h.mustDo(http.MethodPost, "/api/v1/data-products", token, map[string]any{
 		"dataName": name, "isFile": true, "path": "/scratch/" + name, "dataStorageId": storageID,
 	}, http.StatusCreated)
@@ -886,15 +887,15 @@ func principalOf(token string) string {
 // no share confers control.
 func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	h := newHarness(t)
-	credentialID, storageID := h.seedStorage("staging", tokenAlice)
+	endpointID, credentialID, storageID := h.seedStorage("staging", tokenAlice)
 	base := "/api/v1/scp-data-storages/" + storageID
 
 	created := h.mustDo(http.MethodGet, base, tokenAlice, nil, http.StatusOK)
 	if created["ownerId"] != "alice" {
 		t.Errorf("ownerId = %v, want it taken from the token", created["ownerId"])
 	}
-	if created["sshCredential"] == nil {
-		t.Error("storage response did not inline its credential")
+	if created["sshEndpoint"] == nil || created["sshCredential"] == nil {
+		t.Error("storage response did not inline its endpoint and credential")
 	}
 
 	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
@@ -925,7 +926,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	}
 
 	// READ is not WRITE, and no share confers control.
-	repoint := map[string]any{"dataName": "renamed", "sshCredentialId": credentialID}
+	repoint := map[string]any{"dataName": "renamed", "sshEndpointId": endpointID, "sshCredentialId": credentialID}
 	if rec := h.do(http.MethodPut, base, tokenBob, repoint); rec.Code != http.StatusForbidden {
 		t.Errorf("update with READ: status = %d, want 403", rec.Code)
 	}
@@ -957,7 +958,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 // A group share reaches every active member of the group, and stops at a suspended one.
 func TestStorageGroupSharing(t *testing.T) {
 	h := newHarness(t)
-	_, storageID := h.seedStorage("group-staging", tokenAlice)
+	_, _, storageID := h.seedStorage("group-staging", tokenAlice)
 	groupID := h.seedGroup("data-team", tokenAlice)
 	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
 		map[string]any{"userId": "bob"}, http.StatusCreated)
@@ -981,7 +982,7 @@ func TestStorageGroupSharing(t *testing.T) {
 // names has to be one the caller can already reach.
 func TestProductRegistrationRequiresReachableStorage(t *testing.T) {
 	h := newHarness(t)
-	_, storageID := h.seedStorage("closed", tokenBob)
+	_, _, storageID := h.seedStorage("closed", tokenBob)
 
 	body := map[string]any{
 		"dataName": "run-1", "isFile": true, "path": "/scratch/run-1", "dataStorageId": storageID,
@@ -1071,78 +1072,6 @@ func TestProductIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	h.mustDo(http.MethodPut, base, tokenBob, update, http.StatusOK)
 	if rec := h.do(http.MethodDelete, base, tokenBob, nil); rec.Code != http.StatusForbidden {
 		t.Errorf("grantee deleting with WRITE: status = %d, want 403", rec.Code)
-	}
-}
-
-// A product's credential is the binding its data was staged under. It carries no
-// foreign key, so the service is the only thing keeping the reference honest: it must
-// exist, be usable by the caller, and name the SSH credential its storage stages
-// under.
-func TestProductCredentialMustBeUsableAndForTheStoragesAccount(t *testing.T) {
-	h := newHarness(t)
-	credentialID, storageID := h.seedStorage("staged", tokenAlice)
-	endpointID := h.seedSSHEndpoint("staged-host")
-
-	// Alice's own binding under the storage's SSH credential.
-	aliceBinding := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
-		"sshEndpointId": endpointID, "sshCredentialId": credentialID,
-	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
-
-	body := func(credential string) map[string]any {
-		return map[string]any{
-			"dataName": "run-1", "isFile": true, "path": "/scratch/run-1",
-			"dataStorageId": storageID, "credentialId": credential,
-		}
-	}
-
-	created := h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, body(aliceBinding), http.StatusCreated)
-	if created["credentialId"] != aliceBinding {
-		t.Errorf("credentialId = %v, want %s", created["credentialId"], aliceBinding)
-	}
-
-	// An unknown binding is a 404 rather than a dangling reference.
-	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body("nope")); rec.Code != http.StatusNotFound {
-		t.Errorf("unknown credential: status = %d, want 404", rec.Code)
-	}
-
-	// Someone else's binding is a 403 — staging under a credential nobody shared with
-	// the caller would let them act as its owner.
-	_, bobsBinding := h.seedEndpointCredential("bobs", tokenBob)
-	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(bobsBinding)); rec.Code != http.StatusForbidden {
-		t.Errorf("someone else's credential: status = %d, want 403", rec.Code)
-	}
-
-	// A binding on a different host is fine as long as it is the same account: a
-	// storage names who its data is reached as, not where it sits.
-	elsewhere := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
-		"sshEndpointId": h.seedSSHEndpoint("elsewhere"), "sshCredentialId": credentialID,
-	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
-	h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, body(elsewhere), http.StatusCreated)
-
-	// A binding under a different account would reach the host as someone who cannot
-	// see this data.
-	_, otherCredential := h.seedSSHKeyAndCredential("other-account")
-	otherAccount := h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials", tokenAlice, map[string]any{
-		"sshEndpointId": endpointID, "sshCredentialId": otherCredential,
-	}, http.StatusCreated)["sshEndpointCredentialId"].(string)
-	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(otherAccount)); rec.Code != http.StatusBadRequest {
-		t.Errorf("credential for another account: status = %d, want 400", rec.Code)
-	}
-
-	// Sharing bob's binding with alice makes it usable, but it is still a different
-	// account, so it is refused on that ground rather than let through.
-	h.mustDo(http.MethodPost, "/api/v1/ssh-endpoint-credentials/"+bobsBinding+"/user-shares", tokenBob,
-		map[string]any{"userId": "alice", "permission": "READ"}, http.StatusCreated)
-	if rec := h.do(http.MethodPost, "/api/v1/data-products", tokenAlice, body(bobsBinding)); rec.Code != http.StatusBadRequest {
-		t.Errorf("shared credential for another account: status = %d, want 400", rec.Code)
-	}
-
-	// Omitting the credential is allowed: not every dataset has been staged yet.
-	noCredential := h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, map[string]any{
-		"dataName": "unstaged", "isFile": false, "path": "/scratch/unstaged", "dataStorageId": storageID,
-	}, http.StatusCreated)
-	if noCredential["credentialId"] != nil {
-		t.Errorf("credentialId = %v, want null", noCredential["credentialId"])
 	}
 }
 

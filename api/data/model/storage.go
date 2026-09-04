@@ -38,12 +38,13 @@ func (p DataStoragePermission) Valid() bool {
 	return false
 }
 
-// SCPDataStorage is an account data products can be staged under.
+// SCPDataStorage is a host and account data products can be staged through.
 //
-// It names the SSH user credential — a username and key — that data on it is reached
-// as, not a host: the host comes from the SSH endpoint credential whoever moves the
-// data acts under, which is why several storages on different hosts can stage under
-// one account.
+// It names both halves of that: the SSH endpoint data on it lives on, and the SSH user
+// credential — a username and key — it is reached as. The two are kept apart rather
+// than folded into one SSHEndpointCredential because a binding also carries an owner,
+// and a storage is not staged under one person's standing on the host: whoever holds a
+// share reaches it under their own binding for the same host and account.
 //
 // It belongs to whoever registered it, and everyone else reaches it through the
 // sharing rows below. Ownership is not transferable through the API: products are
@@ -52,6 +53,9 @@ func (p DataStoragePermission) Valid() bool {
 type SCPDataStorage struct {
 	ID   string  `gorm:"column:data_id;primaryKey;type:varchar(36)" json:"dataId"`
 	Name *string `gorm:"column:data_name;type:varchar(255)" json:"dataName,omitempty"`
+
+	SSHEndpointID *string           `gorm:"column:ssh_endpoint_id;type:varchar(36);index" json:"sshEndpointId,omitempty"`
+	SSHEndpoint   *cred.SSHEndpoint `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshEndpoint,omitempty"`
 
 	SSHUserCredentialID *string                 `gorm:"column:ssh_user_credential_id;type:varchar(36);index" json:"sshUserCredentialId,omitempty"`
 	SSHUserCredential   *cred.SSHUserCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshUserCredential,omitempty"`

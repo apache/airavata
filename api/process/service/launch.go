@@ -102,7 +102,6 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *model.P
 			dataStagingTask := &model.DataStagingTask{
 				ProcessID:                  &process.ID,
 				SourceDataStorageID:        dataProduct.DataStorageID,
-				SourceCredentialID:         dataProduct.CredentialID,
 				SourcePath:                 dataProduct.Path,
 				SourceDataStorageType:      &dataProduct.DataStorageType,
 				DestinationDataStorageID:   &clusterStorage.ID,

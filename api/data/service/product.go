@@ -10,7 +10,6 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
-	credsvc "github.com/apache/airavata/api/credentials/service"
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
@@ -108,7 +107,6 @@ type DataProductService struct {
 	db             *gorm.DB
 	storages       *repository.SCPDataStorageRepository
 	storageSharing *repository.SCPDataStorageSharingRepository
-	credentials    *credsvc.CredentialAccess
 	users          *iamrepo.UserRepository
 }
 
@@ -119,7 +117,6 @@ func NewDataProductService(
 	sharing *repository.DataProductSharingRepository,
 	storages *repository.SCPDataStorageRepository,
 	storageSharing *repository.SCPDataStorageSharingRepository,
-	credentials *credsvc.CredentialAccess,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
 ) *DataProductService {
@@ -132,7 +129,6 @@ func NewDataProductService(
 		db:             db,
 		storages:       storages,
 		storageSharing: storageSharing,
-		credentials:    credentials,
 		users:          users,
 	}
 }
@@ -303,39 +299,18 @@ func (s *DataProductService) Delete(ctx context.Context, id string) error {
 	})
 }
 
-// resolveReferences checks the storage and credential a request names.
+// resolveReferences checks the storage a request names.
 //
-// Both have to be reachable by the caller, and neither carries a foreign key, so this
-// is the only thing standing between a request and a dangling reference. The binding
-// must also be for the SSH credential the storage stages under: one naming a different
-// account would reach the host as someone who cannot see this data, and accepting it
-// would leave a product that looks transferable and is not.
+// It has to be reachable by the caller, and the reference carries no foreign key — the
+// storage id is qualified by a storage *type* — so this is the only thing standing
+// between a request and a dangling one. The host and the account the dataset is reached
+// under come from the storage itself, so there is nothing else here to agree with.
 func (s *DataProductService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.DataProductRequest) error {
 	storage, err := s.storages.WithTx(tx).FindByID(ctx, req.DataStorageID)
 	if err != nil {
 		return notFoundAs(err, "SCP data storage not found: %s", req.DataStorageID)
 	}
-	if err := requireStorageReadable(ctx, s.access.withTx(tx), s.storageSharing.WithTx(tx), storage); err != nil {
-		return err
-	}
-
-	if req.CredentialID == nil {
-		return nil
-	}
-	credential, err := s.credentials.WithTx(tx).RequireUsable(ctx, *req.CredentialID)
-	if err != nil {
-		return err
-	}
-	if !sameCredential(credential.SSHCredentialID, storage.SSHUserCredentialID) {
-		return httpx.BadRequest(
-			"SSH endpoint credential %s is not for the SSH credential SCP data storage %s stages under",
-			credential.ID, storage.ID)
-	}
-	return nil
-}
-
-func sameCredential(a, b *string) bool {
-	return a != nil && b != nil && *a == *b
+	return requireStorageReadable(ctx, s.access.withTx(tx), s.storageSharing.WithTx(tx), storage)
 }
 
 // DataProductSharingService manages who, besides the owner, may reach a product.

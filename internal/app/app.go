@@ -132,9 +132,9 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 		Template:        applicationsvc.NewTemplateService(db, templates, deployments),
 		BatchDeployment: applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters),
 
-		SCPDataStorage:        datasvc.NewSCPDataStorageService(db, storages, storageShares, sshCreds, products, users, groupMembers),
+		SCPDataStorage:        datasvc.NewSCPDataStorageService(db, storages, storageShares, endpoints, sshCreds, products, users, groupMembers),
 		SCPDataStorageSharing: datasvc.NewSCPDataStorageSharingService(db, storages, storageShares, groups, users, groupMembers),
-		DataProduct:           datasvc.NewDataProductService(db, products, productShares, storages, storageShares, bindingAccess, users, groupMembers),
+		DataProduct:           datasvc.NewDataProductService(db, products, productShares, storages, storageShares, users, groupMembers),
 		DataProductSharing:    datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers),
 
 		Process:                processsvc.NewProcessService(db, processes, deployments, bindingAccess, users, statusSvc),

@@ -47,8 +47,6 @@ type DataProduct struct {
 	DataStorageID   *string         `gorm:"column:data_storage_id;type:varchar(36);index" json:"dataStorageId,omitempty"`
 	DataStorageType DataStorageType `gorm:"column:data_storage_type;type:varchar(32)" json:"dataStorageType,omitempty"`
 
-	CredentialID *string `gorm:"column:credential_id;type:varchar(36);index" json:"credentialId,omitempty"`
-
 	CreatedAt int64 `gorm:"column:created_at;not null" json:"createdAt"`
 }
 
