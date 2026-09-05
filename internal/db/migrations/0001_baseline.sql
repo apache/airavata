@@ -26,6 +26,25 @@
 -- batch_processes.submission_credential_id, the binding a run submits under, was folded
 -- in the same way.
 --
+-- Re-recorded a third time when the compute vertical split a cluster in two. The
+-- clusters table described a machine and an identity at once — it carried an
+-- ssh_endpoint_id, an scp_data_storage_id and a slurm_home — so registering one meant
+-- putting somebody's access into an admin-owned catalogue, and a second person on the
+-- same machine needed a second cluster. It is now slurm_clusters, describing the
+-- machine alone: the head node jobs are submitted through and an optional data host
+-- beside it. How a particular person logs in — the account, the key, the work root —
+-- is slurm_cluster_configs, owned by whoever registered it and reached by everyone else
+-- through slurm_cluster_config_user_sharings and slurm_cluster_config_group_sharings.
+--
+-- The three files that had accumulated on top of the previous baseline (0002, 0003,
+-- 0004) are folded in here and deleted rather than kept alongside it. That is the same
+-- judgement as the two re-recordings above and rests on the same fact: nothing in this
+-- schema has run outside development. A database that did apply 0001-0004 cannot be
+-- brought forward by this file — its schema_migrations already records version 1, so
+-- the runner would skip it and the database would never gain the split. Such a database
+-- has to be recreated, which is exactly why this is only done while the schema is
+-- development-only.
+--
 -- Do not hand-edit this file once it has run anywhere outside development: a change to
 -- a table's shape belongs in a new migration (0002_..., 0003_..., ...), the same way
 -- ddl-auto never narrows a column and this framework never rewrites history.
@@ -55,19 +74,17 @@ CREATE TABLE "ssh_user_credentials" ("ssh_credential_id" varchar(36),"username" 
 
 CREATE INDEX IF NOT EXISTS "idx_ssh_user_credentials_ssh_key_id" ON "ssh_user_credentials" ("ssh_key_id");
 
-CREATE TABLE "clusters" ("cluster_id" varchar(36),"cluster_name" varchar(255) NOT NULL,"cluster_description" varchar(1024),"slurm_home" varchar(1024) NOT NULL,"ssh_endpoint_id" varchar(36),PRIMARY KEY ("cluster_id"),CONSTRAINT "fk_clusters_ssh_endpoint" FOREIGN KEY ("ssh_endpoint_id") REFERENCES "ssh_endpoints"("ssh_endpoint_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "slurm_clusters" ("slurm_cluster_id" varchar(36),"cluster_name" varchar(255) NOT NULL,"cluster_description" varchar(1024),"headnode_host" varchar(255) NOT NULL,"headnode_port" bigint NOT NULL,"data_host" varchar(255),"data_port" bigint,PRIMARY KEY ("slurm_cluster_id"));
 
-CREATE INDEX IF NOT EXISTS "idx_clusters_ssh_endpoint_id" ON "clusters" ("ssh_endpoint_id");
-
-CREATE TABLE "scp_data_storages" ("data_id" varchar(36),"data_name" varchar(255),"ssh_endpoint_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("data_id"),CONSTRAINT "fk_scp_data_storages_ssh_endpoint" FOREIGN KEY ("ssh_endpoint_id") REFERENCES "ssh_endpoints"("ssh_endpoint_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storages_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "scp_data_storages" ("data_id" varchar(36),"data_name" varchar(255),"ssh_endpoint_id" varchar(36),"ssh_user_credential_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("data_id"),CONSTRAINT "fk_scp_data_storages_ssh_user_credential" FOREIGN KEY ("ssh_user_credential_id") REFERENCES "ssh_user_credentials"("ssh_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storages_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storages_ssh_endpoint" FOREIGN KEY ("ssh_endpoint_id") REFERENCES "ssh_endpoints"("ssh_endpoint_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_scp_data_storages_owner_id" ON "scp_data_storages" ("user_id");
 
+CREATE INDEX IF NOT EXISTS "idx_scp_data_storages_ssh_user_credential_id" ON "scp_data_storages" ("ssh_user_credential_id");
+
 CREATE INDEX IF NOT EXISTS "idx_scp_data_storages_ssh_endpoint_id" ON "scp_data_storages" ("ssh_endpoint_id");
 
-CREATE TABLE "data_products" ("data_id" varchar(36),"data_name" varchar(255),"data_description" varchar(2048),"is_file" boolean NOT NULL,"path" varchar(2048),"provision_status" varchar(32),"user_id" varchar(255),"data_storage_id" varchar(36),"data_storage_type" varchar(32),"credential_id" varchar(36),"created_at" bigint NOT NULL,PRIMARY KEY ("data_id"),CONSTRAINT "fk_data_products_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
-
-CREATE INDEX IF NOT EXISTS "idx_data_products_credential_id" ON "data_products" ("credential_id");
+CREATE TABLE "data_products" ("data_id" varchar(36),"data_name" varchar(255),"data_description" varchar(2048),"is_file" boolean NOT NULL,"path" varchar(2048),"provision_status" varchar(32),"user_id" varchar(255),"data_storage_id" varchar(36),"data_storage_type" varchar(32),"created_at" bigint NOT NULL,PRIMARY KEY ("data_id"),CONSTRAINT "fk_data_products_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_data_products_data_storage_id" ON "data_products" ("data_storage_id");
 
@@ -83,9 +100,17 @@ CREATE INDEX IF NOT EXISTS "idx_application_template_outputs_template_id" ON "ap
 
 CREATE TABLE "group_members" ("group_id" varchar(36),"user_id" varchar(255),"group_role" varchar(32),"group_member_status" varchar(32),PRIMARY KEY ("group_id","user_id"),CONSTRAINT "fk_users_memberships" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_groups_members" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
-CREATE TABLE "cluster_partitions" ("partition_id" varchar(36),"cluster_id" varchar(36),"name" varchar(255) NOT NULL,"description" varchar(1024),"max_run_time" integer,"max_nodes" integer,"max_processors" integer,"max_jobs_in_queue" integer,"max_memory" bigint,"cpu_per_node" integer,"default_node_count" integer,"default_cpu_count" integer,"default_walltime" bigint,"gres" varchar(1024),"nodes" varchar(4096),"is_default_queue" boolean,"is_checkpointable" boolean,PRIMARY KEY ("partition_id"),CONSTRAINT "fk_clusters_partitions" FOREIGN KEY ("cluster_id") REFERENCES "clusters"("cluster_id") ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE "cluster_partitions" ("partition_id" varchar(36),"cluster_id" varchar(36),"name" varchar(255) NOT NULL,"description" varchar(1024),"max_run_time" integer,"max_nodes" integer,"max_processors" integer,"max_jobs_in_queue" integer,"max_memory" bigint,"cpu_per_node" integer,"default_node_count" integer,"default_cpu_count" integer,"default_walltime" bigint,"gres" varchar(1024),"nodes" varchar(4096),"is_default_queue" boolean,"is_checkpointable" boolean,PRIMARY KEY ("partition_id"),CONSTRAINT "fk_slurm_clusters_partitions" FOREIGN KEY ("cluster_id") REFERENCES "slurm_clusters"("slurm_cluster_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_cluster_partitions_cluster_id" ON "cluster_partitions" ("cluster_id");
+
+CREATE TABLE "slurm_cluster_configs" ("slurm_cluster_config_id" varchar(36),"name" varchar(255),"description" varchar(1024),"slurm_cluster_id" varchar(36),"login_user" varchar(255) NOT NULL,"work_root" varchar(1024) NOT NULL,"ssh_key_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("slurm_cluster_config_id"),CONSTRAINT "fk_slurm_cluster_configs_ssh_key" FOREIGN KEY ("ssh_key_id") REFERENCES "ssh_keys"("ssh_key_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_slurm_cluster_configs_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_slurm_cluster_configs_slurm_cluster" FOREIGN KEY ("slurm_cluster_id") REFERENCES "slurm_clusters"("slurm_cluster_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_configs_owner_id" ON "slurm_cluster_configs" ("user_id");
+
+CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_configs_ssh_key_id" ON "slurm_cluster_configs" ("ssh_key_id");
+
+CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_configs_slurm_cluster_id" ON "slurm_cluster_configs" ("slurm_cluster_id");
 
 CREATE TABLE "ssh_endpoint_credentials" ("ssh_endpoint_credential_id" varchar(36),"ssh_endpoint_id" varchar(36),"ssh_credential_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("ssh_endpoint_credential_id"),CONSTRAINT "fk_ssh_endpoint_credentials_ssh_endpoint" FOREIGN KEY ("ssh_endpoint_id") REFERENCES "ssh_endpoints"("ssh_endpoint_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_ssh_endpoint_credentials_ssh_credential" FOREIGN KEY ("ssh_credential_id") REFERENCES "ssh_user_credentials"("ssh_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_ssh_endpoint_credentials_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
@@ -95,11 +120,9 @@ CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credentials_ssh_credential_id" ON "
 
 CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credentials_ssh_endpoint_id" ON "ssh_endpoint_credentials" ("ssh_endpoint_id");
 
-CREATE TABLE "batch_application_deployments" ("deployment_id" varchar(36),"cluster_id" varchar(36),"template_id" varchar(36),"slurm_run_section" text NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"default_submission_credential_id" varchar(36) NOT NULL,"work_dir" varchar(1024),"partition" varchar(255),PRIMARY KEY ("deployment_id"),CONSTRAINT "fk_batch_application_deployments_template" FOREIGN KEY ("template_id") REFERENCES "application_templates"("template_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_default_submission_credential" FOREIGN KEY ("default_submission_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_cluster" FOREIGN KEY ("cluster_id") REFERENCES "clusters"("cluster_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "batch_application_deployments" ("deployment_id" varchar(36),"cluster_id" varchar(36),"template_id" varchar(36),"slurm_run_section" text NOT NULL,"default_batch_job_config_id" varchar(36) NOT NULL,"default_partition" varchar(255),PRIMARY KEY ("deployment_id"),CONSTRAINT "fk_batch_application_deployments_cluster" FOREIGN KEY ("cluster_id") REFERENCES "slurm_clusters"("slurm_cluster_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_template" FOREIGN KEY ("template_id") REFERENCES "application_templates"("template_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_default_batch_job_config" FOREIGN KEY ("default_batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
-CREATE INDEX IF NOT EXISTS "idx_batch_application_deployments_default_submission_cr850dbe93" ON "batch_application_deployments" ("default_submission_credential_id");
-
-CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_application_deployments_batch_job_config_id" ON "batch_application_deployments" ("batch_job_config_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_application_deployments_default_batch_job_config_id" ON "batch_application_deployments" ("default_batch_job_config_id");
 
 CREATE INDEX IF NOT EXISTS "idx_batch_application_deployments_template_id" ON "batch_application_deployments" ("template_id");
 
@@ -135,25 +158,37 @@ CREATE INDEX IF NOT EXISTS "idx_scp_data_storage_user_sharings_user_id" ON "scp_
 
 CREATE INDEX IF NOT EXISTS "idx_scp_data_storage_user_sharings_data_storage_id" ON "scp_data_storage_user_sharings" ("data_storage_id");
 
+CREATE TABLE "slurm_cluster_config_group_sharings" ("slurm_cluster_config_group_sharing_id" varchar(36),"slurm_cluster_config_id" varchar(36),"group_id" varchar(36) NOT NULL,"permission" varchar(10) NOT NULL,PRIMARY KEY ("slurm_cluster_config_group_sharing_id"),CONSTRAINT "fk_slurm_cluster_config_group_sharings_group" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_slurm_cluster_config_group_sharings_slurm_cluster_config" FOREIGN KEY ("slurm_cluster_config_id") REFERENCES "slurm_cluster_configs"("slurm_cluster_config_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_config_group_sharings_group_id" ON "slurm_cluster_config_group_sharings" ("group_id");
+
+CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_config_group_sharings_slurm_cluster_config_id" ON "slurm_cluster_config_group_sharings" ("slurm_cluster_config_id");
+
+CREATE TABLE "slurm_cluster_config_user_sharings" ("slurm_cluster_config_user_sharing_id" varchar(36),"slurm_cluster_config_id" varchar(36),"user_id" varchar(255) NOT NULL,"permission" varchar(10) NOT NULL,PRIMARY KEY ("slurm_cluster_config_user_sharing_id"),CONSTRAINT "fk_slurm_cluster_config_user_sharings_slurm_cluster_config" FOREIGN KEY ("slurm_cluster_config_id") REFERENCES "slurm_cluster_configs"("slurm_cluster_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_slurm_cluster_config_user_sharings_user" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_config_user_sharings_user_id" ON "slurm_cluster_config_user_sharings" ("user_id");
+
+CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_config_user_sharings_slurm_cluster_config_id" ON "slurm_cluster_config_user_sharings" ("slurm_cluster_config_id");
+
 CREATE TABLE "data_product_group_sharings" ("data_product_group_sharing_id" varchar(36),"data_product_id" varchar(36),"group_id" varchar(36),"permission" varchar(32),PRIMARY KEY ("data_product_group_sharing_id"),CONSTRAINT "fk_data_product_group_sharings_data_product" FOREIGN KEY ("data_product_id") REFERENCES "data_products"("data_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_data_product_group_sharings_group" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_group_sharings_group_id" ON "data_product_group_sharings" ("group_id");
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_group_sharings_data_product_id" ON "data_product_group_sharings" ("data_product_id");
 
-CREATE TABLE "data_product_user_sharings" ("data_product_user_sharing_id" varchar(36),"data_product_id" varchar(36),"user_id" varchar(255),"permission" varchar(32),PRIMARY KEY ("data_product_user_sharing_id"),CONSTRAINT "fk_data_product_user_sharings_data_product" FOREIGN KEY ("data_product_id") REFERENCES "data_products"("data_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_data_product_user_sharings_user" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "data_product_user_sharings" ("data_product_user_sharing_id" varchar(36),"data_product_id" varchar(36),"user_id" varchar(255),"permission" varchar(32),PRIMARY KEY ("data_product_user_sharing_id"),CONSTRAINT "fk_data_product_user_sharings_user" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_data_product_user_sharings_data_product" FOREIGN KEY ("data_product_id") REFERENCES "data_products"("data_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_user_id" ON "data_product_user_sharings" ("user_id");
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_data_product_id" ON "data_product_user_sharings" ("data_product_id");
 
-CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"submission_credential_id" varchar(36) NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"job_name" varchar(255),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_submission_credential" FOREIGN KEY ("submission_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"submission_credential_id" varchar(36) NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"job_name" varchar(255),"base_work_dir" varchar(1024),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_submission_credential" FOREIGN KEY ("submission_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_batch_job_config_id" ON "batch_processes" ("batch_job_config_id");
 
-CREATE INDEX IF NOT EXISTS "idx_batch_processes_deployment_id" ON "batch_processes" ("deployment_id");
-
 CREATE INDEX IF NOT EXISTS "idx_batch_processes_submission_credential_id" ON "batch_processes" ("submission_credential_id");
+
+CREATE INDEX IF NOT EXISTS "idx_batch_processes_deployment_id" ON "batch_processes" ("deployment_id");
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_process_id" ON "batch_processes" ("parent_process_id");
 

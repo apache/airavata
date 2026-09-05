@@ -167,7 +167,7 @@ type BatchDeploymentService struct {
 	db          *gorm.DB
 	deployments *repository.BatchDeploymentRepository
 	templates   *repository.TemplateRepository
-	clusters    *computerepo.ClusterRepository
+	clusters    *computerepo.SlurmClusterRepository
 }
 
 // NewBatchDeploymentService returns a deployment service.
@@ -175,7 +175,7 @@ func NewBatchDeploymentService(
 	db *gorm.DB,
 	deployments *repository.BatchDeploymentRepository,
 	templates *repository.TemplateRepository,
-	clusters *computerepo.ClusterRepository,
+	clusters *computerepo.SlurmClusterRepository,
 ) *BatchDeploymentService {
 	return &BatchDeploymentService{db: db, deployments: deployments, templates: templates, clusters: clusters}
 }
@@ -328,7 +328,7 @@ func (s *BatchDeploymentService) resolveReferences(ctx context.Context, tx *gorm
 	if req.SlurmClusterID != nil && strings.TrimSpace(*req.SlurmClusterID) != "" {
 		cluster, err := s.clusters.WithTx(tx).FindByID(ctx, *req.SlurmClusterID)
 		if err != nil {
-			return nil, nil, notFoundAs(err, "Cluster not found: %s", *req.SlurmClusterID)
+			return nil, nil, notFoundAs(err, "Slurm cluster not found: %s", *req.SlurmClusterID)
 		}
 		clusterID = &cluster.ID
 	}

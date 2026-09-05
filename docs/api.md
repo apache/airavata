@@ -12,7 +12,7 @@ Every failure — validation, authorization, missing record — comes back in th
 {
   "status": 404,
   "error": "Not Found",
-  "message": "Cluster not found: c1d2e3f4-5678-4abc-9def-0123456789ab"
+  "message": "Slurm cluster not found: c1d2e3f4-5678-4abc-9def-0123456789ab"
 }
 ```
 
@@ -46,7 +46,7 @@ Internal failures return `500` with a fixed `"Internal server error"` message: t
 
 ## SSH Endpoints
 
-An SSH endpoint is a host reachable over SSH. It was split out of the cluster, which used to carry a bare host name: separating it lets several clusters share one login host, and lets a credential be held against the host itself rather than against one cluster's view of it.
+An SSH endpoint is a host reachable over SSH. Separating it from the things that use it lets several data storages share one host, and lets a credential be held against the host itself rather than against one consumer's view of it.
 
 Endpoints are deployment topology and hold no secret, so reads are open and writes require `ADMIN` or `SUPER_ADMIN`.
 
@@ -58,7 +58,7 @@ POST /api/v1/ssh-endpoints
 
 **curl example**
 
-The example below captures `sshEndpointId` into `$SSH_ENDPOINT_ID` (requires `jq`), for use when creating a cluster and a credential binding below.
+The example below captures `sshEndpointId` into `$SSH_ENDPOINT_ID` (requires `jq`), for use when creating a data storage and a credential binding below.
 
 ```bash
 TOKEN='<the token printed at startup>'
@@ -103,9 +103,9 @@ PUT    /api/v1/ssh-endpoints/{sshEndpointId}
 DELETE /api/v1/ssh-endpoints/{sshEndpointId}
 ```
 
-Updating an endpoint silently redirects every cluster and credential that names it, which is what moving a login node should do — hence the admin requirement.
+Updating an endpoint silently redirects every credential and data storage that names it, which is what moving a login node should do — hence the admin requirement.
 
-`DELETE` returns `204 No Content`, or `409 Conflict` naming how many clusters or credential bindings still reference it. Detach those first; the foreign keys are `RESTRICT`, so the delete is refused rather than cascading into resources people are using.
+`DELETE` returns `204 No Content`, or `409 Conflict` naming how many credential bindings still reference it. Detach those first; the foreign keys are `RESTRICT`, so the delete is refused rather than cascading into resources people are using.
 
 ### Create SSH Key
 
@@ -113,7 +113,7 @@ Updating an endpoint silently redirects every cluster and credential that names 
 POST /api/v1/ssh-keys
 ```
 
-Requires `ADMIN` or `SUPER_ADMIN` authority. Stores the keypair used to authenticate to a cluster; `privateKey` and `passphrase` are write-only — they are never returned by any read endpoint.
+Requires `ADMIN` or `SUPER_ADMIN` authority. Stores the keypair used to authenticate to a host — a cluster head node through a [cluster config](#slurm-cluster-configs), or a data host through a credential; `privateKey` and `passphrase` are write-only — they are never returned by any read endpoint.
 
 **curl example**
 
@@ -533,11 +533,9 @@ A user share is the same shape with `sshEndpointCredentialUserSharingId` and `us
 | `404 Not Found` | no such binding, group or user; or a `sharingId` that belongs to a different binding |
 | `409 Conflict` | already shared with that group or user (widen the existing share instead), or shared with the owner, which would grant nothing |
 
-## Clusters
+## SCP Data Storage Registration
 
-A cluster is a Slurm-managed HPC resource that batch deployments submit jobs to. It is reached through an [SSH endpoint](#ssh-endpoints) and stages files through an [SCP data storage](#scp-data-storages), both named by id.
-
-The storage is registered first, since a cluster names one as it is created — its create call is documented immediately below, out of the [SCP Data Storages](#scp-data-storages) section further down, which carries the rest of the resource: its routes, its sharing rules and how it is read back.
+An SCP data storage is a host and location that datasets are staged through. Registering one is documented here, ahead of the resources that name it: [data products](#data-products) live on one, and a [data staging task](#create-data-staging-task) moves files between two. The rest of the resource — its routes, its sharing rules and how it is read back — is under [SCP Data Storages](#scp-data-storages) further down.
 
 A storage in turn names an SSH endpoint and an SSH credential, so [Create SSH Endpoint](#create-ssh-endpoint), [Create SSH Key](#create-ssh-key) and [Create SSH Credential](#create-ssh-credential) above are the calls that come before the one below.
 
@@ -547,9 +545,9 @@ A storage in turn names an SSH endpoint and an SSH credential, so [Create SSH En
 POST /api/v1/scp-data-storages
 ```
 
-Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the cluster below.
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the data product and staging steps further down.
 
-A storage names both halves of where its data is: the **host** it sits on, as an SSH endpoint, and the **account** it is reached as, as an SSH credential — a username paired with a key. The two are named separately rather than as one [endpoint credential](#create-ssh-endpoint-credential) because a binding also carries an owner, and a storage is not staged under one person's standing on the host: whoever it is shared with reaches it under their own binding for that same host and account. A cluster's storage is the login host's own filesystem — where a run's work directory lives, where its file inputs are staged to and its outputs staged from — so this one points at the same endpoint the cluster does. A storage on any other host is an ordinary dataset location, like the FASTA host in [Register the Run's Data Products](#register-the-runs-data-products).
+A storage names both halves of where its data is: the **host** it sits on, as an SSH endpoint, and the **account** it is reached as, as an SSH credential — a username paired with a key. The two are named separately rather than as one [endpoint credential](#create-ssh-endpoint-credential) because a binding also carries an owner, and a storage is not staged under one person's standing on the host: whoever it is shared with reaches it under their own binding for that same host and account.
 
 ```bash
 STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
@@ -600,32 +598,41 @@ Both are inlined, the credential nesting the safe (public-only) summary of the k
 }
 ```
 
-`DELETE` returns `204 No Content`, or `409 Conflict` when data products are still registered on the storage or a cluster still stages through it. Deleting one takes its shares with it.
+`DELETE` returns `204 No Content`, or `409 Conflict` when data products are still registered on the storage. Deleting one takes its shares with it.
 
-### Create Cluster
+## Slurm Clusters
+
+A Slurm cluster is an HPC resource that batch deployments submit jobs to. It describes the **machine** and nothing about who reaches it: the head node jobs are submitted through, an optional separate endpoint for data movement, and the partitions it is carved into.
+
+How a particular person logs in — under which account, presenting which key, beneath which work root — is a [Slurm cluster config](#slurm-cluster-configs), a separate resource with its own owner and sharing rules. That split is what lets one registered cluster serve everybody without the catalogue ever holding anyone's credentials, and it is why registering a cluster needs no key, no endpoint and no storage.
+
+Reads are open to anyone, including anonymous callers. Writes require `ADMIN` or `SUPER_ADMIN`.
+
+### Create Slurm Cluster
 
 ```
-POST /api/v1/clusters
+POST /api/v1/slurm-clusters
 ```
 
 Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$STORAGE_ID` from [Create SCP Data Storage](#create-scp-data-storage) above, and captures `clusterId` into `$CLUSTER_ID` (requires `jq`) for the batch deployment step further down.
+Captures `slurmClusterId` into `$CLUSTER_ID` (requires `jq`) for the cluster config and batch deployment steps further down.
 
 A cluster whose layout is already known can be carved into partitions in the same call, by carrying them in `partitions`. They are written in the same transaction as the cluster, so a cluster is never visible carrying half the layout it was registered with. A cluster that gains partitions later adds them one at a time through [Create Cluster Partition](#create-cluster-partition) instead.
 
 ```bash
-CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/clusters \
+CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-clusters \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "clusterName": "expanse",
     "clusterDescription": "SDSC Expanse HPC cluster",
-    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'",
-    "scpDataStorageId": "'"$STORAGE_ID"'",
-    "slurmHome": "/usr/bin",
+    "headnodeHost": "login.expanse.sdsc.edu",
+    "headnodePort": 22,
+    "dataHost": "dtn.expanse.sdsc.edu",
+    "dataPort": 22,
     "partitions": [
       {
         "name": "compute",
@@ -639,7 +646,7 @@ CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/clusters \
         "isDefaultQueue": true
       }
     ]
-  }' | jq -r '.clusterId')
+  }' | jq -r '.slurmClusterId')
 
 echo "$CLUSTER_ID"
 ```
@@ -650,52 +657,25 @@ echo "$CLUSTER_ID"
 |---|---|---|
 | `clusterName` | string | required, cannot be blank |
 | `clusterDescription` | string \| null | optional |
-| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
-| `scpDataStorageId` | string | required, must reference an existing [SCP data storage](#create-scp-data-storage) the caller can reach |
-| `slurmHome` | string | required, cannot be blank |
-| `partitions` | array \| null | optional, create only. Each element takes the same shape as a [Create Cluster Partition](#create-cluster-partition) body. A `PUT` carrying this field is rejected — see [Read, Update and Delete Clusters](#read-update-and-delete-clusters) |
-
-```json
-{
-  "clusterName": "expanse",
-  "clusterDescription": "SDSC Expanse HPC cluster",
-  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "scpDataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
-  "slurmHome": "/usr/bin",
-  "partitions": [
-    {
-      "name": "compute",
-      "description": "General-purpose CPU partition",
-      "maxRunTime": 2880,
-      "maxNodes": 32,
-      "cpuPerNode": 128,
-      "defaultNodeCount": 1,
-      "defaultCpuCount": 16,
-      "defaultWalltime": 240,
-      "isDefaultQueue": true
-    }
-  ]
-}
-```
+| `headnodeHost` | string | required, cannot be blank. The host jobs are submitted through |
+| `headnodePort` | number | required, 1–65535 |
+| `dataHost` | string \| null | optional. A separate endpoint for data movement — a DTN, typically. A cluster that names none stages through its head node |
+| `dataPort` | number \| null | optional, 1–65535 when present |
+| `partitions` | array \| null | optional, create only. Each element takes the same shape as a [Create Cluster Partition](#create-cluster-partition) body. A `PUT` carrying this field is rejected — see [Read, Update and Delete Slurm Clusters](#read-update-and-delete-slurm-clusters) |
 
 **Response — `201 Created`**
 
-`clusterId` is server-generated (UUID), as is every `partitionId`. The endpoint is inlined, since every caller that wants a cluster wants the host it lives on. The storage is not: it is named by id and read through its own endpoint, since it carries an owner and a permission of its own that a cluster read has no business asserting. `partitions` carries whatever the request asked for, and is `[]` for a cluster registered without any — those are added afterwards via `/api/v1/clusters/{clusterId}/partitions`.
+`slurmClusterId` is server-generated (UUID), as is every `partitionId`. `partitions` carries whatever the request asked for, and is `[]` for a cluster registered without any — those are added afterwards via `/api/v1/slurm-clusters/{slurmClusterId}/partitions`.
 
 ```json
 {
-  "clusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
+  "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
   "clusterName": "expanse",
   "clusterDescription": "SDSC Expanse HPC cluster",
-  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "sshEndpoint": {
-    "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-    "name": "expanse-login",
-    "hostName": "login.expanse.sdsc.edu",
-    "port": 22
-  },
-  "scpDataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
-  "slurmHome": "/usr/bin",
+  "headnodeHost": "login.expanse.sdsc.edu",
+  "headnodePort": 22,
+  "dataHost": "dtn.expanse.sdsc.edu",
+  "dataPort": 22,
   "partitions": [
     {
       "partitionId": "4b3a2c1d-0e9f-4876-a5b4-c3d2e1f0a9b8",
@@ -722,7 +702,7 @@ echo "$CLUSTER_ID"
 
 **Validation errors — `400 Bad Request`**
 
-Returned when `clusterName`, `sshEndpointId`, `scpDataStorageId` or `slurmHome` is blank, or when an inline partition fails its own constraints — those are reported under the element that carries them, as `partitions[0].name`. An `sshEndpointId` or `scpDataStorageId` that does not resolve to an existing record is returned as `404 Not Found` instead, and a storage the caller cannot reach as `403 Forbidden`.
+Returned when `clusterName` or `headnodeHost` is blank, when `headnodePort` or a supplied `dataPort` falls outside 1–65535, or when an inline partition fails its own constraints — those are reported under the element that carries them, as `partitions[0].name`.
 
 ```json
 {
@@ -731,24 +711,24 @@ Returned when `clusterName`, `sshEndpointId`, `scpDataStorageId` or `slurmHome` 
   "message": "Validation failed",
   "fieldErrors": [
     { "field": "clusterName", "message": "Cluster name cannot be blank" },
-    { "field": "sshEndpointId", "message": "SSH endpoint id cannot be blank" },
-    { "field": "scpDataStorageId", "message": "SCP data storage id cannot be blank" }
+    { "field": "headnodeHost", "message": "Headnode host cannot be blank" },
+    { "field": "headnodePort", "message": "Headnode port must be between 1 and 65535" }
   ]
 }
 ```
 
-### Read, Update and Delete Clusters
+### Read, Update and Delete Slurm Clusters
 
 ```
-GET    /api/v1/clusters
-GET    /api/v1/clusters/{clusterId}
-PUT    /api/v1/clusters/{clusterId}
-DELETE /api/v1/clusters/{clusterId}
+GET    /api/v1/slurm-clusters
+GET    /api/v1/slurm-clusters/{slurmClusterId}
+PUT    /api/v1/slurm-clusters/{slurmClusterId}
+DELETE /api/v1/slurm-clusters/{slurmClusterId}
 ```
 
-Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read carries the cluster's partitions and its SSH endpoint inline, so a caller that wants the layout never needs a second call.
+Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read carries the cluster's partitions inline, so a caller that wants the layout never needs a second call.
 
-`PUT` changes a cluster's own fields — including repointing it at a different SSH endpoint or SCP data storage, each re-resolved the way a create resolves it — and leaves its partitions alone. A body carrying `partitions` is **rejected** rather than obeyed:
+`PUT` changes a cluster's own fields — including repointing it at a different head node or data endpoint — and leaves its partitions alone. A body carrying `partitions` is **rejected** rather than obeyed:
 
 ```json
 {
@@ -756,31 +736,31 @@ Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read 
   "error": "Bad Request",
   "message": "Validation failed",
   "fieldErrors": [
-    { "field": "partitions", "message": "Partitions are only accepted when a cluster is created; use /api/v1/clusters/{clusterId}/partitions to change them" }
+    { "field": "partitions", "message": "Partitions are only accepted when a cluster is created; use /api/v1/slurm-clusters/{slurmClusterId}/partitions to change them" }
   ]
 }
 ```
 
 The elements of that array carry no ids, so there is nothing to match an incoming partition to an existing row by. Obeying the field would mean replacing the collection wholesale and deleting partitions the caller never mentioned; ignoring it would silently discard what they asked for. Rejecting it says which endpoint to use instead.
 
-`DELETE` returns `204 No Content` and takes the cluster's partitions with it — that foreign key cascades, unlike the `RESTRICT` ones guarding endpoints, credentials and data storages.
+`DELETE` returns `204 No Content` and takes the cluster's partitions with it — that foreign key cascades. It returns `409 Conflict` naming how many [cluster configs](#slurm-cluster-configs) still log in to it: that foreign key is `RESTRICT`, and their owners have to retire them first, since deleting the cluster out from under them would strand every share on those configs.
 
 
 ### Create Cluster Partition
 
 ```
-POST /api/v1/clusters/{clusterId}/partitions
+POST /api/v1/slurm-clusters/{slurmClusterId}/partitions
 ```
 
 Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$CLUSTER_ID` from [Create Cluster](#create-cluster) above, and captures
+Uses `$CLUSTER_ID` from [Create Slurm Cluster](#create-slurm-cluster) above, and captures
 `partitionId` into `$PARTITION_ID` (requires `jq`).
 
 ```bash
-PARTITION_ID=$(curl -s -X POST localhost:9095/api/v1/clusters/"$CLUSTER_ID"/partitions \
+PARTITION_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-clusters/"$CLUSTER_ID"/partitions \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -888,10 +868,10 @@ Returned when `name` is blank.
 ### Read, Update and Delete Cluster Partitions
 
 ```
-GET    /api/v1/clusters/{clusterId}/partitions
-GET    /api/v1/clusters/{clusterId}/partitions/{partitionId}
-PUT    /api/v1/clusters/{clusterId}/partitions/{partitionId}
-DELETE /api/v1/clusters/{clusterId}/partitions/{partitionId}
+GET    /api/v1/slurm-clusters/{slurmClusterId}/partitions
+GET    /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId}
+PUT    /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId}
+DELETE /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId}
 ```
 
 Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. `PUT` takes the same body as [Create Cluster Partition](#create-cluster-partition).
@@ -900,13 +880,13 @@ Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. `PUT` takes
 
 ```bash
 # $CLUSTER_ID was registered earlier, with or without partitions of its own.
-curl -s -X POST localhost:9095/api/v1/clusters/"$CLUSTER_ID"/partitions \
+curl -s -X POST localhost:9095/api/v1/slurm-clusters/"$CLUSTER_ID"/partitions \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{ "name": "largemem", "maxMemory": 2048000, "maxNodes": 2 }'
 
 # The cluster now carries every partition it has been given.
-curl -s localhost:9095/api/v1/clusters/"$CLUSTER_ID" \
+curl -s localhost:9095/api/v1/slurm-clusters/"$CLUSTER_ID" \
   -H "Authorization: Bearer $TOKEN" | jq -r '.partitions[].name'
 ```
 
@@ -914,6 +894,172 @@ Every path is scoped by its cluster, so a `partitionId` belonging to one cluster
 
 `DELETE` returns `204 No Content`. Nothing holds a foreign key to a partition, so removing one never conflicts; note that a deployment names its default partition by name rather than by id, and deleting the partition it names is not detected here.
 
+
+## Slurm Cluster Configs
+
+A Slurm cluster config is one way of logging in to a [Slurm cluster](#slurm-clusters): an account, an SSH key, and the directory work is done beneath. The cluster says *where* jobs run; the config says *as whom*.
+
+Registering one is self-service — no admin authority — and it belongs to whoever registered it. Everyone else reaches it through its sharing rules, which is what lets a PI hand a team access to an allocation without handing over the key itself. Ownership is not transferable through the API: a run is launched against a config by id, so handing one over would silently hand over the identity every job on it submits as.
+
+| Standing | May do |
+|---|---|
+| Owner, or platform admin | everything: read, update, delete, and manage the share list |
+| `WRITE` share | read and update the config |
+| `READ` share | read the config |
+| Anyone else | nothing — an unshared config is `403`, not `404`, once the id is known to exist |
+
+`WRITE` deliberately stops short of control. A grantee may correct a work root; retiring the identity everybody else reaches the cluster through, or deciding who else gets it, stays with the owner.
+
+The key is returned as its **public** summary only — name and public key. The private material has no field on any read model, so it cannot leak through these routes at all.
+
+### Create Slurm Cluster Config
+
+```
+POST /api/v1/slurm-cluster-configs
+```
+
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body. Uses `$CLUSTER_ID` from [Create Slurm Cluster](#create-slurm-cluster) and `$SSH_KEY_ID` from [Create SSH Key](#create-ssh-key) above, and captures `slurmClusterConfigId` into `$CLUSTER_CONFIG_ID` (requires `jq`).
+
+```bash
+CLUSTER_CONFIG_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "expanse-alloc-TG-BIO123456",
+    "description": "Group allocation on Expanse",
+    "slurmClusterId": "'"$CLUSTER_ID"'",
+    "loginUser": "airavata",
+    "workRoot": "/expanse/lustre/scratch/airavata/jobs",
+    "sshKeyId": "'"$SSH_KEY_ID"'"
+  }' | jq -r '.slurmClusterConfigId')
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string \| null | optional |
+| `description` | string \| null | optional |
+| `slurmClusterId` | string | required, must reference an existing [Slurm cluster](#create-slurm-cluster) |
+| `loginUser` | string | required, cannot be blank. The account on the head node |
+| `workRoot` | string | required, cannot be blank. Runs work beneath this directory |
+| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) |
+
+A `slurmClusterId` or `sshKeyId` that does not resolve is `404 Not Found` rather than a dangling reference.
+
+**Response — `201 Created`**
+
+The cluster is inlined, since a config is only meaningful together with the machine it logs in to. `permission` is what the calling principal may do with the config.
+
+```json
+{
+  "slurmClusterConfigId": "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d",
+  "name": "expanse-alloc-TG-BIO123456",
+  "description": "Group allocation on Expanse",
+  "ownerId": "cilogon:12345",
+  "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
+  "slurmCluster": {
+    "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
+    "clusterName": "expanse",
+    "clusterDescription": "SDSC Expanse HPC cluster",
+    "headnodeHost": "login.expanse.sdsc.edu",
+    "headnodePort": 22,
+    "dataHost": "dtn.expanse.sdsc.edu",
+    "dataPort": 22,
+    "partitions": []
+  },
+  "loginUser": "airavata",
+  "workRoot": "/expanse/lustre/scratch/airavata/jobs",
+  "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+  "sshKey": {
+    "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+    "sshKeyName": "expanse-key",
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
+  },
+  "permission": "WRITE"
+}
+```
+
+### Read, Update and Delete Slurm Cluster Configs
+
+```
+GET    /api/v1/slurm-cluster-configs
+GET    /api/v1/slurm-cluster-configs/me
+GET    /api/v1/slurm-cluster-configs/shared-with-me
+GET    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
+PUT    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
+DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
+```
+
+`GET /api/v1/slurm-cluster-configs` lists every config across every owner and requires `ADMIN` or `SUPER_ADMIN` — it names who may submit as whom, and where. `/me` returns the caller's own; `/shared-with-me` returns the ones others have shared with them, each carrying the `permission` it grants. Ownership is not a share, so a config never appears in both.
+
+`PUT` needs `WRITE` and takes the same body as the create. It can repoint a config at a different cluster or key, each re-resolved the way a create resolves it. The owner is deliberately left alone: re-deriving it from the caller's token would hand the config to whichever admin — or grantee — happened to issue the request.
+
+`DELETE` is owner-and-admin only and returns `204 No Content`, taking the config's shares with it.
+
+| Status | When |
+|---|---|
+| `403 Forbidden` | the config is not shared with the caller for what they asked to do; or a grantee tried to delete it or read its share list |
+| `404 Not Found` | no such config, cluster or key |
+
+### Share a Slurm Cluster Config
+
+```
+GET    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares
+POST   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares
+PUT    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares/{sharingId}
+DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares/{sharingId}
+
+GET    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares
+POST   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares
+PUT    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares/{sharingId}
+DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares/{sharingId}
+```
+
+Restricted to the config's owner and platform admins — reading the list included. It names who can submit jobs as a particular account on a particular machine, which is more than a grantee needs to know.
+
+A group share reaches someone only through an **ACTIVE** membership: an inactive member keeps their place in the group without keeping access through it.
+
+```bash
+# Share with one user, read-only.
+curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/user-shares \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "userId": "cilogon:67890", "permission": "READ" }'
+
+# Or with a whole group, letting them launch under it.
+curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/group-shares \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "groupId": "'"$GROUP_ID"'", "permission": "WRITE" }'
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `userId` / `groupId` | string | required, cannot be blank; must reference an existing user or group |
+| `permission` | `READ` \| `WRITE` \| null | optional, defaults to `READ` |
+
+`PUT` changes what an existing share grants and requires `permission`. `DELETE` revokes it and returns `204 No Content`.
+
+**Response — `201 Created`**
+
+```json
+{
+  "slurmClusterConfigUserSharingId": "2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f",
+  "slurmClusterConfigId": "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d",
+  "userId": "cilogon:67890",
+  "permission": "READ"
+}
+```
+
+| Status | When |
+|---|---|
+| `400 Bad Request` | `userId`/`groupId` blank, or an unrecognised `permission` |
+| `403 Forbidden` | the caller is not the owner — a grantee cannot read or change the share list |
+| `404 Not Found` | no such config, group or user; or a `sharingId` that belongs to a different config |
+| `409 Conflict` | already shared with that group or user (widen the existing share instead), or shared with the owner, which would grant nothing |
 
 ## Application Templates
 
@@ -1111,7 +1257,7 @@ Requires `ADMIN` or `SUPER_ADMIN` authority.
 
 **curl example**
 
-Uses `$TEMPLATE_ID` from [Create Application Template](#create-application-template) and `$CLUSTER_ID` from [Create Cluster](#create-cluster) above, and captures `deploymentId` into `$DEPLOYMENT_ID` (requires `jq`) for the process step further down.
+Uses `$TEMPLATE_ID` from [Create Application Template](#create-application-template) and `$CLUSTER_ID` from [Create Slurm Cluster](#create-slurm-cluster) above, and captures `deploymentId` into `$DEPLOYMENT_ID` (requires `jq`) for the process step further down.
 
 ```bash
 TOKEN='<the token printed at startup>'
@@ -1277,13 +1423,13 @@ need a registered product each before a run can name them: `fastaFile` in, and
 `rankedModels` and `confidenceScores` out. They do not all live in the same place. The
 FASTA sequence sits on a lab data host the group already stages sequences through, while
 the two outputs are written by the job itself and stay on the cluster, so their products
-are registered against the cluster's own storage.
+are registered against a storage standing for the cluster's own filesystem.
 
 **The FASTA host.** A dataset on another host means a second [SSH endpoint](#create-ssh-endpoint),
 a second storage on it, and a [credential binding](#create-ssh-endpoint-credential) to
-reach it under — the cluster's endpoint and binding from earlier are for a different
-host, so neither can be reused here. The account differs too: the group's login on the
-lab host is `labuser`, not the `airavata` the cluster is reached as. So a second
+reach it under — the endpoint and binding from earlier are for a different host, so
+neither can be reused here. The account differs too: the group's login on the lab host
+is `labuser`, not the `airavata` the cluster is reached as. So a second
 [SSH credential](#create-ssh-credential) pairs that username with the *same*
 `$SSH_KEY_ID` — one key can back credentials for as many usernames as it is authorised
 for, and re-registering the key material would only give the same bytes a second id.
@@ -1329,8 +1475,11 @@ FASTA_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
 
 **The cluster.** The outputs land on the login host the cluster is reached through, which
 is the storage registered in [Create SCP Data Storage](#create-scp-data-storage) —
-`expanse-scratch`, on `$SSH_ENDPOINT_ID` and staged under `$SSH_CREDENTIAL_ID`, the same
-host and account the run submits under:
+`expanse-scratch`, on `$SSH_ENDPOINT_ID` and staged under `$SSH_CREDENTIAL_ID`. A
+[Slurm cluster](#slurm-clusters) itself names no storage: it carries its own head node
+and data host, and the account a run submits under comes from the
+[cluster config](#slurm-cluster-configs). So this storage is registered separately, and
+should point at the same host and account that config logs in as:
 
 ```bash
 CLUSTER_STORAGE_ID="$STORAGE_ID"
@@ -1772,9 +1921,9 @@ Runs a command on the remote host — filtering the output of a running job, for
 
 ## SCP Data Storages
 
-An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) — the host its data sits on — and an [SSH credential](#create-ssh-credential) — the account it is reached as — and belongs to whoever registered it. A [cluster](#clusters) names one as the filesystem its runs work in, and a [data product](#data-products) names one as where its dataset lives.
+An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) — the host its data sits on — and an [SSH credential](#create-ssh-credential) — the account it is reached as — and belongs to whoever registered it. A [data product](#data-products) names one as where its dataset lives, and a [data staging task](#create-data-staging-task) moves files between two of them.
 
-Registering one is documented up front, under [Create SCP Data Storage](#create-scp-data-storage), since a cluster cannot be created without one. What follows here is the rest of the resource.
+Registering one is documented up front, under [SCP Data Storage Registration](#scp-data-storage-registration), because the walkthrough needs one before it can register a dataset. What follows here is the rest of the resource.
 
 | Standing | May do |
 |---|---|

@@ -29,7 +29,7 @@ func Entities() []any {
 		&iammodel.UserRole{},
 		&iammodel.Group{},
 		&credentialsmodel.SSHUserCredential{},
-		&computemodel.Cluster{},
+		&computemodel.SlurmCluster{},
 		&datamodel.SCPDataStorage{},
 		&datamodel.DataProduct{},
 		&applicationmodel.TemplateInput{},
@@ -38,6 +38,7 @@ func Entities() []any {
 		// Depend on the above.
 		&iammodel.GroupMember{},
 		&computemodel.ClusterPartition{},
+		&computemodel.SlurmClusterConfig{},
 		&credentialsmodel.SSHEndpointCredential{},
 		&applicationmodel.BatchDeployment{},
 
@@ -49,6 +50,8 @@ func Entities() []any {
 		&credentialsmodel.SSHEndpointCredentialUserSharing{},
 		&datamodel.SCPDataStorageGroupSharing{},
 		&datamodel.SCPDataStorageUserSharing{},
+		&computemodel.SlurmClusterConfigGroupSharing{},
+		&computemodel.SlurmClusterConfigUserSharing{},
 		&datamodel.DataProductGroupSharing{},
 		&datamodel.DataProductUserSharing{},
 

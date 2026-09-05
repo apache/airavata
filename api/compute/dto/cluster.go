@@ -6,19 +6,24 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	model "github.com/apache/airavata/api/compute/model"
-	creddto "github.com/apache/airavata/api/credentials/dto"
 )
 
-// ClusterRequest is the create/update payload for a cluster.
+// SlurmClusterRequest is the create/update payload for a cluster.
 //
-// The host name it used to carry is now an SSH endpoint of its own, named by id. The
-// field is required for the same reason the host name was: a cluster nothing can log
-// in to cannot be submitted to.
-type ClusterRequest struct {
+// It describes the machine only. The account a job submits under, the key it presents
+// and the directory it works beneath are a SlurmClusterConfig, so registering a
+// cluster never puts anyone's credentials into the catalogue.
+type SlurmClusterRequest struct {
 	ClusterName        string  `json:"clusterName"`
 	ClusterDescription *string `json:"clusterDescription"`
-	SSHEndpointID      string  `json:"sshEndpointId"`
-	SlurmHome          string  `json:"slurmHome"`
+
+	HeadnodeHost string `json:"headnodeHost"`
+	HeadnodePort int    `json:"headnodePort"`
+
+	// DataHost and DataPort are the optional separate endpoint for data movement. A
+	// cluster that names neither stages through its head node.
+	DataHost *string `json:"dataHost"`
+	DataPort *int    `json:"dataPort"`
 
 	// Partitions are the partitions to carve the cluster into as it is registered, so
 	// a cluster whose layout is already known arrives complete rather than needing a
@@ -28,16 +33,23 @@ type ClusterRequest struct {
 	// obeyed: the set has no ids in it, so there would be nothing to match an incoming
 	// partition to an existing row by, and replacing the collection wholesale would
 	// delete partitions the caller never mentioned. Adding, changing and removing them
-	// afterwards is what /api/v1/clusters/{clusterId}/partitions is for.
+	// afterwards is what /api/v1/slurm-clusters/{slurmClusterId}/partitions is for.
 	Partitions []ClusterPartitionRequest `json:"partitions"`
 }
 
 // Validate implements httpx.Validator.
-func (r *ClusterRequest) Validate() []httpx.FieldError {
+func (r *SlurmClusterRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlank("clusterName", "Cluster name cannot be blank", r.ClusterName)
-	c.NotBlank("sshEndpointId", "SSH endpoint id cannot be blank", r.SSHEndpointID)
-	c.NotBlank("slurmHome", "Slurm home cannot be blank", r.SlurmHome)
+	c.NotBlank("headnodeHost", "Headnode host cannot be blank", r.HeadnodeHost)
+	if r.HeadnodePort <= 0 || r.HeadnodePort > 65535 {
+		c.Add("headnodePort", "Headnode port must be between 1 and 65535")
+	}
+	// The data endpoint is optional as a whole, but half of one is a configuration
+	// error rather than a default: a host with no port has nothing to connect to.
+	if r.DataPort != nil && (*r.DataPort <= 0 || *r.DataPort > 65535) {
+		c.Add("dataPort", "Data port must be between 1 and 65535")
+	}
 	for i := range r.Partitions {
 		c.Nested(indexed("partitions", i), &r.Partitions[i])
 	}
@@ -48,53 +60,59 @@ func indexed(field string, i int) string {
 	return field + "[" + strconv.Itoa(i) + "]"
 }
 
-// ClusterResponse is the read model for a cluster.
-//
-// The endpoint is inlined rather than left as a bare id: every caller that wants a
-// cluster wants the host it lives on, and it is a small, non-secret record.
-//
-// Java: org.apache.airavata.compute.dto.ClusterResponseDto
-type ClusterResponse struct {
-	ClusterID          string                       `json:"clusterId"`
-	ClusterName        string                       `json:"clusterName"`
-	ClusterDescription *string                      `json:"clusterDescription"`
-	SSHEndpointID      *string                      `json:"sshEndpointId"`
-	SSHEndpoint        *creddto.SSHEndpointResponse `json:"sshEndpoint"`
-	SlurmHome          string                       `json:"slurmHome"`
-	Partitions         []ClusterPartitionResponse   `json:"partitions"`
+// SlurmClusterResponse is the read model for a cluster.
+type SlurmClusterResponse struct {
+	SlurmClusterID     string  `json:"slurmClusterId"`
+	ClusterName        string  `json:"clusterName"`
+	ClusterDescription *string `json:"clusterDescription"`
+
+	HeadnodeHost string `json:"headnodeHost"`
+	HeadnodePort int    `json:"headnodePort"`
+
+	DataHost *string `json:"dataHost"`
+	DataPort *int    `json:"dataPort"`
+
+	Partitions []ClusterPartitionResponse `json:"partitions"`
 }
 
-// ApplyClusterRequest copies the mutable fields of a request onto an entity. The id
-// and the partitions are never written from a request: partitions are managed through
-// their own endpoints, and overwriting the collection here would risk removing rows
-// the caller never mentioned. The SSH endpoint is resolved by the service, which is
-// what turns an unknown id into a 404 rather than a dangling reference.
+// ApplySlurmClusterRequest copies the mutable fields of a request onto an entity. The
+// id and the partitions are never written from a request: partitions are managed
+// through their own endpoints, and overwriting the collection here would risk removing
+// rows the caller never mentioned.
 //
 // A create request's inline partitions are written by the service through the
 // partition repository, one row at a time, for that same reason — this function stays
 // out of the collection on every path.
-func ApplyClusterRequest(dst *model.Cluster, src *ClusterRequest) {
+func ApplySlurmClusterRequest(dst *model.SlurmCluster, src *SlurmClusterRequest) {
 	dst.ClusterName = src.ClusterName
 	dst.ClusterDescription = src.ClusterDescription
-	dst.SlurmHome = src.SlurmHome
+	dst.HeadnodeHost = src.HeadnodeHost
+	dst.HeadnodePort = src.HeadnodePort
+	dst.DataHost = src.DataHost
+	dst.DataPort = src.DataPort
 }
 
-func ToClusterResponse(c *model.Cluster) ClusterResponse {
+func ToSlurmClusterResponse(c *model.SlurmCluster) SlurmClusterResponse {
 	partitions := make([]ClusterPartitionResponse, 0, len(c.Partitions))
 	for i := range c.Partitions {
 		partitions = append(partitions, ToClusterPartitionResponse(&c.Partitions[i]))
 	}
-	out := ClusterResponse{
-		ClusterID:          c.ID,
+	return SlurmClusterResponse{
+		SlurmClusterID:     c.ID,
 		ClusterName:        c.ClusterName,
 		ClusterDescription: c.ClusterDescription,
-		SSHEndpointID:      c.SSHEndpointID,
-		SlurmHome:          c.SlurmHome,
+		HeadnodeHost:       c.HeadnodeHost,
+		HeadnodePort:       c.HeadnodePort,
+		DataHost:           c.DataHost,
+		DataPort:           c.DataPort,
 		Partitions:         partitions,
 	}
-	if c.SSHEndpoint != nil {
-		endpoint := creddto.ToSSHEndpointResponse(c.SSHEndpoint)
-		out.SSHEndpoint = &endpoint
+}
+
+func ToSlurmClusterResponses(in []model.SlurmCluster) []SlurmClusterResponse {
+	out := make([]SlurmClusterResponse, 0, len(in))
+	for i := range in {
+		out = append(out, ToSlurmClusterResponse(&in[i]))
 	}
 	return out
 }

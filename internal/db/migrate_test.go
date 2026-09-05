@@ -38,7 +38,7 @@ func newTestDB(t *testing.T) *gorm.DB {
 	return gdb
 }
 
-// seedSSHEndpoint creates the host a cluster or a credential binding points at. It
+// seedSSHEndpoint creates the host a credential binding or a data storage points at. It
 // exists because the host name clusters used to carry is now an entity of its own.
 func seedSSHEndpoint(t *testing.T, gdb *gorm.DB, name string) *credentialsmodel.SSHEndpoint {
 	t.Helper()
@@ -55,7 +55,9 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 	want := []string{
 		"users", "user_roles", "groups", "group_members",
 		"ssh_keys", "ssh_user_credentials",
-		"ssh_endpoints", "clusters", "cluster_partitions",
+		"ssh_endpoints", "slurm_clusters", "cluster_partitions",
+		"slurm_cluster_configs", "slurm_cluster_config_user_sharings",
+		"slurm_cluster_config_group_sharings",
 		"ssh_endpoint_credentials",
 		"ssh_endpoint_credential_group_sharings", "ssh_endpoint_credential_user_sharings",
 		"scp_data_storages", "scp_data_storage_group_sharings", "scp_data_storage_user_sharings",
@@ -77,8 +79,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 func TestBeforeCreateGeneratesUUID(t *testing.T) {
 	gdb := newTestDB(t)
 
-	endpoint := seedSSHEndpoint(t, gdb, "expanse")
-	cluster := &computemodel.Cluster{ClusterName: "expanse", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
+	cluster := &computemodel.SlurmCluster{ClusterName: "expanse", HeadnodeHost: "login.expanse.edu", HeadnodePort: 22}
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
@@ -202,8 +203,7 @@ func TestGroupMemberRejectsUnknownRoleAndStatus(t *testing.T) {
 func TestDeletingClusterCascadesToPartitions(t *testing.T) {
 	gdb := newTestDB(t)
 
-	endpoint := seedSSHEndpoint(t, gdb, "anvil")
-	cluster := &computemodel.Cluster{ClusterName: "anvil", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
+	cluster := &computemodel.SlurmCluster{ClusterName: "anvil", HeadnodeHost: "login.anvil.edu", HeadnodePort: 22}
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
@@ -216,7 +216,7 @@ func TestDeletingClusterCascadesToPartitions(t *testing.T) {
 		t.Fatalf("create partition: %v", err)
 	}
 
-	if err := gdb.Delete(&computemodel.Cluster{}, "cluster_id = ?", cluster.ID).Error; err != nil {
+	if err := gdb.Delete(&computemodel.SlurmCluster{}, "slurm_cluster_id = ?", cluster.ID).Error; err != nil {
 		t.Fatalf("delete cluster: %v", err)
 	}
 
@@ -297,8 +297,7 @@ func TestTemplateInputNameIsUniquePerTemplate(t *testing.T) {
 func TestNullableColumnsRoundTripAsNil(t *testing.T) {
 	gdb := newTestDB(t)
 
-	endpoint := seedSSHEndpoint(t, gdb, "delta")
-	cluster := &computemodel.Cluster{ClusterName: "delta", SSHEndpointID: &endpoint.ID, SlurmHome: "/usr/bin"}
+	cluster := &computemodel.SlurmCluster{ClusterName: "delta", HeadnodeHost: "login.delta.edu", HeadnodePort: 22}
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}

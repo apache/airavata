@@ -8,24 +8,23 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
-	computerepo "github.com/apache/airavata/api/compute/repository"
 	dto "github.com/apache/airavata/api/credentials/dto"
 	model "github.com/apache/airavata/api/credentials/model"
 	"github.com/apache/airavata/api/credentials/repository"
 )
 
-// SSHEndpointService manages the hosts clusters and credentials are reached through.
+// SSHEndpointService manages the hosts credentials and data storages are reached
+// through.
 //
 // It follows the cluster catalog's rules rather than the credential's: an endpoint is
 // a piece of deployment topology holding no secret, so reads are open and writes are
 // administrative.
 //
-// The cluster repository is the one thing it reaches outside this vertical, and only
-// to read: deleting an endpoint has to know whether a cluster still names it.
+// A Slurm cluster no longer names an endpoint — it carries its own head node and data
+// host — so this service stays entirely within the credentials vertical.
 type SSHEndpointService struct {
 	db          *gorm.DB
 	endpoints   *repository.SSHEndpointRepository
-	clusters    *computerepo.ClusterRepository
 	credentials *repository.SSHEndpointCredentialRepository
 }
 
@@ -33,10 +32,9 @@ type SSHEndpointService struct {
 func NewSSHEndpointService(
 	db *gorm.DB,
 	endpoints *repository.SSHEndpointRepository,
-	clusters *computerepo.ClusterRepository,
 	credentials *repository.SSHEndpointCredentialRepository,
 ) *SSHEndpointService {
-	return &SSHEndpointService{db: db, endpoints: endpoints, clusters: clusters, credentials: credentials}
+	return &SSHEndpointService{db: db, endpoints: endpoints, credentials: credentials}
 }
 
 // List returns every endpoint.
@@ -74,8 +72,8 @@ func (s *SSHEndpointService) Create(ctx context.Context, req *dto.SSHEndpointReq
 
 // Update changes an endpoint.
 //
-// Repointing an endpoint at a different host silently redirects every cluster and
-// credential that names it, which is exactly what an operator moving a login node
+// Repointing an endpoint at a different host silently redirects every credential and
+// data storage that names it, which is exactly what an operator moving a login node
 // wants — so it is allowed, and left to the admin authority to gate.
 func (s *SSHEndpointService) Update(ctx context.Context, id string, req *dto.SSHEndpointRequest) (*dto.SSHEndpointResponse, error) {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
@@ -95,9 +93,9 @@ func (s *SSHEndpointService) Update(ctx context.Context, id string, req *dto.SSH
 
 // Delete removes an endpoint that nothing references.
 //
-// The foreign keys from clusters and credentials are RESTRICT, so the database would
-// refuse this anyway; checking first turns an opaque constraint violation into a 409
-// naming what is still using it.
+// The foreign key from a credential binding is RESTRICT, so the database would refuse
+// this anyway; checking first turns an opaque constraint violation into a 409 naming
+// what is still using it.
 func (s *SSHEndpointService) Delete(ctx context.Context, id string) error {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return err
@@ -107,13 +105,6 @@ func (s *SSHEndpointService) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	clusters, err := s.clusters.FindBySSHEndpointID(ctx, endpoint.ID)
-	if err != nil {
-		return err
-	}
-	if len(clusters) > 0 {
-		return httpx.Conflict("SSH endpoint %s is still used by %d cluster(s)", endpoint.ID, len(clusters))
-	}
 	credentials, err := s.credentials.FindBySSHEndpointID(ctx, endpoint.ID)
 	if err != nil {
 		return err

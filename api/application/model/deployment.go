@@ -62,8 +62,12 @@ type BatchDeployment struct {
 
 	// The cluster is genuinely optional: a null ClusterID is legitimate, while a
 	// supplied-but-unknown id is an error the service reports as not-found.
-	ClusterID *string               `gorm:"column:cluster_id;type:varchar(36);index" json:"clusterId,omitempty"`
-	Cluster   *computemodel.Cluster `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	//
+	// It names the machine only. Which account a run submits under, and with which
+	// key, is a SlurmClusterConfig chosen at launch time rather than baked into the
+	// deployment — one deployment serves every user who holds a config for the cluster.
+	ClusterID *string                    `gorm:"column:cluster_id;type:varchar(36);index" json:"clusterId,omitempty"`
+	Cluster   *computemodel.SlurmCluster `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
 	TemplateID *string   `gorm:"column:template_id;type:varchar(36);index" json:"templateId,omitempty"`
 	Template   *Template `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`

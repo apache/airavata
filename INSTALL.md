@@ -231,16 +231,13 @@ That is enough to administer clusters, SSH keys, templates and deployments right
 ```bash
 TOKEN='<the token printed at startup>'
 
-# A cluster is reached through an SSH endpoint, so create the host first.
-ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
+# A cluster describes the machine: the head node jobs are submitted through, and
+# optionally a separate host for data movement. Who logs in, as whom, is a
+# slurm-cluster-config, which any authenticated user registers for themselves.
+curl -s -X POST localhost:9095/api/v1/slurm-clusters \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
-  -d '{"name":"expanse-login","hostName":"login.expanse.sdsc.edu"}' | jq -r '.sshEndpointId')
-
-curl -s -X POST localhost:9095/api/v1/clusters \
-  -H "Authorization: Bearer $TOKEN" \
-  -H 'Content-Type: application/json' \
-  -d '{"clusterName":"expanse","sshEndpointId":"'"$ENDPOINT_ID"'","slurmHome":"/usr/bin"}'
+  -d '{"clusterName":"expanse","headnodeHost":"login.expanse.sdsc.edu","headnodePort":22}'
 ```
 
 ### Two things that need a manual step
@@ -296,7 +293,7 @@ curl -s -X POST localhost:9095/api/v1/users \
 ```bash
 go test ./...            # 99 tests covering the schema, routing, authorisation and orchestration
 curl -s localhost:9095/health
-curl -s localhost:9095/api/v1/clusters      # readable without a token
+curl -s localhost:9095/api/v1/slurm-clusters # readable without a token
 ```
 
 Catalogue reads — clusters, partitions, SSH keys, SSH credentials, templates and

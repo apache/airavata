@@ -176,14 +176,26 @@ func (h *harness) seedSSHEndpoint(name string) string {
 	return out["sshEndpointId"].(string)
 }
 
-// seedCluster creates an endpoint and a cluster reached through it, returning the
-// cluster's id.
+// seedCluster registers a Slurm cluster and returns its id.
 func (h *harness) seedCluster(name string) string {
 	h.t.Helper()
-	out := h.mustDo(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
-		"clusterName": name, "sshEndpointId": h.seedSSHEndpoint(name), "slurmHome": "/usr/bin",
+	out := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, map[string]any{
+		"clusterName": name, "headnodeHost": name + ".example.edu", "headnodePort": 22,
 	}, http.StatusCreated)
-	return out["clusterId"].(string)
+	return out["slurmClusterId"].(string)
+}
+
+// seedClusterConfig registers a cluster login config owned by the caller of token, and
+// returns its id along with the cluster it points at.
+func (h *harness) seedClusterConfig(token, name string) (configID, clusterID string) {
+	h.t.Helper()
+	clusterID = h.seedCluster(name)
+	keyID, _ := h.seedSSHKeyAndCredential(name)
+	out := h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs", token, map[string]any{
+		"name": name, "slurmClusterId": clusterID,
+		"loginUser": "runner", "workRoot": "/scratch/runner", "sshKeyId": keyID,
+	}, http.StatusCreated)
+	return out["slurmClusterConfigId"].(string), clusterID
 }
 
 // seedSSHKeyAndCredential creates a key and a credential using it.
@@ -222,7 +234,7 @@ func TestHealthIsOpen(t *testing.T) {
 func TestReadsAreOpenToAnonymousCallers(t *testing.T) {
 	h := newHarness(t)
 	for _, path := range []string{
-		"/api/v1/clusters",
+		"/api/v1/slurm-clusters",
 		"/api/v1/ssh-endpoints",
 		"/api/v1/ssh-keys",
 		"/api/v1/ssh-credentials",
@@ -239,7 +251,7 @@ func TestReadsAreOpenToAnonymousCallers(t *testing.T) {
 // which would turn a mistyped token into a confusing 403 further in.
 func TestInvalidTokenIsRejected(t *testing.T) {
 	h := newHarness(t)
-	rec := h.do(http.MethodGet, "/api/v1/clusters", tokenBogus, nil)
+	rec := h.do(http.MethodGet, "/api/v1/slurm-clusters", tokenBogus, nil)
 	if rec.Code != http.StatusUnauthorized {
 		t.Errorf("status = %d, want 401", rec.Code)
 	}
@@ -252,23 +264,23 @@ func TestInvalidTokenIsRejected(t *testing.T) {
 // (a token will not help).
 func TestWritesRequireAdmin(t *testing.T) {
 	h := newHarness(t)
-	body := map[string]any{"clusterName": "c", "sshEndpointId": h.seedSSHEndpoint("c"), "slurmHome": "/usr/bin"}
+	body := map[string]any{"clusterName": "c", "headnodeHost": "c.example.edu", "headnodePort": 22}
 
-	if rec := h.do(http.MethodPost, "/api/v1/clusters", "", body); rec.Code != http.StatusUnauthorized {
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters", "", body); rec.Code != http.StatusUnauthorized {
 		t.Errorf("anonymous create: status = %d, want 401", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, "/api/v1/clusters", tokenAlice, body); rec.Code != http.StatusForbidden {
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters", tokenAlice, body); rec.Code != http.StatusForbidden {
 		t.Errorf("non-admin create: status = %d, want 403", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, "/api/v1/clusters", tokenAdmin, body); rec.Code != http.StatusCreated {
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, body); rec.Code != http.StatusCreated {
 		t.Errorf("admin create: status = %d, want 201\nbody: %s", rec.Code, rec.Body.String())
 	}
 }
 
 func TestValidationReportsFieldErrors(t *testing.T) {
 	h := newHarness(t)
-	rec := h.do(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
-		"clusterName": "  ", "sshEndpointId": "", "slurmHome": "/usr/bin",
+	rec := h.do(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, map[string]any{
+		"clusterName": "  ", "headnodeHost": "", "headnodePort": 22,
 	})
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("status = %d, want 400\nbody: %s", rec.Code, rec.Body.String())
@@ -287,8 +299,8 @@ func TestValidationReportsFieldErrors(t *testing.T) {
 	if got["clusterName"] != "Cluster name cannot be blank" {
 		t.Errorf("clusterName error = %q, want the Java message", got["clusterName"])
 	}
-	if got["sshEndpointId"] != "SSH endpoint id cannot be blank" {
-		t.Errorf("sshEndpointId error = %q, want the blank-endpoint message", got["sshEndpointId"])
+	if got["headnodeHost"] != "Headnode host cannot be blank" {
+		t.Errorf("headnodeHost error = %q, want the blank-headnode message", got["headnodeHost"])
 	}
 }
 
@@ -299,13 +311,13 @@ func TestPartitionLookupIsScopedToItsCluster(t *testing.T) {
 	clusterA := h.seedCluster("alpha")
 	clusterB := h.seedCluster("beta")
 
-	created := h.mustDo(http.MethodPost, "/api/v1/clusters/"+clusterA+"/partitions", tokenAdmin,
+	created := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters/"+clusterA+"/partitions", tokenAdmin,
 		map[string]any{"name": "wholenode", "maxNodes": 16}, http.StatusCreated)
 	partitionID := created["partitionId"].(string)
 
-	h.mustDo(http.MethodGet, "/api/v1/clusters/"+clusterA+"/partitions/"+partitionID, "", nil, http.StatusOK)
+	h.mustDo(http.MethodGet, "/api/v1/slurm-clusters/"+clusterA+"/partitions/"+partitionID, "", nil, http.StatusOK)
 
-	if rec := h.do(http.MethodGet, "/api/v1/clusters/"+clusterB+"/partitions/"+partitionID, "", nil); rec.Code != http.StatusNotFound {
+	if rec := h.do(http.MethodGet, "/api/v1/slurm-clusters/"+clusterB+"/partitions/"+partitionID, "", nil); rec.Code != http.StatusNotFound {
 		t.Errorf("cross-cluster partition read: status = %d, want 404", rec.Code)
 	}
 }
@@ -313,10 +325,10 @@ func TestPartitionLookupIsScopedToItsCluster(t *testing.T) {
 func TestDeletingClusterCascadesToPartitions(t *testing.T) {
 	h := newHarness(t)
 	clusterID := h.seedCluster("gamma")
-	h.mustDo(http.MethodPost, "/api/v1/clusters/"+clusterID+"/partitions", tokenAdmin,
+	h.mustDo(http.MethodPost, "/api/v1/slurm-clusters/"+clusterID+"/partitions", tokenAdmin,
 		map[string]any{"name": "cpu"}, http.StatusCreated)
 
-	h.mustDo(http.MethodDelete, "/api/v1/clusters/"+clusterID, tokenAdmin, nil, http.StatusNoContent)
+	h.mustDo(http.MethodDelete, "/api/v1/slurm-clusters/"+clusterID, tokenAdmin, nil, http.StatusNoContent)
 
 	var remaining int64
 	h.db.Table("cluster_partitions").Where("cluster_id = ?", clusterID).Count(&remaining)
@@ -564,38 +576,100 @@ func TestUpdatingEndpointCredentialKeepsItsOwner(t *testing.T) {
 	}
 }
 
-// The host a cluster is reached through is its own record now, and the cluster
-// response carries it inline rather than making callers fetch it separately.
-func TestClusterCarriesItsSSHEndpoint(t *testing.T) {
+// A cluster describes the machine and nothing about who reaches it: the head node it
+// submits through and, optionally, a separate endpoint for data movement.
+func TestClusterCarriesItsHeadnode(t *testing.T) {
 	h := newHarness(t)
-	endpointID := h.seedSSHEndpoint("expanse")
 
-	created := h.mustDo(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
-		"clusterName": "expanse", "sshEndpointId": endpointID, "slurmHome": "/usr/bin",
+	created := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, map[string]any{
+		"clusterName": "expanse", "headnodeHost": "login.expanse.edu", "headnodePort": 22,
+		"dataHost": "data.expanse.edu", "dataPort": 2222,
 	}, http.StatusCreated)
 
-	if got := created["sshEndpointId"]; got != endpointID {
-		t.Errorf("sshEndpointId = %v, want %s", got, endpointID)
+	if created["headnodeHost"] != "login.expanse.edu" || created["headnodePort"].(float64) != 22 {
+		t.Errorf("headnode = %v:%v, want login.expanse.edu:22", created["headnodeHost"], created["headnodePort"])
 	}
-	endpoint, ok := created["sshEndpoint"].(map[string]any)
-	if !ok {
-		t.Fatalf("sshEndpoint = %v, want the endpoint inlined", created["sshEndpoint"])
-	}
-	if endpoint["hostName"] != "expanse.example.edu" || endpoint["port"].(float64) != 22 {
-		t.Errorf("inlined endpoint = %v, want the seeded host on the default port", endpoint)
+	if created["dataHost"] != "data.expanse.edu" || created["dataPort"].(float64) != 2222 {
+		t.Errorf("data endpoint = %v:%v, want data.expanse.edu:2222", created["dataHost"], created["dataPort"])
 	}
 
 	// Reads go through a different path than the create response, so check both.
-	fetched := h.mustDo(http.MethodGet, "/api/v1/clusters/"+created["clusterId"].(string), "", nil, http.StatusOK)
-	if fetched["sshEndpoint"] == nil {
-		t.Error("GET cluster did not preload the endpoint")
+	fetched := h.mustDo(http.MethodGet, "/api/v1/slurm-clusters/"+created["slurmClusterId"].(string), "", nil, http.StatusOK)
+	if fetched["headnodeHost"] != "login.expanse.edu" {
+		t.Errorf("GET cluster headnodeHost = %v, want login.expanse.edu", fetched["headnodeHost"])
 	}
 
-	// An endpoint that does not resolve is a 404, not a dangling reference.
-	if rec := h.do(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
-		"clusterName": "ghost", "sshEndpointId": "nope", "slurmHome": "/usr/bin",
-	}); rec.Code != http.StatusNotFound {
-		t.Errorf("unknown endpoint id: status = %d, want 404", rec.Code)
+	// The data endpoint stays optional: a cluster registered without it reads back null
+	// rather than an empty host that looks reachable.
+	plain := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, map[string]any{
+		"clusterName": "anvil", "headnodeHost": "login.anvil.edu", "headnodePort": 22,
+	}, http.StatusCreated)
+	if plain["dataHost"] != nil || plain["dataPort"] != nil {
+		t.Errorf("dataHost/dataPort = %v/%v, want null for a cluster staging through its head node",
+			plain["dataHost"], plain["dataPort"])
+	}
+}
+
+// Registering a cluster config is self-service — no admin authority — and the config is
+// private to its owner until it is shared.
+func TestClusterConfigIsSelfServiceAndPrivate(t *testing.T) {
+	h := newHarness(t)
+	configID, _ := h.seedClusterConfig(tokenAlice, "expanse")
+
+	mine := h.list("/api/v1/slurm-cluster-configs/me", tokenAlice)
+	if len(mine) != 1 {
+		t.Errorf("alice /me = %d configs, want 1", len(mine))
+	}
+	if theirs := h.list("/api/v1/slurm-cluster-configs/me", tokenBob); len(theirs) != 0 {
+		t.Errorf("bob /me = %d configs, want 0", len(theirs))
+	}
+
+	// Listing across every owner names who may submit as whom, so it stays admin-only.
+	if rec := h.do(http.MethodGet, "/api/v1/slurm-cluster-configs", tokenAlice, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("non-admin list: status = %d, want 403", rec.Code)
+	}
+	h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs", tokenAdmin, nil, http.StatusOK)
+
+	// Unshared, the config is invisible to anyone else.
+	if rec := h.do(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("outsider read: status = %d, want 403", rec.Code)
+	}
+
+	// A share opens it, and reports what it grants.
+	h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs/"+configID+"/user-shares", tokenAlice,
+		map[string]any{"userId": "bob"}, http.StatusCreated)
+	got := h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID, tokenBob, nil, http.StatusOK)
+	if got["permission"] != "READ" {
+		t.Errorf("grantee permission = %v, want READ", got["permission"])
+	}
+	shared := h.list("/api/v1/slurm-cluster-configs/shared-with-me", tokenBob)
+	if len(shared) != 1 {
+		t.Errorf("bob shared-with-me = %d, want 1", len(shared))
+	}
+
+	// The share list itself is the owner's: it names who can submit under this
+	// identity, which is more than a grantee needs to know.
+	if rec := h.do(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID+"/user-shares", tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee share list: status = %d, want 403", rec.Code)
+	}
+	h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID+"/user-shares", tokenAlice, nil, http.StatusOK)
+}
+
+// The literal /me and /shared-with-me patterns must win over /{slurmClusterConfigId},
+// or either would be looked up as a config id and 404.
+func TestClusterConfigLiteralPathsBeatTheIDPattern(t *testing.T) {
+	h := newHarness(t)
+	h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs/me", tokenAlice, nil, http.StatusOK)
+	h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs/shared-with-me", tokenAlice, nil, http.StatusOK)
+}
+
+// A cluster that configs still log in to cannot be deleted out from under them.
+func TestDeletingAClusterInUseIsRefused(t *testing.T) {
+	h := newHarness(t)
+	_, clusterID := h.seedClusterConfig(tokenAlice, "expanse")
+
+	if rec := h.do(http.MethodDelete, "/api/v1/slurm-clusters/"+clusterID, tokenAdmin, nil); rec.Code != http.StatusConflict {
+		t.Errorf("delete cluster in use: status = %d, want 409", rec.Code)
 	}
 }
 
@@ -604,16 +678,8 @@ func TestClusterCarriesItsSSHEndpoint(t *testing.T) {
 func TestSSHEndpointInUseCannotBeDeleted(t *testing.T) {
 	h := newHarness(t)
 
-	// Held by a cluster.
-	endpointID := h.seedSSHEndpoint("busy")
-	h.mustDo(http.MethodPost, "/api/v1/clusters", tokenAdmin, map[string]any{
-		"clusterName": "busy", "sshEndpointId": endpointID, "slurmHome": "/usr/bin",
-	}, http.StatusCreated)
-	if rec := h.do(http.MethodDelete, "/api/v1/ssh-endpoints/"+endpointID, tokenAdmin, nil); rec.Code != http.StatusConflict {
-		t.Errorf("delete with a cluster attached: status = %d, want 409", rec.Code)
-	}
-
-	// Held by a credential binding.
+	// Held by a credential binding. A Slurm cluster names no endpoint any more, so a
+	// binding and a data storage are the only things that can hold one.
 	boundID, _ := h.seedEndpointCredential("bound", tokenAlice)
 	if rec := h.do(http.MethodDelete, "/api/v1/ssh-endpoints/"+boundID, tokenAdmin, nil); rec.Code != http.StatusConflict {
 		t.Errorf("delete with a binding attached: status = %d, want 409", rec.Code)
@@ -2242,7 +2308,8 @@ func TestGroupWritesRequireAuthentication(t *testing.T) {
 func TestUnknownResourcesReportNotFound(t *testing.T) {
 	h := newHarness(t)
 	for _, path := range []string{
-		"/api/v1/clusters/nope",
+		"/api/v1/slurm-clusters/nope",
+		"/api/v1/slurm-cluster-configs/nope",
 		"/api/v1/ssh-endpoints/nope",
 		"/api/v1/ssh-keys/nope",
 		"/api/v1/application-templates/nope",
@@ -2265,7 +2332,7 @@ func TestUnknownResourcesReportNotFound(t *testing.T) {
 func TestUnsetPartitionLimitsStayNull(t *testing.T) {
 	h := newHarness(t)
 	clusterID := h.seedCluster("nulls")
-	created := h.mustDo(http.MethodPost, "/api/v1/clusters/"+clusterID+"/partitions", tokenAdmin,
+	created := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters/"+clusterID+"/partitions", tokenAdmin,
 		map[string]any{"name": "cpu"}, http.StatusCreated)
 
 	if v, ok := created["maxNodes"]; !ok || v != nil {

@@ -48,21 +48,39 @@ func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) err
 func (s *LaunchService) launchBatchProcess(ctx context.Context, process *model.Process) error {
 	// Implementation for launching a batch process goes here
 	batchProcess := process.BatchProcess
-
-	inputMapping := batchProcess.InputMappings
-	outputMapping := batchProcess.OutputMappings
-
 	batchDeployment := batchProcess.Deployment
-
-	cluster := batchDeployment.Cluster
-
 	sshCredential := batchProcess.SubmissionCredential
-
-	clusterStorage := cluster.SCPDataStorage
 
 	if sshCredential == nil {
 		return fmt.Errorf("No SSH credential available for batch process")
 	}
+
+	// TODO(compute-rename): staging to and from the cluster is not wired to the new
+	// model yet. A SlurmCluster no longer carries an SCPDataStorage — the machine now
+	// names its own headnode and data endpoint, and the account, key and work root a
+	// run uses live on the SlurmClusterConfig chosen at launch time. A DataStagingTask
+	// still addresses both ends by data-storage id, so the cluster side of a staging
+	// task has nothing to point at until either the task grows a way to name a cluster
+	// config, or a storage is derived from the config's cluster and work root.
+	//
+	// Refused rather than guessed at: staging a run's inputs to the wrong place, or to
+	// a storage belonging to someone else, is worse than not launching it. This service
+	// is not yet wired into internal/app, so nothing reachable regresses on this path.
+	_ = batchDeployment.Cluster
+	return fmt.Errorf(
+		"launching batch process %s is not supported yet: data staging has not been "+
+			"migrated to the SlurmCluster/SlurmClusterConfig model", process.ID)
+}
+
+// launchBatchProcessStaging is the staging half of launchBatchProcess, kept for the
+// migration above to build on. It is unreachable until that TODO is resolved.
+func (s *LaunchService) launchBatchProcessStaging(ctx context.Context, process *model.Process, clusterStorage *datamodel.SCPDataStorage) error {
+	batchProcess := process.BatchProcess
+
+	inputMapping := batchProcess.InputMappings
+	outputMapping := batchProcess.OutputMappings
+
+	sshCredential := batchProcess.SubmissionCredential
 
 	// Every staging path is built beneath the run's own subdirectory of this, so a run
 	// that named no base work dir has nowhere to stage to. The field is optional on the

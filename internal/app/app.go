@@ -52,8 +52,10 @@ type Services struct {
 	CredentialAccess             *credentialssvc.CredentialAccess
 
 	// Compute.
-	Cluster          *computesvc.ClusterService
-	ClusterPartition *computesvc.ClusterPartitionService
+	SlurmCluster              *computesvc.SlurmClusterService
+	ClusterPartition          *computesvc.ClusterPartitionService
+	SlurmClusterConfig        *computesvc.SlurmClusterConfigService
+	SlurmClusterConfigSharing *computesvc.SlurmClusterConfigSharingService
 
 	// Application catalogue.
 	Template        *applicationsvc.TemplateService
@@ -89,8 +91,10 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 	endpoints := credentialsrepo.NewSSHEndpointRepository(db)
 	bindings := credentialsrepo.NewSSHEndpointCredentialRepository(db)
 	bindingShares := credentialsrepo.NewSSHEndpointCredentialSharingRepository(db)
-	clusters := computerepo.NewClusterRepository(db)
+	clusters := computerepo.NewSlurmClusterRepository(db)
 	partitions := computerepo.NewClusterPartitionRepository(db)
+	clusterConfigs := computerepo.NewSlurmClusterConfigRepository(db)
+	clusterConfigShares := computerepo.NewSlurmClusterConfigSharingRepository(db)
 	templates := applicationrepo.NewTemplateRepository(db)
 	deployments := applicationrepo.NewBatchDeploymentRepository(db)
 	storages := datarepo.NewSCPDataStorageRepository(db)
@@ -121,13 +125,15 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 
 		SSHKey:                       credentialssvc.NewSSHKeyService(db, sshKeys, sshCreds),
 		SSHUserCredential:            credentialssvc.NewSSHUserCredentialService(db, sshCreds, sshKeys),
-		SSHEndpoint:                  credentialssvc.NewSSHEndpointService(db, endpoints, clusters, bindings),
+		SSHEndpoint:                  credentialssvc.NewSSHEndpointService(db, endpoints, bindings),
 		SSHEndpointCredential:        credentialssvc.NewSSHEndpointCredentialService(db, bindings, bindingShares, endpoints, sshCreds, users, groupMembers),
 		SSHEndpointCredentialSharing: credentialssvc.NewSSHEndpointCredentialSharingService(db, bindings, bindingShares, groups, users, groupMembers),
 		CredentialAccess:             bindingAccess,
 
-		Cluster:          computesvc.NewClusterService(db, clusters, partitions, endpoints),
-		ClusterPartition: computesvc.NewClusterPartitionService(db, partitions, clusters),
+		SlurmCluster:              computesvc.NewSlurmClusterService(db, clusters, partitions, clusterConfigs),
+		ClusterPartition:          computesvc.NewClusterPartitionService(db, partitions, clusters),
+		SlurmClusterConfig:        computesvc.NewSlurmClusterConfigService(db, clusterConfigs, clusterConfigShares, clusters, sshKeys, users, groupMembers),
+		SlurmClusterConfigSharing: computesvc.NewSlurmClusterConfigSharingService(db, clusterConfigs, clusterConfigShares, groups, users, groupMembers),
 
 		Template:        applicationsvc.NewTemplateService(db, templates, deployments),
 		BatchDeployment: applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters),

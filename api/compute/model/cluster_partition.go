@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// ClusterPartition is a Slurm partition (queue) on a Cluster.
+// ClusterPartition is a Slurm partition (queue) on a SlurmCluster.
 //
 // Every limit is nullable: an unset MaxNodes means "no declared limit", which is
 // distinct from a limit of zero. Hence the pointers.
@@ -14,7 +14,7 @@ import (
 type ClusterPartition struct {
 	ID string `gorm:"column:partition_id;primaryKey;type:varchar(36)" json:"partitionId"`
 
-	// The owning side of this association is Cluster.Partitions, which declares the
+	// The owning side of this association is SlurmCluster.Partitions, which declares the
 	// cascade. Only the key is held here; a back-reference would produce a second,
 	// redundant foreign key on the same column.
 	ClusterID *string `gorm:"column:cluster_id;type:varchar(36);index" json:"clusterId,omitempty"`

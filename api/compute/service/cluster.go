@@ -1,5 +1,6 @@
-// Package service holds the compute vertical's business rules: the cluster catalogue
-// and the partitions it is carved into.
+// Package service holds the compute vertical's business rules: the cluster catalogue,
+// the partitions it is carved into, and the login configs users reach a cluster
+// through.
 package service
 
 import (
@@ -14,7 +15,6 @@ import (
 	dto "github.com/apache/airavata/api/compute/dto"
 	model "github.com/apache/airavata/api/compute/model"
 	"github.com/apache/airavata/api/compute/repository"
-	credrepo "github.com/apache/airavata/api/credentials/repository"
 )
 
 func notFoundAs(err error, format string, args ...any) error {
@@ -24,74 +24,72 @@ func notFoundAs(err error, format string, args ...any) error {
 	return err
 }
 
-// ClusterService manages Slurm clusters. Reads are open; writes are administrative.
-type ClusterService struct {
+// SlurmClusterService manages Slurm clusters. Reads are open; writes are
+// administrative.
+//
+// A cluster is deployment topology holding no secret — a head node, a data endpoint
+// and a set of queues — which is why it is readable by anyone and writable only by an
+// admin. Who may log in to it, and as whom, is a SlurmClusterConfig and is governed by
+// its own ownership and sharing rules.
+type SlurmClusterService struct {
 	db         *gorm.DB
-	clusters   *repository.ClusterRepository
+	clusters   *repository.SlurmClusterRepository
 	partitions *repository.ClusterPartitionRepository
-	endpoints  *credrepo.SSHEndpointRepository
+	configs    *repository.SlurmClusterConfigRepository
 }
 
-// NewClusterService returns a cluster service.
+// NewSlurmClusterService returns a cluster service.
 //
 // It holds the partition repository so a create can register a cluster's partitions in
 // the same transaction as the cluster itself. Writes still go through that repository
 // rather than through the cluster's owned collection, the same discipline the partition
-// service keeps.
-func NewClusterService(db *gorm.DB, clusters *repository.ClusterRepository, partitions *repository.ClusterPartitionRepository, endpoints *credrepo.SSHEndpointRepository) *ClusterService {
-	return &ClusterService{db: db, clusters: clusters, partitions: partitions, endpoints: endpoints}
+// service keeps. The config repository is read-only here, and only so that deleting a
+// cluster can report what still logs in to it.
+func NewSlurmClusterService(
+	db *gorm.DB,
+	clusters *repository.SlurmClusterRepository,
+	partitions *repository.ClusterPartitionRepository,
+	configs *repository.SlurmClusterConfigRepository,
+) *SlurmClusterService {
+	return &SlurmClusterService{db: db, clusters: clusters, partitions: partitions, configs: configs}
 }
 
 // List returns every cluster.
-func (s *ClusterService) List(ctx context.Context) ([]dto.ClusterResponse, error) {
+func (s *SlurmClusterService) List(ctx context.Context) ([]dto.SlurmClusterResponse, error) {
 	clusters, err := s.clusters.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
-	out := make([]dto.ClusterResponse, 0, len(clusters))
-	for i := range clusters {
-		out = append(out, dto.ToClusterResponse(&clusters[i]))
-	}
-	return out, nil
+	return dto.ToSlurmClusterResponses(clusters), nil
 }
 
 // Get returns one cluster.
-func (s *ClusterService) Get(ctx context.Context, id string) (*dto.ClusterResponse, error) {
+func (s *SlurmClusterService) Get(ctx context.Context, id string) (*dto.SlurmClusterResponse, error) {
 	cluster, err := s.clusters.FindByID(ctx, id)
 	if err != nil {
-		return nil, notFoundAs(err, "Cluster not found: %s", id)
+		return nil, notFoundAs(err, "Slurm cluster not found: %s", id)
 	}
-	out := dto.ToClusterResponse(cluster)
+	out := dto.ToSlurmClusterResponse(cluster)
 	return &out, nil
 }
 
 // Create registers a cluster, along with any partitions the request carves it into.
 //
-// The named SSH endpoint must already exist: a cluster pointing at a host nothing
-// knows about could never be submitted to, so an unknown id is a 404 rather than a
-// dangling reference.
-//
 // The partitions are written in the same transaction as the cluster, so a cluster
 // never becomes visible carrying half the layout it was registered with. A cluster
 // that gains partitions later adds them through
-// POST /api/v1/clusters/{clusterId}/partitions instead.
-func (s *ClusterService) Create(ctx context.Context, req *dto.ClusterRequest) (*dto.ClusterResponse, error) {
+// POST /api/v1/slurm-clusters/{slurmClusterId}/partitions instead.
+func (s *SlurmClusterService) Create(ctx context.Context, req *dto.SlurmClusterRequest) (*dto.SlurmClusterResponse, error) {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return nil, err
 	}
 
-	var out dto.ClusterResponse
+	var out dto.SlurmClusterResponse
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		clusters, endpoints := s.clusters.WithTx(tx), s.endpoints.WithTx(tx)
-		partitions := s.partitions.WithTx(tx)
+		clusters, partitions := s.clusters.WithTx(tx), s.partitions.WithTx(tx)
 
-		endpoint, err := endpoints.FindByID(ctx, req.SSHEndpointID)
-		if err != nil {
-			return notFoundAs(err, "SSH endpoint not found: %s", req.SSHEndpointID)
-		}
-
-		cluster := &model.Cluster{SSHEndpointID: &endpoint.ID, SSHEndpoint: endpoint}
-		dto.ApplyClusterRequest(cluster, req)
+		cluster := &model.SlurmCluster{}
+		dto.ApplySlurmClusterRequest(cluster, req)
 		if err := clusters.Save(ctx, cluster); err != nil {
 			return err
 		}
@@ -109,7 +107,7 @@ func (s *ClusterService) Create(ctx context.Context, req *dto.ClusterRequest) (*
 			cluster.Partitions = append(cluster.Partitions, *partition)
 		}
 
-		out = dto.ToClusterResponse(cluster)
+		out = dto.ToSlurmClusterResponse(cluster)
 		return nil
 	})
 	if err != nil {
@@ -125,37 +123,31 @@ func (s *ClusterService) Create(ctx context.Context, req *dto.ClusterRequest) (*
 // field would mean replacing the collection wholesale and deleting partitions the
 // caller never mentioned, and ignoring it would silently drop what the caller asked
 // for. The partition endpoints are where a cluster's layout changes.
-func (s *ClusterService) Update(ctx context.Context, id string, req *dto.ClusterRequest) (*dto.ClusterResponse, error) {
+func (s *SlurmClusterService) Update(ctx context.Context, id string, req *dto.SlurmClusterRequest) (*dto.SlurmClusterResponse, error) {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return nil, err
 	}
 	if len(req.Partitions) > 0 {
 		return nil, httpx.Invalid([]httpx.FieldError{{
 			Field:   "partitions",
-			Message: "Partitions are only accepted when a cluster is created; use /api/v1/clusters/{clusterId}/partitions to change them",
+			Message: "Partitions are only accepted when a cluster is created; use /api/v1/slurm-clusters/{slurmClusterId}/partitions to change them",
 		}})
 	}
 
-	var out dto.ClusterResponse
+	var out dto.SlurmClusterResponse
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		clusters, endpoints := s.clusters.WithTx(tx), s.endpoints.WithTx(tx)
+		clusters := s.clusters.WithTx(tx)
 
 		cluster, err := clusters.FindByID(ctx, id)
 		if err != nil {
-			return notFoundAs(err, "Cluster not found: %s", id)
-		}
-		endpoint, err := endpoints.FindByID(ctx, req.SSHEndpointID)
-		if err != nil {
-			return notFoundAs(err, "SSH endpoint not found: %s", req.SSHEndpointID)
+			return notFoundAs(err, "Slurm cluster not found: %s", id)
 		}
 
-		dto.ApplyClusterRequest(cluster, req)
-		cluster.SSHEndpointID = &endpoint.ID
-		cluster.SSHEndpoint = endpoint
+		dto.ApplySlurmClusterRequest(cluster, req)
 		if err := clusters.Save(ctx, cluster); err != nil {
 			return err
 		}
-		out = dto.ToClusterResponse(cluster)
+		out = dto.ToSlurmClusterResponse(cluster)
 		return nil
 	})
 	if err != nil {
@@ -164,14 +156,26 @@ func (s *ClusterService) Update(ctx context.Context, id string, req *dto.Cluster
 	return &out, nil
 }
 
-// Delete removes a cluster, taking its partitions with it.
-func (s *ClusterService) Delete(ctx context.Context, id string) error {
+// Delete removes a cluster nothing logs in to, taking its partitions with it.
+//
+// The foreign key from a config is RESTRICT, so the database would refuse this anyway;
+// checking first turns an opaque constraint violation into a 409 naming how many
+// configs still point at it. Their owners have to retire them, since an admin deleting
+// the cluster out from under them would silently strand every share on those configs.
+func (s *SlurmClusterService) Delete(ctx context.Context, id string) error {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return err
 	}
 	cluster, err := s.clusters.FindByID(ctx, id)
 	if err != nil {
-		return notFoundAs(err, "Cluster not found: %s", id)
+		return notFoundAs(err, "Slurm cluster not found: %s", id)
+	}
+	configs, err := s.configs.FindBySlurmClusterID(ctx, cluster.ID)
+	if err != nil {
+		return err
+	}
+	if len(configs) > 0 {
+		return httpx.Conflict("Slurm cluster %s is still used by %d cluster config(s)", cluster.ID, len(configs))
 	}
 	return s.clusters.Delete(ctx, cluster)
 }
@@ -184,11 +188,11 @@ func (s *ClusterService) Delete(ctx context.Context, id string) error {
 type ClusterPartitionService struct {
 	db         *gorm.DB
 	partitions *repository.ClusterPartitionRepository
-	clusters   *repository.ClusterRepository
+	clusters   *repository.SlurmClusterRepository
 }
 
 // NewClusterPartitionService returns a partition service.
-func NewClusterPartitionService(db *gorm.DB, partitions *repository.ClusterPartitionRepository, clusters *repository.ClusterRepository) *ClusterPartitionService {
+func NewClusterPartitionService(db *gorm.DB, partitions *repository.ClusterPartitionRepository, clusters *repository.SlurmClusterRepository) *ClusterPartitionService {
 	return &ClusterPartitionService{db: db, partitions: partitions, clusters: clusters}
 }
 
@@ -266,10 +270,10 @@ func (s *ClusterPartitionService) Delete(ctx context.Context, clusterID, partiti
 	return s.partitions.Delete(ctx, partition)
 }
 
-func (s *ClusterPartitionService) requireCluster(ctx context.Context, clusterID string) (*model.Cluster, error) {
+func (s *ClusterPartitionService) requireCluster(ctx context.Context, clusterID string) (*model.SlurmCluster, error) {
 	cluster, err := s.clusters.FindByID(ctx, clusterID)
 	if err != nil {
-		return nil, notFoundAs(err, "Cluster not found: %s", clusterID)
+		return nil, notFoundAs(err, "Slurm cluster not found: %s", clusterID)
 	}
 	return cluster, nil
 }
@@ -280,7 +284,7 @@ func (s *ClusterPartitionService) requirePartition(ctx context.Context, clusterI
 	}
 	partition, err := s.partitions.FindByIDAndClusterID(ctx, partitionID, clusterID)
 	if err != nil {
-		return nil, notFoundAs(err, "Partition not found: %s in cluster %s", partitionID, clusterID)
+		return nil, notFoundAs(err, "Partition not found: %s in Slurm cluster %s", partitionID, clusterID)
 	}
 	return partition, nil
 }
