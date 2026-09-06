@@ -32,14 +32,14 @@ type BatchProcessRequest struct {
 	JobName        *string                               `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigRequest `json:"batchJobConfig"`
 
-	// SubmissionCredentialID names the SSH endpoint credential binding this run submits
-	// under — the id returned by POST /api/v1/ssh-endpoint-credentials, not a bare SSH
-	// credential.
+	// SlurmClusterConfigID names the cluster login config this run submits under — the
+	// id returned by POST /api/v1/slurm-cluster-configs, which carries the account, the
+	// key and the work root.
 	//
-	// Required: a deployment carries no credential to fall back on, so every run says
-	// which identity it submits under, and only a binding the caller owns or that is
-	// shared with them will be accepted.
-	SubmissionCredentialID *string `json:"submissionCredentialId"`
+	// Required: a deployment names the machine but nobody's identity on it, so every
+	// run says which config it submits under, and only a config the caller owns or that
+	// is shared with them will be accepted.
+	SlurmClusterConfigID *string `json:"slurmClusterConfigId"`
 
 	// BaseWorkDir is the parent directory on the cluster this run works under; it gets
 	// a subdirectory of its own beneath it, named for the process id, which is where
@@ -60,7 +60,7 @@ type BatchProcessRequest struct {
 func (r *BatchProcessRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlank("deploymentId", "Deployment id cannot be blank", r.DeploymentID)
-	c.NotBlankPtr("submissionCredentialId", "Submission credential id cannot be blank", r.SubmissionCredentialID)
+	c.NotBlankPtr("slurmClusterConfigId", "Slurm cluster config id cannot be blank", r.SlurmClusterConfigID)
 	if r.BatchJobConfig == nil {
 		c.Add("batchJobConfig", "Batch job config cannot be null")
 	} else {
@@ -84,7 +84,7 @@ type BatchProcessResponse struct {
 	JobName        *string                                `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigResponse `json:"batchJobConfig"`
 
-	SubmissionCredentialID string `json:"submissionCredentialId"`
+	SlurmClusterConfigID string `json:"slurmClusterConfigId"`
 
 	BaseWorkDir *string `json:"baseWorkDir"`
 
@@ -202,15 +202,15 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		return nil
 	}
 	return &BatchProcessResponse{
-		BatchProcessID:         b.ID,
-		DeploymentID:           b.DeploymentID,
-		JobID:                  b.JobID,
-		JobName:                b.JobName,
-		SubmissionCredentialID: b.SubmissionCredentialID,
-		BaseWorkDir:            b.BaseWorkDir,
-		BatchJobConfig:         applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
-		InputMappings:          ToInputMappings(b.InputMappings),
-		OutputMappings:         ToOutputMappings(b.OutputMappings),
+		BatchProcessID:       b.ID,
+		DeploymentID:         b.DeploymentID,
+		JobID:                b.JobID,
+		JobName:              b.JobName,
+		SlurmClusterConfigID: b.SlurmClusterConfigID,
+		BaseWorkDir:          b.BaseWorkDir,
+		BatchJobConfig:       applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
+		InputMappings:        ToInputMappings(b.InputMappings),
+		OutputMappings:       ToOutputMappings(b.OutputMappings),
 	}
 }
 

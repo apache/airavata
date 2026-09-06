@@ -13,8 +13,8 @@ import (
 // generates its key in BeforeCreate.
 //
 // Every service that resolves ownership assumes the authenticated principal's name is
-// exactly this ID. That assumption is load-bearing in SSHEndpointCredential and
-// BatchJobProcess authorisation.
+// exactly this ID. That assumption is load-bearing in SlurmClusterConfig and
+// SCPDataStorage authorisation.
 type User struct {
 	ID string `gorm:"column:user_id;primaryKey;type:varchar(255)" json:"userId"`
 

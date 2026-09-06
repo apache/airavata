@@ -39,11 +39,9 @@ func validateStorageType(c *httpx.Constraints, field string, t *data.DataStorage
 // DataStagingTaskRequest is the create/update payload for a staging task.
 type DataStagingTaskRequest struct {
 	SourceDataStorageID   *string               `json:"sourceDataStorageId"`
-	SourceCredentialID    *string               `json:"sourceCredentialId"`
 	SourceDataStorageType *data.DataStorageType `json:"sourceDataStorageType"`
 
 	DestinationDataStorageID   *string               `json:"destinationDataStorageId"`
-	DestinationCredentialID    *string               `json:"destinationCredentialId"`
 	DestinationDataStorageType *data.DataStorageType `json:"destinationDataStorageType"`
 
 	SourcePath      *string `json:"sourcePath"`
@@ -70,10 +68,8 @@ func (r *DataStagingTaskRequest) Validate() []httpx.FieldError {
 
 func ApplyDataStagingTaskRequest(dst *model.DataStagingTask, src *DataStagingTaskRequest) {
 	dst.SourceDataStorageID = src.SourceDataStorageID
-	dst.SourceCredentialID = src.SourceCredentialID
 	dst.SourceDataStorageType = src.SourceDataStorageType
 	dst.DestinationDataStorageID = src.DestinationDataStorageID
-	dst.DestinationCredentialID = src.DestinationCredentialID
 	dst.DestinationDataStorageType = src.DestinationDataStorageType
 	dst.SourcePath = src.SourcePath
 	dst.DestinationPath = src.DestinationPath
@@ -88,11 +84,9 @@ type DataStagingTaskResponse struct {
 	ProcessID *string `json:"processId"`
 
 	SourceDataStorageID   *string               `json:"sourceDataStorageId"`
-	SourceCredentialID    *string               `json:"sourceCredentialId"`
 	SourceDataStorageType *data.DataStorageType `json:"sourceDataStorageType"`
 
 	DestinationDataStorageID   *string               `json:"destinationDataStorageId"`
-	DestinationCredentialID    *string               `json:"destinationCredentialId"`
 	DestinationDataStorageType *data.DataStorageType `json:"destinationDataStorageType"`
 
 	SourcePath      *string `json:"sourcePath"`
@@ -108,10 +102,8 @@ func ToDataStagingTaskResponse(t *model.DataStagingTask) DataStagingTaskResponse
 		TaskID:                     t.ID,
 		ProcessID:                  t.ProcessID,
 		SourceDataStorageID:        t.SourceDataStorageID,
-		SourceCredentialID:         t.SourceCredentialID,
 		SourceDataStorageType:      t.SourceDataStorageType,
 		DestinationDataStorageID:   t.DestinationDataStorageID,
-		DestinationCredentialID:    t.DestinationCredentialID,
 		DestinationDataStorageType: t.DestinationDataStorageType,
 		SourcePath:                 t.SourcePath,
 		DestinationPath:            t.DestinationPath,

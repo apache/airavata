@@ -25,10 +25,10 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"groups", "user_id", "users", "user_id"},
 		{"group_members", "group_id", "groups", "group_id"},
 		{"group_members", "user_id", "users", "user_id"},
-		{"ssh_user_credentials", "ssh_key_id", "ssh_keys", "ssh_key_id"},
 		{"cluster_partitions", "cluster_id", "slurm_clusters", "slurm_cluster_id"},
-		// A cluster names no SSH endpoint any more: it carries its own headnode and
-		// data host, and the account reaching it belongs to a cluster config.
+		// Nothing names an SSH endpoint any more — the entity is gone. A cluster
+		// carries its own headnode and data host, a storage its own host, and the
+		// account reaching either belongs to a cluster config or the storage itself.
 		{"slurm_cluster_configs", "slurm_cluster_id", "slurm_clusters", "slurm_cluster_id"},
 		{"slurm_cluster_configs", "ssh_key_id", "ssh_keys", "ssh_key_id"},
 		{"slurm_cluster_configs", "user_id", "users", "user_id"},
@@ -36,13 +36,6 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"slurm_cluster_config_group_sharings", "group_id", "groups", "group_id"},
 		{"slurm_cluster_config_user_sharings", "slurm_cluster_config_id", "slurm_cluster_configs", "slurm_cluster_config_id"},
 		{"slurm_cluster_config_user_sharings", "user_id", "users", "user_id"},
-		{"ssh_endpoint_credentials", "ssh_endpoint_id", "ssh_endpoints", "ssh_endpoint_id"},
-		{"ssh_endpoint_credentials", "ssh_credential_id", "ssh_user_credentials", "ssh_credential_id"},
-		{"ssh_endpoint_credentials", "user_id", "users", "user_id"},
-		{"ssh_endpoint_credential_group_sharings", "ssh_endpoint_credential_id", "ssh_endpoint_credentials", "ssh_endpoint_credential_id"},
-		{"ssh_endpoint_credential_group_sharings", "group_id", "groups", "group_id"},
-		{"ssh_endpoint_credential_user_sharings", "ssh_endpoint_credential_id", "ssh_endpoint_credentials", "ssh_endpoint_credential_id"},
-		{"ssh_endpoint_credential_user_sharings", "user_id", "users", "user_id"},
 		{"scp_data_storages", "ssh_key_id", "ssh_keys", "ssh_key_id"},
 		{"scp_data_storages", "user_id", "users", "user_id"},
 		{"scp_data_storage_group_sharings", "data_storage_id", "scp_data_storages", "data_id"},
@@ -62,7 +55,7 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"processes", "user_id", "users", "user_id"},
 		{"batch_processes", "parent_process_id", "processes", "process_id"},
 		{"batch_processes", "deployment_id", "batch_application_deployments", "deployment_id"},
-		{"batch_processes", "submission_credential_id", "ssh_endpoint_credentials", "ssh_endpoint_credential_id"},
+		{"batch_processes", "slurm_cluster_config_id", "slurm_cluster_configs", "slurm_cluster_config_id"},
 		{"batch_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
 		{"process_statuses", "process_id", "processes", "process_id"},
 		{"process_template_input_mappings", "batch_process_id", "batch_processes", "batch_process_id"},

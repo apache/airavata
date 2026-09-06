@@ -44,68 +44,11 @@ The statuses in use:
 
 Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
-## SSH Endpoints
+## SSH Keys
 
-An SSH endpoint is a host reachable over SSH. Separating it from the things that use it lets several credential bindings share one host, and lets a credential be held against the host itself rather than against one consumer's view of it.
+An SSH key is a registered keypair. It is an administrative catalogue: reads are open — responses carry the public half only — while writes require `ADMIN` or `SUPER_ADMIN`.
 
-Endpoints are deployment topology and hold no secret, so reads are open and writes require `ADMIN` or `SUPER_ADMIN`.
-
-### Create SSH Endpoint
-
-```
-POST /api/v1/ssh-endpoints
-```
-
-**curl example**
-
-The example below captures `sshEndpointId` into `$SSH_ENDPOINT_ID` (requires `jq`), for use when creating a credential binding below.
-
-```bash
-TOKEN='<the token printed at startup>'
-
-SSH_ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "expanse-login",
-    "hostName": "login.expanse.sdsc.edu",
-    "port": 22
-  }' | jq -r '.sshEndpointId')
-
-echo "$SSH_ENDPOINT_ID"
-```
-
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `name` | string | required, cannot be blank |
-| `hostName` | string | required, cannot be blank |
-| `port` | integer \| null | optional, 1–65535; defaults to `22` |
-
-**Response — `201 Created`**
-
-```json
-{
-  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "name": "expanse-login",
-  "hostName": "login.expanse.sdsc.edu",
-  "port": 22
-}
-```
-
-### Read, Update and Delete SSH Endpoints
-
-```
-GET    /api/v1/ssh-endpoints
-GET    /api/v1/ssh-endpoints/{sshEndpointId}
-PUT    /api/v1/ssh-endpoints/{sshEndpointId}
-DELETE /api/v1/ssh-endpoints/{sshEndpointId}
-```
-
-Updating an endpoint silently redirects every credential binding that names it, which is what moving a login node should do — hence the admin requirement.
-
-`DELETE` returns `204 No Content`, or `409 Conflict` naming how many credential bindings still reference it. Detach those first; the foreign keys are `RESTRICT`, so the delete is refused rather than cascading into resources people are using.
+A key is what a [Slurm cluster config](#slurm-cluster-configs) presents when it logs in to a cluster, and what an [SCP data storage](#scp-data-storages) presents when data is staged through it. Each of those carries its own host and login user, so the key is the only thing they take from here — and the only reason a key cannot be deleted.
 
 ### Create SSH Key
 
@@ -113,11 +56,11 @@ Updating an endpoint silently redirects every credential binding that names it, 
 POST /api/v1/ssh-keys
 ```
 
-Requires `ADMIN` or `SUPER_ADMIN` authority. Stores the keypair used to authenticate to a host — a cluster head node through a [cluster config](#slurm-cluster-configs), or a data host through a credential; `privateKey` and `passphrase` are write-only — they are never returned by any read endpoint.
+Requires `ADMIN` or `SUPER_ADMIN` authority. Stores the keypair used to authenticate to a host — a cluster head node through a [cluster config](#slurm-cluster-configs), or a data host through an [SCP data storage](#scp-data-storages); `privateKey` and `passphrase` are write-only — they are never returned by any read endpoint.
 
 **curl example**
 
-The example below captures `sshKeyId` from the response into `$SSH_KEY_ID` (requires `jq`), for use when creating the SSH credential below.
+The example below captures `sshKeyId` from the response into `$SSH_KEY_ID` (requires `jq`), for use by the cluster config and the data storage below.
 
 ```bash
 SSH_KEY_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-keys \
@@ -178,145 +121,6 @@ Returned when `sshKeyName` or `publicKey` is blank.
   ]
 }
 ```
-
-### Create SSH Credential
-
-```
-POST /api/v1/ssh-credentials
-```
-
-Requires `ADMIN` or `SUPER_ADMIN` authority. Pairs a login username with an SSH key, producing the id that [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) below binds to a host.
-
-**curl example**
-
-Uses `$SSH_KEY_ID` from [Create SSH Key](#create-ssh-key) above, and captures `sshCredentialId` into `$SSH_CREDENTIAL_ID` for the next step.
-
-```bash
-SSH_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-credentials \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "airavata",
-    "sshKeyId": "'"$SSH_KEY_ID"'"
-  }' | jq -r '.sshCredentialId')
-
-echo "$SSH_CREDENTIAL_ID"
-```
-
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `username` | string | required, cannot be blank |
-| `sshKeyId` | string | required, must reference an existing SSH key |
-
-```json
-{
-  "username": "airavata",
-  "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f"
-}
-```
-
-**Response — `201 Created`**
-
-`sshCredentialId` is server-generated (UUID); `sshKey` nests the safe (public-only) summary of the key it uses.
-
-```json
-{
-  "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f",
-  "username": "airavata",
-  "sshKey": {
-    "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-    "sshKeyName": "expanse-key",
-    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
-  }
-}
-```
-
-**Validation errors — `400 Bad Request`**
-
-Returned when `username` or `sshKeyId` is blank. An `sshKeyId` that does not resolve to an existing key is returned as `404 Not Found` instead.
-
-```json
-{
-  "status": 400,
-  "error": "Bad Request",
-  "message": "Validation failed",
-  "fieldErrors": [
-    { "field": "username", "message": "Username cannot be blank" },
-    { "field": "sshKeyId", "message": "SSH key id cannot be blank" }
-  ]
-}
-```
-
-### Create SSH Endpoint Credential
-
-```
-POST /api/v1/ssh-endpoint-credentials
-```
-
-Binds an SSH credential to an [SSH endpoint](#ssh-endpoints) so the caller can act on that host. Requires only an authenticated principal — not admin — but that principal must have a matching row in `users` (see INSTALL.md's "Owning resources requires a matching `users` row"), since the binding's owner is resolved from the token rather than accepted as a request field.
-
-The resulting binding id is what [Create Process](#create-process) below uses as `submissionCredentialId`: a run submits under a specific endpoint credential, not a bare SSH credential, since the binding is what ties the submitting identity to both a host and an owner.
-
-**curl example**
-
-Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `sshEndpointCredentialId` into `$ENDPOINT_CREDENTIAL_ID` for the process submission step.
-
-```bash
-ENDPOINT_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoint-credentials \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'",
-    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
-  }' | jq -r '.sshEndpointCredentialId')
-
-echo "$ENDPOINT_CREDENTIAL_ID"
-```
-
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `sshEndpointId` | string | required, must reference an existing SSH endpoint |
-| `sshCredentialId` | string | required, must reference an existing SSH credential |
-
-**Response — `201 Created`**
-
-`sshEndpointCredentialId` is server-generated (UUID); `userId` is the owner resolved from the caller's token, not a request field. `permission` is what the *calling* principal may do with it — a property of the request rather than of the record.
-
-```json
-{
-  "sshEndpointCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
-  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f",
-  "userId": "root",
-  "permission": "WRITE"
-}
-```
-
-**Validation errors**
-
-- `400 Bad Request` when `sshEndpointId` or `sshCredentialId` is blank.
-- `404 Not Found` when the caller has no matching `users` row, or `sshEndpointId`/`sshCredentialId` does not resolve to an existing record.
-
-### Read, Update and Delete SSH Endpoint Credentials
-
-```
-GET    /api/v1/ssh-endpoint-credentials
-GET    /api/v1/ssh-endpoint-credentials/me
-GET    /api/v1/ssh-endpoint-credentials/shared-with-me
-GET    /api/v1/ssh-endpoint-credentials/{id}
-PUT    /api/v1/ssh-endpoint-credentials/{id}
-DELETE /api/v1/ssh-endpoint-credentials/{id}
-```
-
-`GET /api/v1/ssh-endpoint-credentials` lists every binding across every user and requires `ADMIN` or `SUPER_ADMIN` — it exposes who can reach what. Both it and `/me` accept an optional `?sshEndpointId=` filter. `/me` returns the caller's own bindings; `/shared-with-me` returns the ones other users have shared with them, each carrying the permission it grants.
-
-`PUT` repoints a binding at a different endpoint or SSH credential and needs `WRITE`. The owner is never re-derived from the caller's token, so an admin — or a grantee — editing someone's binding does not acquire it.
-
-`DELETE` returns `204 No Content` and removes the binding's shares with it. It is refused for anyone but the owner and platform admins, even a grantee holding `WRITE`.
 
 ### Create Group
 
@@ -460,79 +264,6 @@ curl -s -X PUT localhost:9095/api/v1/groups/"$GROUP_ID"/members/cilogon:67890 \
 `DELETE` returns `204 No Content`, or `409 Conflict` when the named user owns the group.
 
 
-### Share an SSH Endpoint Credential
-
-```
-GET    /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares
-POST   /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares
-PUT    /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares/{sharingId}
-DELETE /api/v1/ssh-endpoint-credentials/{credentialId}/group-shares/{sharingId}
-
-GET    /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares
-POST   /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares
-PUT    /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares/{sharingId}
-DELETE /api/v1/ssh-endpoint-credentials/{credentialId}/user-shares/{sharingId}
-```
-
-A binding can be shared with a [group](#groups) or with a named user. Every one of these routes — reads included — is restricted to the owner and platform admins: the share list names who can reach a host, which is more than a grantee needs to know.
-
-What a share confers:
-
-| Holding | May do |
-|---|---|
-| `READ` | read the binding, and see it under `/shared-with-me` |
-| `WRITE` | the above, and repoint the binding at a different endpoint or SSH credential |
-| Ownership | the above, and delete the binding, and manage its shares |
-
-`WRITE` implies `READ`. Control is deliberately not reachable through a share at all: a share lets someone use a credential, while deciding who *else* gets it stays with the owner. Where several shares reach the same caller — say a `READ` user share and a `WRITE` group share — the strongest one applies.
-
-A group share reaches a member only while their membership is `ACTIVE`. Suspending a member withdraws their access without touching the share; reinstating them restores it.
-
-**curl example**
-
-Uses `$ENDPOINT_CREDENTIAL_ID` from above and `$GROUP_ID` from [Create Group](#create-group).
-
-```bash
-curl -s -X POST localhost:9095/api/v1/ssh-endpoint-credentials/"$ENDPOINT_CREDENTIAL_ID"/group-shares \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "groupId": "'"$GROUP_ID"'",
-    "permission": "READ"
-  }'
-```
-
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `groupId` / `userId` | string | required; `groupId` for a group share, `userId` for a user share. Must reference an existing record |
-| `permission` | string \| null | optional, `READ` or `WRITE`; defaults to `READ` |
-
-`PUT` takes only `permission`, which is required there — the subject of a share is fixed at creation, so widening or narrowing it is the only edit.
-
-**Response — `201 Created`**
-
-```json
-{
-  "sshEndpointCredentialGroupSharingId": "5c4b3a29-1807-4f6e-9d5c-4b3a29180765",
-  "sshEndpointCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
-  "groupId": "9f8e7d6c-5b4a-4392-8180-7f6e5d4c3b2a",
-  "permission": "READ"
-}
-```
-
-A user share is the same shape with `sshEndpointCredentialUserSharingId` and `userId`.
-
-**Errors**
-
-| Status | Cause |
-|---|---|
-| `400 Bad Request` | `groupId`/`userId` blank, or an unrecognised `permission` |
-| `403 Forbidden` | the caller is not the owner — a grantee cannot read or change the share list |
-| `404 Not Found` | no such binding, group or user; or a `sharingId` that belongs to a different binding |
-| `409 Conflict` | already shared with that group or user (widen the existing share instead), or shared with the owner, which would grant nothing |
-
 ## SCP Data Storage Registration
 
 An SCP data storage is a host and location that datasets are staged through. Registering one is documented here, ahead of the resources that name it: [data products](#data-products) live on one, and a [data staging task](#create-data-staging-task) moves files between two. The rest of the resource — its routes, its sharing rules and how it is read back — is under [SCP Data Storages](#scp-data-storages) further down.
@@ -547,7 +278,7 @@ POST /api/v1/scp-data-storages
 
 Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_KEY_ID` from [Create SSH Key](#create-ssh-key) above, and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the data product and staging steps further down.
 
-A storage names both halves of where its data is: the **host** it sits on, as a host name and port, and the **account** it is reached as, as a login user and the key presented for it. Only the key is a reference, because its private half has to live somewhere it is never read back. The host is not an [SSH endpoint](#ssh-endpoints) and the account is not an [SSH credential](#create-ssh-credential): both of those are administrative catalogues, and registering a storage is self-service — asking an admin to enter the host first would defeat that.
+A storage names both halves of where its data is: the **host** it sits on, as a host name and port, and the **account** it is reached as, as a login user and the key presented for it. Only the key is a reference, because its private half has to live somewhere it is never read back. Neither half is taken from an administrative catalogue: registering a storage is self-service, and having to ask an admin to enter the host first would defeat that.
 
 ```bash
 STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
@@ -1379,8 +1110,8 @@ carries hangs off it, and nothing that hangs off it is addressable on its own.
 
 What a run needs beyond an owner and a type depends on what kind of run it is, and that
 is carried in a **section** of the process body rather than in a resource of its own. A
-`BATCH_JOB` carries a `batchProcess` section — the deployment being run, the credential
-it submits under, the resources this run asks for, and the values it supplies for the
+`BATCH_JOB` carries a `batchProcess` section — the deployment being run, the cluster
+config it submits under, the resources this run asks for, and the values it supplies for the
 deployment template's declared inputs and outputs. Those `inputMappings` and `outputMappings` sit inside the section
 rather than beside it, since the declarations they name come from the deployment's
 template, which only a `BATCH_JOB` has. A process carrying no `batchProcess` therefore
@@ -1422,44 +1153,15 @@ the two outputs are written by the job itself and stay on the cluster, so their 
 are registered against a storage standing for the cluster's own filesystem.
 
 **The FASTA host.** A dataset on another host means a second storage, naming
-`data.lab.example.edu` rather than the cluster's login node, and a
-[credential binding](#create-ssh-endpoint-credential) to reach that host under — which
-in turn needs a second [SSH endpoint](#create-ssh-endpoint), since a binding names the
-host from the endpoint catalogue. The account differs too: the group's login on the lab
-host is `labuser`, not the `airavata` the cluster is reached as. Both the storage and
-the lab [SSH credential](#create-ssh-credential) present the *same* `$SSH_KEY_ID` — one
-key can be authorised for as many accounts as its public half is installed on, and
-re-registering the key material would only give the same bytes a second id.
-`$FASTA_STORAGE_ID` is what the FASTA product names below, and it carries the host, the
-account and the key. The binding is not named by any product — it is what gives the
-caller standing on the lab host when the transfer actually runs.
+`data.lab.example.edu` rather than the cluster's login node. The account differs too:
+the group's login on the lab host is `labuser`, not the `airavata` the cluster is
+reached as. It presents the *same* `$SSH_KEY_ID` as the first storage — one key can be
+authorised for as many accounts as its public half is installed on, and re-registering
+the key material would only give the same bytes a second id. `$FASTA_STORAGE_ID` is what
+the FASTA product names below, and it carries all three: the host, the account and the
+key.
 
 ```bash
-FASTA_ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "lab-data",
-    "hostName": "data.lab.example.edu",
-    "port": 22
-  }' | jq -r '.sshEndpointId')
-
-LAB_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-credentials \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "labuser",
-    "sshKeyId": "'"$SSH_KEY_ID"'"
-  }' | jq -r '.sshCredentialId')
-
-FASTA_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoint-credentials \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "sshEndpointId": "'"$FASTA_ENDPOINT_ID"'",
-    "sshCredentialId": "'"$LAB_CREDENTIAL_ID"'"
-  }' | jq -r '.sshEndpointCredentialId')
-
 FASTA_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
@@ -1547,7 +1249,7 @@ POST /api/v1/processes
 ```
 
 Uses `$DEPLOYMENT_ID` from [Create Batch Deployment](#create-batch-deployment),
-`$ENDPOINT_CREDENTIAL_ID` from [Create SSH Endpoint Credential](#create-ssh-endpoint-credential),
+`$CLUSTER_CONFIG_ID` from [Create Slurm Cluster Config](#create-slurm-cluster-config),
 the `inputId`/`outputId` values returned by
 [Create Application Template](#create-application-template), and the three `dataId`
 values from [Register the Run's Data Products](#register-the-runs-data-products) above,
@@ -1572,7 +1274,7 @@ PROCESS_ID=$(curl -s -X POST localhost:9095/api/v1/processes \
     "processType": "BATCH_JOB",
     "batchProcess": {
       "deploymentId": "'"$DEPLOYMENT_ID"'",
-      "submissionCredentialId": "'"$ENDPOINT_CREDENTIAL_ID"'",
+      "slurmClusterConfigId": "'"$CLUSTER_CONFIG_ID"'",
       "jobName": "alphafold-run-1",
       "baseWorkDir": "/scratch/$USER/alphafold",
       "batchJobConfig": {
@@ -1606,7 +1308,7 @@ There is no `userId`: ownership comes from the token.
 |---|---|---|
 | `deploymentId` | string | required, cannot be blank |
 | `batchJobConfig` | object | required — the same shape a deployment's `defaultBatchJobConfig` carries |
-| `submissionCredentialId` | string | required, cannot be blank; the SSH endpoint credential binding this run submits under |
+| `slurmClusterConfigId` | string | required, cannot be blank; the [cluster config](#slurm-cluster-configs) this run submits under — the account, the key and the work root it runs as |
 | `jobName` | string \| null | optional |
 | `jobId` | string \| null | optional. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded afterwards |
 | `baseWorkDir` | string \| null | optional; the parent directory on the cluster this run works under. Launching a run that omits it fails, since there is nowhere to stage its files |
@@ -1623,12 +1325,12 @@ in a subdirectory of it named for its `processId`, which is where the template's
 inputs are staged to and its file outputs staged from. It replaces the deployment's
 former `workDir`, so two runs of one deployment can work under different directories.
 
-`submissionCredentialId` is the one field of a self-service submission that names an
-identity to act under, so it is authorized against the caller: a binding that does not
+`slurmClusterConfigId` is the one field of a self-service submission that names an
+identity to act under, so it is authorized against the caller: a config that does not
 exist is `404`, and one that is neither theirs nor shared with them is `403`. A
-deployment carries no credential to fall back on, which is why the field is required
-rather than optional. A `PUT` re-resolves it the same way, so a body that omits it is
-rejected rather than keeping what the run was created with.
+deployment names the machine but nobody's identity on it, which is why the field is
+required rather than optional. A `PUT` re-resolves it the same way, so a body that omits
+it is rejected rather than keeping what the run was created with.
 
 **`batchProcess.inputMappings` / `batchProcess.outputMappings`**
 
@@ -1662,7 +1364,7 @@ Deleting the process deletes the batch section, and the mappings with it.
   "batchProcess": {
     "batchProcessId": "7e6d5c4b-3a29-4187-9605-4b3a2c1d0e9f",
     "deploymentId": "c3d4e5f6-a7b8-4901-a2b3-c4d5e6f7a8b9",
-    "submissionCredentialId": "5f4e3d2c-1b0a-4998-8776-6a5b4c3d2e1f",
+    "slurmClusterConfigId": "5f4e3d2c-1b0a-4998-8776-6a5b4c3d2e1f",
     "jobId": null,
     "jobName": "alphafold-run-1",
     "baseWorkDir": "/scratch/$USER/alphafold",
@@ -1830,7 +1532,6 @@ curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/data-staging-tasks
   -H "Content-Type: application/json" \
   -d '{
     "sourceDataStorageId": "'"$STORAGE_ID"'",
-    "sourceCredentialId": "'"$ENDPOINT_CREDENTIAL_ID"'",
     "sourceDataStorageType": "SCP",
     "sourcePath": "/scratch/alphafold/run-1/input.fasta",
     "destinationPath": "/scratch/alphafold/run-1/staged/",
@@ -1844,8 +1545,7 @@ curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/data-staging-tasks
 |---|---|---|
 | `sourcePath` | string | required, cannot be blank. A single path, or a JSON array of paths |
 | `destinationPath` | string | required, cannot be blank |
-| `sourceDataStorageId` / `destinationDataStorageId` | string \| null | optional |
-| `sourceCredentialId` / `destinationCredentialId` | string \| null | optional |
+| `sourceDataStorageId` / `destinationDataStorageId` | string \| null | optional. Each end is a [storage](#scp-data-storages), which carries the host, the login user and the key it is reached under — so there is no separate credential to name |
 | `sourceDataStorageType` / `destinationDataStorageType` | string \| null | optional, one of `SCP`, `S3` |
 
 **Response — `201 Created`**
@@ -1855,10 +1555,8 @@ curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/data-staging-tasks
   "taskId": "b4c5d6e7-f809-4a1b-8c2d-3e4f5a6b7c8d",
   "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
   "sourceDataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
-  "sourceCredentialId": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
   "sourceDataStorageType": "SCP",
   "destinationDataStorageId": null,
-  "destinationCredentialId": null,
   "destinationDataStorageType": null,
   "sourcePath": "/scratch/alphafold/run-1/input.fasta",
   "destinationPath": "/scratch/alphafold/run-1/staged/",
@@ -1920,7 +1618,7 @@ Runs a command on the remote host — filtering the output of a running job, for
 
 ## SCP Data Storages
 
-An SCP data storage is a host and location that datasets are staged through. It names the host its data sits on, the account it is reached as, and the [SSH key](#ssh-keys) presented for that account, and belongs to whoever registered it. A [data product](#data-products) names one as where its dataset lives, and a [data staging task](#create-data-staging-task) moves files between two of them.
+An SCP data storage is a host and location that datasets are staged through. It names the host its data sits on, the account it is reached as, and the [SSH key](#create-ssh-key) presented for that account, and belongs to whoever registered it. A [data product](#data-products) names one as where its dataset lives, and a [data staging task](#create-data-staging-task) moves files between two of them.
 
 Registering one is documented up front, under [SCP Data Storage Registration](#scp-data-storage-registration), because the walkthrough needs one before it can register a dataset. What follows here is the rest of the resource.
 
@@ -1930,7 +1628,7 @@ Registering one is documented up front, under [SCP Data Storage Registration](#s
 | `WRITE` share | the above, and edit the storage |
 | Owner (or admin) | the above, and delete it, and manage its shares |
 
-`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as [data products](#data-products) and [SSH endpoint credentials](#share-an-ssh-endpoint-credential). A group share applies only while the member's group membership is `ACTIVE`.
+`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as [data products](#data-products) and [cluster configs](#share-a-slurm-cluster-config). A group share applies only while the member's group membership is `ACTIVE`.
 
 Anyone else gets `403 Forbidden` on every read, including the unfiltered listing: `GET /api/v1/scp-data-storages` is admin-only, `/me` returns what the caller owns, and `/shared-with-me` what has been shared with them.
 
@@ -1980,7 +1678,7 @@ A data product is a registered dataset: a path on an [SCP data storage](#scp-dat
 | `WRITE` share | the above, and edit the product |
 | Owner (or admin) | the above, and delete it, and manage its shares |
 
-`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as [SSH endpoint credentials](#share-an-ssh-endpoint-credential). A group share applies only while the member's group membership is `ACTIVE`.
+`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as [SCP data storages](#share-an-scp-data-storage). A group share applies only while the member's group membership is `ACTIVE`.
 
 Anyone else gets `403 Forbidden`, and no listing leaks a product: `GET /api/v1/data-products` is admin-only, `/me` returns what the caller owns, and `/shared-with-me` what has been shared with them.
 

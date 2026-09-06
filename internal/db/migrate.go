@@ -21,14 +21,12 @@ func Entities() []any {
 		// No outbound references.
 		&iammodel.User{},
 		&credentialsmodel.SSHKey{},
-		&credentialsmodel.SSHEndpoint{},
 		&applicationmodel.Template{},
 		&applicationmodel.BatchJobConfig{},
 
 		// One level in.
 		&iammodel.UserRole{},
 		&iammodel.Group{},
-		&credentialsmodel.SSHUserCredential{},
 		&computemodel.SlurmCluster{},
 		&datamodel.SCPDataStorage{},
 		&datamodel.DataProduct{},
@@ -39,15 +37,12 @@ func Entities() []any {
 		&iammodel.GroupMember{},
 		&computemodel.ClusterPartition{},
 		&computemodel.SlurmClusterConfig{},
-		&credentialsmodel.SSHEndpointCredential{},
 		&applicationmodel.BatchDeployment{},
 
 		// A run. Everything below in this package hangs off it.
 		&processmodel.Process{},
 
 		// Sharing rows reference the record they open up, and a group or a user.
-		&credentialsmodel.SSHEndpointCredentialGroupSharing{},
-		&credentialsmodel.SSHEndpointCredentialUserSharing{},
 		&datamodel.SCPDataStorageGroupSharing{},
 		&datamodel.SCPDataStorageUserSharing{},
 		&computemodel.SlurmClusterConfigGroupSharing{},

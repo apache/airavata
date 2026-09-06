@@ -20,11 +20,12 @@ type DataStorageType string
 
 const (
 	DataStorageTypeSCP DataStorageType = "SCP"
+	DataStorageTypeHPC DataStorageType = "HPC"
 )
 
 func (t DataStorageType) Valid() bool {
 	switch t {
-	case DataStorageTypeSCP:
+	case DataStorageTypeSCP, DataStorageTypeHPC:
 		return true
 	}
 	return false
@@ -41,13 +42,12 @@ func (p DataStoragePermission) Valid() bool {
 // SCPDataStorage is a host and account data products can be staged through.
 //
 // It names the host itself — the name and port to reach over SSH — and the account it
-// is reached as: a login user and the key presented for it. The host is spelled out
-// here rather than pointed at an SSHEndpoint, and the account rather than an
-// SSHUserCredential, for the same reason a SlurmClusterConfig does: those catalogue
-// entries are administrative, so registering a storage would otherwise mean an admin
-// first entering the host, while a storage is self-service and belongs to whoever
-// declares it. Only the key stays a reference, because the private material has to
-// live somewhere it is never read back.
+// is reached as: a login user and the key presented for it. The host and the account
+// are spelled out here rather than pointed at catalogue entries, for the same reason a
+// SlurmClusterConfig spells them out: a storage is self-service, and a catalogue only
+// an admin can add to would mean asking an admin before registering one. Only the key
+// stays a reference, because the private material has to live somewhere it is never
+// read back.
 //
 // It belongs to whoever registered it, and everyone else reaches it through the
 // sharing rows below. Ownership is not transferable through the API: products are

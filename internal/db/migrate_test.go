@@ -12,7 +12,6 @@ import (
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
-	credentialsmodel "github.com/apache/airavata/api/credentials/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	processmodel "github.com/apache/airavata/api/process/model"
 )
@@ -43,12 +42,10 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 
 	want := []string{
 		"users", "user_roles", "groups", "group_members",
-		"ssh_keys", "ssh_user_credentials",
-		"ssh_endpoints", "slurm_clusters", "cluster_partitions",
+		"ssh_keys",
+		"slurm_clusters", "cluster_partitions",
 		"slurm_cluster_configs", "slurm_cluster_config_user_sharings",
 		"slurm_cluster_config_group_sharings",
-		"ssh_endpoint_credentials",
-		"ssh_endpoint_credential_group_sharings", "ssh_endpoint_credential_user_sharings",
 		"scp_data_storages", "scp_data_storage_group_sharings", "scp_data_storage_user_sharings",
 		"data_products", "data_product_group_sharings", "data_product_user_sharings",
 		"application_templates", "application_template_inputs", "application_template_outputs",
@@ -307,18 +304,18 @@ func TestNullableColumnsRoundTripAsNil(t *testing.T) {
 	}
 }
 
-// Ownership drives authorisation on credentials, datasets and processes, so the
+// Ownership drives authorisation on cluster configs, datasets and processes, so the
 // helpers must not treat a missing owner as a match for the empty principal.
 func TestOwnedByRejectsUnownedRows(t *testing.T) {
-	cred := &credentialsmodel.SSHEndpointCredential{}
-	if cred.OwnedBy("") {
-		t.Error("a credential with no owner reported ownership by the empty user id")
+	config := &computemodel.SlurmClusterConfig{}
+	if config.OwnedBy("") {
+		t.Error("a cluster config with no owner reported ownership by the empty user id")
 	}
-	cred.OwnerID = ptr.To("cilogon:1")
-	if !cred.OwnedBy("cilogon:1") {
+	config.OwnerID = ptr.To("cilogon:1")
+	if !config.OwnedBy("cilogon:1") {
 		t.Error("owner was not recognised")
 	}
-	if cred.OwnedBy("cilogon:2") {
+	if config.OwnedBy("cilogon:2") {
 		t.Error("a different user was reported as the owner")
 	}
 

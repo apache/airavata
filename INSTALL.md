@@ -244,7 +244,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-clusters \
 
 **1. Owning resources requires a matching `users` row.**
 
-Endpoints that create *owned* resources — SSH endpoint credentials, processes —
+Endpoints that create *owned* resources — cluster configs, data storages, processes —
 resolve the caller to a user record and refuse if none exists:
 
 ```
@@ -296,14 +296,16 @@ curl -s localhost:9095/health
 curl -s localhost:9095/api/v1/slurm-clusters # readable without a token
 ```
 
-Catalogue reads — clusters, partitions, SSH keys, SSH credentials, templates and
+Catalogue reads — clusters, partitions, SSH keys, templates and
 deployments — are open to anonymous callers. Beyond those:
 
-- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating SSH endpoint credentials
-  and processes, which any authenticated caller may do for themselves.
-- **Owner-scoped reads** (`/ssh-endpoint-credentials/{id}`, `/users/{id}`) require
-  authentication and are refused unless the caller owns the record or is an admin.
-- **Unfiltered listings** of SSH endpoint credentials, processes and users require
+- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating cluster configs, data
+  storages, data products and processes, which any authenticated caller may do for
+  themselves.
+- **Owner-scoped reads** (`/slurm-cluster-configs/{id}`, `/users/{id}`) require
+  authentication and are refused unless the caller owns the record, holds a share, or is
+  an admin.
+- **Unfiltered listings** of cluster configs, data storages, processes and users require
   `ADMIN`, because they expose who holds access to what.
 
 A request with no token to a guarded endpoint returns `401`, while an authenticated

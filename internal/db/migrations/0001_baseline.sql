@@ -53,6 +53,25 @@
 -- somewhere it is never read back. Development-only again, so this is a re-recording
 -- rather than a migration.
 --
+-- Re-recorded a fifth time when SSHEndpoint left the API. The endpoint catalogue and
+-- the ssh_endpoint_credentials bindings held against it are gone, together with their
+-- two sharing tables: nothing named an endpoint any more except a binding, and the
+-- binding's only remaining consumer was batch_processes.submission_credential_id. A run
+-- now submits under a slurm_cluster_config, which already carries the account, the key
+-- and the work root, so that column is slurm_cluster_config_id. data_staging_tasks lost
+-- source_credential_id and destination_credential_id for the same reason: each end is a
+-- data storage, and a storage carries the host, the login user and the key it is
+-- reached under. Development-only again, so this is a re-recording rather than a
+-- migration.
+--
+-- Re-recorded a sixth time when ssh_user_credentials went with it. Pairing a username
+-- with a key had no consumer left once the bindings were gone: a slurm_cluster_config
+-- and an scp_data_storage each name their login user beside the key they present, so
+-- the credential row was a catalogue of accounts nothing pointed at. ssh_keys is what
+-- remains of the credential vertical, and the two tables above are the only things that
+-- reference it. Development-only again, so this is a re-recording rather than a
+-- migration.
+--
 -- Do not hand-edit this file once it has run anywhere outside development: a change to
 -- a table's shape belongs in a new migration (0002_..., 0003_..., ...), the same way
 -- ddl-auto never narrows a column and this framework never rewrites history.
@@ -66,8 +85,6 @@ CREATE TABLE "users" ("user_id" varchar(255),"auth_method" varchar(32),"email" v
 
 CREATE TABLE "ssh_keys" ("ssh_key_id" varchar(36),"ssh_key_name" varchar(255) NOT NULL,"public_key" text NOT NULL,"private_key" text NOT NULL,"passphrase" varchar(255),PRIMARY KEY ("ssh_key_id"));
 
-CREATE TABLE "ssh_endpoints" ("ssh_endpoint_id" varchar(36),"name" varchar(255) NOT NULL,"host_name" varchar(255) NOT NULL,"port" bigint NOT NULL,PRIMARY KEY ("ssh_endpoint_id"));
-
 CREATE TABLE "application_templates" ("template_id" varchar(36),"template_name" varchar(255),"template_description" varchar(2048),PRIMARY KEY ("template_id"));
 
 CREATE TABLE "batch_job_configs" ("batch_job_config_id" varchar(36),"cpus" integer,"mem" varchar(64),"mem_per_cpu" varchar(64),"ntasks_per_node" integer,"cpus_per_task" integer,"nodes" integer,"ntasks" integer,"gres" varchar(255),"gpus" integer,"mem_per_gpu" varchar(64),"cpus_per_gpu" varchar(64),"gpus_per_node" integer,"wall_time_minutes" bigint NOT NULL,"constraints" varchar(255),"allocation" varchar(255) NOT NULL,PRIMARY KEY ("batch_job_config_id"));
@@ -77,10 +94,6 @@ CREATE TABLE "user_roles" ("user_id" varchar(255),"role" varchar(32),PRIMARY KEY
 CREATE TABLE "groups" ("group_id" varchar(36),"group_name" varchar(255),"user_id" varchar(255),"created_at" bigint NOT NULL,PRIMARY KEY ("group_id"),CONSTRAINT "fk_groups_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_groups_owner_id" ON "groups" ("user_id");
-
-CREATE TABLE "ssh_user_credentials" ("ssh_credential_id" varchar(36),"username" varchar(255) NOT NULL,"ssh_key_id" varchar(36),PRIMARY KEY ("ssh_credential_id"),CONSTRAINT "fk_ssh_user_credentials_ssh_key" FOREIGN KEY ("ssh_key_id") REFERENCES "ssh_keys"("ssh_key_id") ON DELETE RESTRICT ON UPDATE CASCADE);
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_user_credentials_ssh_key_id" ON "ssh_user_credentials" ("ssh_key_id");
 
 CREATE TABLE "slurm_clusters" ("slurm_cluster_id" varchar(36),"cluster_name" varchar(255) NOT NULL,"cluster_description" varchar(1024),"headnode_host" varchar(255) NOT NULL,"headnode_port" bigint NOT NULL,"data_host" varchar(255),"data_port" bigint,PRIMARY KEY ("slurm_cluster_id"));
 
@@ -118,14 +131,6 @@ CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_configs_ssh_key_id" ON "slurm_clus
 
 CREATE INDEX IF NOT EXISTS "idx_slurm_cluster_configs_slurm_cluster_id" ON "slurm_cluster_configs" ("slurm_cluster_id");
 
-CREATE TABLE "ssh_endpoint_credentials" ("ssh_endpoint_credential_id" varchar(36),"ssh_endpoint_id" varchar(36),"ssh_credential_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("ssh_endpoint_credential_id"),CONSTRAINT "fk_ssh_endpoint_credentials_ssh_endpoint" FOREIGN KEY ("ssh_endpoint_id") REFERENCES "ssh_endpoints"("ssh_endpoint_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_ssh_endpoint_credentials_ssh_credential" FOREIGN KEY ("ssh_credential_id") REFERENCES "ssh_user_credentials"("ssh_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_ssh_endpoint_credentials_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credentials_owner_id" ON "ssh_endpoint_credentials" ("user_id");
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credentials_ssh_credential_id" ON "ssh_endpoint_credentials" ("ssh_credential_id");
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credentials_ssh_endpoint_id" ON "ssh_endpoint_credentials" ("ssh_endpoint_id");
-
 CREATE TABLE "batch_application_deployments" ("deployment_id" varchar(36),"cluster_id" varchar(36),"template_id" varchar(36),"slurm_run_section" text NOT NULL,"default_batch_job_config_id" varchar(36) NOT NULL,"default_partition" varchar(255),PRIMARY KEY ("deployment_id"),CONSTRAINT "fk_batch_application_deployments_cluster" FOREIGN KEY ("cluster_id") REFERENCES "slurm_clusters"("slurm_cluster_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_template" FOREIGN KEY ("template_id") REFERENCES "application_templates"("template_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_application_deployments_default_batch_job_config" FOREIGN KEY ("default_batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_application_deployments_default_batch_job_config_id" ON "batch_application_deployments" ("default_batch_job_config_id");
@@ -139,18 +144,6 @@ CREATE TABLE "processes" ("process_id" varchar(36),"user_id" varchar(255),"proce
 CREATE INDEX IF NOT EXISTS "idx_processes_last_status_id" ON "processes" ("last_status_id");
 
 CREATE INDEX IF NOT EXISTS "idx_processes_owner_id" ON "processes" ("user_id");
-
-CREATE TABLE "ssh_endpoint_credential_group_sharings" ("ssh_endpoint_credential_group_sharing_id" varchar(36),"ssh_endpoint_credential_id" varchar(36),"group_id" varchar(36),"permission" varchar(32),PRIMARY KEY ("ssh_endpoint_credential_group_sharing_id"),CONSTRAINT "fk_ssh_endpoint_credential_group_sharings_ssh_endpoint_e0bc6690" FOREIGN KEY ("ssh_endpoint_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_ssh_endpoint_credential_group_sharings_group" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE RESTRICT ON UPDATE CASCADE);
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credential_group_sharings_group_id" ON "ssh_endpoint_credential_group_sharings" ("group_id");
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credential_group_sharings_ssh_endpoint620154af" ON "ssh_endpoint_credential_group_sharings" ("ssh_endpoint_credential_id");
-
-CREATE TABLE "ssh_endpoint_credential_user_sharings" ("ssh_endpoint_credential_user_sharing_id" varchar(36),"ssh_endpoint_credential_id" varchar(36),"user_id" varchar(255),"permission" varchar(32),PRIMARY KEY ("ssh_endpoint_credential_user_sharing_id"),CONSTRAINT "fk_ssh_endpoint_credential_user_sharings_ssh_endpoint_c4cde1714" FOREIGN KEY ("ssh_endpoint_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_ssh_endpoint_credential_user_sharings_user" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credential_user_sharings_user_id" ON "ssh_endpoint_credential_user_sharings" ("user_id");
-
-CREATE INDEX IF NOT EXISTS "idx_ssh_endpoint_credential_user_sharings_ssh_endpoint_802d3210" ON "ssh_endpoint_credential_user_sharings" ("ssh_endpoint_credential_id");
 
 CREATE TABLE "scp_data_storage_group_sharings" ("data_storage_group_sharing_id" varchar(36),"data_storage_id" varchar(36),"group_id" varchar(36),"permission" varchar(32),PRIMARY KEY ("data_storage_group_sharing_id"),CONSTRAINT "fk_scp_data_storage_group_sharings_data_storage" FOREIGN KEY ("data_storage_id") REFERENCES "scp_data_storages"("data_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storage_group_sharings_group" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
@@ -188,11 +181,11 @@ CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_user_id" ON "data_pro
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_data_product_id" ON "data_product_user_sharings" ("data_product_id");
 
-CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"submission_credential_id" varchar(36) NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"job_name" varchar(255),"base_work_dir" varchar(1024),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_submission_credential" FOREIGN KEY ("submission_credential_id") REFERENCES "ssh_endpoint_credentials"("ssh_endpoint_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"slurm_cluster_config_id" varchar(36) NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"job_name" varchar(255),"base_work_dir" varchar(1024),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_slurm_cluster_config" FOREIGN KEY ("slurm_cluster_config_id") REFERENCES "slurm_cluster_configs"("slurm_cluster_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_batch_job_config_id" ON "batch_processes" ("batch_job_config_id");
 
-CREATE INDEX IF NOT EXISTS "idx_batch_processes_submission_credential_id" ON "batch_processes" ("submission_credential_id");
+CREATE INDEX IF NOT EXISTS "idx_batch_processes_slurm_cluster_config_id" ON "batch_processes" ("slurm_cluster_config_id");
 
 CREATE INDEX IF NOT EXISTS "idx_batch_processes_deployment_id" ON "batch_processes" ("deployment_id");
 
@@ -214,13 +207,9 @@ CREATE INDEX IF NOT EXISTS "idx_process_template_output_mappings_batch_process_i
 
 CREATE INDEX IF NOT EXISTS "idx_process_template_output_mappings_template_output_id" ON "process_template_output_mappings" ("template_output_id");
 
-CREATE TABLE "data_staging_tasks" ("task_id" varchar(36),"process_id" varchar(36),"source_data_storage_id" varchar(36),"source_credential_id" varchar(36),"source_data_storage_type" varchar(32),"destination_data_storage_id" varchar(36),"destination_credential_id" varchar(36),"destination_data_storage_type" varchar(32),"source_path" text,"destination_path" text,"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_data_staging_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
-
-CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_destination_credential_id" ON "data_staging_tasks" ("destination_credential_id");
+CREATE TABLE "data_staging_tasks" ("task_id" varchar(36),"process_id" varchar(36),"source_data_storage_id" varchar(36),"source_data_storage_type" varchar(32),"destination_data_storage_id" varchar(36),"destination_data_storage_type" varchar(32),"source_path" text,"destination_path" text,"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_data_staging_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_destination_data_storage_id" ON "data_staging_tasks" ("destination_data_storage_id");
-
-CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_source_credential_id" ON "data_staging_tasks" ("source_credential_id");
 
 CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_source_data_storage_id" ON "data_staging_tasks" ("source_data_storage_id");
 

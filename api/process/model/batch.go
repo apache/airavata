@@ -2,7 +2,7 @@ package model
 
 import (
 	applicationmodel "github.com/apache/airavata/api/application/model"
-	cred "github.com/apache/airavata/api/credentials/model"
+	computemodel "github.com/apache/airavata/api/compute/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -25,9 +25,11 @@ type BatchJobProcess struct {
 	DeploymentID *string                           `gorm:"column:deployment_id;type:varchar(36);index" json:"deploymentId,omitempty"`
 	Deployment   *applicationmodel.BatchDeployment `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
-	// The credential used to submit this batch job. It must be an SSH endpoint credential.
-	SubmissionCredentialID string                      `gorm:"column:submission_credential_id;type:varchar(36);not null;index" json:"submissionCredentialId"`
-	SubmissionCredential   *cred.SSHEndpointCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	// The cluster login config this batch job submits under: the account, the key and
+	// the work root it runs as. RESTRICT, so a config cannot be deleted out from under
+	// a run that submitted through it.
+	SlurmClusterConfigID string                           `gorm:"column:slurm_cluster_config_id;type:varchar(36);not null;index" json:"slurmClusterConfigId"`
+	SlurmClusterConfig   *computemodel.SlurmClusterConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
 	// Owned one-to-one, as on BatchDeployment: unique foreign key on this side, with
 	// the orphan removed by AfterDelete since the database cannot cascade outward.

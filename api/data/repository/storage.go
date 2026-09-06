@@ -79,6 +79,16 @@ func (r *SCPDataStorageRepository) FindSharedWith(ctx context.Context, userID st
 	return out, err
 }
 
+// CountByKeyID reports how many storages still present one SSH key, for the same
+// reason the cluster configs do: the key's foreign key is RESTRICT, and a 409 naming
+// what holds it beats a constraint violation.
+func (r *SCPDataStorageRepository) CountByKeyID(ctx context.Context, keyID string) (int64, error) {
+	var n int64
+	err := r.db.WithContext(ctx).Model(&model.SCPDataStorage{}).
+		Where("ssh_key_id = ?", keyID).Count(&n).Error
+	return n, err
+}
+
 // Save inserts or updates a storage.
 func (r *SCPDataStorageRepository) Save(ctx context.Context, s *model.SCPDataStorage) error {
 	return r.db.WithContext(ctx).Save(s).Error

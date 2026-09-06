@@ -90,6 +90,17 @@ func (r *SlurmClusterConfigRepository) FindSharedWith(ctx context.Context, userI
 	return out, err
 }
 
+// CountByKeyID reports how many configs still present one SSH key. The credentials
+// vertical asks before deleting a key: the foreign key is RESTRICT, so without this the
+// delete would fail as an opaque constraint violation rather than a 409 naming what
+// still holds it.
+func (r *SlurmClusterConfigRepository) CountByKeyID(ctx context.Context, keyID string) (int64, error) {
+	var n int64
+	err := r.db.WithContext(ctx).Model(&model.SlurmClusterConfig{}).
+		Where("ssh_key_id = ?", keyID).Count(&n).Error
+	return n, err
+}
+
 // Save inserts or updates a config.
 func (r *SlurmClusterConfigRepository) Save(ctx context.Context, c *model.SlurmClusterConfig) error {
 	return r.db.WithContext(ctx).Save(c).Error

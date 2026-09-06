@@ -49,19 +49,19 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *model.P
 	// Implementation for launching a batch process goes here
 	batchProcess := process.BatchProcess
 	batchDeployment := batchProcess.Deployment
-	sshCredential := batchProcess.SubmissionCredential
+	clusterConfig := batchProcess.SlurmClusterConfig
 
-	if sshCredential == nil {
-		return fmt.Errorf("No SSH credential available for batch process")
+	if clusterConfig == nil {
+		return fmt.Errorf("No Slurm cluster config available for batch process")
 	}
 
 	// TODO(compute-rename): staging to and from the cluster is not wired to the new
-	// model yet. A SlurmCluster no longer carries an SCPDataStorage — the machine now
-	// names its own headnode and data endpoint, and the account, key and work root a
-	// run uses live on the SlurmClusterConfig chosen at launch time. A DataStagingTask
-	// still addresses both ends by data-storage id, so the cluster side of a staging
-	// task has nothing to point at until either the task grows a way to name a cluster
-	// config, or a storage is derived from the config's cluster and work root.
+	// model yet. The account, key and work root a run uses now come from the
+	// SlurmClusterConfig it was submitted under, which is what this function reads
+	// above — but a DataStagingTask still addresses both ends by data-storage id, and a
+	// SlurmCluster carries no SCPDataStorage, so the cluster side of a staging task has
+	// nothing to point at until either the task grows a way to name a cluster config,
+	// or a storage is derived from the config's cluster and work root.
 	//
 	// Refused rather than guessed at: staging a run's inputs to the wrong place, or to
 	// a storage belonging to someone else, is worse than not launching it. This service
@@ -79,8 +79,6 @@ func (s *LaunchService) launchBatchProcessStaging(ctx context.Context, process *
 
 	inputMapping := batchProcess.InputMappings
 	outputMapping := batchProcess.OutputMappings
-
-	sshCredential := batchProcess.SubmissionCredential
 
 	// Every staging path is built beneath the run's own subdirectory of this, so a run
 	// that named no base work dir has nowhere to stage to. The field is optional on the
@@ -123,7 +121,6 @@ func (s *LaunchService) launchBatchProcessStaging(ctx context.Context, process *
 				SourcePath:                 dataProduct.Path,
 				SourceDataStorageType:      &dataProduct.DataStorageType,
 				DestinationDataStorageID:   &clusterStorage.ID,
-				DestinationCredentialID:    &sshCredential.ID,
 				DestinationDataStorageType: &destStorageType,
 				DestinationPath:            &destPath,
 				OnFailure:                  &failureAction,
@@ -174,7 +171,6 @@ func (s *LaunchService) launchBatchProcessStaging(ctx context.Context, process *
 			dataStagingTask := &model.DataStagingTask{
 				ProcessID:             &process.ID,
 				SourceDataStorageID:   &clusterStorage.ID,
-				SourceCredentialID:    &sshCredential.ID,
 				SourcePath:            &sourcePath,
 				SourceDataStorageType: &sourceStorageType,
 

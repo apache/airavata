@@ -44,12 +44,7 @@ type Services struct {
 	GroupMember *iamsvc.GroupMemberService
 
 	// Credentials.
-	SSHKey                       *credentialssvc.SSHKeyService
-	SSHUserCredential            *credentialssvc.SSHUserCredentialService
-	SSHEndpoint                  *credentialssvc.SSHEndpointService
-	SSHEndpointCredential        *credentialssvc.SSHEndpointCredentialService
-	SSHEndpointCredentialSharing *credentialssvc.SSHEndpointCredentialSharingService
-	CredentialAccess             *credentialssvc.CredentialAccess
+	SSHKey *credentialssvc.SSHKeyService
 
 	// Compute.
 	SlurmCluster              *computesvc.SlurmClusterService
@@ -87,10 +82,6 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 	groups := iamrepo.NewGroupRepository(db)
 	groupMembers := iamrepo.NewGroupMemberRepository(db)
 	sshKeys := credentialsrepo.NewSSHKeyRepository(db)
-	sshCreds := credentialsrepo.NewSSHUserCredentialRepository(db)
-	endpoints := credentialsrepo.NewSSHEndpointRepository(db)
-	bindings := credentialsrepo.NewSSHEndpointCredentialRepository(db)
-	bindingShares := credentialsrepo.NewSSHEndpointCredentialSharingRepository(db)
 	clusters := computerepo.NewSlurmClusterRepository(db)
 	partitions := computerepo.NewClusterPartitionRepository(db)
 	clusterConfigs := computerepo.NewSlurmClusterConfigRepository(db)
@@ -110,10 +101,10 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 
 	// Two services are shared by others below, so they are built first rather than
 	// twice: StatusService because submitting a process records its first status in
-	// the same transaction, and CredentialAccess because data products resolve
-	// access to their storage's submission credential through it.
+	// the same transaction, and ConfigAccess because a run is authorised against the
+	// cluster config it submits under.
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
-	bindingAccess := credentialssvc.NewCredentialAccess(bindings, bindingShares, groupMembers)
+	configAccess := computesvc.NewConfigAccess(clusterConfigs, clusterConfigShares, groupMembers)
 
 	return &Services{
 		Config: cfg,
@@ -123,12 +114,9 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 		Group:       iamsvc.NewGroupService(db, groups, groupMembers, users),
 		GroupMember: iamsvc.NewGroupMemberService(db, groups, groupMembers, users),
 
-		SSHKey:                       credentialssvc.NewSSHKeyService(db, sshKeys, sshCreds),
-		SSHUserCredential:            credentialssvc.NewSSHUserCredentialService(db, sshCreds, sshKeys),
-		SSHEndpoint:                  credentialssvc.NewSSHEndpointService(db, endpoints, bindings),
-		SSHEndpointCredential:        credentialssvc.NewSSHEndpointCredentialService(db, bindings, bindingShares, endpoints, sshCreds, users, groupMembers),
-		SSHEndpointCredentialSharing: credentialssvc.NewSSHEndpointCredentialSharingService(db, bindings, bindingShares, groups, users, groupMembers),
-		CredentialAccess:             bindingAccess,
+		// A key is deleted only when nothing presents it, and what can present one
+		// lives in other verticals — hence both repositories here.
+		SSHKey: credentialssvc.NewSSHKeyService(sshKeys, clusterConfigs, storages),
 
 		SlurmCluster:              computesvc.NewSlurmClusterService(db, clusters, partitions, clusterConfigs),
 		ClusterPartition:          computesvc.NewClusterPartitionService(db, partitions, clusters),
@@ -143,7 +131,7 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 		DataProduct:           datasvc.NewDataProductService(db, products, productShares, storages, storageShares, users, groupMembers),
 		DataProductSharing:    datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers),
 
-		Process:                processsvc.NewProcessService(db, processes, deployments, bindingAccess, users, statusSvc),
+		Process:                processsvc.NewProcessService(db, processes, deployments, configAccess, users, statusSvc),
 		ProcessStatus:          statusSvc,
 		DataStagingTask:        processsvc.NewDataStagingTaskService(db, stagingTasks, processes),
 		JobSubmissionTask:      processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes),

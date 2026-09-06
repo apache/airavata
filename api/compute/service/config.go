@@ -95,6 +95,44 @@ func (a configAccess) requireControl(ctx context.Context, config *model.SlurmClu
 	return nil
 }
 
+// ConfigAccess answers "may this caller submit under this config?" for services
+// outside the compute package.
+//
+// The process vertical asks it before letting a run be submitted under a config.
+// Exposing the question rather than the tables is what keeps one definition of who may
+// use a config: owner, admin, or a share, resolved exactly as it is here.
+type ConfigAccess struct{ configAccess }
+
+// NewConfigAccess returns a checker over the config and sharing tables.
+func NewConfigAccess(
+	configs *repository.SlurmClusterConfigRepository,
+	sharing *repository.SlurmClusterConfigSharingRepository,
+	members *iamrepo.GroupMemberRepository,
+) *ConfigAccess {
+	return &ConfigAccess{configAccess{access: access{members: members}, configs: configs, sharing: sharing}}
+}
+
+// WithTx returns a checker bound to tx, for checks made from inside a transaction.
+func (a *ConfigAccess) WithTx(tx *gorm.DB) *ConfigAccess {
+	return &ConfigAccess{a.configAccess.withTx(tx)}
+}
+
+// RequireUsable loads a config and checks the caller may submit under it: 404 when
+// there is no such config, 403 when it is neither theirs nor shared with them.
+//
+// READ is the bar rather than WRITE: a config is shared precisely so the people it
+// reaches can run under it, and running under one does not change it.
+func (a *ConfigAccess) RequireUsable(ctx context.Context, id string) (*model.SlurmClusterConfig, error) {
+	config, err := a.requireConfig(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := a.require(ctx, config, permRead); err != nil {
+		return nil, err
+	}
+	return config, nil
+}
+
 // SlurmClusterConfigService manages the login configs jobs are submitted through.
 //
 // Registering one is self-service: any authenticated caller may declare how they reach

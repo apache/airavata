@@ -71,7 +71,7 @@ func newShare(subject *string, grants *string) share {
 
 // access resolves what the calling principal may do with a shared record.
 //
-// It is the same model the SSH endpoint credentials use: strongest of ownership, a
+// It is the same model the cluster configs use: strongest of ownership, a
 // user share, and a group share reaching an active membership. Platform admins are
 // treated as owners. "Control" — deleting a record and managing its shares — is not
 // reachable through a share, because deciding who else gets access stays with the

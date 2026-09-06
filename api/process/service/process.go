@@ -15,7 +15,7 @@ import (
 	applicationdto "github.com/apache/airavata/api/application/dto"
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	applicationrepo "github.com/apache/airavata/api/application/repository"
-	credsvc "github.com/apache/airavata/api/credentials/service"
+	computesvc "github.com/apache/airavata/api/compute/service"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 	dto "github.com/apache/airavata/api/process/dto"
 	model "github.com/apache/airavata/api/process/model"
@@ -36,15 +36,15 @@ func notFoundAs(err error, format string, args ...any) error {
 // there is no service for it either — the API surface and the service surface say the
 // same thing about what is a resource.
 //
-// Note the asymmetry with SSH endpoint credentials and SCP data. Submitting is
-// self-service and ownership is taken from the token, but reads are not owner-scoped:
+// Note the asymmetry with cluster configs and SCP data. Submitting is self-service and
+// ownership is taken from the token, but reads are not owner-scoped:
 // listing by deployment and fetching by id carry no authorisation at all, matching
 // the Java service. That is worth revisiting, but it is the behaviour clients have.
 type ProcessService struct {
 	db          *gorm.DB
 	processes   *repository.ProcessRepository
 	deployments *applicationrepo.BatchDeploymentRepository
-	credentials *credsvc.CredentialAccess
+	configs     *computesvc.ConfigAccess
 	users       *iamrepo.UserRepository
 	statuses    *StatusService
 }
@@ -54,7 +54,7 @@ func NewProcessService(
 	db *gorm.DB,
 	processes *repository.ProcessRepository,
 	deployments *applicationrepo.BatchDeploymentRepository,
-	credentials *credsvc.CredentialAccess,
+	configs *computesvc.ConfigAccess,
 	users *iamrepo.UserRepository,
 	statuses *StatusService,
 ) *ProcessService {
@@ -62,7 +62,7 @@ func NewProcessService(
 		db:          db,
 		processes:   processes,
 		deployments: deployments,
-		credentials: credentials,
+		configs:     configs,
 		users:       users,
 		statuses:    statuses,
 	}
@@ -227,7 +227,7 @@ func (s *ProcessService) saveBatchProcess(
 	if err != nil {
 		return nil, notFoundAs(err, "Deployment not found: %s", req.DeploymentID)
 	}
-	submissionCredentialID, err := s.resolveSubmissionCredential(ctx, tx, req)
+	clusterConfigID, err := s.resolveClusterConfig(ctx, tx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +251,7 @@ func (s *ProcessService) saveBatchProcess(
 
 	dto.ApplyBatchProcessRequest(batch, req)
 	batch.DeploymentID = &deployment.ID
-	batch.SubmissionCredentialID = submissionCredentialID
+	batch.SlurmClusterConfigID = clusterConfigID
 	batch.BatchJobConfigID = config.ID
 	if err := processes.SaveBatchProcess(ctx, batch); err != nil {
 		return nil, err
@@ -259,27 +259,26 @@ func (s *ProcessService) saveBatchProcess(
 	return batch, nil
 }
 
-// resolveSubmissionCredential authorises the SSH endpoint credential binding this run
-// submits under.
+// resolveClusterConfig authorises the cluster login config this run submits under.
 //
-// The binding is authorised against the caller — this is the one place in a
+// The config is authorised against the caller — this is the one place in a
 // self-service submission where a caller supplies an identity to act under, so
-// RequireUsable is what keeps them to their own bindings and the ones shared with
-// them. A deployment carries no default to fall back on, so validation already
-// rejects a request that names none.
-func (s *ProcessService) resolveSubmissionCredential(
+// RequireUsable is what keeps them to their own configs and the ones shared with
+// them. A deployment names the machine but no identity on it, so validation already
+// rejects a request that names no config.
+func (s *ProcessService) resolveClusterConfig(
 	ctx context.Context,
 	tx *gorm.DB,
 	req *dto.BatchProcessRequest,
 ) (string, error) {
-	if req.SubmissionCredentialID == nil || strings.TrimSpace(*req.SubmissionCredentialID) == "" {
-		return "", httpx.BadRequest("Submission credential id cannot be blank")
+	if req.SlurmClusterConfigID == nil || strings.TrimSpace(*req.SlurmClusterConfigID) == "" {
+		return "", httpx.BadRequest("Slurm cluster config id cannot be blank")
 	}
-	credential, err := s.credentials.WithTx(tx).RequireUsable(ctx, *req.SubmissionCredentialID)
+	config, err := s.configs.WithTx(tx).RequireUsable(ctx, *req.SlurmClusterConfigID)
 	if err != nil {
 		return "", err
 	}
-	return credential.ID, nil
+	return config.ID, nil
 }
 
 // saveMappings replaces a batch process's template input and output mapping sets.

@@ -29,12 +29,13 @@ type DataStagingTask struct {
 	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
 	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"process,omitempty"`
 
+	// Each end is addressed by data-storage id alone: a storage carries the host, the
+	// login user and the key it is reached under, so there is no separate credential to
+	// name here.
 	SourceDataStorageID   *string               `gorm:"column:source_data_storage_id;type:varchar(36);index" json:"sourceDataStorageId,omitempty"`
-	SourceCredentialID    *string               `gorm:"column:source_credential_id;type:varchar(36);index" json:"sourceCredentialId,omitempty"`
 	SourceDataStorageType *data.DataStorageType `gorm:"column:source_data_storage_type;type:varchar(32)" json:"sourceDataStorageType,omitempty"`
 
 	DestinationDataStorageID   *string               `gorm:"column:destination_data_storage_id;type:varchar(36);index" json:"destinationDataStorageId,omitempty"`
-	DestinationCredentialID    *string               `gorm:"column:destination_credential_id;type:varchar(36);index" json:"destinationCredentialId,omitempty"`
 	DestinationDataStorageType *data.DataStorageType `gorm:"column:destination_data_storage_type;type:varchar(32)" json:"destinationDataStorageType,omitempty"`
 
 	// This could be a json array of file paths, or a single file path
