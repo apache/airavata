@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+package apache.airavata.scheduler.scheduler;
+
+option go_package = "github.com/apache/airavata/scheduler/core/dto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "common.proto";
+import "experiment.proto";
+
+// Task state enumeration
+enum TaskState {
+  TASK_STATE_CREATED = 0;
+  TASK_STATE_QUEUED = 1;
+  TASK_STATE_STAGING = 2;
+  TASK_STATE_RUNNING = 3;
+  TASK_STATE_COMPLETED = 4;
+  TASK_STATE_FAILED = 5;
+  TASK_STATE_CANCELLED = 6;
+  TASK_STATE_RETRYING = 7;
+}
+
+// Worker state enumeration
+enum WorkerState {
+  WORKER_STATE_OFFLINE = 0;
+  WORKER_STATE_IDLE = 1;
+  WORKER_STATE_BUSY = 2;
+  WORKER_STATE_STAGING = 3;
+  WORKER_STATE_ERROR = 4;
+}
+
+// Scheduler configuration
+message SchedulerConfig {
+  string worker_id = 1;
+  string compute_id = 2;
+  string output_dir = 3;
+  int32 max_retries = 4;
+  google.protobuf.Duration timeout = 5;
+  google.protobuf.Duration health_check_interval = 6;
+  google.protobuf.Duration task_timeout = 7;
+  map<string, string> metadata = 8;
+}
+
+// Scheduler status
+message SchedulerStatus {
+  string worker_id = 1;
+  WorkerState state = 2;
+  string current_task_id = 3;
+  int32 queue_length = 4;
+  int32 completed_tasks = 5;
+  int32 failed_tasks = 6;
+  google.protobuf.Timestamp last_activity = 7;
+  google.protobuf.Timestamp started_at = 8;
+  bool healthy = 9;
+  repeated string errors = 10;
+  map<string, string> metadata = 11;
+}
+
+// Task queue entry
+message TaskQueueEntry {
+  apache.airavata.scheduler.experiment.Task task = 1;
+  TaskState state = 2;
+  int32 retry_count = 3;
+  google.protobuf.Timestamp queued_at = 4;
+  google.protobuf.Timestamp scheduled_at = 5;
+  string assigned_worker = 6;
+  map<string, string> metadata = 7;
+}
+
+// Add task request
+message AddTaskRequest {
+  apache.airavata.scheduler.experiment.Task task = 1;
+  int32 priority = 2;
+  google.protobuf.Duration timeout = 3;
+  map<string, string> options = 4;
+}
+
+// Add task response
+message AddTaskResponse {
+  string task_id = 1;
+  TaskState state = 2;
+  apache.airavata.scheduler.common.ValidationResult validation = 3;
+}
+
+// Cancel task request
+message CancelTaskRequest {
+  string task_id = 1;
+  string reason = 2;
+  bool force = 3;
+}
+
+// Cancel task response
+message CancelTaskResponse {
+  bool cancelled = 1;
+  TaskState state = 2;
+  string message = 3;
+}
+
+// Get task state request
+message GetTaskStateRequest {
+  string task_id = 1;
+  bool include_metadata = 2;
+}
+
+// Get task state response
+message GetTaskStateResponse {
+  string task_id = 1;
+  TaskState state = 2;
+  apache.airavata.scheduler.experiment.Task task = 3;
+  int32 retry_count = 4;
+  google.protobuf.Timestamp last_updated = 5;
+  string error = 6;
+  map<string, string> metadata = 7;
+}
+
+// List tasks request
+message ListTasksRequest {
+  TaskState state = 1;
+  string worker_id = 2;
+  string experiment_id = 3;
+  apache.airavata.scheduler.common.PaginationRequest pagination = 4;
+}
+
+// List tasks response
+message ListTasksResponse {
+  repeated TaskQueueEntry tasks = 1;
+  apache.airavata.scheduler.common.PaginationResponse pagination = 2;
+}
+
+// Get scheduler status request
+message GetSchedulerStatusRequest {
+  string worker_id = 1;
+  bool include_queue = 2;
+  bool include_metrics = 3;
+}
+
+// Get scheduler status response
+message GetSchedulerStatusResponse {
+  SchedulerStatus status = 1;
+  repeated TaskQueueEntry queue = 2;
+  map<string, double> metrics = 3;
+}
+
+// Update scheduler config request
+message UpdateSchedulerConfigRequest {
+  string worker_id = 1;
+  SchedulerConfig config = 2;
+}
+
+// Update scheduler config response
+message UpdateSchedulerConfigResponse {
+  SchedulerConfig config = 1;
+  apache.airavata.scheduler.common.ValidationResult validation = 2;
+}
+
+// Health check request
+message HealthCheckRequest {
+  string worker_id = 1;
+}
+
+// Health check response
+message HealthCheckResponse {
+  bool healthy = 1;
+  string status = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  repeated string errors = 4;
+  map<string, string> metadata = 5;
+}
+
+// Stop scheduler request
+message StopSchedulerRequest {
+  string worker_id = 1;
+  bool graceful = 2;
+  google.protobuf.Duration timeout = 3;
+}
+
+// Stop scheduler response
+message StopSchedulerResponse {
+  bool stopped = 1;
+  string message = 2;
+  google.protobuf.Timestamp stopped_at = 3;
+}

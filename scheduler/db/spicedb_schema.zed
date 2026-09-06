@@ -1,0 +1,29 @@
+definition user {}
+
+definition group {
+  relation member: user | group
+  relation parent: group
+  
+  // Recursive permission inheritance through group hierarchy
+  permission is_member = member + parent->is_member
+}
+
+definition credential {
+  relation owner: user
+  relation reader: user | group#is_member
+  relation writer: user | group#is_member
+  
+  // Permissions with inheritance
+  permission read = owner + reader + writer
+  permission write = owner + writer
+  permission delete = owner
+}
+
+definition compute_resource {
+  relation bound_credential: credential
+}
+
+definition storage_resource {
+  relation bound_credential: credential
+}
+
