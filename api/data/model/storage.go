@@ -40,11 +40,14 @@ func (p DataStoragePermission) Valid() bool {
 
 // SCPDataStorage is a host and account data products can be staged through.
 //
-// It names both halves of that: the SSH endpoint data on it lives on, and the SSH user
-// credential — a username and key — it is reached as. The two are kept apart rather
-// than folded into one SSHEndpointCredential because a binding also carries an owner,
-// and a storage is not staged under one person's standing on the host: whoever holds a
-// share reaches it under their own binding for the same host and account.
+// It names the host itself — the name and port to reach over SSH — and the account it
+// is reached as: a login user and the key presented for it. The host is spelled out
+// here rather than pointed at an SSHEndpoint, and the account rather than an
+// SSHUserCredential, for the same reason a SlurmClusterConfig does: those catalogue
+// entries are administrative, so registering a storage would otherwise mean an admin
+// first entering the host, while a storage is self-service and belongs to whoever
+// declares it. Only the key stays a reference, because the private material has to
+// live somewhere it is never read back.
 //
 // It belongs to whoever registered it, and everyone else reaches it through the
 // sharing rows below. Ownership is not transferable through the API: products are
@@ -54,11 +57,13 @@ type SCPDataStorage struct {
 	ID   string  `gorm:"column:data_id;primaryKey;type:varchar(36)" json:"dataId"`
 	Name *string `gorm:"column:data_name;type:varchar(255)" json:"dataName,omitempty"`
 
-	SSHEndpointID *string           `gorm:"column:ssh_endpoint_id;type:varchar(36);index" json:"sshEndpointId,omitempty"`
-	SSHEndpoint   *cred.SSHEndpoint `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshEndpoint,omitempty"`
+	HostName *string `gorm:"column:host_name;type:varchar(255)" json:"hostName,omitempty"`
+	Port     *int    `gorm:"column:port;type:int" json:"port,omitempty"`
 
-	SSHUserCredentialID *string                 `gorm:"column:ssh_user_credential_id;type:varchar(36);index" json:"sshUserCredentialId,omitempty"`
-	SSHUserCredential   *cred.SSHUserCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshUserCredential,omitempty"`
+	LoginUser *string `gorm:"column:login_user;type:varchar(255)" json:"loginUser,omitempty"`
+
+	SSHKeyID *string      `gorm:"column:ssh_key_id;type:varchar(36);index" json:"sshKeyId,omitempty"`
+	SSHKey   *cred.SSHKey `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshKey,omitempty"`
 
 	// OwnerID is named for its role because ownership, not mere reference, is what the
 	// authorisation checks read. RESTRICT: a user who still owns storages cannot be

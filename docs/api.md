@@ -46,7 +46,7 @@ Internal failures return `500` with a fixed `"Internal server error"` message: t
 
 ## SSH Endpoints
 
-An SSH endpoint is a host reachable over SSH. Separating it from the things that use it lets several data storages share one host, and lets a credential be held against the host itself rather than against one consumer's view of it.
+An SSH endpoint is a host reachable over SSH. Separating it from the things that use it lets several credential bindings share one host, and lets a credential be held against the host itself rather than against one consumer's view of it.
 
 Endpoints are deployment topology and hold no secret, so reads are open and writes require `ADMIN` or `SUPER_ADMIN`.
 
@@ -58,7 +58,7 @@ POST /api/v1/ssh-endpoints
 
 **curl example**
 
-The example below captures `sshEndpointId` into `$SSH_ENDPOINT_ID` (requires `jq`), for use when creating a data storage and a credential binding below.
+The example below captures `sshEndpointId` into `$SSH_ENDPOINT_ID` (requires `jq`), for use when creating a credential binding below.
 
 ```bash
 TOKEN='<the token printed at startup>'
@@ -103,7 +103,7 @@ PUT    /api/v1/ssh-endpoints/{sshEndpointId}
 DELETE /api/v1/ssh-endpoints/{sshEndpointId}
 ```
 
-Updating an endpoint silently redirects every credential and data storage that names it, which is what moving a login node should do — hence the admin requirement.
+Updating an endpoint silently redirects every credential binding that names it, which is what moving a login node should do — hence the admin requirement.
 
 `DELETE` returns `204 No Content`, or `409 Conflict` naming how many credential bindings still reference it. Detach those first; the foreign keys are `RESTRICT`, so the delete is refused rather than cascading into resources people are using.
 
@@ -185,7 +185,7 @@ Returned when `sshKeyName` or `publicKey` is blank.
 POST /api/v1/ssh-credentials
 ```
 
-Requires `ADMIN` or `SUPER_ADMIN` authority. Pairs a login username with an SSH key, producing the id that [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) below binds to a host and that [Create SCP Data Storage](#create-scp-data-storage) registers a storage under.
+Requires `ADMIN` or `SUPER_ADMIN` authority. Pairs a login username with an SSH key, producing the id that [Create SSH Endpoint Credential](#create-ssh-endpoint-credential) below binds to a host.
 
 **curl example**
 
@@ -537,7 +537,7 @@ A user share is the same shape with `sshEndpointCredentialUserSharingId` and `us
 
 An SCP data storage is a host and location that datasets are staged through. Registering one is documented here, ahead of the resources that name it: [data products](#data-products) live on one, and a [data staging task](#create-data-staging-task) moves files between two. The rest of the resource — its routes, its sharing rules and how it is read back — is under [SCP Data Storages](#scp-data-storages) further down.
 
-A storage in turn names an SSH endpoint and an SSH credential, so [Create SSH Endpoint](#create-ssh-endpoint), [Create SSH Key](#create-ssh-key) and [Create SSH Credential](#create-ssh-credential) above are the calls that come before the one below.
+A storage spells out its own host and login account, so the only thing it needs registered ahead of it is the key it presents: [Create SSH Key](#create-ssh-key) above is the one call that comes before the one below.
 
 ### Create SCP Data Storage
 
@@ -545,9 +545,9 @@ A storage in turn names an SSH endpoint and an SSH credential, so [Create SSH En
 POST /api/v1/scp-data-storages
 ```
 
-Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_ENDPOINT_ID` from [Create SSH Endpoint](#create-ssh-endpoint) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the data product and staging steps further down.
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_KEY_ID` from [Create SSH Key](#create-ssh-key) above, and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the data product and staging steps further down.
 
-A storage names both halves of where its data is: the **host** it sits on, as an SSH endpoint, and the **account** it is reached as, as an SSH credential — a username paired with a key. The two are named separately rather than as one [endpoint credential](#create-ssh-endpoint-credential) because a binding also carries an owner, and a storage is not staged under one person's standing on the host: whoever it is shared with reaches it under their own binding for that same host and account.
+A storage names both halves of where its data is: the **host** it sits on, as a host name and port, and the **account** it is reached as, as a login user and the key presented for it. Only the key is a reference, because its private half has to live somewhere it is never read back. The host is not an [SSH endpoint](#ssh-endpoints) and the account is not an [SSH credential](#create-ssh-credential): both of those are administrative catalogues, and registering a storage is self-service — asking an admin to enter the host first would defeat that.
 
 ```bash
 STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
@@ -555,8 +555,10 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
   -H "Content-Type: application/json" \
   -d '{
     "dataName": "expanse-scratch",
-    "sshEndpointId": "'"$SSH_ENDPOINT_ID"'",
-    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
+    "hostName": "login.expanse.sdsc.edu",
+    "port": 22,
+    "loginUser": "airavata",
+    "sshKeyId": "'"$SSH_KEY_ID"'"
   }' | jq -r '.dataId')
 ```
 
@@ -565,34 +567,28 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
 | Field | Type | Notes |
 |---|---|---|
 | `dataName` | string | required, cannot be blank |
-| `sshEndpointId` | string | required, must reference an existing [SSH endpoint](#create-ssh-endpoint) |
-| `sshCredentialId` | string | required, must reference an existing [SSH credential](#create-ssh-credential) |
+| `hostName` | string | required, cannot be blank |
+| `port` | integer | optional, 1-65535, defaults to `22` |
+| `loginUser` | string | required, cannot be blank |
+| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) |
 
 **Response — `201 Created`**
 
-Both are inlined, the credential nesting the safe (public-only) summary of the key behind it — the private material is never returned. `permission` is what the calling principal may do with the storage.
+The key is inlined as its safe (public-only) summary — the private material is never returned. `permission` is what the calling principal may do with the storage.
 
 ```json
 {
   "dataId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
   "dataName": "expanse-scratch",
   "ownerId": "cilogon:12345",
-  "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-  "sshEndpoint": {
-    "sshEndpointId": "3f2a1b0c-9d8e-4f7a-8b6c-5d4e3f2a1b0c",
-    "name": "expanse-login",
-    "hostName": "login.expanse.sdsc.edu",
-    "port": 22
-  },
-  "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f",
-  "sshCredential": {
-    "sshCredentialId": "7f8e9d0c-1b2a-4c3d-8e4f-5a6b7c8d9e0f",
-    "username": "airavata",
-    "sshKey": {
-      "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-      "sshKeyName": "expanse-key",
-      "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
-    }
+  "hostName": "login.expanse.sdsc.edu",
+  "port": 22,
+  "loginUser": "airavata",
+  "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+  "sshKey": {
+    "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+    "sshKeyName": "expanse-key",
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
   },
   "permission": "WRITE"
 }
@@ -1425,17 +1421,18 @@ FASTA sequence sits on a lab data host the group already stages sequences throug
 the two outputs are written by the job itself and stay on the cluster, so their products
 are registered against a storage standing for the cluster's own filesystem.
 
-**The FASTA host.** A dataset on another host means a second [SSH endpoint](#create-ssh-endpoint),
-a second storage on it, and a [credential binding](#create-ssh-endpoint-credential) to
-reach it under — the endpoint and binding from earlier are for a different host, so
-neither can be reused here. The account differs too: the group's login on the lab host
-is `labuser`, not the `airavata` the cluster is reached as. So a second
-[SSH credential](#create-ssh-credential) pairs that username with the *same*
-`$SSH_KEY_ID` — one key can back credentials for as many usernames as it is authorised
-for, and re-registering the key material would only give the same bytes a second id.
-`$FASTA_STORAGE_ID` is what the FASTA product names below, and it carries both of those.
-The binding is not named by any product — it is what gives the caller standing on the lab
-host when the transfer actually runs.
+**The FASTA host.** A dataset on another host means a second storage, naming
+`data.lab.example.edu` rather than the cluster's login node, and a
+[credential binding](#create-ssh-endpoint-credential) to reach that host under — which
+in turn needs a second [SSH endpoint](#create-ssh-endpoint), since a binding names the
+host from the endpoint catalogue. The account differs too: the group's login on the lab
+host is `labuser`, not the `airavata` the cluster is reached as. Both the storage and
+the lab [SSH credential](#create-ssh-credential) present the *same* `$SSH_KEY_ID` — one
+key can be authorised for as many accounts as its public half is installed on, and
+re-registering the key material would only give the same bytes a second id.
+`$FASTA_STORAGE_ID` is what the FASTA product names below, and it carries the host, the
+account and the key. The binding is not named by any product — it is what gives the
+caller standing on the lab host when the transfer actually runs.
 
 ```bash
 FASTA_ENDPOINT_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-endpoints \
@@ -1468,14 +1465,16 @@ FASTA_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
   -H "Content-Type: application/json" \
   -d '{
     "dataName": "lab-sequences",
-    "sshEndpointId": "'"$FASTA_ENDPOINT_ID"'",
-    "sshCredentialId": "'"$LAB_CREDENTIAL_ID"'"
+    "hostName": "data.lab.example.edu",
+    "port": 22,
+    "loginUser": "labuser",
+    "sshKeyId": "'"$SSH_KEY_ID"'"
   }' | jq -r '.dataId')
 ```
 
 **The cluster.** The outputs land on the login host the cluster is reached through, which
 is the storage registered in [Create SCP Data Storage](#create-scp-data-storage) —
-`expanse-scratch`, on `$SSH_ENDPOINT_ID` and staged under `$SSH_CREDENTIAL_ID`. A
+`expanse-scratch`, on `login.expanse.sdsc.edu` as `airavata`. A
 [Slurm cluster](#slurm-clusters) itself names no storage: it carries its own head node
 and data host, and the account a run submits under comes from the
 [cluster config](#slurm-cluster-configs). So this storage is registered separately, and
@@ -1921,7 +1920,7 @@ Runs a command on the remote host — filtering the output of a running job, for
 
 ## SCP Data Storages
 
-An SCP data storage is a host and location that datasets are staged through. It points at an [SSH endpoint](#ssh-endpoints) — the host its data sits on — and an [SSH credential](#create-ssh-credential) — the account it is reached as — and belongs to whoever registered it. A [data product](#data-products) names one as where its dataset lives, and a [data staging task](#create-data-staging-task) moves files between two of them.
+An SCP data storage is a host and location that datasets are staged through. It names the host its data sits on, the account it is reached as, and the [SSH key](#ssh-keys) presented for that account, and belongs to whoever registered it. A [data product](#data-products) names one as where its dataset lives, and a [data staging task](#create-data-staging-task) moves files between two of them.
 
 Registering one is documented up front, under [SCP Data Storage Registration](#scp-data-storage-registration), because the walkthrough needs one before it can register a dataset. What follows here is the rest of the resource.
 

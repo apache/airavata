@@ -2,10 +2,15 @@ package dto
 
 import (
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/ptr"
 
 	creddto "github.com/apache/airavata/api/credentials/dto"
 	model "github.com/apache/airavata/api/data/model"
 )
+
+// defaultSSHPort is used when a request omits the port, so the common case of a
+// standard SSH host does not have to state it.
+const defaultSSHPort = 22
 
 // SCPDataStorageRequest is the create/update payload for a storage.
 //
@@ -13,59 +18,76 @@ import (
 // a storage can neither be registered on someone else's behalf nor handed over by
 // editing it.
 type SCPDataStorageRequest struct {
-	DataName        *string `json:"dataName"`
-	SSHEndpointID   string  `json:"sshEndpointId"`
-	SSHCredentialID string  `json:"sshCredentialId"`
+	DataName *string `json:"dataName"`
+
+	HostName string `json:"hostName"`
+	Port     *int   `json:"port"`
+
+	LoginUser string `json:"loginUser"`
+
+	SSHKeyID string `json:"sshKeyId"`
 }
 
 // Validate implements httpx.Validator.
 func (r *SCPDataStorageRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlankPtr("dataName", "Data name cannot be blank", r.DataName)
-	c.NotBlank("sshEndpointId", "SSH endpoint id cannot be blank", r.SSHEndpointID)
-	c.NotBlank("sshCredentialId", "SSH credential id cannot be blank", r.SSHCredentialID)
+	c.NotBlank("hostName", "Host name cannot be blank", r.HostName)
+	c.NotBlank("loginUser", "Login user cannot be blank", r.LoginUser)
+	c.NotBlank("sshKeyId", "SSH key id cannot be blank", r.SSHKeyID)
+	if r.Port != nil && (*r.Port < 1 || *r.Port > 65535) {
+		c.Add("port", "Port must be between 1 and 65535")
+	}
 	return c.Fields()
 }
 
 // ApplySCPDataStorageRequest copies the mutable fields of a request onto an entity.
-// The endpoint and the credential are resolved by the service, which is what turns an
-// unknown id into a 404 rather than a dangling reference.
+// The key is resolved by the service, which is what turns an unknown id into a 404
+// rather than a dangling reference.
+//
+// An omitted port means 22 rather than 0 — the zero value would be a port nothing can
+// connect to, which is worse than a default.
 func ApplySCPDataStorageRequest(dst *model.SCPDataStorage, src *SCPDataStorageRequest) {
 	dst.Name = src.DataName
+	dst.HostName = ptr.To(src.HostName)
+	dst.LoginUser = ptr.To(src.LoginUser)
+	dst.Port = ptr.To(ptr.FromOr(src.Port, defaultSSHPort))
 }
 
 // SCPDataStorageResponse is the read model for a storage.
 //
-// Both the endpoint and the credential are inlined — the latter with its key summary,
-// never the private material — because a storage is only meaningful together with the
-// host it stages through and the account it is reached as.
+// The host and the account it is reached as are spelled out on the storage itself; the
+// key is inlined as its safe summary — name and public key, never the private
+// material, which the credential response type has no field for at all.
 type SCPDataStorageResponse struct {
-	DataID          string                             `json:"dataId"`
-	DataName        *string                            `json:"dataName"`
-	OwnerID         *string                            `json:"ownerId"`
-	SSHEndpointID   *string                            `json:"sshEndpointId"`
-	SSHEndpoint     *creddto.SSHEndpointResponse       `json:"sshEndpoint"`
-	SSHCredentialID *string                            `json:"sshCredentialId"`
-	SSHCredential   *creddto.SSHUserCredentialResponse `json:"sshCredential"`
+	DataID   string  `json:"dataId"`
+	DataName *string `json:"dataName"`
+	OwnerID  *string `json:"ownerId"`
+
+	HostName *string `json:"hostName"`
+	Port     *int    `json:"port"`
+
+	LoginUser *string `json:"loginUser"`
+
+	SSHKeyID *string                 `json:"sshKeyId"`
+	SSHKey   *creddto.SSHKeyResponse `json:"sshKey"`
 
 	Permission *string `json:"permission,omitempty"`
 }
 
 func ToSCPDataStorageResponse(s *model.SCPDataStorage) SCPDataStorageResponse {
 	out := SCPDataStorageResponse{
-		DataID:          s.ID,
-		DataName:        s.Name,
-		OwnerID:         s.OwnerID,
-		SSHEndpointID:   s.SSHEndpointID,
-		SSHCredentialID: s.SSHUserCredentialID,
+		DataID:    s.ID,
+		DataName:  s.Name,
+		OwnerID:   s.OwnerID,
+		HostName:  s.HostName,
+		Port:      s.Port,
+		LoginUser: s.LoginUser,
+		SSHKeyID:  s.SSHKeyID,
 	}
-	if s.SSHEndpoint != nil {
-		endpoint := creddto.ToSSHEndpointResponse(s.SSHEndpoint)
-		out.SSHEndpoint = &endpoint
-	}
-	if s.SSHUserCredential != nil {
-		credential := creddto.ToSSHUserCredentialResponse(s.SSHUserCredential)
-		out.SSHCredential = &credential
+	if s.SSHKey != nil {
+		key := creddto.ToSSHKeyResponse(s.SSHKey)
+		out.SSHKey = &key
 	}
 	return out
 }

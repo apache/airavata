@@ -38,17 +38,6 @@ func newTestDB(t *testing.T) *gorm.DB {
 	return gdb
 }
 
-// seedSSHEndpoint creates the host a credential binding or a data storage points at. It
-// exists because the host name clusters used to carry is now an entity of its own.
-func seedSSHEndpoint(t *testing.T, gdb *gorm.DB, name string) *credentialsmodel.SSHEndpoint {
-	t.Helper()
-	endpoint := &credentialsmodel.SSHEndpoint{Name: name, HostName: name + ".example.edu", Port: 22}
-	if err := gdb.Create(endpoint).Error; err != nil {
-		t.Fatalf("create ssh endpoint: %v", err)
-	}
-	return endpoint
-}
-
 func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 	gdb := newTestDB(t)
 

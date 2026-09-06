@@ -678,8 +678,9 @@ func TestDeletingAClusterInUseIsRefused(t *testing.T) {
 func TestSSHEndpointInUseCannotBeDeleted(t *testing.T) {
 	h := newHarness(t)
 
-	// Held by a credential binding. A Slurm cluster names no endpoint any more, so a
-	// binding and a data storage are the only things that can hold one.
+	// Held by a credential binding. Neither a Slurm cluster nor a data storage names an
+	// endpoint any more — both spell out their own host — so a binding is the only
+	// thing that can hold one.
 	boundID, _ := h.seedEndpointCredential("bound", tokenAlice)
 	if rec := h.do(http.MethodDelete, "/api/v1/ssh-endpoints/"+boundID, tokenAdmin, nil); rec.Code != http.StatusConflict {
 		t.Errorf("delete with a binding attached: status = %d, want 409", rec.Code)
@@ -906,22 +907,22 @@ func TestDeletingEndpointCredentialRemovesItsShares(t *testing.T) {
 }
 
 // seedStorage registers an SCP data storage owned by the caller of token, returning the
-// endpoint and SSH credential it stages through along with its id.
-func (h *harness) seedStorage(name, token string) (endpointID, credentialID, storageID string) {
+// SSH key it stages under along with its id.
+func (h *harness) seedStorage(name, token string) (keyID, storageID string) {
 	h.t.Helper()
-	endpointID = h.seedSSHEndpoint(name)
-	_, credentialID = h.seedSSHKeyAndCredential(name)
+	keyID, _ = h.seedSSHKeyAndCredential(name)
 	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", token, map[string]any{
-		"dataName": name, "sshEndpointId": endpointID, "sshCredentialId": credentialID,
+		"dataName": name, "hostName": name + ".example.edu",
+		"loginUser": "runner", "sshKeyId": keyID,
 	}, http.StatusCreated)
-	return endpointID, credentialID, out["dataId"].(string)
+	return keyID, out["dataId"].(string)
 }
 
 // seedProduct registers a dataset owned by the caller of token, on a storage shared
 // with them.
 func (h *harness) seedProduct(name, token string) (storageID, productID string) {
 	h.t.Helper()
-	_, _, storageID = h.seedStorage(name, token)
+	_, storageID = h.seedStorage(name, token)
 	out := h.mustDo(http.MethodPost, "/api/v1/data-products", token, map[string]any{
 		"dataName": name, "isFile": true, "path": "/scratch/" + name, "dataStorageId": storageID,
 	}, http.StatusCreated)
@@ -953,15 +954,22 @@ func principalOf(token string) string {
 // no share confers control.
 func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	h := newHarness(t)
-	endpointID, credentialID, storageID := h.seedStorage("staging", tokenAlice)
+	keyID, storageID := h.seedStorage("staging", tokenAlice)
 	base := "/api/v1/scp-data-storages/" + storageID
 
 	created := h.mustDo(http.MethodGet, base, tokenAlice, nil, http.StatusOK)
 	if created["ownerId"] != "alice" {
 		t.Errorf("ownerId = %v, want it taken from the token", created["ownerId"])
 	}
-	if created["sshEndpoint"] == nil || created["sshCredential"] == nil {
-		t.Error("storage response did not inline its endpoint and credential")
+	if created["hostName"] != "staging.example.edu" || created["loginUser"] != "runner" {
+		t.Errorf("storage response lost the host or the account: %v@%v",
+			created["loginUser"], created["hostName"])
+	}
+	if created["port"].(float64) != 22 {
+		t.Errorf("port = %v, want the default 22 rather than the zero value", created["port"])
+	}
+	if created["sshKey"] == nil {
+		t.Error("storage response did not inline its SSH key")
 	}
 
 	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
@@ -992,7 +1000,10 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	}
 
 	// READ is not WRITE, and no share confers control.
-	repoint := map[string]any{"dataName": "renamed", "sshEndpointId": endpointID, "sshCredentialId": credentialID}
+	repoint := map[string]any{
+		"dataName": "renamed", "hostName": "staging.example.edu",
+		"loginUser": "runner", "sshKeyId": keyID,
+	}
 	if rec := h.do(http.MethodPut, base, tokenBob, repoint); rec.Code != http.StatusForbidden {
 		t.Errorf("update with READ: status = %d, want 403", rec.Code)
 	}
@@ -1021,10 +1032,47 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	}
 }
 
+// A storage spells out its own host and account and names a key from the catalogue, so
+// a body missing either half is a 400, and a key id that resolves to nothing is a 404
+// rather than a storage pointing at a key that does not exist.
+func TestStorageRegistrationValidatesItsHostAndKey(t *testing.T) {
+	h := newHarness(t)
+	keyID, _ := h.seedSSHKeyAndCredential("validation")
+	body := func(over map[string]any) map[string]any {
+		out := map[string]any{
+			"dataName": "scratch", "hostName": "login.example.edu",
+			"loginUser": "runner", "sshKeyId": keyID,
+		}
+		for k, v := range over {
+			out[k] = v
+		}
+		return out
+	}
+
+	rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenAlice, body(map[string]any{"hostName": "  "}))
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("blank host name: status = %d, want 400", rec.Code)
+	} else if got := firstFieldError(t, rec); got != "hostName" {
+		t.Errorf("field error = %q, want hostName", got)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenAlice,
+		body(map[string]any{"loginUser": ""})); rec.Code != http.StatusBadRequest {
+		t.Errorf("blank login user: status = %d, want 400", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenAlice,
+		body(map[string]any{"port": 70000})); rec.Code != http.StatusBadRequest {
+		t.Errorf("out-of-range port: status = %d, want 400", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenAlice,
+		body(map[string]any{"sshKeyId": "nope"})); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown SSH key: status = %d, want 404", rec.Code)
+	}
+}
+
 // A group share reaches every active member of the group, and stops at a suspended one.
 func TestStorageGroupSharing(t *testing.T) {
 	h := newHarness(t)
-	_, _, storageID := h.seedStorage("group-staging", tokenAlice)
+	_, storageID := h.seedStorage("group-staging", tokenAlice)
 	groupID := h.seedGroup("data-team", tokenAlice)
 	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
 		map[string]any{"userId": "bob"}, http.StatusCreated)
@@ -1048,7 +1096,7 @@ func TestStorageGroupSharing(t *testing.T) {
 // names has to be one the caller can already reach.
 func TestProductRegistrationRequiresReachableStorage(t *testing.T) {
 	h := newHarness(t)
-	_, _, storageID := h.seedStorage("closed", tokenBob)
+	_, storageID := h.seedStorage("closed", tokenBob)
 
 	body := map[string]any{
 		"dataName": "run-1", "isFile": true, "path": "/scratch/run-1", "dataStorageId": storageID,

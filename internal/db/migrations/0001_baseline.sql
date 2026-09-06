@@ -45,6 +45,14 @@
 -- has to be recreated, which is exactly why this is only done while the schema is
 -- development-only.
 --
+-- Re-recorded a fourth time when scp_data_storages stopped pointing at the credential
+-- catalogue. It carried an ssh_endpoint_id and an ssh_user_credential_id, both of which
+-- only an admin can create, so registering a self-service storage needed an admin to
+-- enter its host first. The table now spells out host_name, port and login_user itself
+-- and keeps a single reference, ssh_key_id, because the private key has to live
+-- somewhere it is never read back. Development-only again, so this is a re-recording
+-- rather than a migration.
+--
 -- Do not hand-edit this file once it has run anywhere outside development: a change to
 -- a table's shape belongs in a new migration (0002_..., 0003_..., ...), the same way
 -- ddl-auto never narrows a column and this framework never rewrites history.
@@ -76,13 +84,11 @@ CREATE INDEX IF NOT EXISTS "idx_ssh_user_credentials_ssh_key_id" ON "ssh_user_cr
 
 CREATE TABLE "slurm_clusters" ("slurm_cluster_id" varchar(36),"cluster_name" varchar(255) NOT NULL,"cluster_description" varchar(1024),"headnode_host" varchar(255) NOT NULL,"headnode_port" bigint NOT NULL,"data_host" varchar(255),"data_port" bigint,PRIMARY KEY ("slurm_cluster_id"));
 
-CREATE TABLE "scp_data_storages" ("data_id" varchar(36),"data_name" varchar(255),"ssh_endpoint_id" varchar(36),"ssh_user_credential_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("data_id"),CONSTRAINT "fk_scp_data_storages_ssh_user_credential" FOREIGN KEY ("ssh_user_credential_id") REFERENCES "ssh_user_credentials"("ssh_credential_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storages_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storages_ssh_endpoint" FOREIGN KEY ("ssh_endpoint_id") REFERENCES "ssh_endpoints"("ssh_endpoint_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+CREATE TABLE "scp_data_storages" ("data_id" varchar(36),"data_name" varchar(255),"host_name" varchar(255),"port" bigint,"login_user" varchar(255),"ssh_key_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("data_id"),CONSTRAINT "fk_scp_data_storages_ssh_key" FOREIGN KEY ("ssh_key_id") REFERENCES "ssh_keys"("ssh_key_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storages_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_scp_data_storages_owner_id" ON "scp_data_storages" ("user_id");
 
-CREATE INDEX IF NOT EXISTS "idx_scp_data_storages_ssh_user_credential_id" ON "scp_data_storages" ("ssh_user_credential_id");
-
-CREATE INDEX IF NOT EXISTS "idx_scp_data_storages_ssh_endpoint_id" ON "scp_data_storages" ("ssh_endpoint_id");
+CREATE INDEX IF NOT EXISTS "idx_scp_data_storages_ssh_key_id" ON "scp_data_storages" ("ssh_key_id");
 
 CREATE TABLE "data_products" ("data_id" varchar(36),"data_name" varchar(255),"data_description" varchar(2048),"is_file" boolean NOT NULL,"path" varchar(2048),"provision_status" varchar(32),"user_id" varchar(255),"data_storage_id" varchar(36),"data_storage_type" varchar(32),"created_at" bigint NOT NULL,PRIMARY KEY ("data_id"),CONSTRAINT "fk_data_products_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 

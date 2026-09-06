@@ -106,15 +106,15 @@ func requireStorageReadable(ctx context.Context, base access, sharing *repositor
 // SCPDataStorageService manages the storages datasets are staged through.
 //
 // Registering one is self-service: any authenticated caller may declare a storage on a
-// host from the endpoint catalog, under a credential from the SSH credential catalog,
-// and it belongs to them. Everyone else reaches it through its sharing rules.
+// host of their choosing, under an account of their choosing, presenting a key from
+// the SSH key catalog, and it belongs to them. Everyone else reaches it through its
+// sharing rules.
 type SCPDataStorageService struct {
 	storageAccess
-	db          *gorm.DB
-	endpoints   *credrepo.SSHEndpointRepository
-	credentials *credrepo.SSHUserCredentialRepository
-	products    *repository.DataProductRepository
-	users       *iamrepo.UserRepository
+	db       *gorm.DB
+	keys     *credrepo.SSHKeyRepository
+	products *repository.DataProductRepository
+	users    *iamrepo.UserRepository
 }
 
 // NewSCPDataStorageService returns a storage service.
@@ -122,8 +122,7 @@ func NewSCPDataStorageService(
 	db *gorm.DB,
 	storages *repository.SCPDataStorageRepository,
 	sharing *repository.SCPDataStorageSharingRepository,
-	endpoints *credrepo.SSHEndpointRepository,
-	credentials *credrepo.SSHUserCredentialRepository,
+	keys *credrepo.SSHKeyRepository,
 	products *repository.DataProductRepository,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
@@ -134,11 +133,10 @@ func NewSCPDataStorageService(
 			storages: storages,
 			sharing:  sharing,
 		},
-		db:          db,
-		endpoints:   endpoints,
-		credentials: credentials,
-		products:    products,
-		users:       users,
+		db:       db,
+		keys:     keys,
+		products: products,
+		users:    users,
 	}
 }
 
@@ -208,23 +206,19 @@ func (s *SCPDataStorageService) Get(ctx context.Context, id string) (*dto.SCPDat
 	return &out, nil
 }
 
-// resolveReferences loads the endpoint and credential a request names. Neither is
-// created here, so an id that resolves to nothing is a 404 rather than a storage
-// pointing at a host or an account that does not exist.
-func (s *SCPDataStorageService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.SCPDataStorageRequest) (*credmodel.SSHEndpoint, *credmodel.SSHUserCredential, error) {
-	endpoint, err := s.endpoints.WithTx(tx).FindByID(ctx, req.SSHEndpointID)
+// resolveKey loads the SSH key a request names. It is not created here, so an id that
+// resolves to nothing is a 404 rather than a storage pointing at a key that does not
+// exist.
+func (s *SCPDataStorageService) resolveKey(ctx context.Context, tx *gorm.DB, req *dto.SCPDataStorageRequest) (*credmodel.SSHKey, error) {
+	key, err := s.keys.WithTx(tx).FindByID(ctx, req.SSHKeyID)
 	if err != nil {
-		return nil, nil, notFoundAs(err, "SSH endpoint not found: %s", req.SSHEndpointID)
+		return nil, notFoundAs(err, "SSH key not found: %s", req.SSHKeyID)
 	}
-	credential, err := s.credentials.WithTx(tx).FindByID(ctx, req.SSHCredentialID)
-	if err != nil {
-		return nil, nil, notFoundAs(err, "SSH credential not found: %s", req.SSHCredentialID)
-	}
-	return endpoint, credential, nil
+	return key, nil
 }
 
-// Create registers a storage owned by the calling user, on an existing SSH endpoint and
-// under an existing SSH credential.
+// Create registers a storage owned by the calling user, on the host it names and under
+// an existing SSH key.
 //
 // The owner is taken from the token, so there is no way to register a storage on
 // someone else's behalf.
@@ -242,17 +236,15 @@ func (s *SCPDataStorageService) Create(ctx context.Context, req *dto.SCPDataStor
 		if err != nil {
 			return notFoundAs(err, "No user record found for authenticated principal: %s", principal.Name)
 		}
-		endpoint, credential, err := s.resolveReferences(ctx, tx, req)
+		key, err := s.resolveKey(ctx, tx, req)
 		if err != nil {
 			return err
 		}
 
 		storage := &model.SCPDataStorage{
-			SSHEndpointID:       &endpoint.ID,
-			SSHEndpoint:         endpoint,
-			SSHUserCredentialID: &credential.ID,
-			SSHUserCredential:   credential,
-			OwnerID:             &owner.ID,
+			SSHKeyID: &key.ID,
+			SSHKey:   key,
+			OwnerID:  &owner.ID,
 		}
 		dto.ApplySCPDataStorageRequest(storage, req)
 		if err := storages.Save(ctx, storage); err != nil {
@@ -267,8 +259,8 @@ func (s *SCPDataStorageService) Create(ctx context.Context, req *dto.SCPDataStor
 	return &out, nil
 }
 
-// Update changes a storage, including which endpoint it stages through and which
-// credential it stages under. It needs WRITE, which a share can confer.
+// Update changes a storage, including which host it stages through and which account
+// and key it stages under. It needs WRITE, which a share can confer.
 //
 // The owner is deliberately left alone: re-deriving it from the caller's token would
 // hand the storage to whichever admin — or grantee — happened to issue the request.
@@ -285,16 +277,14 @@ func (s *SCPDataStorageService) Update(ctx context.Context, id string, req *dto.
 		if err != nil {
 			return err
 		}
-		endpoint, credential, err := s.resolveReferences(ctx, tx, req)
+		key, err := s.resolveKey(ctx, tx, req)
 		if err != nil {
 			return err
 		}
 
 		dto.ApplySCPDataStorageRequest(storage, req)
-		storage.SSHEndpointID = &endpoint.ID
-		storage.SSHEndpoint = endpoint
-		storage.SSHUserCredentialID = &credential.ID
-		storage.SSHUserCredential = credential
+		storage.SSHKeyID = &key.ID
+		storage.SSHKey = key
 		if err := storages.Save(ctx, storage); err != nil {
 			return err
 		}

@@ -11,10 +11,10 @@ import (
 
 // SCPDataStorageRepository reads and writes SCP data storages.
 //
-// Reads preload the SSH endpoint, the credential and the key behind it because the
-// response DTO carries all three: a storage without the host it stages through and the
-// account it is reached as is not much use to a caller deciding whether to put data
-// there.
+// Reads preload the SSH key because the response DTO carries its public summary: the
+// host and the login user are columns on the storage itself, but the key it presents
+// is a reference, and a storage without it is not much use to a caller deciding
+// whether to put data there.
 type SCPDataStorageRepository struct{ db *gorm.DB }
 
 // NewSCPDataStorageRepository returns a repository backed by db.
@@ -29,10 +29,7 @@ func (r *SCPDataStorageRepository) WithTx(tx *gorm.DB) *SCPDataStorageRepository
 
 // withReferences is the read scope every lookup that feeds a response DTO starts from.
 func (r *SCPDataStorageRepository) withReferences(ctx context.Context) *gorm.DB {
-	return r.db.WithContext(ctx).
-		Preload("SSHEndpoint").
-		Preload("SSHUserCredential").
-		Preload("SSHUserCredential.SSHKey")
+	return r.db.WithContext(ctx).Preload("SSHKey")
 }
 
 // FindAll returns every storage.
