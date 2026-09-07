@@ -1151,13 +1151,16 @@ POST   /api/v1/processes
 GET    /api/v1/processes/{processId}
 PUT    /api/v1/processes/{processId}
 DELETE /api/v1/processes/{processId}
+POST   /api/v1/processes/{processId}/launch    (owner)
 ```
 
 **Authorization.** Submitting is self-service: any authenticated caller may create a
 process, and the owner is taken from the token rather than the body. The unfiltered
 listing, `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Reading one process, and
 listing the runs of a deployment, carry no authorization at all — carried over from the
-Java service, which did the same.
+Java service, which did the same. [Launching](#launch-a-process) is the exception among
+the writes: it is owner-scoped rather than administrative, because it acts under the
+identity the run was submitted with.
 
 ### Register the Run's Data Products
 
@@ -1473,6 +1476,55 @@ resolve to an existing record is returned as `404 Not Found` instead.
   ]
 }
 ```
+
+### Launch a Process
+
+```
+POST /api/v1/processes/{processId}/launch
+```
+
+Turns a submitted run into the tasks that will carry it out. **Owner-scoped**, like the
+[task routes](#process-tasks) and unlike the process reads: launching reaches a host
+under the identity the run was submitted with, so it is the owner's to trigger — the
+owner or a platform admin, everyone else `403 Forbidden`.
+
+There is no body. What it records, for a `BATCH_JOB`, is:
+
+- one [data staging task](#create-data-staging-task) per mapped file — inputs staged
+  into the run's own subdirectory of its work directory, outputs staged back out of it
+  to the [product](#data-products) each output mapping names;
+- one [job submission task](#create-job-submission-and-job-monitoring-tasks), and one
+  job monitoring task beside it.
+
+The work directory is the run's `baseWorkDir`, falling back to the `workRoot` of the
+[cluster config](#slurm-cluster-configs) it submits under. Every reference it follows is
+authorised in turn by the service that owns it, so a run cannot stage through a config
+or a dataset its owner has no standing on.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/launch \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `202 Accepted`**
+
+`202` rather than `200`: the tasks are recorded here, and carrying them out is later
+work. The body is the process, the same shape [`GET`](#read-update-and-delete-processes)
+returns. The tasks themselves are read back through the run's task collections.
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | no token |
+| `403 Forbidden` | the run belongs to another user |
+| `404 Not Found` | no such process, or a `dataId` in a file mapping resolves to nothing |
+| `409 Conflict` | the run has already been launched; or it cannot be launched as it stands — its deployment names no cluster or no template, or nothing supplies a work directory |
+
+Launching is **not idempotent** — it writes a task per staged file — so a second call is
+refused with `409` rather than doubling the work. Only `FILE` declarations are staged
+today: the `FILE_LIST` and `DIRECTORY` branches are stubs, so a run carrying those is
+launched without staging tasks for them.
 
 ## Process Statuses
 

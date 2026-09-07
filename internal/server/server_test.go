@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strings"
 	"testing"
 
@@ -1116,11 +1117,12 @@ func TestDataSharingRejectsBadRequests(t *testing.T) {
 // seedProcess submits a process owned by the caller of token and returns its id.
 func (h *harness) seedProcess(name, token string) string {
 	h.t.Helper()
-	configID, _ := h.seedClusterConfig(token, name)
+	configID, clusterID := h.seedClusterConfig(token, name)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
 		map[string]any{"templateName": name}, http.StatusCreated)
 	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"slurmClusterId":        clusterID,
 		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
 	proc := h.mustDo(http.MethodPost, "/api/v1/processes", token, map[string]any{
@@ -1394,13 +1396,103 @@ func TestProcessSubmitsUnderAConfigTheCallerMayUse(t *testing.T) {
 	}
 }
 
+// Launching turns a submitted run into the tasks that will carry it out: one staging
+// task per mapped file, plus a submission and a monitoring task.
+func TestLaunchingAProcessRecordsItsTasks(t *testing.T) {
+	h := newHarness(t)
+	deployment, configID, inputID, outputID := h.seedDeploymentWithIO("launch")
+	_, inputProduct := h.seedProduct("launch-input", tokenAlice)
+	_, outputProduct := h.seedProduct("launch-output", tokenAlice)
+
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":         deployment["deploymentId"],
+			"slurmClusterConfigId": configID,
+			"batchJobConfig":       map[string]any{"wallTimeMinutes": 10, "allocation": "A"},
+			"baseWorkDir":          "/scratch/alice",
+			"inputMappings": []any{
+				map[string]any{"templateInputId": inputID, "value": inputProduct},
+			},
+			"outputMappings": []any{
+				map[string]any{"templateOutputId": outputID, "value": outputProduct},
+			},
+		},
+	}, http.StatusCreated)
+	processID := created["processId"].(string)
+	base := "/api/v1/processes/" + processID
+
+	launched := h.mustDo(http.MethodPost, base+"/launch", tokenAlice, nil, http.StatusAccepted)
+	if launched["processId"] != processID {
+		t.Errorf("processId = %v, want the launched run %s", launched["processId"], processID)
+	}
+
+	// A file input is staged in and a file output staged out, so both directions of the
+	// mapping produce a task.
+	staging := h.list(base+"/data-staging-tasks", tokenAlice)
+	if len(staging) != 2 {
+		t.Fatalf("data staging tasks = %d, want one per mapped file", len(staging))
+	}
+	if len(h.list(base+"/job-submission-tasks", tokenAlice)) != 1 {
+		t.Error("launching did not record a job submission task")
+	}
+	if len(h.list(base+"/job-monitoring-tasks", tokenAlice)) != 1 {
+		t.Error("launching did not record a job monitoring task")
+	}
+
+	// The staged-in task destination is the run's own subdirectory of its work dir,
+	// which is where the template's file inputs are expected.
+	var destinations []string
+	for _, task := range staging {
+		if path, ok := task["destinationPath"].(string); ok {
+			destinations = append(destinations, path)
+		}
+	}
+	want := "/scratch/alice/" + processID + "/sequence"
+	if !slices.Contains(destinations, want) {
+		t.Errorf("staging destinations = %v, want one at %s", destinations, want)
+	}
+}
+
+// Launching is not idempotent — it writes a task per staged file — so a second call is
+// refused rather than doubling the work.
+func TestLaunchingTwiceIsRefused(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("relaunch", tokenAlice)
+	base := "/api/v1/processes/" + processID + "/launch"
+
+	h.mustDo(http.MethodPost, base, tokenAlice, nil, http.StatusAccepted)
+	if rec := h.do(http.MethodPost, base, tokenAlice, nil); rec.Code != http.StatusConflict {
+		t.Errorf("second launch: status = %d, want 409", rec.Code)
+	}
+}
+
+// Launching acts on a host under the identity the run was submitted with, so it is the
+// owner's to trigger — reading the run is not enough.
+func TestLaunchIsOwnerScoped(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("owner-scoped-launch", tokenAlice)
+	base := "/api/v1/processes/" + processID + "/launch"
+
+	if rec := h.do(http.MethodPost, base, "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous launch: status = %d, want 401", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, base, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("launch by another user: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/processes/nope/launch", tokenAlice, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown process: status = %d, want 404", rec.Code)
+	}
+	h.mustDo(http.MethodPost, base, tokenAdmin, nil, http.StatusAccepted)
+}
+
 // seedDeploymentWithIO creates a deployment whose template declares one input and one
 // output, and returns the deployment together with those two declaration ids. The
 // mapping tests need real declarations to point at: a mapping carries a foreign key to
 // the template input it supplies a value for.
 func (h *harness) seedDeploymentWithIO(name string) (deployment map[string]any, configID, inputID, outputID string) {
 	h.t.Helper()
-	configID, _ = h.seedClusterConfig(tokenAlice, name)
+	configID, clusterID := h.seedClusterConfig(tokenAlice, name)
 	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin, map[string]any{
 		"templateName": name,
 		"inputs":       []any{map[string]any{"inputName": "sequence", "inputType": "FILE"}},
@@ -1408,6 +1500,7 @@ func (h *harness) seedDeploymentWithIO(name string) (deployment map[string]any, 
 	}, http.StatusCreated)
 	deployment = h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
 		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"slurmClusterId":        clusterID,
 		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
 	}, http.StatusCreated)
 

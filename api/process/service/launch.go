@@ -4,92 +4,222 @@ import (
 	"context"
 	"strings"
 
+	"github.com/apache/airavata/api/process/repository"
 	"gorm.io/gorm"
 
 	"fmt"
 
-	applicationmodel "github.com/apache/airavata/api/application/model"
-	applicationrepo "github.com/apache/airavata/api/application/repository"
+	"github.com/apache/airavata/internal/auth"
+	"github.com/apache/airavata/internal/httpx"
+
+	appdto "github.com/apache/airavata/api/application/dto"
+	appmod "github.com/apache/airavata/api/application/model"
+	appserv "github.com/apache/airavata/api/application/service"
+	computesev "github.com/apache/airavata/api/compute/service"
+	credentialsev "github.com/apache/airavata/api/credentials/service"
+	datasev "github.com/apache/airavata/api/data/service"
+
 	datamodel "github.com/apache/airavata/api/data/model"
-	datarepo "github.com/apache/airavata/api/data/repository"
-	iamrepo "github.com/apache/airavata/api/iam/repository"
-	model "github.com/apache/airavata/api/process/model"
-	"github.com/apache/airavata/api/process/repository"
+	"github.com/apache/airavata/api/process/dto"
+	procmodel "github.com/apache/airavata/api/process/model"
 )
 
 type LaunchService struct {
-	db                 *gorm.DB
-	processes          *repository.ProcessRepository
-	deployments        *applicationrepo.BatchDeploymentRepository
-	users              *iamrepo.UserRepository
-	statuses           *StatusService
+	db                     *gorm.DB
+	processService         *ProcessService
+	batchDeploymentService *appserv.BatchDeploymentService
+	templateService        *appserv.TemplateService
+	clusterService         *computesev.SlurmClusterService
+	clusterConfigService   *computesev.SlurmClusterConfigService
+	sshKeyService          *credentialsev.SSHKeyService
+	scpDataStorageService  *datasev.SCPDataStorageService
+	dataProductService     *datasev.DataProductService
+
 	dataStagingTasks   *repository.DataStagingTaskRepository
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository
 	monitoringTasks    *repository.JobMonitoringTaskRepository
 	interactiveTasks   *repository.InteractiveCommandTaskRepository
-	data               *datarepo.DataProductRepository
 }
 
-func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) error {
-	// Implementation for launching a process goes here
+// NewLaunchService returns a launch service.
+func NewLaunchService(
+	db *gorm.DB,
+	processService *ProcessService,
+	batchDeploymentService *appserv.BatchDeploymentService,
+	templateService *appserv.TemplateService,
+	clusterService *computesev.SlurmClusterService,
+	clusterConfigService *computesev.SlurmClusterConfigService,
+	sshKeyService *credentialsev.SSHKeyService,
+	scpDataStorageService *datasev.SCPDataStorageService,
+	dataProductService *datasev.DataProductService,
 
-	proc, err := s.processes.FindByID(ctx, processID)
+	dataStagingTasks *repository.DataStagingTaskRepository,
+	jobSubmissionTasks *repository.JobSubmissionTaskRepository,
+	monitoringTasks *repository.JobMonitoringTaskRepository,
+	interactiveTasks *repository.InteractiveCommandTaskRepository,
+) *LaunchService {
+	return &LaunchService{
+		db:                     db,
+		processService:         processService,
+		batchDeploymentService: batchDeploymentService,
+		templateService:        templateService,
+		clusterService:         clusterService,
+		clusterConfigService:   clusterConfigService,
+		sshKeyService:          sshKeyService,
+		scpDataStorageService:  scpDataStorageService,
+		dataProductService:     dataProductService,
+		dataStagingTasks:       dataStagingTasks,
+		jobSubmissionTasks:     jobSubmissionTasks,
+		monitoringTasks:        monitoringTasks,
+		interactiveTasks:       interactiveTasks,
+	}
+}
+
+// LaunchProcess turns a submitted process into the tasks that will carry it out.
+//
+// Owner-scoped, like the task routes and unlike the process reads: launching acts on a
+// host under the identity the run was submitted with, so it is the owner's to trigger.
+// The references it walks — the cluster config, each data product — are authorised in
+// turn by their own services, so a run cannot reach a config or a dataset its owner has
+// no standing on either.
+//
+// Launching is not idempotent: it writes a task per staged file plus a submission and a
+// monitoring task, so a second call would double them. A process that already carries
+// tasks is refused rather than launched again.
+func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*dto.Response, error) {
+	proc, err := s.processService.Get(ctx, processID)
 	if err != nil {
-		return notFoundAs(err, "Process not found: %s", processID)
+		return nil, notFoundAs(err, "Process not found: %s", processID)
+	}
+	if err := s.requireOwnership(ctx, proc); err != nil {
+		return nil, err
+	}
+	if err := s.requireNotLaunched(ctx, proc.ProcessID); err != nil {
+		return nil, err
 	}
 
-	if *proc.ProcessType == model.ProcessTypeBatchJob {
-		return s.launchBatchProcess(ctx, proc)
+	if proc.ProcessType == nil {
+		return nil, fmt.Errorf("Process %s has no process type", proc.ProcessID)
 	}
 
+	if *proc.ProcessType == procmodel.ProcessTypeBatchJob {
+		if err := s.launchBatchProcess(ctx, proc); err != nil {
+			return nil, err
+		}
+	}
+
+	return proc, nil
+}
+
+// requireOwnership allows the run's owner and platform admins. A process with no owner
+// belongs to nobody, so it must not match the empty principal name.
+func (s *LaunchService) requireOwnership(ctx context.Context, proc *dto.Response) error {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return err
+	}
+	owned := proc.UserID != nil && *proc.UserID == principal.Name
+	if !owned && !principal.IsAdmin() {
+		return httpx.Forbidden("Access denied: you may only launch your own processes")
+	}
 	return nil
 }
 
-func (s *LaunchService) launchBatchProcess(ctx context.Context, process *model.Process) error {
-	// Implementation for launching a batch process goes here
-	batchProcess := process.BatchProcess
-	batchDeployment := batchProcess.Deployment
-	clusterConfig := batchProcess.SlurmClusterConfig
-
-	if clusterConfig == nil {
-		return fmt.Errorf("No Slurm cluster config available for batch process")
+// requireNotLaunched reports a conflict when a process already carries the tasks a
+// launch creates. It is the guard that keeps a retried request from staging every input
+// twice and submitting the job twice over.
+func (s *LaunchService) requireNotLaunched(ctx context.Context, processID string) error {
+	staging, err := s.dataStagingTasks.FindByProcessID(ctx, processID)
+	if err != nil {
+		return err
 	}
-
-	// TODO(compute-rename): staging to and from the cluster is not wired to the new
-	// model yet. The account, key and work root a run uses now come from the
-	// SlurmClusterConfig it was submitted under, which is what this function reads
-	// above — but a DataStagingTask still addresses both ends by data-storage id, and a
-	// SlurmCluster carries no SCPDataStorage, so the cluster side of a staging task has
-	// nothing to point at until either the task grows a way to name a cluster config,
-	// or a storage is derived from the config's cluster and work root.
-	//
-	// Refused rather than guessed at: staging a run's inputs to the wrong place, or to
-	// a storage belonging to someone else, is worse than not launching it. This service
-	// is not yet wired into internal/app, so nothing reachable regresses on this path.
-	_ = batchDeployment.Cluster
-	return fmt.Errorf(
-		"launching batch process %s is not supported yet: data staging has not been "+
-			"migrated to the SlurmCluster/SlurmClusterConfig model", process.ID)
+	submissions, err := s.jobSubmissionTasks.FindByProcessID(ctx, processID)
+	if err != nil {
+		return err
+	}
+	if len(staging)+len(submissions) > 0 {
+		return httpx.Conflict("Process %s has already been launched", processID)
+	}
+	return nil
 }
 
-// launchBatchProcessStaging is the staging half of launchBatchProcess, kept for the
-// migration above to build on. It is unreachable until that TODO is resolved.
-func (s *LaunchService) launchBatchProcessStaging(ctx context.Context, process *model.Process, clusterStorage *datamodel.SCPDataStorage) error {
+func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Response) error {
+	// Implementation for launching a batch process goes here
 	batchProcess := process.BatchProcess
+
+	if batchProcess == nil {
+		return fmt.Errorf("Process %s has no batch process", process.ProcessID)
+	}
+
+	// Each of these is optional on the record it comes from, so it is checked before it
+	// is followed rather than dereferenced. A run whose deployment names no cluster, or
+	// whose deployment is missing outright, cannot be launched — a conflict with the
+	// state it was submitted in, not a fault in the request that asked.
+	if batchProcess.DeploymentID == nil {
+		return httpx.Conflict("Batch process %s names no deployment", batchProcess.BatchProcessID)
+	}
+
+	batchDeployment, err := s.batchDeploymentService.Get(ctx, *batchProcess.DeploymentID)
+	if err != nil {
+		return fmt.Errorf("Failed to get batch deployment %s: %v", *batchProcess.DeploymentID, err)
+	}
+
+	if batchDeployment == nil {
+		return fmt.Errorf("Batch process %s has no deployment", batchProcess.BatchProcessID)
+	}
+
+	if batchDeployment.TemplateID == nil {
+		return httpx.Conflict("Deployment %s names no application template", batchDeployment.DeploymentID)
+	}
+
+	template, err := s.templateService.Get(ctx, *batchDeployment.TemplateID)
+
+	if err != nil {
+		return fmt.Errorf("Failed to get template %s: %v", *batchDeployment.TemplateID, err)
+	}
+
+	if template == nil {
+		return fmt.Errorf("Batch deployment %s has no template", *batchDeployment.TemplateID)
+	}
+
+	if batchDeployment.SlurmClusterID == nil {
+		return httpx.Conflict("Deployment %s names no Slurm cluster, so there is nowhere to launch %s",
+			batchDeployment.DeploymentID, process.ProcessID)
+	}
+
+	cluster, err := s.clusterService.Get(ctx, *batchDeployment.SlurmClusterID)
+	if err != nil {
+		return fmt.Errorf("Failed to get cluster %s: %v", *batchDeployment.SlurmClusterID, err)
+	}
+
+	if cluster == nil {
+		return fmt.Errorf("Deployment %s has no cluster", *batchDeployment.SlurmClusterID)
+	}
+
+	clusterConfig, err := s.clusterConfigService.Get(ctx, batchProcess.SlurmClusterConfigID)
+	if err != nil {
+		return fmt.Errorf("Failed to get cluster config %s: %v", batchProcess.SlurmClusterConfigID, err)
+	}
+
+	if clusterConfig == nil {
+		return fmt.Errorf("Batch process %s has no cluster config", batchProcess.SlurmClusterConfigID)
+	}
+
+	workRoot := batchProcess.BaseWorkDir
+	if workRoot == nil || strings.TrimSpace(*workRoot) == "" {
+		workRoot = &clusterConfig.WorkRoot
+	}
+	if workRoot == nil || strings.TrimSpace(*workRoot) == "" {
+		return fmt.Errorf("Batch process %s has no base work dir", batchProcess.BatchProcessID)
+	}
 
 	inputMapping := batchProcess.InputMappings
 	outputMapping := batchProcess.OutputMappings
-
-	// Every staging path is built beneath the run's own subdirectory of this, so a run
-	// that named no base work dir has nowhere to stage to. The field is optional on the
-	// wire, which is why it is checked here rather than assumed.
-	if batchProcess.BaseWorkDir == nil || strings.TrimSpace(*batchProcess.BaseWorkDir) == "" {
-		return fmt.Errorf("Batch process %s has no base work dir", batchProcess.ID)
-	}
-
+	hpcStorageType := datamodel.DataStorageTypeHPC
 	for _, input := range inputMapping {
 		// Process each input mapping here
-		tempInput := input.TemplateInput
+		tempInput := findTemplateInput(template, input.TemplateInputID)
+
 		if tempInput == nil {
 			return fmt.Errorf("Input mapping %s has no template input", input.TemplateInputMappingID)
 		}
@@ -98,50 +228,55 @@ func (s *LaunchService) launchBatchProcessStaging(ctx context.Context, process *
 			return fmt.Errorf("Input mapping %s has no input type", input.TemplateInputMappingID)
 		}
 
-		if *tempInput.InputType == applicationmodel.TemplateInputTypeFile {
+		if *tempInput.InputType == appmod.TemplateInputTypeFile {
 			// Create a data staging task for the file input
 			dataProductId := input.Value
-			if *dataProductId == "" {
+			if dataProductId == nil || *dataProductId == "" {
 				return fmt.Errorf("Input mapping %s has no value", input.TemplateInputMappingID)
 			}
 
-			dataProduct, err := s.data.FindByID(ctx, *dataProductId)
+			dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
 			if err != nil {
 				return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
 			}
 
-			destPath := *batchProcess.BaseWorkDir + "/" + process.ID + "/" + *tempInput.InputName
-			destStorageType := datamodel.DataStorageTypeSCP
-			failureAction := model.OnFailureActionRetry
+			destPath := *workRoot + "/" + process.ProcessID + "/" + *&tempInput.InputName
+
+			failureAction := procmodel.OnFailureActionRetry
 			retryCount := 3
 			taskOrder := 0
-			dataStagingTask := &model.DataStagingTask{
-				ProcessID:                  &process.ID,
-				SourceDataStorageID:        dataProduct.DataStorageID,
-				SourcePath:                 dataProduct.Path,
-				SourceDataStorageType:      &dataProduct.DataStorageType,
-				DestinationDataStorageID:   &clusterStorage.ID,
-				DestinationDataStorageType: &destStorageType,
+
+			dataStagingTask := &procmodel.DataStagingTask{
+				ProcessID:             &process.ProcessID,
+				SourceDataStorageID:   dataProduct.DataStorageID,
+				SourcePath:            dataProduct.Path,
+				SourceDataStorageType: &dataProduct.DataStorageType,
+
+				DestinationDataStorageID:   &clusterConfig.SlurmClusterConfigID,
+				DestinationDataStorageType: &hpcStorageType,
 				DestinationPath:            &destPath,
 				OnFailure:                  &failureAction,
 				RetryCount:                 &retryCount,
 				TaskOrder:                  &taskOrder,
 			}
-			s.dataStagingTasks.Save(ctx, dataStagingTask)
+
+			if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
+				return err
+			}
 		}
 
-		if *tempInput.InputType == applicationmodel.TemplateInputTypeFileList {
+		if *tempInput.InputType == appmod.TemplateInputTypeFileList {
 			// Create a data staging task for the list input
 		}
 
-		if *tempInput.InputType == applicationmodel.TemplateInputTypeDirectory {
+		if *tempInput.InputType == appmod.TemplateInputTypeDirectory {
 			// Create a data staging task for the directory input
 		}
 	}
 
 	for _, output := range outputMapping {
 		// Process each output mapping here
-		tempOutput := output.TemplateOutput
+		tempOutput := findTemplateOutput(template, output.TemplateOutputID)
 		if tempOutput == nil {
 			return fmt.Errorf("Output mapping %s has no template output", output.TemplateOutputMappingID)
 		}
@@ -150,63 +285,88 @@ func (s *LaunchService) launchBatchProcessStaging(ctx context.Context, process *
 			return fmt.Errorf("Output mapping %s has no output type", output.TemplateOutputMappingID)
 		}
 
-		if *tempOutput.OutputType == applicationmodel.TemplateOutputTypeFile {
+		if *tempOutput.OutputType == appmod.TemplateOutputTypeFile {
 
 			dataProductId := output.Value
-			if *dataProductId == "" {
+			if dataProductId == nil || *dataProductId == "" {
 				return fmt.Errorf("Output mapping %s has no value", output.TemplateOutputMappingID)
 			}
 
-			dataProduct, err := s.data.FindByID(ctx, *dataProductId)
+			dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
 			if err != nil {
 				return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
 			}
 
 			// Create a data staging task for the file output
-			sourcePath := *batchProcess.BaseWorkDir + "/" + process.ID + "/" + *tempOutput.OutputName
-			sourceStorageType := datamodel.DataStorageTypeSCP
-			failureAction := model.OnFailureActionRetry
+
+			sourcePath := *workRoot + "/" + process.ProcessID + "/" + *&tempOutput.OutputName
+			destStorageType := datamodel.DataStorageTypeSCP
+			failureAction := procmodel.OnFailureActionRetry
 			retryCount := 3
 			taskOrder := 3
-			dataStagingTask := &model.DataStagingTask{
-				ProcessID:             &process.ID,
-				SourceDataStorageID:   &clusterStorage.ID,
+			dataStagingTask := &procmodel.DataStagingTask{
+				ProcessID:             &process.ProcessID,
+				SourceDataStorageID:   &clusterConfig.SlurmClusterConfigID,
 				SourcePath:            &sourcePath,
-				SourceDataStorageType: &sourceStorageType,
+				SourceDataStorageType: &hpcStorageType,
 
 				DestinationDataStorageID:   dataProduct.DataStorageID,
-				DestinationDataStorageType: &dataProduct.DataStorageType,
+				DestinationDataStorageType: &destStorageType,
 				DestinationPath:            dataProduct.Path,
 				OnFailure:                  &failureAction,
 				RetryCount:                 &retryCount,
 				TaskOrder:                  &taskOrder,
 			}
-			s.dataStagingTasks.Save(ctx, dataStagingTask)
+			if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
+				return err
+			}
 		}
 	}
 
-	jobSubmissionFailureAction := model.OnFailureActionExit
+	jobSubmissionFailureAction := procmodel.OnFailureActionExit
 	jobSubmissionRetryCount := 1
 	jobSubmissionTaskOrder := 1
-	jobSubmission := &model.JobSubmissionTask{
-		ProcessID:  &process.ID,
+	jobSubmission := &procmodel.JobSubmissionTask{
+		ProcessID:  &process.ProcessID,
 		OnFailure:  &jobSubmissionFailureAction,
 		RetryCount: &jobSubmissionRetryCount,
 		TaskOrder:  &jobSubmissionTaskOrder,
 	}
 
-	s.jobSubmissionTasks.Save(ctx, jobSubmission)
+	if err := s.jobSubmissionTasks.Save(ctx, jobSubmission); err != nil {
+		return err
+	}
 
 	jobMonitoringRetryCount := 10
 	jobMonitoringTaskOrder := 3
-	jobMonitoringFailureAction := model.OnFailureActionRetry
-	jobMonitoring := &model.JobMonitoringTask{
-		ProcessID:  &process.ID,
+	jobMonitoringFailureAction := procmodel.OnFailureActionRetry
+	jobMonitoring := &procmodel.JobMonitoringTask{
+		ProcessID:  &process.ProcessID,
 		OnFailure:  &jobMonitoringFailureAction,
 		RetryCount: &jobMonitoringRetryCount,
 		TaskOrder:  &jobMonitoringTaskOrder,
 	}
-	s.monitoringTasks.Save(ctx, jobMonitoring)
+	if err := s.monitoringTasks.Save(ctx, jobMonitoring); err != nil {
+		return err
+	}
 
+	return nil
+}
+
+func findTemplateInput(template *appdto.TemplateResponse, inputID string) *appdto.TemplateInputDTO {
+	for _, input := range template.Inputs {
+		if input.InputID == inputID {
+			return &input
+		}
+	}
+	return nil
+}
+
+func findTemplateOutput(template *appdto.TemplateResponse, outputID string) *appdto.TemplateOutputDTO {
+	for _, output := range template.Outputs {
+		if output.OutputID == outputID {
+			return &output
+		}
+	}
 	return nil
 }
