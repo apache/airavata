@@ -15,6 +15,7 @@ import (
 	service "github.com/apache/airavata/api/compute/service"
 	credmodel "github.com/apache/airavata/api/credentials/model"
 	credrepo "github.com/apache/airavata/api/credentials/repository"
+	credsvc "github.com/apache/airavata/api/credentials/service"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
@@ -55,7 +56,7 @@ func newConfigFixture(t *testing.T) *configFixture {
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
-	key := &credmodel.SSHKey{SSHKeyName: "alice-key", PublicKey: "ssh-ed25519 AAAA", PrivateKey: "secret"}
+	key := &credmodel.SSHKey{SSHKeyName: "alice-key", PublicKey: "ssh-ed25519 AAAA", PrivateKey: "secret", OwnerID: "alice"}
 	if err := gdb.Create(key).Error; err != nil {
 		t.Fatalf("create key: %v", err)
 	}
@@ -70,7 +71,7 @@ func newConfigFixture(t *testing.T) *configFixture {
 
 	return &configFixture{
 		gdb:       gdb,
-		configs:   service.NewSlurmClusterConfigService(gdb, configs, shares, clusters, keys, users, members),
+		configs:   service.NewSlurmClusterConfigService(gdb, configs, shares, clusters, credsvc.NewKeyAccess(keys), users, members),
 		sharing:   service.NewSlurmClusterConfigSharingService(gdb, configs, shares, groups, users, members),
 		clusterID: cluster.ID,
 		keyID:     key.ID,

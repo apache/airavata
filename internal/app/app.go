@@ -99,12 +99,14 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 	monitoringTasks := processrepo.NewJobMonitoringTaskRepository(db)
 	commandTasks := processrepo.NewInteractiveCommandTaskRepository(db)
 
-	// Two services are shared by others below, so they are built first rather than
-	// twice: StatusService because submitting a process records its first status in
-	// the same transaction, and ConfigAccess because a run is authorised against the
-	// cluster config it submits under.
+	// Three services are shared by others below, so they are built first rather than
+	// twice: StatusService because submitting a process records its first status in the
+	// same transaction, ConfigAccess because a run is authorised against the cluster
+	// config it submits under, and KeyAccess because both a cluster config and a data
+	// storage must own the key they present.
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, clusterConfigShares, groupMembers)
+	keyAccess := credentialssvc.NewKeyAccess(sshKeys)
 
 	return &Services{
 		Config: cfg,
@@ -116,17 +118,17 @@ func New(cfg config.Config, db *gorm.DB) *Services {
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.
-		SSHKey: credentialssvc.NewSSHKeyService(sshKeys, clusterConfigs, storages),
+		SSHKey: credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages),
 
 		SlurmCluster:              computesvc.NewSlurmClusterService(db, clusters, partitions, clusterConfigs),
 		ClusterPartition:          computesvc.NewClusterPartitionService(db, partitions, clusters),
-		SlurmClusterConfig:        computesvc.NewSlurmClusterConfigService(db, clusterConfigs, clusterConfigShares, clusters, sshKeys, users, groupMembers),
+		SlurmClusterConfig:        computesvc.NewSlurmClusterConfigService(db, clusterConfigs, clusterConfigShares, clusters, keyAccess, users, groupMembers),
 		SlurmClusterConfigSharing: computesvc.NewSlurmClusterConfigSharingService(db, clusterConfigs, clusterConfigShares, groups, users, groupMembers),
 
 		Template:        applicationsvc.NewTemplateService(db, templates, deployments),
 		BatchDeployment: applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters),
 
-		SCPDataStorage:        datasvc.NewSCPDataStorageService(db, storages, storageShares, sshKeys, products, users, groupMembers),
+		SCPDataStorage:        datasvc.NewSCPDataStorageService(db, storages, storageShares, keyAccess, products, users, groupMembers),
 		SCPDataStorageSharing: datasvc.NewSCPDataStorageSharingService(db, storages, storageShares, groups, users, groupMembers),
 		DataProduct:           datasvc.NewDataProductService(db, products, productShares, storages, storageShares, users, groupMembers),
 		DataProductSharing:    datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers),

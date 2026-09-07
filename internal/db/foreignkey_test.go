@@ -22,6 +22,7 @@ func TestForeignKeyDirections(t *testing.T) {
 	}
 	want := []fk{
 		{"user_roles", "user_id", "users", "user_id"},
+		{"ssh_keys", "owner_id", "users", "user_id"},
 		{"groups", "user_id", "users", "user_id"},
 		{"group_members", "group_id", "groups", "group_id"},
 		{"group_members", "user_id", "users", "user_id"},

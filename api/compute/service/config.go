@@ -13,7 +13,7 @@ import (
 	model "github.com/apache/airavata/api/compute/model"
 	"github.com/apache/airavata/api/compute/repository"
 	credmodel "github.com/apache/airavata/api/credentials/model"
-	credrepo "github.com/apache/airavata/api/credentials/repository"
+	credsvc "github.com/apache/airavata/api/credentials/service"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
 
@@ -136,13 +136,14 @@ func (a *ConfigAccess) RequireUsable(ctx context.Context, id string) (*model.Slu
 // SlurmClusterConfigService manages the login configs jobs are submitted through.
 //
 // Registering one is self-service: any authenticated caller may declare how they reach
-// a cluster from the catalogue, under a key from the SSH key catalogue, and it belongs
-// to them. Everyone else reaches it through its sharing rules.
+// a cluster from the catalogue, under one of their own SSH keys, and it belongs to
+// them. Everyone else reaches it through its sharing rules — which is how they submit
+// under a key they do not hold.
 type SlurmClusterConfigService struct {
 	configAccess
 	db       *gorm.DB
 	clusters *repository.SlurmClusterRepository
-	keys     *credrepo.SSHKeyRepository
+	keys     *credsvc.KeyAccess
 	users    *iamrepo.UserRepository
 }
 
@@ -152,7 +153,7 @@ func NewSlurmClusterConfigService(
 	configs *repository.SlurmClusterConfigRepository,
 	sharing *repository.SlurmClusterConfigSharingRepository,
 	clusters *repository.SlurmClusterRepository,
-	keys *credrepo.SSHKeyRepository,
+	keys *credsvc.KeyAccess,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
 ) *SlurmClusterConfigService {
@@ -238,14 +239,25 @@ func (s *SlurmClusterConfigService) Get(ctx context.Context, id string) (*dto.Sl
 // resolveReferences loads the cluster and the key a request names. Neither is created
 // here, so an id that resolves to nothing is a 404 rather than a config pointing at a
 // machine or a key that does not exist.
-func (s *SlurmClusterConfigService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.SlurmClusterConfigRequest) (*model.SlurmCluster, *credmodel.SSHKey, error) {
+//
+// held is the key the config already presents, or nil on create. Assigning a key needs
+// the caller to own it; keeping the one already there does not, so a grantee with WRITE
+// can edit a config without owning the key it logs in with — and still cannot point it
+// at a key of their own.
+func (s *SlurmClusterConfigService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.SlurmClusterConfigRequest, held *string) (*model.SlurmCluster, *credmodel.SSHKey, error) {
 	cluster, err := s.clusters.WithTx(tx).FindByID(ctx, req.SlurmClusterID)
 	if err != nil {
 		return nil, nil, notFoundAs(err, "Slurm cluster not found: %s", req.SlurmClusterID)
 	}
-	key, err := s.keys.WithTx(tx).FindByID(ctx, req.SSHKeyID)
+
+	keys := s.keys.WithTx(tx)
+	if held != nil && *held == req.SSHKeyID {
+		key, err := keys.Find(ctx, req.SSHKeyID)
+		return cluster, key, err
+	}
+	key, err := keys.RequireOwned(ctx, req.SSHKeyID)
 	if err != nil {
-		return nil, nil, notFoundAs(err, "SSH key not found: %s", req.SSHKeyID)
+		return nil, nil, err
 	}
 	return cluster, key, nil
 }
@@ -269,7 +281,7 @@ func (s *SlurmClusterConfigService) Create(ctx context.Context, req *dto.SlurmCl
 		if err != nil {
 			return notFoundAs(err, "No user record found for authenticated principal: %s", principal.Name)
 		}
-		cluster, key, err := s.resolveReferences(ctx, tx, req)
+		cluster, key, err := s.resolveReferences(ctx, tx, req, nil)
 		if err != nil {
 			return err
 		}
@@ -312,7 +324,7 @@ func (s *SlurmClusterConfigService) Update(ctx context.Context, id string, req *
 		if err != nil {
 			return err
 		}
-		cluster, key, err := s.resolveReferences(ctx, tx, req)
+		cluster, key, err := s.resolveReferences(ctx, tx, req, config.SSHKeyID)
 		if err != nil {
 			return err
 		}

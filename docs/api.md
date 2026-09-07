@@ -2,7 +2,7 @@
 
 Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via the `SERVER_PORT` env var).
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [Groups](#groups), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership and sharing rules rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH keys](#ssh-keys), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a key, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
 ## Error responses
 
@@ -46,9 +46,19 @@ Internal failures return `500` with a fixed `"Internal server error"` message: t
 
 ## SSH Keys
 
-An SSH key is a registered keypair. It is an administrative catalogue: reads are open — responses carry the public half only — while writes require `ADMIN` or `SUPER_ADMIN`.
+An SSH key is a registered keypair, and it belongs to whoever registered it. Registering one is self-service — any authenticated caller may — but nothing about it is reachable by anyone else: reading, updating and deleting a key are the owner's alone, and the listing returns only the caller's own keys.
 
-A key is what a [Slurm cluster config](#slurm-cluster-configs) presents when it logs in to a cluster, and what an [SCP data storage](#scp-data-storages) presents when data is staged through it. Each of those carries its own host and login user, so the key is the only thing they take from here — and the only reason a key cannot be deleted.
+**Platform admins are not treated as owners here**, unlike everywhere else in this API. There is no share to open a key up either. A key is the credential itself rather than something reached with one, so lending it out is what sharing a [cluster config](#share-a-slurm-cluster-config) or a [data storage](#share-an-scp-data-storage) is for — the key stays with its owner while other people submit and stage under it.
+
+A key is what a [Slurm cluster config](#slurm-cluster-configs) presents when it logs in to a cluster, and what an [SCP data storage](#scp-data-storages) presents when data is staged through it. Each of those carries its own host and login user, so the key is the only thing they take from here — and the only reason a key cannot be deleted. **Putting a key on either one requires owning it**: assigning a key means presenting its private half under a name of your choosing, so a request naming somebody else's key is `403 Forbidden`. Re-presenting the key a record already holds is not an assignment, which is what lets a `WRITE` grantee edit a config or a storage without owning the key on it.
+
+```
+GET    /api/v1/ssh-keys                 # the caller's own keys
+POST   /api/v1/ssh-keys
+GET    /api/v1/ssh-keys/{sshKeyId}      (owner)
+PUT    /api/v1/ssh-keys/{sshKeyId}      (owner)
+DELETE /api/v1/ssh-keys/{sshKeyId}      (owner)
+```
 
 ### Create SSH Key
 
@@ -56,7 +66,7 @@ A key is what a [Slurm cluster config](#slurm-cluster-configs) presents when it 
 POST /api/v1/ssh-keys
 ```
 
-Requires `ADMIN` or `SUPER_ADMIN` authority. Stores the keypair used to authenticate to a host — a cluster head node through a [cluster config](#slurm-cluster-configs), or a data host through an [SCP data storage](#scp-data-storages); `privateKey` and `passphrase` are write-only — they are never returned by any read endpoint.
+Requires an authenticated principal with a `users` row (see INSTALL.md's "Owning resources requires a matching `users` row"). The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Stores the keypair used to authenticate to a host — a cluster head node through a [cluster config](#slurm-cluster-configs), or a data host through an [SCP data storage](#scp-data-storages); `privateKey` and `passphrase` are write-only — they are never returned by any read endpoint.
 
 **curl example**
 
@@ -96,15 +106,26 @@ echo "$SSH_KEY_ID"
 
 **Response — `201 Created`**
 
-`sshKeyId` is server-generated (UUID). Note `privateKey` and `passphrase` are absent from the response — they cannot leak through this endpoint.
+`sshKeyId` is server-generated (UUID); `ownerId` is resolved from the caller's token, not a request field. Note `privateKey` and `passphrase` are absent from the response — they cannot leak through this endpoint.
 
 ```json
 {
   "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
   "sshKeyName": "expanse-key",
-  "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
+  "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+  "ownerId": "cilogon:12345"
 }
 ```
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `sshKeyName` or `publicKey` blank, or `privateKey` missing on create |
+| `401 Unauthorized` | no token — every route here needs one, reads included |
+| `403 Forbidden` | the key belongs to another user |
+| `404 Not Found` | no such key, or the caller has no `users` row |
+| `409 Conflict` | a cluster config or a data storage still presents the key |
 
 **Validation errors — `400 Bad Request`**
 
@@ -301,7 +322,7 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
 | `hostName` | string | required, cannot be blank |
 | `port` | integer | optional, 1-65535, defaults to `22` |
 | `loginUser` | string | required, cannot be blank |
-| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) |
+| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) **the caller owns** — assigning someone else's key is `403` |
 
 **Response — `201 Created`**
 
@@ -319,7 +340,8 @@ The key is inlined as its safe (public-only) summary — the private material is
   "sshKey": {
     "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
     "sshKeyName": "expanse-key",
-    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+    "ownerId": "cilogon:12345"
   },
   "permission": "WRITE"
 }
@@ -670,7 +692,7 @@ CLUSTER_CONFIG_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs 
 | `slurmClusterId` | string | required, must reference an existing [Slurm cluster](#create-slurm-cluster) |
 | `loginUser` | string | required, cannot be blank. The account on the head node |
 | `workRoot` | string | required, cannot be blank. Runs work beneath this directory |
-| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) |
+| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) **the caller owns** — assigning someone else's key is `403` |
 
 A `slurmClusterId` or `sshKeyId` that does not resolve is `404 Not Found` rather than a dangling reference.
 
@@ -701,7 +723,8 @@ The cluster is inlined, since a config is only meaningful together with the mach
   "sshKey": {
     "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
     "sshKeyName": "expanse-key",
-    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse"
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+    "ownerId": "cilogon:12345"
   },
   "permission": "WRITE"
 }

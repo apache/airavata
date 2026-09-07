@@ -33,11 +33,16 @@ func (r *SSHKeyRequest) Validate() []httpx.FieldError {
 // It has no private key or passphrase field at all. That is the containment: the
 // secrets cannot leak through this endpoint because there is nowhere for them to go.
 //
+// There is no owner field on the request side: ownership comes from the access token
+// and is immutable, so a key can neither be registered on someone else's behalf nor
+// handed over by editing it.
+//
 // Java: org.apache.airavata.credentials.dto.SSHKeyResponseDto
 type SSHKeyResponse struct {
 	SSHKeyID   string `json:"sshKeyId"`
 	SSHKeyName string `json:"sshKeyName"`
 	PublicKey  string `json:"publicKey"`
+	OwnerID    string `json:"ownerId"`
 }
 
 func ToSSHKeyResponse(k *model.SSHKey) SSHKeyResponse {
@@ -45,5 +50,6 @@ func ToSSHKeyResponse(k *model.SSHKey) SSHKeyResponse {
 		SSHKeyID:   k.ID,
 		SSHKeyName: k.SSHKeyName,
 		PublicKey:  k.PublicKey,
+		OwnerID:    k.OwnerID,
 	}
 }

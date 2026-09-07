@@ -25,6 +25,14 @@ func (r *SSHKeyRepository) FindAll(ctx context.Context) ([]model.SSHKey, error) 
 	return out, err
 }
 
+// FindByOwnerID returns every key registered by one user. There is no listing across
+// owners: a key is private to whoever registered it.
+func (r *SSHKeyRepository) FindByOwnerID(ctx context.Context, userID string) ([]model.SSHKey, error) {
+	var out []model.SSHKey
+	err := r.db.WithContext(ctx).Where("owner_id = ?", userID).Find(&out).Error
+	return out, err
+}
+
 // FindByID returns one key, or gorm.ErrRecordNotFound.
 func (r *SSHKeyRepository) FindByID(ctx context.Context, id string) (*model.SSHKey, error) {
 	var out model.SSHKey

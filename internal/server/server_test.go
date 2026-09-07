@@ -180,7 +180,7 @@ func (h *harness) seedCluster(name string) string {
 func (h *harness) seedClusterConfig(token, name string) (configID, clusterID string) {
 	h.t.Helper()
 	clusterID = h.seedCluster(name)
-	keyID := h.seedSSHKey(name)
+	keyID := h.seedSSHKey(name, token)
 	out := h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs", token, map[string]any{
 		"name": name, "slurmClusterId": clusterID,
 		"loginUser": "runner", "workRoot": "/scratch/runner", "sshKeyId": keyID,
@@ -188,10 +188,11 @@ func (h *harness) seedClusterConfig(token, name string) (configID, clusterID str
 	return out["slurmClusterConfigId"].(string), clusterID
 }
 
-// seedSSHKey registers a key as admin and returns its id.
-func (h *harness) seedSSHKey(name string) string {
+// seedSSHKey registers a key owned by the caller of token and returns its id. The
+// owner matters: only they may put it on a cluster config or a data storage.
+func (h *harness) seedSSHKey(name, token string) string {
 	h.t.Helper()
-	key := h.mustDo(http.MethodPost, "/api/v1/ssh-keys", tokenAdmin, map[string]any{
+	key := h.mustDo(http.MethodPost, "/api/v1/ssh-keys", token, map[string]any{
 		"sshKeyName": name, "publicKey": "ssh-ed25519 AAAA", "privateKey": "PRIVATE",
 	}, http.StatusCreated)
 	return key["sshKeyId"].(string)
@@ -208,7 +209,6 @@ func TestReadsAreOpenToAnonymousCallers(t *testing.T) {
 	h := newHarness(t)
 	for _, path := range []string{
 		"/api/v1/slurm-clusters",
-		"/api/v1/ssh-keys",
 		"/api/v1/application-templates",
 		"/api/v1/slurm-deployments",
 	} {
@@ -365,35 +365,145 @@ func TestUpdatingSSHKeyWithoutSecretsPreservesThem(t *testing.T) {
 	}
 }
 
+// A key belongs to whoever registered it and to nobody else. There is no share to open
+// one up, and platform admins get no standing on one either — reading or repointing
+// someone's key material is not an administrative act.
+func TestSSHKeyIsPrivateToItsOwner(t *testing.T) {
+	h := newHarness(t)
+	keyID := h.seedSSHKey("alices-key", tokenAlice)
+	base := "/api/v1/ssh-keys/" + keyID
+
+	created := h.mustDo(http.MethodGet, base, tokenAlice, nil, http.StatusOK)
+	if created["ownerId"] != "alice" {
+		t.Errorf("ownerId = %v, want it taken from the token", created["ownerId"])
+	}
+
+	update := map[string]any{"sshKeyName": "renamed", "publicKey": "ssh-ed25519 AAAA"}
+	for _, token := range []string{tokenBob, tokenAdmin} {
+		if rec := h.do(http.MethodGet, base, token, nil); rec.Code != http.StatusForbidden {
+			t.Errorf("read by %s: status = %d, want 403", token, rec.Code)
+		}
+		if rec := h.do(http.MethodPut, base, token, update); rec.Code != http.StatusForbidden {
+			t.Errorf("update by %s: status = %d, want 403", token, rec.Code)
+		}
+		if rec := h.do(http.MethodDelete, base, token, nil); rec.Code != http.StatusForbidden {
+			t.Errorf("delete by %s: status = %d, want 403", token, rec.Code)
+		}
+	}
+	h.mustDo(http.MethodPut, base, tokenAlice, update, http.StatusOK)
+
+	// Listing is the caller's own keys, so it never becomes a way around the above.
+	if mine := h.list("/api/v1/ssh-keys", tokenAlice); len(mine) != 1 {
+		t.Errorf("alice's keys = %d, want 1", len(mine))
+	}
+	for _, token := range []string{tokenBob, tokenAdmin} {
+		if theirs := h.list("/api/v1/ssh-keys", token); len(theirs) != 0 {
+			t.Errorf("%s sees %d of alice's keys, want 0", token, len(theirs))
+		}
+	}
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-keys", "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous list: status = %d, want 401", rec.Code)
+	}
+}
+
+// Putting a key on a cluster config or a data storage is presenting its private half
+// under a name of the caller's choosing, so it is refused unless they own the key.
+func TestAssigningAKeyRequiresOwningIt(t *testing.T) {
+	h := newHarness(t)
+	aliceKey := h.seedSSHKey("alices-key", tokenAlice)
+	clusterID := h.seedCluster("shared-machine")
+
+	config := map[string]any{
+		"slurmClusterId": clusterID, "loginUser": "bob",
+		"workRoot": "/scratch/bob", "sshKeyId": aliceKey,
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-cluster-configs", tokenBob, config); rec.Code != http.StatusForbidden {
+		t.Errorf("config on another user's key: status = %d, want 403", rec.Code)
+	}
+	storage := map[string]any{
+		"dataName": "bobs-scratch", "hostName": "data.example.edu",
+		"loginUser": "bob", "sshKeyId": aliceKey,
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenBob, storage); rec.Code != http.StatusForbidden {
+		t.Errorf("storage on another user's key: status = %d, want 403", rec.Code)
+	}
+
+	// An admin has no more standing here than bob: the key is alice's.
+	if rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenAdmin, storage); rec.Code != http.StatusForbidden {
+		t.Errorf("storage registered by an admin on alice's key: status = %d, want 403", rec.Code)
+	}
+
+	// With his own key, both go through.
+	bobKey := h.seedSSHKey("bobs-key", tokenBob)
+	config["sshKeyId"], storage["sshKeyId"] = bobKey, bobKey
+	h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs", tokenBob, config, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", tokenBob, storage, http.StatusCreated)
+}
+
+// Editing a record someone shared with you is not assigning a key: a WRITE grantee may
+// change what a storage says while it keeps the owner's key. Swapping in a different
+// key follows the same rule as anywhere else — it has to be one of theirs.
+func TestGranteeMayEditAroundAKeyTheyDoNotOwn(t *testing.T) {
+	h := newHarness(t)
+	aliceKey, storageID := h.seedStorage("shared-staging", tokenAlice)
+	base := "/api/v1/scp-data-storages/" + storageID
+	h.shareStorageWithUser(storageID, "bob", "WRITE", tokenAlice)
+
+	body := func(keyID string) map[string]any {
+		return map[string]any{
+			"dataName": "renamed", "hostName": "shared-staging.example.edu",
+			"loginUser": "runner", "sshKeyId": keyID,
+		}
+	}
+
+	// Re-presenting alice's key while renaming the storage is fine: keeping the key
+	// already on the record is not an assignment, so bob needs no standing on it.
+	h.mustDo(http.MethodPut, base, tokenBob, body(aliceKey), http.StatusOK)
+
+	// Putting a third party's key on it is refused — bob owns neither.
+	adminKey := h.seedSSHKey("admins-key", tokenAdmin)
+	if rec := h.do(http.MethodPut, base, tokenBob, body(adminKey)); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee assigning a third party's key: status = %d, want 403", rec.Code)
+	}
+
+	// His own key he may lend: assigning is allowed exactly when the caller owns the
+	// key, so after the swap the storage stages under bob's.
+	bobKey := h.seedSSHKey("bobs-key", tokenBob)
+	updated := h.mustDo(http.MethodPut, base, tokenBob, body(bobKey), http.StatusOK)
+	if updated["sshKeyId"] != bobKey {
+		t.Errorf("sshKeyId = %v, want bob's key %s", updated["sshKeyId"], bobKey)
+	}
+}
+
 // Nothing in the schema stops a key from being deleted out from under a credential,
 // so the service has to.
 func TestDeletingSSHKeyInUseConflicts(t *testing.T) {
 	h := newHarness(t)
 
 	// Held by a cluster config: what a run logs in with.
-	configKey := h.seedSSHKey("config-key")
+	configKey := h.seedSSHKey("config-key", tokenAlice)
 	clusterID := h.seedCluster("in-use")
 	h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs", tokenAlice, map[string]any{
 		"slurmClusterId": clusterID, "loginUser": "runner",
 		"workRoot": "/scratch/runner", "sshKeyId": configKey,
 	}, http.StatusCreated)
-	if rec := h.do(http.MethodDelete, "/api/v1/ssh-keys/"+configKey, tokenAdmin, nil); rec.Code != http.StatusConflict {
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-keys/"+configKey, tokenAlice, nil); rec.Code != http.StatusConflict {
 		t.Errorf("delete of a key a config presents: status = %d, want 409", rec.Code)
 	}
 
 	// Held by a data storage: what a dataset is staged under.
-	storageKey := h.seedSSHKey("storage-key")
+	storageKey := h.seedSSHKey("storage-key", tokenAlice)
 	h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", tokenAlice, map[string]any{
 		"dataName": "in-use", "hostName": "in-use.example.edu",
 		"loginUser": "runner", "sshKeyId": storageKey,
 	}, http.StatusCreated)
-	if rec := h.do(http.MethodDelete, "/api/v1/ssh-keys/"+storageKey, tokenAdmin, nil); rec.Code != http.StatusConflict {
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-keys/"+storageKey, tokenAlice, nil); rec.Code != http.StatusConflict {
 		t.Errorf("delete of a key a storage presents: status = %d, want 409", rec.Code)
 	}
 
 	// Presented by nothing, it goes.
-	freeKey := h.seedSSHKey("free-key")
-	h.mustDo(http.MethodDelete, "/api/v1/ssh-keys/"+freeKey, tokenAdmin, nil, http.StatusNoContent)
+	freeKey := h.seedSSHKey("free-key", tokenAlice)
+	h.mustDo(http.MethodDelete, "/api/v1/ssh-keys/"+freeKey, tokenAlice, nil, http.StatusNoContent)
 }
 
 func TestDeletingTemplateWithDeploymentsConflicts(t *testing.T) {
@@ -623,7 +733,7 @@ func TestStrongestShareWins(t *testing.T) {
 // SSH key it stages under along with its id.
 func (h *harness) seedStorage(name, token string) (keyID, storageID string) {
 	h.t.Helper()
-	keyID = h.seedSSHKey(name)
+	keyID = h.seedSSHKey(name, token)
 	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", token, map[string]any{
 		"dataName": name, "hostName": name + ".example.edu",
 		"loginUser": "runner", "sshKeyId": keyID,
@@ -750,7 +860,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 // rather than a storage pointing at a key that does not exist.
 func TestStorageRegistrationValidatesItsHostAndKey(t *testing.T) {
 	h := newHarness(t)
-	keyID := h.seedSSHKey("validation")
+	keyID := h.seedSSHKey("validation", tokenAlice)
 	body := func(over map[string]any) map[string]any {
 		out := map[string]any{
 			"dataName": "scratch", "hostName": "login.example.edu",
@@ -1761,7 +1871,7 @@ func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
 func TestUnregisteredPrincipalCannotOwnResources(t *testing.T) {
 	h := newHarness(t)
 	clusterID := h.seedCluster("ghost")
-	keyID := h.seedSSHKey("ghost")
+	keyID := h.seedSSHKey("ghost", tokenAlice)
 
 	// A token naming a principal with no users row.
 	introspector := stubIntrospector{

@@ -72,6 +72,12 @@
 -- reference it. Development-only again, so this is a re-recording rather than a
 -- migration.
 --
+-- Re-recorded a seventh time when ssh_keys gained an owner. A key used to be an
+-- admin-managed catalogue row any caller could point at; it now carries owner_id and is
+-- private to whoever registered it, which is what lets registering one be self-service
+-- without also letting anyone present somebody else's key material. Development-only
+-- again, so this is a re-recording rather than a migration.
+--
 -- Do not hand-edit this file once it has run anywhere outside development: a change to
 -- a table's shape belongs in a new migration (0002_..., 0003_..., ...), the same way
 -- ddl-auto never narrows a column and this framework never rewrites history.
@@ -83,7 +89,9 @@
 
 CREATE TABLE "users" ("user_id" varchar(255),"auth_method" varchar(32),"email" varchar(255),"first_name" varchar(255),"last_name" varchar(255),"status" varchar(32),"created_at" bigint NOT NULL,PRIMARY KEY ("user_id"));
 
-CREATE TABLE "ssh_keys" ("ssh_key_id" varchar(36),"ssh_key_name" varchar(255) NOT NULL,"public_key" text NOT NULL,"private_key" text NOT NULL,"passphrase" varchar(255),PRIMARY KEY ("ssh_key_id"));
+CREATE TABLE "ssh_keys" ("ssh_key_id" varchar(36),"ssh_key_name" varchar(255) NOT NULL,"public_key" text NOT NULL,"private_key" text NOT NULL,"passphrase" varchar(255),"owner_id" varchar(255) NOT NULL,PRIMARY KEY ("ssh_key_id"),CONSTRAINT "fk_ssh_keys_owner" FOREIGN KEY ("owner_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_ssh_keys_owner_id" ON "ssh_keys" ("owner_id");
 
 CREATE TABLE "application_templates" ("template_id" varchar(36),"template_name" varchar(255),"template_description" varchar(2048),PRIMARY KEY ("template_id"));
 

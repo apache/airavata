@@ -10,7 +10,7 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
-	credrepo "github.com/apache/airavata/api/credentials/repository"
+	credsvc "github.com/apache/airavata/api/credentials/service"
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
@@ -106,13 +106,13 @@ func requireStorageReadable(ctx context.Context, base access, sharing *repositor
 // SCPDataStorageService manages the storages datasets are staged through.
 //
 // Registering one is self-service: any authenticated caller may declare a storage on a
-// host of their choosing, under an account of their choosing, presenting a key from
-// the SSH key catalog, and it belongs to them. Everyone else reaches it through its
-// sharing rules.
+// host of their choosing, under an account of their choosing, presenting one of their
+// own SSH keys, and it belongs to them. Everyone else reaches it through its sharing
+// rules — which is how they stage under a key they do not hold.
 type SCPDataStorageService struct {
 	storageAccess
 	db       *gorm.DB
-	keys     *credrepo.SSHKeyRepository
+	keys     *credsvc.KeyAccess
 	products *repository.DataProductRepository
 	users    *iamrepo.UserRepository
 }
@@ -122,7 +122,7 @@ func NewSCPDataStorageService(
 	db *gorm.DB,
 	storages *repository.SCPDataStorageRepository,
 	sharing *repository.SCPDataStorageSharingRepository,
-	keys *credrepo.SSHKeyRepository,
+	keys *credsvc.KeyAccess,
 	products *repository.DataProductRepository,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
@@ -209,12 +209,17 @@ func (s *SCPDataStorageService) Get(ctx context.Context, id string) (*dto.SCPDat
 // resolveKey loads the SSH key a request names. It is not created here, so an id that
 // resolves to nothing is a 404 rather than a storage pointing at a key that does not
 // exist.
-func (s *SCPDataStorageService) resolveKey(ctx context.Context, tx *gorm.DB, req *dto.SCPDataStorageRequest) (*credmodel.SSHKey, error) {
-	key, err := s.keys.WithTx(tx).FindByID(ctx, req.SSHKeyID)
-	if err != nil {
-		return nil, notFoundAs(err, "SSH key not found: %s", req.SSHKeyID)
+//
+// held is the key the storage already presents, or nil on create. Assigning a key needs
+// the caller to own it; keeping the one already there does not, so a grantee with WRITE
+// can rename a storage or move its host without owning the key it stages under — and
+// still cannot point it at a key of their own.
+func (s *SCPDataStorageService) resolveKey(ctx context.Context, tx *gorm.DB, req *dto.SCPDataStorageRequest, held *string) (*credmodel.SSHKey, error) {
+	keys := s.keys.WithTx(tx)
+	if held != nil && *held == req.SSHKeyID {
+		return keys.Find(ctx, req.SSHKeyID)
 	}
-	return key, nil
+	return keys.RequireOwned(ctx, req.SSHKeyID)
 }
 
 // Create registers a storage owned by the calling user, on the host it names and under
@@ -236,7 +241,7 @@ func (s *SCPDataStorageService) Create(ctx context.Context, req *dto.SCPDataStor
 		if err != nil {
 			return notFoundAs(err, "No user record found for authenticated principal: %s", principal.Name)
 		}
-		key, err := s.resolveKey(ctx, tx, req)
+		key, err := s.resolveKey(ctx, tx, req, nil)
 		if err != nil {
 			return err
 		}
@@ -277,7 +282,7 @@ func (s *SCPDataStorageService) Update(ctx context.Context, id string, req *dto.
 		if err != nil {
 			return err
 		}
-		key, err := s.resolveKey(ctx, tx, req)
+		key, err := s.resolveKey(ctx, tx, req, storage.SSHKeyID)
 		if err != nil {
 			return err
 		}

@@ -2,6 +2,7 @@
 package model
 
 import (
+	iam "github.com/apache/airavata/api/iam/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,12 @@ import (
 // no field on the read-side response DTO, so they cannot leak through a GET. Update
 // paths must treat a blank incoming value as "unchanged" rather than "erase" — see
 // ptr.NonBlank.
+//
+// It belongs to whoever registered it, and — unlike every other owned record here —
+// there is no sharing model to reach it by. A key is the credential itself rather than
+// something reached with one, so a cluster config or a data storage may only present a
+// key its own owner registered. Sharing the config is how someone else submits under
+// it; the key never leaves its owner.
 //
 // Java: org.apache.airavata.credentials.model.SSHKeyEntity
 type SSHKey struct {
@@ -24,6 +31,18 @@ type SSHKey struct {
 	PrivateKey string `gorm:"column:private_key;type:text;not null" json:"-"`
 
 	Passphrase *string `gorm:"column:passphrase;type:varchar(255)" json:"-"`
+
+	// OwnerID is varchar(255) to match users.user_id: a CILogon subject is far longer
+	// than a UUID. RESTRICT, so a user who still owns keys cannot be deleted out from
+	// under them.
+	OwnerID string    `gorm:"column:owner_id;type:varchar(255);not null;index" json:"ownerId"`
+	Owner   *iam.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+}
+
+// OwnedBy reports whether userID owns this key. A key with no owner is owned by
+// nobody, so it must not match the empty principal name.
+func (k *SSHKey) OwnedBy(userID string) bool {
+	return k.OwnerID != "" && k.OwnerID == userID
 }
 
 // TableName returns the table backing SSHKey.
