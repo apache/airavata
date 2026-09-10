@@ -19,6 +19,71 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// Note: Only use DownloadFileFromSCP and UploadFileToSCP for SCP transfers. Do not use
+// any of the utility methods outside of this file. They are considered internal implementation details. Also,
+// DO NOT change internal implementation logic unless you fully understand the implications.
+
+// Copies a single remote file to localPath over SSH
+func DownloadFileFromSCP(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string, localPath string) error {
+	target := fmt.Sprintf("scp download %s@%s:%s", username, host, remotePath)
+
+	t, err := intializeSession(ctx, host, port, username, key, "-f", remotePath, target)
+	if err != nil {
+		return err
+	}
+	defer t.close()
+
+	if err := receiveSCPFile(t.stdout, t.stdin, localPath); err != nil {
+		return t.fail(err)
+	}
+	if err := t.finish(); err != nil {
+		return err
+	}
+
+	slog.Info("Downloaded file over SCP", "host", host, "remotePath", remotePath, "localPath", localPath)
+	return nil
+}
+
+// Uploads a single local file to a remote endpoint
+func UploadFileToSCP(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, localPath string, remotePath string) error {
+	target := fmt.Sprintf("scp upload %s@%s:%s", username, host, remotePath)
+
+	// Validate the local file before attempting the SCP upload.
+	file, err := os.Open(localPath)
+	if err != nil {
+		return fmt.Errorf("%s: %w", target, err)
+	}
+	defer file.Close()
+	info, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("%s: %w", target, err)
+	}
+	if info.IsDir() {
+		return fmt.Errorf("%s: %s is a directory: recursive scp upload is not supported", target, localPath)
+	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("%s: %s is not a regular file, so the size it would announce cannot be trusted", target, localPath)
+	}
+
+	t, err := intializeSession(ctx, host, port, username, key, "-t", remotePath, target)
+	if err != nil {
+		return err
+	}
+	defer t.close()
+
+	if err := sendSCPFile(t.stdout, t.stdin, file, filepath.Base(localPath), info.Mode().Perm(), info.Size()); err != nil {
+		return t.fail(err)
+	}
+	if err := t.finish(); err != nil {
+		return err
+	}
+
+	slog.Info("Uploaded file over SCP", "host", host, "localPath", localPath, "remotePath", remotePath)
+	return nil
+}
+
+// ========================== Utility section =====================================
+
 // scpOK is the byte each side of the SCP wire protocol writes to acknowledge the
 // other's last message. A leading 0x01 or 0x02 instead introduces a one-line error,
 // which is the only way a remote scp reports a missing or unreadable path.
@@ -29,73 +94,147 @@ const scpOK = 0x00
 // attempt quickly rather than hold a worker slot until the OS gives up on the socket.
 const scpDialTimeout = 30 * time.Second
 
-func downloadFromSCP(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string, localPath string) error {
-	target := fmt.Sprintf("%s@%s:%s", username, host, remotePath)
+type scpTransfer struct {
+	client  *ssh.Client
+	session *ssh.Session
+	stdin   io.WriteCloser
+	stdout  *bufio.Reader
+	stderr  *bytes.Buffer
+	ctx     context.Context
+	done    chan struct{}
+	target  string
+}
 
+func intializeSession(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, direction, remotePath, target string) (*scpTransfer, error) {
 	client, err := dialSSH(ctx, host, port, username, key)
 	if err != nil {
-		return fmt.Errorf("scp download %s: %w", target, err)
+		return nil, fmt.Errorf("%s: %w", target, err)
 	}
-	defer client.Close()
-
 	session, err := client.NewSession()
 	if err != nil {
-		return fmt.Errorf("scp download %s: opening session: %w", target, err)
+		client.Close()
+		return nil, fmt.Errorf("%s: opening session: %w", target, err)
 	}
-	defer session.Close()
-
-	stdin, err := session.StdinPipe()
-	if err != nil {
-		return fmt.Errorf("scp download %s: %w", target, err)
+	t := &scpTransfer{client: client, session: session, ctx: ctx, target: target, done: make(chan struct{})}
+	if t.stdin, err = session.StdinPipe(); err != nil {
+		session.Close()
+		client.Close()
+		return nil, fmt.Errorf("%s: %w", target, err)
 	}
 	stdout, err := session.StdoutPipe()
 	if err != nil {
-		return fmt.Errorf("scp download %s: %w", target, err)
+		session.Close()
+		client.Close()
+		return nil, fmt.Errorf("%s: %w", target, err)
 	}
-	var stderr bytes.Buffer
-	session.Stderr = &stderr
+	t.stdout = bufio.NewReader(stdout)
+	t.stderr = &bytes.Buffer{}
+	session.Stderr = t.stderr
 
-	done := make(chan struct{})
-	defer close(done)
+	// A session read blocks on the network, so cancellation has to arrive by closing
+	// the session under it. done stops the watcher when the transfer finishes first.
 	go func() {
 		select {
 		case <-ctx.Done():
 			session.Close()
-		case <-done:
+		case <-t.done:
 		}
 	}()
 
-	if err := session.Start("scp -f " + shellQuote(remotePath)); err != nil {
-		return fmt.Errorf("scp download %s: starting remote scp: %w", target, err)
+	if err := session.Start("scp " + direction + " " + shellQuote(remotePath)); err != nil {
+		t.close()
+		return nil, fmt.Errorf("%s: starting remote scp: %w", target, err)
 	}
+	return t, nil
+}
 
-	if err := receiveSCPFile(bufio.NewReader(stdout), stdin, localPath); err != nil {
-		if ctxErr := ctx.Err(); ctxErr != nil {
-			return fmt.Errorf("scp download %s: %w", target, ctxErr)
-		}
-		if remote := strings.TrimSpace(stderr.String()); remote != "" {
-			return fmt.Errorf("scp download %s: %w (remote: %s)", target, err, remote)
-		}
-		return fmt.Errorf("scp download %s: %w", target, err)
-	}
+func (t *scpTransfer) close() {
+	close(t.done)
+	t.session.Close()
+	t.client.Close()
+}
 
-	// Closing stdin ends the transfer; the remote scp then exits.
-	if err := stdin.Close(); err != nil {
-		return fmt.Errorf("scp download %s: %w", target, err)
+// fail names the transfer in err. A cancelled context takes precedence, because every
+// read and write fails once the session is closed under it and the resulting I/O error
+// says nothing useful. Whatever the remote scp wrote to stderr is folded in.
+func (t *scpTransfer) fail(err error) error {
+	if ctxErr := t.ctx.Err(); ctxErr != nil {
+		return fmt.Errorf("%s: %w", t.target, ctxErr)
 	}
-	if err := session.Wait(); err != nil {
-		if ctxErr := ctx.Err(); ctxErr != nil {
-			return fmt.Errorf("scp download %s: %w", target, ctxErr)
-		}
-		return fmt.Errorf("scp download %s: remote scp exited: %w (remote: %s)", target, err, strings.TrimSpace(stderr.String()))
+	if remote := strings.TrimSpace(t.stderr.String()); remote != "" {
+		return fmt.Errorf("%s: %w (remote: %s)", t.target, err, remote)
 	}
+	return fmt.Errorf("%s: %w", t.target, err)
+}
 
-	slog.Info("Downloaded file over SCP", "host", host, "remotePath", remotePath, "localPath", localPath)
+// Graceful completion of the scp transfer. It closes the stdin to signal the end of the transfer
+// and waits for the remote scp process to exit, returning any errors encountered.
+func (t *scpTransfer) finish() error {
+	if err := t.stdin.Close(); err != nil {
+		return t.fail(err)
+	}
+	if err := t.session.Wait(); err != nil {
+		return t.fail(fmt.Errorf("remote scp exited: %w", err))
+	}
 	return nil
 }
 
-func uploadToSCP(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, localPath string, remotePath string) error {
-	return nil
+// sendSCPFile drives the source half of the protocol: wait to be invited, announce the
+// file, write exactly the announced bytes, close it with a zero byte of our own, and
+// read the remote's verdict.
+//
+// Every step waits for an acknowledgement before the next, so a refusal — no such
+// directory, permission denied, disk full — surfaces as an error here rather than as a
+// transfer that appears to succeed and leaves nothing on the host.
+func sendSCPFile(r *bufio.Reader, w io.Writer, src io.Reader, name string, mode os.FileMode, size int64) error {
+	// A name is interpolated into a header line the remote parses, so a newline would
+	// inject a second header and a slash would move the file out of the directory the
+	// caller named.
+	if name == "" || strings.ContainsAny(name, "\n/") {
+		return fmt.Errorf("unusable remote file name %q", name)
+	}
+	if err := readSCPAck(r); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "C%04o %d %s\n", mode.Perm(), size, name); err != nil {
+		return fmt.Errorf("sending scp file header: %w", err)
+	}
+	if err := readSCPAck(r); err != nil {
+		return err
+	}
+	// Exactly size bytes: the header already committed to that count, so a file that
+	// grew under us must not spill into the next protocol message, and one that shrank
+	// has to fail rather than leave the remote waiting.
+	if _, err := io.CopyN(w, src, size); err != nil {
+		return fmt.Errorf("sending %d bytes: %w", size, err)
+	}
+	if err := scpAck(w); err != nil {
+		return err
+	}
+	return readSCPAck(r)
+}
+
+// readSCPAck reads the remote's verdict on what was just sent. A zero byte accepts it;
+// 0x01 or 0x02 introduce a one-line description of the refusal.
+func readSCPAck(r *bufio.Reader) error {
+	b, err := r.ReadByte()
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			return errors.New("remote closed the connection without acknowledging (is scp installed on the host?)")
+		}
+		return fmt.Errorf("reading scp acknowledgement: %w", err)
+	}
+	if b == scpOK {
+		return nil
+	}
+	line, err := r.ReadString('\n')
+	if err != nil && !errors.Is(err, io.EOF) {
+		return fmt.Errorf("reading scp error message: %w", err)
+	}
+	if line = strings.TrimRight(line, "\n"); line == "" {
+		line = "unspecified error"
+	}
+	return fmt.Errorf("remote scp: %s", line)
 }
 
 func receiveSCPFile(r *bufio.Reader, w io.Writer, localPath string) error {

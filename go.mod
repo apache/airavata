@@ -7,6 +7,7 @@ require (
 	github.com/glebarez/sqlite v1.11.0
 	github.com/google/uuid v1.6.0
 	github.com/stretchr/testify v1.10.0
+	golang.org/x/crypto v0.42.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.2
 )
@@ -33,7 +34,6 @@ require (
 	github.com/stretchr/objx v0.5.2 // indirect
 	go.opentelemetry.io/otel v1.31.0 // indirect
 	go.opentelemetry.io/otel/trace v1.31.0 // indirect
-	golang.org/x/crypto v0.42.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
