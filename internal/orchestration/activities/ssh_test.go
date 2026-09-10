@@ -92,4 +92,26 @@ func TestSCPUpload(t *testing.T) {
 		t.Fatalf("SCP upload failed: %v", err)
 	}
 	t.Logf("SCP upload completed in %v", time.Since(startTime))
+
+	metadata, err := GetSCPFileMetadata(t.Context(), host, 22, username, credmodel.SSHKey{
+		PrivateKey: privateKeyStr,
+		Passphrase: &passphrase,
+	}, "/home/"+username+"/randomupload.bin")
+
+	if err != nil {
+		t.Fatalf("Failed to get SCP file metadata: %v", err)
+	}
+
+	if metadata == nil {
+		t.Fatalf("SCP file metadata is nil")
+	}
+
+	if metadata.Size != int64(len("random data")) {
+		t.Fatalf("SCP file size mismatch: expected %d, got %d", len("random data"), metadata.Size)
+	}
+
+	if !metadata.Mode.Perm().IsRegular() {
+		t.Fatalf("SCP file mode mismatch: expected a regular file")
+	}
+	t.Logf("SCP file metadata: %+v", metadata)
 }

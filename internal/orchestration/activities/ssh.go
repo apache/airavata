@@ -82,6 +82,42 @@ func UploadFileToSCP(ctx context.Context, host string, port int, username string
 	return nil
 }
 
+// Reads the mode, size and name a remote scp announces for a single remote file,
+// without transferring its contents.
+func GetSCPFileMetadata(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string) (*FileMetadata, error) {
+	target := fmt.Sprintf("scp stat %s@%s:%s", username, host, remotePath)
+
+	t, err := intializeSession(ctx, host, port, username, key, "-f", remotePath, target)
+	if err != nil {
+		return nil, err
+	}
+	defer t.close()
+
+	// The opening acknowledgement invites the header, and nothing beyond it.
+	if err := scpAck(t.stdin); err != nil {
+		return nil, t.fail(err)
+	}
+	msg, err := readSCPMessage(t.stdout)
+	if err != nil {
+		return nil, t.fail(err)
+	}
+	if msg[0] != 'C' {
+		return nil, t.fail(fmt.Errorf("remote path is not a plain file: scp announced %q", msg))
+	}
+	mode, size, name, err := parseSCPFileHeader(msg)
+	if err != nil {
+		return nil, t.fail(err)
+	}
+
+	// Path carries the name scp announced, which is the remote basename rather than
+	// the path asked about.
+	return &FileMetadata{
+		Path: name,
+		Size: size,
+		Mode: mode,
+	}, nil
+}
+
 // ========================== Utility section =====================================
 
 // scpOK is the byte each side of the SCP wire protocol writes to acknowledge the
@@ -254,7 +290,7 @@ func receiveSCPFile(r *bufio.Reader, w io.Writer, localPath string) error {
 				return err
 			}
 		case 'C':
-			mode, size, err := parseSCPFileHeader(msg)
+			mode, size, _, err := parseSCPFileHeader(msg)
 			if err != nil {
 				return err
 			}
@@ -309,23 +345,25 @@ func readSCPMessage(r *bufio.Reader) (string, error) {
 	return string(kind) + line, nil
 }
 
-// parseSCPFileHeader reads a "C<mode> <size> <name>" header. The name is the remote's
-// basename and is deliberately ignored: the caller chose where the bytes land, and
-// honouring a name the remote picked would let it write outside that path.
-func parseSCPFileHeader(msg string) (os.FileMode, int64, error) {
+// parseSCPFileHeader reads a "C<mode> <size> <name>" header. The name is split off as
+// the last field rather than on every space, because a remote file name may contain
+// them. A download ignores the name — the caller chose where the bytes land, and
+// honouring a name the remote picked would let it write outside that path — but a
+// metadata probe reports it.
+func parseSCPFileHeader(msg string) (os.FileMode, int64, string, error) {
 	fields := strings.SplitN(msg[1:], " ", 3)
 	if len(fields) != 3 {
-		return 0, 0, fmt.Errorf("malformed scp file header %q", msg)
+		return 0, 0, "", fmt.Errorf("malformed scp file header %q", msg)
 	}
 	mode, err := strconv.ParseUint(fields[0], 8, 32)
 	if err != nil {
-		return 0, 0, fmt.Errorf("malformed mode in scp file header %q", msg)
+		return 0, 0, "", fmt.Errorf("malformed mode in scp file header %q", msg)
 	}
 	size, err := strconv.ParseInt(fields[1], 10, 64)
 	if err != nil || size < 0 {
-		return 0, 0, fmt.Errorf("malformed size in scp file header %q", msg)
+		return 0, 0, "", fmt.Errorf("malformed size in scp file header %q", msg)
 	}
-	return os.FileMode(mode).Perm(), size, nil
+	return os.FileMode(mode).Perm(), size, fields[2], nil
 }
 
 // writeLocalFile stages size bytes into a sibling temporary file and renames it into
