@@ -129,10 +129,11 @@ func runServer() error {
 	introspector := auth.NewCILogonIntrospector(
 		cfg.IntrospectionURI, cfg.UserInfoURI, cfg.ClientID, cfg.ClientSecret, roles, root)
 
+	repos := app.NewRepositories(gdb)
 	// The object graph, built once. The HTTP handler takes it, and so does the workflow
 	// worker once it has a backend to run against — both act through the same services
 	// rather than each assembling a set of their own.
-	svcs := app.New(cfg, gdb)
+	svcs := app.NewServices(cfg, gdb, repos)
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,

@@ -90,7 +90,8 @@ func newHarness(t *testing.T) *harness {
 		tokenBob:   {Name: "bob", Authorities: []string{string(role.User)}},
 	}
 
-	svcs := app.New(cfg, gdb)
+	repos := app.NewRepositories(gdb)
+	svcs := app.NewServices(cfg, gdb, repos)
 	return &harness{
 		t:    t,
 		db:   gdb,

@@ -14,7 +14,12 @@ import (
 )
 
 // Activities is the set of activities, bound to the services they act through.
-type Activities struct{ svcs *app.Services }
+type Activities struct {
+	svcs  *app.Services
+	repos *app.Repositories
+}
 
 // New returns the activity set for svcs.
-func New(svcs *app.Services) *Activities { return &Activities{svcs: svcs} }
+func NewActivities(svcs *app.Services, repos *app.Repositories) *Activities {
+	return &Activities{svcs: svcs, repos: repos}
+}

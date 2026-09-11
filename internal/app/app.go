@@ -76,32 +76,80 @@ type Services struct {
 	Launch *processsvc.LaunchService
 }
 
+type Repositories struct {
+	Users                    *iamrepo.UserRepository
+	Groups                   *iamrepo.GroupRepository
+	GroupMembers             *iamrepo.GroupMemberRepository
+	SSHKeys                  *credentialsrepo.SSHKeyRepository
+	SlurmClusters            *computerepo.SlurmClusterRepository
+	ClusterPartitions        *computerepo.ClusterPartitionRepository
+	SlurmClusterConfigs      *computerepo.SlurmClusterConfigRepository
+	SlurmClusterConfigShares *computerepo.SlurmClusterConfigSharingRepository
+	Templates                *applicationrepo.TemplateRepository
+	BatchDeployments         *applicationrepo.BatchDeploymentRepository
+	SCPDataStorages          *datarepo.SCPDataStorageRepository
+	SCPDataStorageShares     *datarepo.SCPDataStorageSharingRepository
+	DataProducts             *datarepo.DataProductRepository
+	DataProductShares        *datarepo.DataProductSharingRepository
+	Processes                *processrepo.ProcessRepository
+	Statuses                 *processrepo.StatusRepository
+	DataStagingTasks         *processrepo.DataStagingTaskRepository
+	JobSubmissionTasks       *processrepo.JobSubmissionTaskRepository
+	JobMonitoringTasks       *processrepo.JobMonitoringTaskRepository
+	InteractiveCommandTasks  *processrepo.InteractiveCommandTaskRepository
+}
+
+func NewRepositories(db *gorm.DB) *Repositories {
+	return &Repositories{
+		Users:                    iamrepo.NewUserRepository(db),
+		Groups:                   iamrepo.NewGroupRepository(db),
+		GroupMembers:             iamrepo.NewGroupMemberRepository(db),
+		SSHKeys:                  credentialsrepo.NewSSHKeyRepository(db),
+		SlurmClusters:            computerepo.NewSlurmClusterRepository(db),
+		ClusterPartitions:        computerepo.NewClusterPartitionRepository(db),
+		SlurmClusterConfigs:      computerepo.NewSlurmClusterConfigRepository(db),
+		SlurmClusterConfigShares: computerepo.NewSlurmClusterConfigSharingRepository(db),
+		Templates:                applicationrepo.NewTemplateRepository(db),
+		BatchDeployments:         applicationrepo.NewBatchDeploymentRepository(db),
+		SCPDataStorages:          datarepo.NewSCPDataStorageRepository(db),
+		SCPDataStorageShares:     datarepo.NewSCPDataStorageSharingRepository(db),
+		DataProducts:             datarepo.NewDataProductRepository(db),
+		DataProductShares:        datarepo.NewDataProductSharingRepository(db),
+		Processes:                processrepo.NewProcessRepository(db),
+		Statuses:                 processrepo.NewStatusRepository(db),
+		DataStagingTasks:         processrepo.NewDataStagingTaskRepository(db),
+		JobSubmissionTasks:       processrepo.NewJobSubmissionTaskRepository(db),
+		JobMonitoringTasks:       processrepo.NewJobMonitoringTaskRepository(db),
+		InteractiveCommandTasks:  processrepo.NewInteractiveCommandTaskRepository(db),
+	}
+}
+
 // New builds every service over db.
 //
 // The repositories stay local: they are an implementation detail of the services above
 // them, and nothing outside this function has ever wanted one directly.
-func New(cfg config.Config, db *gorm.DB) *Services {
+func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services {
 	// Repositories.
-	users := iamrepo.NewUserRepository(db)
-	groups := iamrepo.NewGroupRepository(db)
-	groupMembers := iamrepo.NewGroupMemberRepository(db)
-	sshKeys := credentialsrepo.NewSSHKeyRepository(db)
-	clusters := computerepo.NewSlurmClusterRepository(db)
-	partitions := computerepo.NewClusterPartitionRepository(db)
-	clusterConfigs := computerepo.NewSlurmClusterConfigRepository(db)
-	clusterConfigShares := computerepo.NewSlurmClusterConfigSharingRepository(db)
-	templates := applicationrepo.NewTemplateRepository(db)
-	deployments := applicationrepo.NewBatchDeploymentRepository(db)
-	storages := datarepo.NewSCPDataStorageRepository(db)
-	storageShares := datarepo.NewSCPDataStorageSharingRepository(db)
-	products := datarepo.NewDataProductRepository(db)
-	productShares := datarepo.NewDataProductSharingRepository(db)
-	processes := processrepo.NewProcessRepository(db)
-	statuses := processrepo.NewStatusRepository(db)
-	stagingTasks := processrepo.NewDataStagingTaskRepository(db)
-	submissionTasks := processrepo.NewJobSubmissionTaskRepository(db)
-	monitoringTasks := processrepo.NewJobMonitoringTaskRepository(db)
-	commandTasks := processrepo.NewInteractiveCommandTaskRepository(db)
+	users := repos.Users
+	groups := repos.Groups
+	groupMembers := repos.GroupMembers
+	sshKeys := repos.SSHKeys
+	clusters := repos.SlurmClusters
+	partitions := repos.ClusterPartitions
+	clusterConfigs := repos.SlurmClusterConfigs
+	clusterConfigShares := repos.SlurmClusterConfigShares
+	templates := repos.Templates
+	deployments := repos.BatchDeployments
+	storages := repos.SCPDataStorages
+	storageShares := repos.SCPDataStorageShares
+	products := repos.DataProducts
+	productShares := repos.DataProductShares
+	processes := repos.Processes
+	statuses := repos.Statuses
+	stagingTasks := repos.DataStagingTasks
+	submissionTasks := repos.JobSubmissionTasks
+	monitoringTasks := repos.JobMonitoringTasks
+	commandTasks := repos.InteractiveCommandTasks
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, clusterConfigShares, groupMembers)
