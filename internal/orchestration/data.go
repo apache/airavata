@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/google/uuid"
+	"path/filepath"
 
 	datamodel "github.com/apache/airavata/api/data/model"
 )
@@ -67,6 +68,13 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 			return nil, err
 		}
 
+		// Ensure the destination directory exists before attempting the SCP upload.
+		if err := CreateDirectorySSH(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHKey, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
+			slog.Error("Failed to create destination directory through SSH", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
+				"destinationDirectory", filepath.Dir(*dataStagingTask.DestinationPath), "error", err)
+			return nil, err
+		}
+
 		err = UploadFileToSCP(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHKey, localTempDataPath, *dataStagingTask.DestinationPath)
 		if err != nil {
 			slog.Error("Failed to upload file through SCP", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
@@ -81,6 +89,14 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 	if *dataStagingTask.DestinationDataStorageType == datamodel.DataStorageTypeHPC {
 		s, err := a.slurmClusterConfigs.FindByID(ctx, *dataStagingTask.DestinationDataStorageID)
 		if err != nil {
+			return nil, err
+		}
+
+		// Ensure the destination directory exists before attempting the SCP upload.
+		if err := CreateDirectorySSH(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser, *s.SSHKey,
+			filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
+			slog.Error("Failed to create destination directory on HPC through SSH", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
+				"destinationDirectory", filepath.Dir(*dataStagingTask.DestinationPath), "error", err)
 			return nil, err
 		}
 

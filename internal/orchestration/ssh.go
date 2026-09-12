@@ -82,6 +82,23 @@ func UploadFileToSCP(ctx context.Context, host string, port int, username string
 	return nil
 }
 
+// Creates remotePath on the host, including any missing parent directories, and does
+// nothing if it is already there.
+func CreateDirectorySSH(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string) error {
+	target := fmt.Sprintf("ssh mkdir %s@%s:%s", username, host, remotePath)
+
+	if strings.TrimSpace(remotePath) == "" {
+		return fmt.Errorf("%s: no remote directory was named", target)
+	}
+
+	if err := runSSHCommand(ctx, host, port, username, key, "mkdir -p "+shellQuote(remotePath), target); err != nil {
+		return err
+	}
+
+	slog.Info("Created directory over SSH", "host", host, "remotePath", remotePath)
+	return nil
+}
+
 // Reads the mode, size and name a remote scp announces for a single remote file,
 // without transferring its contents.
 func GetSCPFileMetadata(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string) (*FileMetadata, error) {
@@ -129,6 +146,46 @@ const scpOK = 0x00
 // activity is retried by the workflow, so a host that is merely down should fail the
 // attempt quickly rather than hold a worker slot until the OS gives up on the socket.
 const scpDialTimeout = 30 * time.Second
+
+// runSSHCommand runs one command on the host and waits for it to finish, folding
+// whatever the command wrote to stderr into the error when it fails.
+func runSSHCommand(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, command, target string) error {
+	client, err := dialSSH(ctx, host, port, username, key)
+	if err != nil {
+		return fmt.Errorf("%s: %w", target, err)
+	}
+	defer client.Close()
+
+	session, err := client.NewSession()
+	if err != nil {
+		return fmt.Errorf("%s: opening session: %w", target, err)
+	}
+	defer session.Close()
+
+	var stderr bytes.Buffer
+	session.Stderr = &stderr
+
+	done := make(chan struct{})
+	defer close(done)
+	go func() {
+		select {
+		case <-ctx.Done():
+			session.Close()
+		case <-done:
+		}
+	}()
+
+	if err := session.Run(command); err != nil {
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			return fmt.Errorf("%s: %w", target, ctxErr)
+		}
+		if remote := strings.TrimSpace(stderr.String()); remote != "" {
+			return fmt.Errorf("%s: %w (remote: %s)", target, err, remote)
+		}
+		return fmt.Errorf("%s: %w", target, err)
+	}
+	return nil
+}
 
 type scpTransfer struct {
 	client  *ssh.Client
