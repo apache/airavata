@@ -1,11 +1,11 @@
-package activities
+package orchestration
 
 import (
 	"context"
 	"fmt"
 	"log/slog"
 
-	dto "github.com/apache/airavata/api/process/dto"
+	model "github.com/apache/airavata/api/process/model"
 )
 
 type SubmitBatchJobParameters struct {
@@ -15,12 +15,12 @@ type SubmitBatchJobParameters struct {
 	Environment    map[string]string
 }
 
-func (a *Activities) SubmitBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
+func (a *ExecutionEngine) submitBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
 	process, err := a.process(ctx, processID)
 	if err != nil {
 		return 0, err
 	}
-	jst, err := a.svcs.JobSubmissionTask.Get(ctx, processID, taskID)
+	jst, err := a.jobMonitoringTasks.FindByIDAndProcessID(ctx, taskID, processID)
 	if err != nil {
 		return 0, err
 	}
@@ -28,12 +28,12 @@ func (a *Activities) SubmitBatchJob(ctx context.Context, processID string, taskI
 	return 0, nil
 }
 
-func (a *Activities) CancelBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
+func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
 	process, err := a.process(ctx, processID)
 	if err != nil {
 		return 0, err
 	}
-	jst, err := a.svcs.JobSubmissionTask.Get(ctx, processID, taskID)
+	jst, err := a.jobSubmissionTasks.FindByIDAndProcessID(ctx, taskID, processID)
 	if err != nil {
 		return 0, err
 	}
@@ -41,12 +41,12 @@ func (a *Activities) CancelBatchJob(ctx context.Context, processID string, taskI
 	return 0, nil
 }
 
-func (a *Activities) MonitorBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
+func (a *ExecutionEngine) monitorBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
 	process, err := a.process(ctx, processID)
 	if err != nil {
 		return 0, err
 	}
-	jmt, err := a.svcs.JobMonitoringTask.Get(ctx, processID, taskID)
+	jmt, err := a.jobMonitoringTasks.FindByIDAndProcessID(ctx, taskID, processID)
 	if err != nil {
 		return 0, err
 	}
@@ -54,8 +54,8 @@ func (a *Activities) MonitorBatchJob(ctx context.Context, processID string, task
 	return 0, nil
 }
 
-func (a *Activities) process(ctx context.Context, processID string) (*dto.Response, error) {
-	process, err := a.svcs.Process.Get(ctx, processID)
+func (a *ExecutionEngine) process(ctx context.Context, processID string) (*model.Process, error) {
+	process, err := a.processes.FindByID(ctx, processID)
 	if err != nil {
 		return nil, err
 	}

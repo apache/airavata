@@ -25,6 +25,7 @@ import (
 	iamsvc "github.com/apache/airavata/api/iam/service"
 	processrepo "github.com/apache/airavata/api/process/repository"
 	processsvc "github.com/apache/airavata/api/process/service"
+	orchestration "github.com/apache/airavata/internal/orchestration"
 )
 
 // Services is every service the application exposes, built over one database.
@@ -74,6 +75,8 @@ type Services struct {
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
 	Launch *processsvc.LaunchService
+
+	ExecutionEngine *orchestration.ExecutionEngine
 }
 
 type Repositories struct {
@@ -167,6 +170,9 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
 	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
 
+	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks, monitoringTasks, storages, clusterConfigs, processes)
+	executionEngine.StartEngine()
+
 	return &Services{
 		Config: cfg,
 		DB:     db,
@@ -199,6 +205,11 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 		JobMonitoringTask:      processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes),
 		InteractiveCommandTask: processsvc.NewInteractiveCommandTaskService(db, commandTasks, processes),
 
-		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc, templateSvc, slurmClusterSvc, slurmClusterConfigSvc, sshKeySvc, scpDataStorageSvc, dataProductSvc, stagingTasks, submissionTasks, monitoringTasks, commandTasks),
+		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
+			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
+			sshKeySvc, scpDataStorageSvc, dataProductSvc, stagingTasks, submissionTasks,
+			monitoringTasks, commandTasks, executionEngine),
+
+		ExecutionEngine: executionEngine,
 	}
 }

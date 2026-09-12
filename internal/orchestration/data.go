@@ -1,4 +1,4 @@
-package activities
+package orchestration
 
 import (
 	"context"
@@ -16,8 +16,8 @@ type FileMetadata struct {
 	Mode os.FileMode
 }
 
-func (a *Activities) CopyData(ctx context.Context, processId string, dataStagingTaskId string) (int, error) {
-	dataStagingTask, err := a.svcs.DataStagingTask.Get(ctx, processId, dataStagingTaskId)
+func (a *ExecutionEngine) copyData(ctx context.Context, processId string, dataStagingTaskId string) (int, error) {
+	dataStagingTask, err := a.dataStagingTasks.FindByIDAndProcessID(ctx, dataStagingTaskId, processId)
 	if err != nil {
 		return 0, err
 	}
@@ -28,7 +28,7 @@ func (a *Activities) CopyData(ctx context.Context, processId string, dataStaging
 
 	if *dataStagingTask.SourceDataStorageType == datamodel.DataStorageTypeSCP {
 
-		s, err := a.repos.SCPDataStorages.FindByID(ctx, *dataStagingTask.SourceDataStorageID)
+		s, err := a.scpStorages.FindByID(ctx, *dataStagingTask.SourceDataStorageID)
 		if err != nil {
 			return 0, err
 		}
@@ -45,7 +45,7 @@ func (a *Activities) CopyData(ctx context.Context, processId string, dataStaging
 	}
 
 	if *dataStagingTask.SourceDataStorageType == datamodel.DataStorageTypeHPC {
-		s, err := a.repos.SlurmClusterConfigs.FindByID(ctx, *dataStagingTask.SourceDataStorageID)
+		s, err := a.slurmClusterConfigs.FindByID(ctx, *dataStagingTask.SourceDataStorageID)
 		if err != nil {
 			return 0, err
 		}
@@ -62,7 +62,7 @@ func (a *Activities) CopyData(ctx context.Context, processId string, dataStaging
 	}
 
 	if *dataStagingTask.DestinationDataStorageType == datamodel.DataStorageTypeSCP {
-		s, err := a.repos.SCPDataStorages.FindByID(ctx, *dataStagingTask.DestinationDataStorageID)
+		s, err := a.scpStorages.FindByID(ctx, *dataStagingTask.DestinationDataStorageID)
 		if err != nil {
 			return 0, err
 		}
@@ -75,11 +75,11 @@ func (a *Activities) CopyData(ctx context.Context, processId string, dataStaging
 		}
 		slog.Info("Successfully uploaded file through SCP", "taskId", dataStagingTask.ID, "processId", dataStagingTask.ProcessID,
 			"sourcePath", localTempDataPath, "destinationPath", *dataStagingTask.DestinationPath)
-		
+
 	}
 
 	if *dataStagingTask.DestinationDataStorageType == datamodel.DataStorageTypeHPC {
-		s, err := a.repos.SlurmClusterConfigs.FindByID(ctx, *dataStagingTask.DestinationDataStorageID)
+		s, err := a.slurmClusterConfigs.FindByID(ctx, *dataStagingTask.DestinationDataStorageID)
 		if err != nil {
 			return 0, err
 		}

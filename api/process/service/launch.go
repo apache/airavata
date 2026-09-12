@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"log/slog"
 	"strings"
 
 	"github.com/apache/airavata/api/process/repository"
 	"gorm.io/gorm"
+
+	"github.com/apache/airavata/internal/orchestration"
 
 	"fmt"
 
@@ -39,6 +42,8 @@ type LaunchService struct {
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository
 	monitoringTasks    *repository.JobMonitoringTaskRepository
 	interactiveTasks   *repository.InteractiveCommandTaskRepository
+
+	executionEngine *orchestration.ExecutionEngine
 }
 
 // NewLaunchService returns a launch service.
@@ -57,6 +62,8 @@ func NewLaunchService(
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository,
 	monitoringTasks *repository.JobMonitoringTaskRepository,
 	interactiveTasks *repository.InteractiveCommandTaskRepository,
+	executionEngine *orchestration.ExecutionEngine,
+
 ) *LaunchService {
 	return &LaunchService{
 		db:                     db,
@@ -72,6 +79,7 @@ func NewLaunchService(
 		jobSubmissionTasks:     jobSubmissionTasks,
 		monitoringTasks:        monitoringTasks,
 		interactiveTasks:       interactiveTasks,
+		executionEngine:        executionEngine,
 	}
 }
 
@@ -349,6 +357,9 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 	if err := s.monitoringTasks.Save(ctx, jobMonitoring); err != nil {
 		return err
 	}
+
+	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
+	s.executionEngine.LaunchProcessExecution(ctx, process.ProcessID)
 
 	return nil
 }
