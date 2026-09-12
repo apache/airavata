@@ -15,43 +15,52 @@ type SubmitBatchJobParameters struct {
 	Environment    map[string]string
 }
 
-func (a *ExecutionEngine) submitBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
+func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
+	slog.Info("Starting to submit batch job", "taskId", taskID, "processId", processID)
 	process, err := a.process(ctx, processID)
 	if err != nil {
-		return 0, err
-	}
-	jst, err := a.jobMonitoringTasks.FindByIDAndProcessID(ctx, taskID, processID)
-	if err != nil {
-		return 0, err
-	}
-	slog.Info("Submitting batch job ...", "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID)
-	return 0, nil
-}
-
-func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
-	process, err := a.process(ctx, processID)
-	if err != nil {
-		return 0, err
+		slog.Error("Failed to retrieve process for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
 	}
 	jst, err := a.jobSubmissionTasks.FindByIDAndProcessID(ctx, taskID, processID)
 	if err != nil {
-		return 0, err
+		slog.Error("Failed to retrieve job submission task for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
 	}
-	slog.Info("Cancelling batch job ...", "processId", processID, "jobId", process.BatchProcess.JobID, "JST Id", jst.ID)
-	return 0, nil
+	slog.Info("Completed submitting batch job", "taskId", taskID, "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID)
+	return executionContext, nil
 }
 
-func (a *ExecutionEngine) monitorBatchJob(ctx context.Context, processID string, taskID string) (int, error) {
+func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
+	slog.Info("Starting to cancel batch job", "taskId", taskID, "processId", processID)
 	process, err := a.process(ctx, processID)
 	if err != nil {
-		return 0, err
+		slog.Error("Failed to retrieve process for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
+	}
+	jst, err := a.jobSubmissionTasks.FindByIDAndProcessID(ctx, taskID, processID)
+	if err != nil {
+		slog.Error("Failed to retrieve job submission task for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
+	}
+	slog.Info("Completed cancelling batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JST Id", jst.ID)
+	return executionContext, nil
+}
+
+func (a *ExecutionEngine) monitorBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
+	slog.Info("Starting to monitor batch job ", "taskId", taskID, "processId", processID)
+	process, err := a.process(ctx, processID)
+	if err != nil {
+		slog.Error("Failed to retrieve process for monitoring batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
 	}
 	jmt, err := a.jobMonitoringTasks.FindByIDAndProcessID(ctx, taskID, processID)
 	if err != nil {
-		return 0, err
+		slog.Error("Failed to retrieve job monitoring task for monitoring batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
 	}
-	slog.Info("Monitoring batch job ...", "processId", processID, "jobId", process.BatchProcess.JobID, "JMT Id", jmt.ID)
-	return 0, nil
+	slog.Info("Completed monitoring batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JMT Id", jmt.ID)
+	return executionContext, nil
 }
 
 func (a *ExecutionEngine) process(ctx context.Context, processID string) (*model.Process, error) {

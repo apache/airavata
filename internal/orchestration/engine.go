@@ -27,6 +27,10 @@ type ExecutionEngine struct {
 	orchestrator        *worker.WorkflowOrchestrator
 }
 
+type ExecutionContext struct {
+	data map[string]interface{}
+}
+
 // NewExecutionEngine returns the workflow set scheduling acts.
 func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	jobSubmissionTasks *processrepo.JobSubmissionTaskRepository,
@@ -100,13 +104,24 @@ func (w *ExecutionEngine) submitProcessExecution(ctx workflow.Context, processID
 
 	currentOrder := 0
 	isPending := true
+	plannedTasks := []string{}
 
+	// This is a temp hook to initialize the execution context for the workflow
+	executionContext := &ExecutionContext{
+		data: make(map[string]interface{}),
+	}
+
+	slog.Info("Starting task planning for process", "processId", processID)
 	for isPending {
 		isPending = false
 		for _, dst := range dsts {
 			if dst.TaskOrder != nil && *dst.TaskOrder == currentOrder {
-				workflow.ExecuteActivity[int](
-					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, dst.RetryCount)}, w.copyData, processID, dst.ID)
+				plannedTasks = append(plannedTasks, dst.ID)
+				executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
+					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, dst.RetryCount)}, w.copyData, executionContext, processID, dst.ID).Get(ctx)
+				if err != nil {
+					return err
+				}
 			} else if dst.TaskOrder != nil && *dst.TaskOrder > currentOrder {
 				isPending = true
 			}
@@ -114,8 +129,12 @@ func (w *ExecutionEngine) submitProcessExecution(ctx workflow.Context, processID
 
 		for _, jst := range jsts {
 			if jst.TaskOrder != nil && *jst.TaskOrder == currentOrder {
-				workflow.ExecuteActivity[int](
-					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jst.OnFailure, jst.RetryCount)}, w.submitBatchJob, processID, jst.ID)
+				plannedTasks = append(plannedTasks, jst.ID)
+				executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
+					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jst.OnFailure, jst.RetryCount)}, w.submitBatchJob, executionContext, processID, jst.ID).Get(ctx)
+				if err != nil {
+					return err
+				}
 			} else if jst.TaskOrder != nil && *jst.TaskOrder > currentOrder {
 				isPending = true
 			}
@@ -123,8 +142,12 @@ func (w *ExecutionEngine) submitProcessExecution(ctx workflow.Context, processID
 
 		for _, jmt := range jmts {
 			if jmt.TaskOrder != nil && *jmt.TaskOrder == currentOrder {
-				workflow.ExecuteActivity[int](
-					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jmt.OnFailure, jmt.RetryCount)}, w.monitorBatchJob, processID, jmt.ID)
+				plannedTasks = append(plannedTasks, jmt.ID)
+				executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
+					ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jmt.OnFailure, jmt.RetryCount)}, w.monitorBatchJob, executionContext, processID, jmt.ID).Get(ctx)
+				if err != nil {
+					return err
+				}
 			} else if jmt.TaskOrder != nil && *jmt.TaskOrder > currentOrder {
 				isPending = true
 			}
@@ -133,7 +156,8 @@ func (w *ExecutionEngine) submitProcessExecution(ctx workflow.Context, processID
 		currentOrder += 1
 
 		if !isPending {
-			slog.Info("All tasks completed for process", "processId", processID)
+			slog.Info("All task planning completed for process", "processId", processID)
+			slog.Info("Planned tasks for process", "processId", processID, "plannedTasks", plannedTasks)
 		}
 	}
 
