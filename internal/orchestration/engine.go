@@ -11,6 +11,7 @@ import (
 
 	"log/slog"
 
+	applicationrepo "github.com/apache/airavata/api/application/repository"
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	datastorerepo "github.com/apache/airavata/api/data/repository"
 	model "github.com/apache/airavata/api/process/model"
@@ -24,11 +25,25 @@ type ExecutionEngine struct {
 	scpStorages         *datastorerepo.SCPDataStorageRepository
 	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository
 	processes           *processrepo.ProcessRepository
+	batchDeployments    *applicationrepo.BatchDeploymentRepository
+	templates           *applicationrepo.TemplateRepository
 	orchestrator        *worker.WorkflowOrchestrator
 }
 
 type ExecutionContext struct {
 	data map[string]interface{}
+}
+
+// set records a value under key for the rest of the run to read.
+//
+// The map is created on demand rather than assumed: an activity is handed a context
+// rebuilt from what crossed the workflow backend, so one that writes cannot count on
+// finding the map the workflow started with.
+func (c *ExecutionContext) set(key string, value interface{}) {
+	if c.data == nil {
+		c.data = make(map[string]interface{})
+	}
+	c.data[key] = value
 }
 
 // NewExecutionEngine returns the workflow set scheduling acts.
@@ -38,6 +53,8 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	scpStorages *datastorerepo.SCPDataStorageRepository,
 	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository,
 	processes *processrepo.ProcessRepository,
+	batchDeployments *applicationrepo.BatchDeploymentRepository,
+	templates *applicationrepo.TemplateRepository,
 ) *ExecutionEngine {
 
 	backend := sqlite.NewSqliteBackend("/tmp/airavataorchestrator.sqlite")
@@ -50,6 +67,8 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		scpStorages:         scpStorages,
 		slurmClusterConfigs: slurmClusterConfigs,
 		processes:           processes,
+		batchDeployments:    batchDeployments,
+		templates:           templates,
 		orchestrator:        orchestrator,
 	}
 }

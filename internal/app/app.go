@@ -170,7 +170,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
 	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
 
-	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks, monitoringTasks, storages, clusterConfigs, processes)
+	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks, monitoringTasks, storages, clusterConfigs, processes, deployments, templates)
 	executionEngine.StartEngine()
 
 	return &Services{
