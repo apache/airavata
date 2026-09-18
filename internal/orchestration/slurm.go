@@ -278,8 +278,8 @@ func slurmWallTime(minutes int64) string {
 //   - File, file list, and directory inputs are mapped to their staged paths under the work directory.
 //   - Scalar inputs are mapped to their literal values, using the default value if no explicit value is provided.
 //
-// Example: ['input name'] -> '/work/dir/input name' for file inputs, or the literal value for scalar inputs.
-func inputValues(batchProcess *model.BatchJobProcess, template *appmodel.Template, workDir string) (map[string]string, error) {
+// Example: ['input name'] -> ['/work/dir/input name'] for file inputs, or the literal value for scalar inputs.
+func inputValues(batchProcess *model.BatchJobProcess, template *appmodel.Template, workDir string) (map[string][]string, error) {
 	templateInputMap := map[string]*appmodel.TemplateInput{}
 	if template != nil {
 		for i := range template.Inputs {
@@ -287,7 +287,7 @@ func inputValues(batchProcess *model.BatchJobProcess, template *appmodel.Templat
 		}
 	}
 
-	out := map[string]string{}
+	out := map[string][]string{}
 	for _, mapping := range batchProcess.InputMappings {
 		if mapping == nil || mapping.TemplateInputID == nil {
 			continue
@@ -298,12 +298,6 @@ func inputValues(batchProcess *model.BatchJobProcess, template *appmodel.Templat
 		}
 		name := *declared.InputName
 
-		// If the input is a file, file list, or directory, it will be staged under the work directory.
-		if declared.InputType != nil && isFileInput(*declared.InputType) {
-			out[name] = path.Join(workDir, name)
-			continue
-		}
-
 		value := mapping.Value
 		if value == nil && declared.DefaultValue != nil {
 			value = declared.DefaultValue
@@ -311,6 +305,16 @@ func inputValues(batchProcess *model.BatchJobProcess, template *appmodel.Templat
 		rendered, err := mappingValue(value)
 		if err != nil {
 			return nil, fmt.Errorf("input %s: %w", name, err)
+		}
+
+		// Append workdir to file inputs that are not already absolute paths.
+		if isFileInput(*declared.InputType) {
+			for i := range rendered {
+				if strings.HasPrefix(rendered[i], "/") {
+					continue
+				}
+				rendered[i] = path.Join(workDir, rendered[i])
+			}
 		}
 
 		// Later, support more complex input types such as lists or nested structures.
@@ -356,45 +360,65 @@ func isFileInput(t appmodel.TemplateInputType) bool {
 	return false
 }
 
-// mappingValue decodes the {"value": ...} or {"values": [...]} document a mapping
-// carries, joining a list with spaces so it reaches a command line as the argument
-// list it is.
+// mappingValue decodes what a mapping carries into the one or more values the run
+// section should see for it: a {"value": ...} or {"values": [...]} document, or a bare
+// JSON array, which is how a file list is written when there is nothing to say about it
+// beyond its elements.
 //
-// A value that is not one of those documents is taken literally: mappings have been
-// written with a bare string in that column, and reporting those as malformed would
-// fail the run over a value that is perfectly usable.
-func mappingValue(raw *string) (string, error) {
+// A value that is none of those is taken literally: mappings have been written with a
+// bare string in that column, and reporting those as malformed would fail the run over
+// a value that is perfectly usable.
+func mappingValue(raw *string) ([]string, error) {
 	if raw == nil {
-		return "", nil
+		return nil, nil
 	}
 	text := strings.TrimSpace(*raw)
-	if text == "" || !strings.HasPrefix(text, "{") {
-		return text, nil
+	if text == "" {
+		return []string{text}, nil
 	}
 
-	var doc struct {
-		Value  any   `json:"value"`
-		Values []any `json:"values"`
-	}
-	decoder := json.NewDecoder(strings.NewReader(text))
-	// Numbers keep the text they were written with, so an integer count does not come
-	// back through float64 as 1e+06.
-	decoder.UseNumber()
-	if err := decoder.Decode(&doc); err != nil {
-		return text, nil
-	}
-
-	if doc.Values != nil {
-		parts := make([]string, 0, len(doc.Values))
-		for _, v := range doc.Values {
-			parts = append(parts, fmt.Sprint(v))
+	switch text[0] {
+	case '[':
+		var items []any
+		if err := decodeJSON(text, &items); err != nil {
+			return []string{text}, nil
 		}
-		return strings.Join(parts, " "), nil
+		return stringify(items), nil
+
+	case '{':
+		var doc struct {
+			Value  any   `json:"value"`
+			Values []any `json:"values"`
+		}
+		if err := decodeJSON(text, &doc); err != nil {
+			return []string{text}, nil
+		}
+		if doc.Values != nil { // If the mapping contains multiple values, return them as a slice.
+			return stringify(doc.Values), nil
+		}
+		if doc.Value == nil {
+			return nil, nil
+		}
+		return []string{fmt.Sprint(doc.Value)}, nil
 	}
-	if doc.Value == nil {
-		return "", nil
+
+	return []string{text}, nil
+}
+
+// decodeJSON reads text into v with numbers kept as the text they were written with, so
+// an integer count does not come back through float64 as 1e+06.
+func decodeJSON(text string, v any) error {
+	decoder := json.NewDecoder(strings.NewReader(text))
+	decoder.UseNumber()
+	return decoder.Decode(v)
+}
+
+func stringify(items []any) []string {
+	parts := make([]string, 0, len(items))
+	for _, item := range items {
+		parts = append(parts, fmt.Sprint(item))
 	}
-	return fmt.Sprint(doc.Value), nil
+	return parts
 }
 
 // optional renders a pointer field for the template: the empty string when it is unset,

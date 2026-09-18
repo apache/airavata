@@ -19,6 +19,8 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 		Inputs: []appmodel.TemplateInput{
 			{ID: "in-file", InputName: ptr("protein"), InputType: ptr(appmodel.TemplateInputTypeFile)},
 			{ID: "in-scalar", InputName: ptr("iterations"), InputType: ptr(appmodel.TemplateInputTypeInteger)},
+			{ID: "in-array", InputName: ptr("files"), InputType: ptr(appmodel.TemplateInputTypeFileList)},
+			{ID: "in-absolute", InputName: ptr("absolute"), InputType: ptr(appmodel.TemplateInputTypeFile)},
 		},
 		Outputs: []appmodel.TemplateOutput{
 			{ID: "out-file", OutputName: ptr("structure.pdb"), OutputType: ptr(appmodel.TemplateOutputTypeFile)},
@@ -30,7 +32,10 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 		TemplateID:       ptr("tpl-1"),
 		DefaultPartition: ptr("gpu"),
 		SlurmRunSection: "module load alphafold\n" +
-			"run_fold --in {{ inputs.protein }} --iterations {{ inputs.iterations }} --out {{ outputs[\"structure.pdb\"] }}",
+			"run_fold --in {{ inputs.protein[0] }} --iterations {{ inputs.iterations[0] }} " +
+			"--files {{ inputs.files[0] }} {{ inputs.files[1] }} {{ inputs.files[2] }} " +
+			"--absolute {{ inputs.absolute[0] }} " +
+			"--out {{ outputs[\"structure.pdb\"] }}",
 		DefaultBatchJobConfig: &appmodel.BatchJobConfig{ID: "cfg-default", WallTimeMinutes: 10, Allocation: "unused"},
 	}
 
@@ -54,6 +59,8 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 			InputMappings: []*model.TemplateInputMapping{
 				{TemplateInputID: ptr("in-file"), Value: ptr("data-product-9")},
 				{TemplateInputID: ptr("in-scalar"), Value: ptr(`{"value": 300}`)},
+				{TemplateInputID: ptr("in-array"), Value: ptr(`["file1", "file2", "file3"]`)},
+				{TemplateInputID: ptr("in-absolute"), Value: ptr("/absolute/path/to/file")},
 			},
 			OutputMappings: []*model.TemplateOutputMapping{
 				{TemplateOutputID: ptr("out-file"), Value: ptr("data-product-10")},
@@ -88,7 +95,9 @@ func TestBuildSlurmScript(t *testing.T) {
 		"#SBATCH --mem=64G",
 		"#SBATCH --gpus=4",
 		"module load alphafold",
-		"run_fold --in /scratch/airavata/proc-1/protein --iterations 300 --out /scratch/airavata/proc-1/structure.pdb",
+		"run_fold --in /scratch/airavata/proc-1/data-product-9 --iterations 300 " +
+			"--files /scratch/airavata/proc-1/file1 /scratch/airavata/proc-1/file2 /scratch/airavata/proc-1/file3 " +
+			"--absolute /absolute/path/to/file --out /scratch/airavata/proc-1/structure.pdb",
 	}
 	for _, line := range want {
 		if !strings.Contains(script, line) {
@@ -172,24 +181,39 @@ func TestSlurmWallTime(t *testing.T) {
 func TestMappingValue(t *testing.T) {
 	cases := []struct {
 		raw  *string
-		want string
+		want []string
 	}{
-		{nil, ""},
-		{ptr("data-product-9"), "data-product-9"},
-		{ptr(`{"value": "/scratch/in.fasta"}`), "/scratch/in.fasta"},
-		{ptr(`{"value": 1000000}`), "1000000"},
-		{ptr(`{"values": ["a", "b"]}`), "a b"},
-		{ptr(`{not json`), `{not json`},
+		{nil, nil},
+		{ptr("data-product-9"), []string{"data-product-9"}},
+		{ptr(`{"value": "/scratch/in.fasta"}`), []string{"/scratch/in.fasta"}},
+		{ptr(`{"value": 1000000}`), []string{"1000000"}},
+		{ptr(`{"values": ["a", "b"]}`), []string{"a", "b"}},
+		{ptr(`["a", "b"]`), []string{"a", "b"}},
+		{ptr(`[]`), []string{}},
+		{ptr(`{not json`), []string{`{not json`}},
+		{ptr(`[not json`), []string{`[not json`}},
 	}
 	for _, c := range cases {
 		got, err := mappingValue(c.raw)
 		if err != nil {
 			t.Fatalf("mappingValue: %v", err)
 		}
-		if got != c.want {
+		if !equalSlices(got, c.want) {
 			t.Errorf("mappingValue(%v) = %q, want %q", c.raw, got, c.want)
 		}
 	}
+}
+
+func equalSlices(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // A directive is one line, so a value that would break out of it is refused rather
