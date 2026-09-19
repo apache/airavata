@@ -42,6 +42,9 @@ type SlurmCluster struct {
 	HeadnodeHost string `gorm:"column:headnode_host;type:varchar(255);not null" json:"headnodeHost"`
 	HeadnodePort int    `gorm:"column:headnode_port;type:int;not null" json:"headnodePort"`
 
+	// SlurmHome is where Slurm is installed on this machine
+	SlurmHome *string `gorm:"column:slurm_home;type:varchar(1024)" json:"slurmHome,omitempty"`
+
 	// optional endpoint to configure additional data movement path
 	DataHost *string `gorm:"column:data_host;type:varchar(255)" json:"dataHost,omitempty"`
 	DataPort *int    `gorm:"column:data_port;type:int" json:"dataPort,omitempty"`

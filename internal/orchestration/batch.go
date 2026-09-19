@@ -77,10 +77,17 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 	slog.Info("Uploaded slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
 
 	slog.Info("Submitting slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath)
+
+	sbatchPath := "sbatch"
+	if clusterConfig.SlurmCluster.SlurmHome != nil && strings.TrimSpace(*clusterConfig.SlurmCluster.SlurmHome) != "" {
+		sbatchPath = path.Join(*clusterConfig.SlurmCluster.SlurmHome, "sbatch")
+	}
+
 	// sbatch is run from the working directory so that a script writing relative paths —
 	// and the job's own stdout and stderr files — land beside the staged inputs rather
 	// than in the login user's home.
-	submitCommand := "cd " + shellQuote(*jst.WorkingDir) + " && sbatch " + shellQuote(scriptUploadPath)
+	submitCommand := "cd " + shellQuote(*jst.WorkingDir) + " && " + shellQuote(sbatchPath) + " " + shellQuote(scriptUploadPath)
+
 	stdout, stderr, err := runSSHCommand(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
 		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
 		*clusterConfig.SSHKey, submitCommand,

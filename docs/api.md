@@ -344,6 +344,7 @@ echo "$CLUSTER_ID"
 | `clusterDescription` | string \| null | optional |
 | `headnodeHost` | string | required, cannot be blank. The host jobs are submitted through |
 | `headnodePort` | number | required, 1–65535 |
+| `slurmHome` | string \| null | optional. Where Slurm is installed on the machine — the prefix its client commands are found under, as in `/opt/slurm` giving `/opt/slurm/bin/sbatch`. A cluster that omits it is one whose login shell already has `sbatch` and `squeue` on `PATH` |
 | `dataHost` | string \| null | optional. A separate endpoint for data movement — a DTN, typically. A cluster that names none stages through its head node |
 | `dataPort` | number \| null | optional, 1–65535 when present |
 | `partitions` | array \| null | optional, create only. Each element takes the same shape as a [Create Cluster Partition](#create-cluster-partition) body. A `PUT` carrying this field is rejected — see [Read, Update and Delete Slurm Clusters](#read-update-and-delete-slurm-clusters) |
@@ -359,6 +360,7 @@ echo "$CLUSTER_ID"
   "clusterDescription": "SDSC Expanse HPC cluster",
   "headnodeHost": "login.expanse.sdsc.edu",
   "headnodePort": 22,
+  "slurmHome": null,
   "dataHost": "dtn.expanse.sdsc.edu",
   "dataPort": 22,
   "partitions": [
@@ -649,6 +651,7 @@ The cluster is inlined, since a config is only meaningful together with the mach
     "clusterDescription": "SDSC Expanse HPC cluster",
     "headnodeHost": "login.expanse.sdsc.edu",
     "headnodePort": 22,
+    "slurmHome": "/usr/bin",
     "dataHost": "dtn.expanse.sdsc.edu",
     "dataPort": 22,
     "partitions": []
@@ -1682,9 +1685,13 @@ There is no body. What it records, for a `BATCH_JOB`, is:
   job monitoring task beside it.
 
 The work directory is the run's `baseWorkDir`, falling back to the `workRoot` of the
-[cluster config](#slurm-cluster-configs) it submits under. Every reference it follows is
-authorised in turn by the service that owns it, so a run cannot stage through a config
-or a dataset its owner has no standing on.
+[cluster config](#slurm-cluster-configs) it submits under, with the `processId` beneath
+it — that per-run segment is what keeps two runs sharing a work root from writing over
+each other's staged inputs. It is recorded on the submission task as its `workingDir`,
+so the job is later submitted from the same directory its inputs were staged into.
+
+Every reference launching follows is authorised in turn by the service that owns it, so
+a run cannot stage through a config or a dataset its owner has no standing on.
 
 ```bash
 curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/launch \
@@ -1752,7 +1759,7 @@ A [process](#processes) is carried out as an ordered list of tasks. There are fo
 | Collection | Carries |
 |---|---|
 | `data-staging-tasks` | a source and destination storage, credential and path — a transfer |
-| `job-submission-tasks` | the scheduler job id the submission produced |
+| `job-submission-tasks` | the directory the job is submitted from, and the scheduler job id the submission produced |
 | `job-monitoring-tasks` | the job id being watched |
 | `interactive-command-tasks` | a command to run on the remote host, and its output |
 
@@ -1833,13 +1840,34 @@ POST /api/v1/processes/{processId}/job-submission-tasks
 POST /api/v1/processes/{processId}/job-monitoring-tasks
 ```
 
-Both take the shared fields plus an optional `jobId`. It is writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded here afterwards with a `PUT`.
+Both take the shared fields plus an optional `jobId`, and a submission task takes a `workingDir` besides.
+
+| Field | Type | Notes |
+|---|---|---|
+| `jobId` | string \| null | optional, both kinds. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded here afterwards |
+| `workingDir` | string \| null | optional, submission tasks only. The directory on the cluster the job is submitted from and runs in — the same one the staging tasks write the run's inputs into |
+
+`workingDir` is filled in by [launching the process](#launch-a-process), which sets it to the run's work directory, and a task created there carries it without the caller supplying anything. It is writable so that a submission task recorded by hand can name one too: a task that reaches submission without a working directory is refused rather than submitted from the login user's home, since that is not where its inputs were staged.
 
 ```bash
 curl -s -X PUT localhost:9095/api/v1/processes/"$PROCESS_ID"/job-submission-tasks/"$TASK_ID" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{ "jobId": "4821577", "onFailure": "EXIT" }'
+  -d '{ "jobId": "4821577", "workingDir": "/scratch/alphafold/a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b", "onFailure": "EXIT" }'
+```
+
+**Response — `201 Created`** (submission task)
+
+```json
+{
+  "taskId": "d6e7f809-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
+  "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+  "jobId": "4821577",
+  "workingDir": "/scratch/alphafold/a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+  "onFailure": "EXIT",
+  "retryCount": 1,
+  "taskOrder": 1
+}
 ```
 
 ### Create Interactive Command Task

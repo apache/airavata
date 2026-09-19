@@ -20,6 +20,10 @@ type SlurmClusterRequest struct {
 	HeadnodeHost string `json:"headnodeHost"`
 	HeadnodePort int    `json:"headnodePort"`
 
+	// SlurmHome is the install prefix the Slurm client commands are found under. A
+	// cluster that omits it runs them off the login shell's PATH.
+	SlurmHome *string `json:"slurmHome"`
+
 	// DataHost and DataPort are the optional separate endpoint for data movement. A
 	// cluster that names neither stages through its head node.
 	DataHost *string `json:"dataHost"`
@@ -69,6 +73,8 @@ type SlurmClusterResponse struct {
 	HeadnodeHost string `json:"headnodeHost"`
 	HeadnodePort int    `json:"headnodePort"`
 
+	SlurmHome *string `json:"slurmHome"`
+
 	DataHost *string `json:"dataHost"`
 	DataPort *int    `json:"dataPort"`
 
@@ -88,6 +94,7 @@ func ApplySlurmClusterRequest(dst *model.SlurmCluster, src *SlurmClusterRequest)
 	dst.ClusterDescription = src.ClusterDescription
 	dst.HeadnodeHost = src.HeadnodeHost
 	dst.HeadnodePort = src.HeadnodePort
+	dst.SlurmHome = src.SlurmHome
 	dst.DataHost = src.DataHost
 	dst.DataPort = src.DataPort
 }
@@ -103,6 +110,7 @@ func ToSlurmClusterResponse(c *model.SlurmCluster) SlurmClusterResponse {
 		ClusterDescription: c.ClusterDescription,
 		HeadnodeHost:       c.HeadnodeHost,
 		HeadnodePort:       c.HeadnodePort,
+		SlurmHome:          c.SlurmHome,
 		DataHost:           c.DataHost,
 		DataPort:           c.DataPort,
 		Partitions:         partitions,

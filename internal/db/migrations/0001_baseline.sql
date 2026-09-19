@@ -103,7 +103,7 @@ CREATE TABLE "groups" ("group_id" varchar(36),"group_name" varchar(255),"user_id
 
 CREATE INDEX IF NOT EXISTS "idx_groups_owner_id" ON "groups" ("user_id");
 
-CREATE TABLE "slurm_clusters" ("slurm_cluster_id" varchar(36),"cluster_name" varchar(255) NOT NULL,"cluster_description" varchar(1024),"headnode_host" varchar(255) NOT NULL,"headnode_port" bigint NOT NULL,"data_host" varchar(255),"data_port" bigint,PRIMARY KEY ("slurm_cluster_id"));
+CREATE TABLE "slurm_clusters" ("slurm_cluster_id" varchar(36),"cluster_name" varchar(255) NOT NULL,"cluster_description" varchar(1024),"headnode_host" varchar(255) NOT NULL,"headnode_port" bigint NOT NULL,"slurm_home" varchar(1024),"data_host" varchar(255),"data_port" bigint,PRIMARY KEY ("slurm_cluster_id"));
 
 CREATE TABLE "scp_data_storages" ("data_id" varchar(36),"data_name" varchar(255),"host_name" varchar(255),"port" bigint,"login_user" varchar(255),"ssh_key_id" varchar(36),"user_id" varchar(255),PRIMARY KEY ("data_id"),CONSTRAINT "fk_scp_data_storages_ssh_key" FOREIGN KEY ("ssh_key_id") REFERENCES "ssh_keys"("ssh_key_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_scp_data_storages_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
