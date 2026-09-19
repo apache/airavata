@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path"
+	"regexp"
+	"strings"
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	model "github.com/apache/airavata/api/process/model"
@@ -56,22 +59,83 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 
 	slog.Info("Retrieved slurm cluster config for batch job", "taskId", taskID, "processId", processID, "clusterConfigId", clusterConfig.ID)
 
-	scriptUploadPath := *jst.WorkingDir + "/" + "script.slurm"
+	if jst.WorkingDir == nil || strings.TrimSpace(*jst.WorkingDir) == "" {
+		err := fmt.Errorf("job submission task %s of process %s names no working directory", taskID, processID)
+		slog.Error("Failed to submit batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
+	}
+
+	scriptUploadPath := path.Join(*jst.WorkingDir, "script.slurm")
 	slog.Info("Uploading slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
-	UploadFileToSCP(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
+	if err := UploadFileToSCP(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
 		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
-		*clusterConfig.SSHKey, scriptPath, scriptUploadPath)
+		*clusterConfig.SSHKey, scriptPath, scriptUploadPath); err != nil {
+		slog.Error("Failed to upload slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "error", err)
+		return nil, err
+	}
 
 	slog.Info("Uploaded slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
 
 	slog.Info("Submitting slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath)
-	runSSHCommand(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
+	// sbatch is run from the working directory so that a script writing relative paths —
+	// and the job's own stdout and stderr files — land beside the staged inputs rather
+	// than in the login user's home.
+	submitCommand := "cd " + shellQuote(*jst.WorkingDir) + " && sbatch " + shellQuote(scriptUploadPath)
+	stdout, stderr, err := runSSHCommand(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
 		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
-		*clusterConfig.SSHKey, "sbatch"+" "+shellQuote(scriptUploadPath),
+		*clusterConfig.SSHKey, submitCommand,
 		fmt.Sprintf("ssh sbatch %s@%s:%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost, scriptUploadPath))
+	if err != nil {
+		slog.Error("Failed to submit slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "stdout", stdout, "stderr", stderr, "error", err)
+		return nil, err
+	}
 
-	slog.Info("Completed submitting batch job", "taskId", taskID, "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID)
+	jobID, err := parseSbatchJobID(stdout)
+	if err != nil {
+		// The job may well be queued: sbatch exited zero, so something was accepted and
+		// only its id was not understood. Failing loudly is still right — without an id
+		// nothing downstream can monitor or cancel it — but the output is logged so the
+		// run can be reconciled by hand.
+		slog.Error("Failed to read job id from sbatch output", "taskId", taskID, "processId", processID, "stdout", stdout, "stderr", stderr, "error", err)
+		return nil, err
+	}
+
+	slog.Info("Submitted batch job", "jobId", jobID, "taskId", taskID, "processId", processID, "jobId", jobID)
+
+	// Recorded in both places the rest of the run reads it from: on the task that did the
+	// submitting, and on the batch process, which is what monitoring and cancellation
+	// look at.
+	jst.JobId = &jobID
+	if err := a.jobSubmissionTasks.Save(ctx, jst); err != nil {
+		slog.Error("Failed to record job id on job submission task", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
+		return nil, err
+	}
+
+	process.BatchProcess.JobID = &jobID
+	if err := a.processes.SaveBatchProcess(ctx, process.BatchProcess); err != nil {
+		slog.Error("Failed to record job id on batch process", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
+		return nil, err
+	}
+
+	slog.Info("Completed submitting batch job", "taskId", taskID, "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID, "jobId", jobID)
 	return executionContext, nil
+}
+
+// sbatchJobID matches the line sbatch prints when it accepts a script: "Submitted batch
+// job 4242", which on a federated install carries a trailing " on cluster <name>".
+var sbatchJobID = regexp.MustCompile(`Submitted batch job (\d+)`)
+
+// parseSbatchJobID reads the scheduler's job id out of what sbatch printed.
+//
+// The line is searched for rather than the whole output matched: a login shell is free
+// to print a banner, a module load notice or a warning before it, and none of that makes
+// the submission any less successful.
+func parseSbatchJobID(out string) (string, error) {
+	match := sbatchJobID.FindStringSubmatch(out)
+	if match == nil {
+		return "", fmt.Errorf("sbatch announced no job id, and its output was %q", strings.TrimSpace(out))
+	}
+	return match[1], nil
 }
 
 // slurmScript gathers what a submission script is built from and renders it.

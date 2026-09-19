@@ -91,7 +91,7 @@ func CreateDirectorySSH(ctx context.Context, host string, port int, username str
 		return fmt.Errorf("%s: no remote directory was named", target)
 	}
 
-	if err := runSSHCommand(ctx, host, port, username, key, "mkdir -p "+shellQuote(remotePath), target); err != nil {
+	if _, _, err := runSSHCommand(ctx, host, port, username, key, "mkdir -p "+shellQuote(remotePath), target); err != nil {
 		return err
 	}
 
@@ -135,22 +135,30 @@ func GetSCPFileMetadata(ctx context.Context, host string, port int, username str
 	}, nil
 }
 
-// runSSHCommand runs one command on the host and waits for it to finish, folding
-// whatever the command wrote to stderr into the error when it fails.
-func runSSHCommand(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, command, target string) error {
+// runSSHCommand runs one command on the host and waits for it to finish, returning
+// what it wrote to stdout and to stderr.
+//
+// Both streams are returned whether the command succeeded or not: what a failing
+// command printed is usually what explains it, and a caller that reads the output —
+// the job id sbatch announces, say — still wants to see what came back. Whatever went
+// to stderr is folded into the error as well, so a caller that only checks err is no
+// worse off than before. The streams are returned as the command wrote them, trailing
+// newline included; a caller parsing them should trim.
+func runSSHCommand(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, command, target string) (string, string, error) {
 	client, err := dialSSH(ctx, host, port, username, key)
 	if err != nil {
-		return fmt.Errorf("%s: %w", target, err)
+		return "", "", fmt.Errorf("%s: %w", target, err)
 	}
 	defer client.Close()
 
 	session, err := client.NewSession()
 	if err != nil {
-		return fmt.Errorf("%s: opening session: %w", target, err)
+		return "", "", fmt.Errorf("%s: opening session: %w", target, err)
 	}
 	defer session.Close()
 
-	var stderr bytes.Buffer
+	var stdout, stderr bytes.Buffer
+	session.Stdout = &stdout
 	session.Stderr = &stderr
 
 	done := make(chan struct{})
@@ -165,14 +173,14 @@ func runSSHCommand(ctx context.Context, host string, port int, username string, 
 
 	if err := session.Run(command); err != nil {
 		if ctxErr := ctx.Err(); ctxErr != nil {
-			return fmt.Errorf("%s: %w", target, ctxErr)
+			return stdout.String(), stderr.String(), fmt.Errorf("%s: %w", target, ctxErr)
 		}
 		if remote := strings.TrimSpace(stderr.String()); remote != "" {
-			return fmt.Errorf("%s: %w (remote: %s)", target, err, remote)
+			return stdout.String(), stderr.String(), fmt.Errorf("%s: %w (remote: %s)", target, err, remote)
 		}
-		return fmt.Errorf("%s: %w", target, err)
+		return stdout.String(), stderr.String(), fmt.Errorf("%s: %w", target, err)
 	}
-	return nil
+	return stdout.String(), stderr.String(), nil
 }
 
 // ========================== Utility section =====================================
