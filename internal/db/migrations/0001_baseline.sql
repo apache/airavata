@@ -223,7 +223,7 @@ CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_source_data_storage_id" ON "d
 
 CREATE INDEX IF NOT EXISTS "idx_data_staging_tasks_process_id" ON "data_staging_tasks" ("process_id");
 
-CREATE TABLE "job_submission_tasks" ("task_id" varchar(36),"process_id" varchar(36),"job_id" varchar(255),"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_job_submission_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE "job_submission_tasks" ("task_id" varchar(36),"process_id" varchar(36),"job_id" varchar(255),"working_dir" varchar(1024),"on_failure" varchar(32),"retry_count" bigint,"task_order" bigint,PRIMARY KEY ("task_id"),CONSTRAINT "fk_job_submission_tasks_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_job_submission_tasks_process_id" ON "job_submission_tasks" ("process_id");
 

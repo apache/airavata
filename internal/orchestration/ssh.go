@@ -135,18 +135,6 @@ func GetSCPFileMetadata(ctx context.Context, host string, port int, username str
 	}, nil
 }
 
-// ========================== Utility section =====================================
-
-// scpOK is the byte each side of the SCP wire protocol writes to acknowledge the
-// other's last message. A leading 0x01 or 0x02 instead introduces a one-line error,
-// which is the only way a remote scp reports a missing or unreadable path.
-const scpOK = 0x00
-
-// scpDialTimeout bounds the TCP connect and the SSH handshake behind it. A staging
-// activity is retried by the workflow, so a host that is merely down should fail the
-// attempt quickly rather than hold a worker slot until the OS gives up on the socket.
-const scpDialTimeout = 30 * time.Second
-
 // runSSHCommand runs one command on the host and waits for it to finish, folding
 // whatever the command wrote to stderr into the error when it fails.
 func runSSHCommand(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, command, target string) error {
@@ -186,6 +174,18 @@ func runSSHCommand(ctx context.Context, host string, port int, username string, 
 	}
 	return nil
 }
+
+// ========================== Utility section =====================================
+
+// scpOK is the byte each side of the SCP wire protocol writes to acknowledge the
+// other's last message. A leading 0x01 or 0x02 instead introduces a one-line error,
+// which is the only way a remote scp reports a missing or unreadable path.
+const scpOK = 0x00
+
+// scpDialTimeout bounds the TCP connect and the SSH handshake behind it. A staging
+// activity is retried by the workflow, so a host that is merely down should fail the
+// attempt quickly rather than hold a worker slot until the OS gives up on the socket.
+const scpDialTimeout = 30 * time.Second
 
 type scpTransfer struct {
 	client  *ssh.Client

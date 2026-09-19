@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"log/slog"
-	//"strings"
+	"strings"
 
 	"github.com/apache/airavata/api/process/repository"
 	"gorm.io/gorm"
@@ -16,13 +16,13 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	appdto "github.com/apache/airavata/api/application/dto"
-	//appmod "github.com/apache/airavata/api/application/model"
+	appmod "github.com/apache/airavata/api/application/model"
 	appserv "github.com/apache/airavata/api/application/service"
 	computesev "github.com/apache/airavata/api/compute/service"
 	credentialsev "github.com/apache/airavata/api/credentials/service"
 	datasev "github.com/apache/airavata/api/data/service"
 
-	//datamodel "github.com/apache/airavata/api/data/model"
+	datamodel "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/process/dto"
 	procmodel "github.com/apache/airavata/api/process/model"
 )
@@ -153,213 +153,216 @@ func (s *LaunchService) requireNotLaunched(ctx context.Context, processID string
 
 func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Response) error {
 	// Implementation for launching a batch process goes here
-	/*
-		batchProcess := process.BatchProcess
+	batchProcess := process.BatchProcess
 
-		if batchProcess == nil {
-			return fmt.Errorf("Process %s has no batch process", process.ProcessID)
+	if batchProcess == nil {
+		return fmt.Errorf("Process %s has no batch process", process.ProcessID)
+	}
+
+	// Each of these is optional on the record it comes from, so it is checked before it
+	// is followed rather than dereferenced. A run whose deployment names no cluster, or
+	// whose deployment is missing outright, cannot be launched — a conflict with the
+	// state it was submitted in, not a fault in the request that asked.
+	if batchProcess.DeploymentID == nil {
+		return httpx.Conflict("Batch process %s names no deployment", batchProcess.BatchProcessID)
+	}
+
+	batchDeployment, err := s.batchDeploymentService.Get(ctx, *batchProcess.DeploymentID)
+	if err != nil {
+		return fmt.Errorf("Failed to get batch deployment %s: %v", *batchProcess.DeploymentID, err)
+	}
+
+	if batchDeployment == nil {
+		return fmt.Errorf("Batch process %s has no deployment", batchProcess.BatchProcessID)
+	}
+
+	if batchDeployment.TemplateID == nil {
+		return httpx.Conflict("Deployment %s names no application template", batchDeployment.DeploymentID)
+	}
+
+	template, err := s.templateService.Get(ctx, *batchDeployment.TemplateID)
+
+	if err != nil {
+		return fmt.Errorf("Failed to get template %s: %v", *batchDeployment.TemplateID, err)
+	}
+
+	if template == nil {
+		return fmt.Errorf("Batch deployment %s has no template", *batchDeployment.TemplateID)
+	}
+
+	if batchDeployment.SlurmClusterID == nil {
+		return httpx.Conflict("Deployment %s names no Slurm cluster, so there is nowhere to launch %s",
+			batchDeployment.DeploymentID, process.ProcessID)
+	}
+
+	cluster, err := s.clusterService.Get(ctx, *batchDeployment.SlurmClusterID)
+	if err != nil {
+		return fmt.Errorf("Failed to get cluster %s: %v", *batchDeployment.SlurmClusterID, err)
+	}
+
+	if cluster == nil {
+		return fmt.Errorf("Deployment %s has no cluster", *batchDeployment.SlurmClusterID)
+	}
+
+	clusterConfig, err := s.clusterConfigService.Get(ctx, batchProcess.SlurmClusterConfigID)
+	if err != nil {
+		return fmt.Errorf("Failed to get cluster config %s: %v", batchProcess.SlurmClusterConfigID, err)
+	}
+
+	if clusterConfig == nil {
+		return fmt.Errorf("Batch process %s has no cluster config", batchProcess.SlurmClusterConfigID)
+	}
+
+	workRoot := batchProcess.BaseWorkDir
+	if workRoot == nil || strings.TrimSpace(*workRoot) == "" {
+		workRoot = &clusterConfig.WorkRoot
+	}
+	if workRoot == nil || strings.TrimSpace(*workRoot) == "" {
+		return fmt.Errorf("Batch process %s has no base work dir", batchProcess.BatchProcessID)
+	}
+
+	// The directory this run works in. The per-process segment is what keeps two runs
+	// sharing a work root from writing over each other's staged inputs, and it is the
+	// same directory the submission task is carried out in.
+	workingDir := strings.TrimSpace(*workRoot) + "/" + process.ProcessID
+
+	inputMapping := batchProcess.InputMappings
+	outputMapping := batchProcess.OutputMappings
+	hpcStorageType := datamodel.DataStorageTypeHPC
+	for _, input := range inputMapping {
+		// Process each input mapping here
+		tempInput := findTemplateInput(template, input.TemplateInputID)
+
+		if tempInput == nil {
+			return fmt.Errorf("Input mapping %s has no template input", input.TemplateInputMappingID)
 		}
 
-		// Each of these is optional on the record it comes from, so it is checked before it
-		// is followed rather than dereferenced. A run whose deployment names no cluster, or
-		// whose deployment is missing outright, cannot be launched — a conflict with the
-		// state it was submitted in, not a fault in the request that asked.
-		if batchProcess.DeploymentID == nil {
-			return httpx.Conflict("Batch process %s names no deployment", batchProcess.BatchProcessID)
+		if tempInput.InputType == nil {
+			return fmt.Errorf("Input mapping %s has no input type", input.TemplateInputMappingID)
 		}
 
-		batchDeployment, err := s.batchDeploymentService.Get(ctx, *batchProcess.DeploymentID)
-		if err != nil {
-			return fmt.Errorf("Failed to get batch deployment %s: %v", *batchProcess.DeploymentID, err)
-		}
-
-		if batchDeployment == nil {
-			return fmt.Errorf("Batch process %s has no deployment", batchProcess.BatchProcessID)
-		}
-
-		if batchDeployment.TemplateID == nil {
-			return httpx.Conflict("Deployment %s names no application template", batchDeployment.DeploymentID)
-		}
-
-		template, err := s.templateService.Get(ctx, *batchDeployment.TemplateID)
-
-		if err != nil {
-			return fmt.Errorf("Failed to get template %s: %v", *batchDeployment.TemplateID, err)
-		}
-
-		if template == nil {
-			return fmt.Errorf("Batch deployment %s has no template", *batchDeployment.TemplateID)
-		}
-
-		if batchDeployment.SlurmClusterID == nil {
-			return httpx.Conflict("Deployment %s names no Slurm cluster, so there is nowhere to launch %s",
-				batchDeployment.DeploymentID, process.ProcessID)
-		}
-
-		cluster, err := s.clusterService.Get(ctx, *batchDeployment.SlurmClusterID)
-		if err != nil {
-			return fmt.Errorf("Failed to get cluster %s: %v", *batchDeployment.SlurmClusterID, err)
-		}
-
-		if cluster == nil {
-			return fmt.Errorf("Deployment %s has no cluster", *batchDeployment.SlurmClusterID)
-		}
-
-		clusterConfig, err := s.clusterConfigService.Get(ctx, batchProcess.SlurmClusterConfigID)
-		if err != nil {
-			return fmt.Errorf("Failed to get cluster config %s: %v", batchProcess.SlurmClusterConfigID, err)
-		}
-
-		if clusterConfig == nil {
-			return fmt.Errorf("Batch process %s has no cluster config", batchProcess.SlurmClusterConfigID)
-		}
-
-		workRoot := batchProcess.BaseWorkDir
-		if workRoot == nil || strings.TrimSpace(*workRoot) == "" {
-			workRoot = &clusterConfig.WorkRoot
-		}
-		if workRoot == nil || strings.TrimSpace(*workRoot) == "" {
-			return fmt.Errorf("Batch process %s has no base work dir", batchProcess.BatchProcessID)
-		}
-
-		inputMapping := batchProcess.InputMappings
-		outputMapping := batchProcess.OutputMappings
-		hpcStorageType := datamodel.DataStorageTypeHPC
-		for _, input := range inputMapping {
-			// Process each input mapping here
-			tempInput := findTemplateInput(template, input.TemplateInputID)
-
-			if tempInput == nil {
-				return fmt.Errorf("Input mapping %s has no template input", input.TemplateInputMappingID)
+		if *tempInput.InputType == appmod.TemplateInputTypeFile {
+			// Create a data staging task for the file input
+			dataProductId := input.Value
+			if dataProductId == nil || *dataProductId == "" {
+				return fmt.Errorf("Input mapping %s has no value", input.TemplateInputMappingID)
 			}
 
-			if tempInput.InputType == nil {
-				return fmt.Errorf("Input mapping %s has no input type", input.TemplateInputMappingID)
+			dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
+			if err != nil {
+				return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
 			}
 
-			if *tempInput.InputType == appmod.TemplateInputTypeFile {
-				// Create a data staging task for the file input
-				dataProductId := input.Value
-				if dataProductId == nil || *dataProductId == "" {
-					return fmt.Errorf("Input mapping %s has no value", input.TemplateInputMappingID)
-				}
+			destPath := workingDir + "/" + *&tempInput.InputName
 
-				dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
-				if err != nil {
-					return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
-				}
+			failureAction := procmodel.OnFailureActionRetry
+			retryCount := 3
+			taskOrder := 0
 
-				destPath := *workRoot + "/" + process.ProcessID + "/" + *&tempInput.InputName
+			dataStagingTask := &procmodel.DataStagingTask{
+				ProcessID:             &process.ProcessID,
+				SourceDataStorageID:   dataProduct.DataStorageID,
+				SourcePath:            dataProduct.Path,
+				SourceDataStorageType: &dataProduct.DataStorageType,
 
-				failureAction := procmodel.OnFailureActionRetry
-				retryCount := 3
-				taskOrder := 0
-
-				dataStagingTask := &procmodel.DataStagingTask{
-					ProcessID:             &process.ProcessID,
-					SourceDataStorageID:   dataProduct.DataStorageID,
-					SourcePath:            dataProduct.Path,
-					SourceDataStorageType: &dataProduct.DataStorageType,
-
-					DestinationDataStorageID:   &clusterConfig.SlurmClusterConfigID,
-					DestinationDataStorageType: &hpcStorageType,
-					DestinationPath:            &destPath,
-					OnFailure:                  &failureAction,
-					RetryCount:                 &retryCount,
-					TaskOrder:                  &taskOrder,
-				}
-
-				if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
-					return err
-				}
+				DestinationDataStorageID:   &clusterConfig.SlurmClusterConfigID,
+				DestinationDataStorageType: &hpcStorageType,
+				DestinationPath:            &destPath,
+				OnFailure:                  &failureAction,
+				RetryCount:                 &retryCount,
+				TaskOrder:                  &taskOrder,
 			}
 
-			if *tempInput.InputType == appmod.TemplateInputTypeFileList {
-				// Create a data staging task for the list input
-			}
-
-			if *tempInput.InputType == appmod.TemplateInputTypeDirectory {
-				// Create a data staging task for the directory input
+			if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
+				return err
 			}
 		}
 
-		for _, output := range outputMapping {
-			// Process each output mapping here
-			tempOutput := findTemplateOutput(template, output.TemplateOutputID)
-			if tempOutput == nil {
-				return fmt.Errorf("Output mapping %s has no template output", output.TemplateOutputMappingID)
+		if *tempInput.InputType == appmod.TemplateInputTypeFileList {
+			// Create a data staging task for the list input
+		}
+
+		if *tempInput.InputType == appmod.TemplateInputTypeDirectory {
+			// Create a data staging task for the directory input
+		}
+	}
+
+	for _, output := range outputMapping {
+		// Process each output mapping here
+		tempOutput := findTemplateOutput(template, output.TemplateOutputID)
+		if tempOutput == nil {
+			return fmt.Errorf("Output mapping %s has no template output", output.TemplateOutputMappingID)
+		}
+
+		if tempOutput.OutputType == nil {
+			return fmt.Errorf("Output mapping %s has no output type", output.TemplateOutputMappingID)
+		}
+
+		if *tempOutput.OutputType == appmod.TemplateOutputTypeFile {
+
+			dataProductId := output.Value
+			if dataProductId == nil || *dataProductId == "" {
+				return fmt.Errorf("Output mapping %s has no value", output.TemplateOutputMappingID)
 			}
 
-			if tempOutput.OutputType == nil {
-				return fmt.Errorf("Output mapping %s has no output type", output.TemplateOutputMappingID)
+			dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
+			if err != nil {
+				return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
 			}
 
-			if *tempOutput.OutputType == appmod.TemplateOutputTypeFile {
+			// Create a data staging task for the file output
 
-				dataProductId := output.Value
-				if dataProductId == nil || *dataProductId == "" {
-					return fmt.Errorf("Output mapping %s has no value", output.TemplateOutputMappingID)
-				}
+			sourcePath := workingDir + "/" + *&tempOutput.OutputName
+			destStorageType := datamodel.DataStorageTypeSCP
+			failureAction := procmodel.OnFailureActionRetry
+			retryCount := 3
+			taskOrder := 3
+			dataStagingTask := &procmodel.DataStagingTask{
+				ProcessID:             &process.ProcessID,
+				SourceDataStorageID:   &clusterConfig.SlurmClusterConfigID,
+				SourcePath:            &sourcePath,
+				SourceDataStorageType: &hpcStorageType,
 
-				dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
-				if err != nil {
-					return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
-				}
-
-				// Create a data staging task for the file output
-
-				sourcePath := *workRoot + "/" + process.ProcessID + "/" + *&tempOutput.OutputName
-				destStorageType := datamodel.DataStorageTypeSCP
-				failureAction := procmodel.OnFailureActionRetry
-				retryCount := 3
-				taskOrder := 3
-				dataStagingTask := &procmodel.DataStagingTask{
-					ProcessID:             &process.ProcessID,
-					SourceDataStorageID:   &clusterConfig.SlurmClusterConfigID,
-					SourcePath:            &sourcePath,
-					SourceDataStorageType: &hpcStorageType,
-
-					DestinationDataStorageID:   dataProduct.DataStorageID,
-					DestinationDataStorageType: &destStorageType,
-					DestinationPath:            dataProduct.Path,
-					OnFailure:                  &failureAction,
-					RetryCount:                 &retryCount,
-					TaskOrder:                  &taskOrder,
-				}
-				if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
-					return err
-				}
+				DestinationDataStorageID:   dataProduct.DataStorageID,
+				DestinationDataStorageType: &destStorageType,
+				DestinationPath:            dataProduct.Path,
+				OnFailure:                  &failureAction,
+				RetryCount:                 &retryCount,
+				TaskOrder:                  &taskOrder,
+			}
+			if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
+				return err
 			}
 		}
+	}
 
-		jobSubmissionFailureAction := procmodel.OnFailureActionExit
-		jobSubmissionRetryCount := 1
-		jobSubmissionTaskOrder := 1
-		jobSubmission := &procmodel.JobSubmissionTask{
-			ProcessID:  &process.ProcessID,
-			OnFailure:  &jobSubmissionFailureAction,
-			RetryCount: &jobSubmissionRetryCount,
-			TaskOrder:  &jobSubmissionTaskOrder,
-		}
+	jobSubmissionFailureAction := procmodel.OnFailureActionExit
+	jobSubmissionRetryCount := 1
+	jobSubmissionTaskOrder := 1
+	jobSubmission := &procmodel.JobSubmissionTask{
+		ProcessID:  &process.ProcessID,
+		WorkingDir: &workingDir,
+		OnFailure:  &jobSubmissionFailureAction,
+		RetryCount: &jobSubmissionRetryCount,
+		TaskOrder:  &jobSubmissionTaskOrder,
+	}
 
-		if err := s.jobSubmissionTasks.Save(ctx, jobSubmission); err != nil {
-			return err
-		}
+	if err := s.jobSubmissionTasks.Save(ctx, jobSubmission); err != nil {
+		return err
+	}
 
-		jobMonitoringRetryCount := 10
-		jobMonitoringTaskOrder := 3
-		jobMonitoringFailureAction := procmodel.OnFailureActionRetry
-		jobMonitoring := &procmodel.JobMonitoringTask{
-			ProcessID:  &process.ProcessID,
-			OnFailure:  &jobMonitoringFailureAction,
-			RetryCount: &jobMonitoringRetryCount,
-			TaskOrder:  &jobMonitoringTaskOrder,
-		}
-		if err := s.monitoringTasks.Save(ctx, jobMonitoring); err != nil {
-			return err
-		}
-
-	*/
+	jobMonitoringRetryCount := 10
+	jobMonitoringTaskOrder := 3
+	jobMonitoringFailureAction := procmodel.OnFailureActionRetry
+	jobMonitoring := &procmodel.JobMonitoringTask{
+		ProcessID:  &process.ProcessID,
+		OnFailure:  &jobMonitoringFailureAction,
+		RetryCount: &jobMonitoringRetryCount,
+		TaskOrder:  &jobMonitoringTaskOrder,
+	}
+	if err := s.monitoringTasks.Save(ctx, jobMonitoring); err != nil {
+		return err
+	}
 	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
 	s.executionEngine.LaunchProcessExecution(ctx, process.ProcessID)
 

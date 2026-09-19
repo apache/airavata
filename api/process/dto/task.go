@@ -127,6 +127,7 @@ func ToDataStagingTaskResponses(in []model.DataStagingTask) []DataStagingTaskRes
 // the submitted job, learned at submission time and recorded here afterwards.
 type JobSubmissionTaskRequest struct {
 	JobID      *string                `json:"jobId"`
+	WorkingDir *string                `json:"workingDir"`
 	OnFailure  *model.OnFailureAction `json:"onFailure"`
 	RetryCount *int                   `json:"retryCount"`
 	TaskOrder  *int                   `json:"taskOrder"`
@@ -141,6 +142,7 @@ func (r *JobSubmissionTaskRequest) Validate() []httpx.FieldError {
 
 func ApplyJobSubmissionTaskRequest(dst *model.JobSubmissionTask, src *JobSubmissionTaskRequest) {
 	dst.JobId = src.JobID
+	dst.WorkingDir = src.WorkingDir
 	dst.OnFailure = src.OnFailure
 	dst.RetryCount = src.RetryCount
 	dst.TaskOrder = src.TaskOrder
@@ -152,6 +154,7 @@ type JobSubmissionTaskResponse struct {
 	ProcessID *string `json:"processId"`
 
 	JobID      *string                `json:"jobId"`
+	WorkingDir *string                `json:"workingDir"`
 	OnFailure  *model.OnFailureAction `json:"onFailure"`
 	RetryCount *int                   `json:"retryCount"`
 	TaskOrder  *int                   `json:"taskOrder"`
@@ -162,6 +165,7 @@ func ToJobSubmissionTaskResponse(t *model.JobSubmissionTask) JobSubmissionTaskRe
 		TaskID:     t.ID,
 		ProcessID:  t.ProcessID,
 		JobID:      t.JobId,
+		WorkingDir: t.WorkingDir,
 		OnFailure:  t.OnFailure,
 		RetryCount: t.RetryCount,
 		TaskOrder:  t.TaskOrder,

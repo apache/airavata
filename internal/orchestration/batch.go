@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	model "github.com/apache/airavata/api/process/model"
@@ -37,7 +38,37 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 
 	slog.Info("Built slurm script for batch job", "taskId", taskID, "processId", processID, "script", script)
 
-	// TODO: Implement the actual submission of the batch job using the built slurm script.
+	// save script to a temporary location or a known path before uploading
+	scriptPath := fmt.Sprintf("/tmp/%s.slurm", processID)
+	err = os.WriteFile(scriptPath, []byte(script), 0644)
+	if err != nil {
+		slog.Error("Failed to write slurm script to temporary location", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
+	}
+
+	defer os.Remove(scriptPath)
+
+	clusterConfig, err := a.slurmClusterConfigs.FindByID(ctx, process.BatchProcess.SlurmClusterConfigID)
+	if err != nil {
+		slog.Error("Failed to retrieve slurm cluster config for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
+	}
+
+	slog.Info("Retrieved slurm cluster config for batch job", "taskId", taskID, "processId", processID, "clusterConfigId", clusterConfig.ID)
+
+	scriptUploadPath := *jst.WorkingDir + "/" + "script.slurm"
+	slog.Info("Uploading slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
+	UploadFileToSCP(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
+		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
+		*clusterConfig.SSHKey, scriptPath, scriptUploadPath)
+
+	slog.Info("Uploaded slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
+
+	slog.Info("Submitting slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath)
+	runSSHCommand(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
+		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
+		*clusterConfig.SSHKey, "sbatch"+" "+shellQuote(scriptUploadPath),
+		fmt.Sprintf("ssh sbatch %s@%s:%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost, scriptUploadPath))
 
 	slog.Info("Completed submitting batch job", "taskId", taskID, "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID)
 	return executionContext, nil

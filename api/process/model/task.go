@@ -58,7 +58,10 @@ type JobSubmissionTask struct {
 	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
 	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"process,omitempty"`
 
-	JobId      *string          `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
+	JobId *string `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
+
+	WorkingDir *string `gorm:"column:working_dir;type:varchar(1024)" json:"workingDir,omitempty"`
+
 	OnFailure  *OnFailureAction `gorm:"column:on_failure;type:varchar(32)" json:"onFailure,omitempty"`
 	RetryCount *int             `gorm:"column:retry_count;type:int" json:"retryCount,omitempty"`
 
