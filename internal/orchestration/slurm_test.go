@@ -76,7 +76,11 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 func TestBuildSlurmScript(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig)
+	cfg := GlobalJobConfigs{
+		MailUser: "airavata@example.com",
+	}
+
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -88,6 +92,8 @@ func TestBuildSlurmScript(t *testing.T) {
 		"#SBATCH --output=/scratch/airavata/proc-1/proc-1.stdout",
 		"#SBATCH --error=/scratch/airavata/proc-1/proc-1.stderr",
 		"#SBATCH --time=1-01:00:00",
+		"#SBATCH --mail-user=airavata@example.com",
+		"#SBATCH --mail-type=BEGIN,END,FAIL",
 		"#SBATCH --account=alloc-123",
 		"#SBATCH --partition=gpu",
 		"#SBATCH --nodes=2",
@@ -121,7 +127,11 @@ func TestBuildSlurmScriptFallsBackToDeploymentConfig(t *testing.T) {
 	process.BatchProcess.BatchJobConfig = nil
 	deployment.DefaultBatchJobConfig.Allocation = "alloc-default"
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig)
+	cfg := GlobalJobConfigs{
+		MailUser: "airavata@example.com",
+	}
+
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -139,7 +149,11 @@ func TestBuildSlurmScriptHonoursBaseWorkDir(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 	process.BatchProcess.BaseWorkDir = ptr("/projects/fold")
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig)
+	cfg := GlobalJobConfigs{
+		MailUser: "airavata@example.com",
+	}
+
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -154,7 +168,11 @@ func TestBuildSlurmScriptDoesNotReexpandInputValues(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 	process.BatchProcess.InputMappings[1].Value = ptr(`{"value": "{{ account }}"}`)
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig)
+	cfg := GlobalJobConfigs{
+		MailUser: "airavata@example.com",
+	}
+
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -221,8 +239,11 @@ func equalSlices(a, b []string) bool {
 func TestBuildSlurmScriptRejectsLineBreaks(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 	process.BatchProcess.BaseWorkDir = ptr("/projects/fold\n#SBATCH --account=someone-else")
+	cfg := GlobalJobConfigs{
+		MailUser: "airavata@example.com",
+	}
 
-	if _, err := buildSlurmScript(process, deployment, template, clusterConfig); err == nil {
+	if _, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg); err == nil {
 		t.Fatal("expected a work dir spanning lines to be refused")
 	}
 }

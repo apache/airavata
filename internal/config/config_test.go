@@ -1,10 +1,12 @@
-package config_test
+// The tests live in the package rather than beside it because what they cover is load,
+// which is unexported. FetchSystemConfigs is the exported entry point, but it is meant
+// to read the environment once and hand back the same Config forever after, so it is the
+// wrong thing to drive a table of environment permutations through.
+package config
 
 import (
 	"strings"
 	"testing"
-
-	"github.com/apache/airavata/internal/config"
 )
 
 // isolate clears every variable Load reads.
@@ -32,7 +34,7 @@ func isolate(t *testing.T) {
 func TestDefaults(t *testing.T) {
 	isolate(t)
 
-	cfg, err := config.Load()
+	cfg, err := load()
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -60,7 +62,7 @@ func TestRefusesToStartWithNoAuthentication(t *testing.T) {
 	isolate(t)
 	t.Setenv("AIRAVATA_ROOT_ACCOUNT_ENABLED", "false")
 
-	if _, err := config.Load(); err == nil {
+	if _, err := load(); err == nil {
 		t.Fatal("Load succeeded with no root account and no CILogon client, want an error")
 	} else if !strings.Contains(err.Error(), "no authentication configured") {
 		t.Errorf("error = %v, want it to name the missing authentication", err)
@@ -74,7 +76,7 @@ func TestCILogonAloneIsEnough(t *testing.T) {
 	t.Setenv("AIRAVATA_ROOT_ACCOUNT_ENABLED", "false")
 	t.Setenv("CILOGON_CLIENT_ID", "some-client-id")
 
-	cfg, err := config.Load()
+	cfg, err := load()
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -87,7 +89,7 @@ func TestCILogonAloneIsEnough(t *testing.T) {
 func TestRootAccountAloneIsEnough(t *testing.T) {
 	isolate(t)
 
-	if _, err := config.Load(); err != nil {
+	if _, err := load(); err != nil {
 		t.Fatalf("Load: %v", err)
 	}
 }
@@ -99,7 +101,7 @@ func TestEnvironmentOverrides(t *testing.T) {
 	t.Setenv("AIRAVATA_CORS_ALLOWED_ORIGINS", "https://a.example.edu,https://b.example.edu")
 	t.Setenv("AIRAVATA_ROOT_ACCOUNT_TOKEN", "fixed-token")
 
-	cfg, err := config.Load()
+	cfg, err := load()
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -124,7 +126,7 @@ func TestDSNOverrideWins(t *testing.T) {
 	t.Setenv("AIRAVATA_DB_HOST", "ignored.example.edu")
 	t.Setenv("AIRAVATA_DB_DSN", "user:pw@tcp(db.example.edu:3306)/airavata?tls=true")
 
-	cfg, err := config.Load()
+	cfg, err := load()
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}
@@ -139,7 +141,7 @@ func TestUnparseableBooleanFallsBackToDefault(t *testing.T) {
 	isolate(t)
 	t.Setenv("AIRAVATA_ROOT_ACCOUNT_ENABLED", "yes-please")
 
-	cfg, err := config.Load()
+	cfg, err := load()
 	if err != nil {
 		t.Fatalf("Load: %v", err)
 	}

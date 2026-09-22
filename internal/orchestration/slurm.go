@@ -34,6 +34,8 @@ const slurmScriptTemplate = `#!/bin/bash
 #SBATCH --output={{ stdout_file }}
 #SBATCH --error={{ stderr_file }}
 #SBATCH --time={{ wall_time }}
+#SBATCH --mail-user={{ mail_user }}
+#SBATCH --mail-type=BEGIN,END,FAIL
 {% if account %}
 #SBATCH --account={{ account }}
 {% endif %}
@@ -106,6 +108,7 @@ func buildSlurmScript(
 	deployment *appmodel.BatchDeployment,
 	template *appmodel.Template,
 	clusterConfig *computemodel.SlurmClusterConfig,
+	globalJobConfigs *GlobalJobConfigs,
 ) (string, error) {
 	batchProcess := process.BatchProcess
 
@@ -144,6 +147,7 @@ func buildSlurmScript(
 		"wall_time":       slurmWallTime(jobConfig.WallTimeMinutes),
 		"account":         strings.TrimSpace(jobConfig.Allocation),
 		"partition":       optional(deployment.DefaultPartition),
+		"mail_user":       globalJobConfigs.MailUser,
 
 		"nodes":           optional(jobConfig.Nodes),
 		"ntasks":          optional(jobConfig.Ntasks),
@@ -159,8 +163,8 @@ func buildSlurmScript(
 		"cpus_per_gpu":    optional(jobConfig.CPUsPerGPU),
 		"constraints":     optional(jobConfig.Constraints),
 
-		"inputs":  inputs,
-		"outputs": outputs,
+		"inputs":    inputs,
+		"outputs":   outputs,
 	}
 
 	// A directive is one line, so a value carrying a newline would not extend the

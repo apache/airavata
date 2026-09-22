@@ -48,7 +48,7 @@ func runMigrate(args []string) error {
 		action = args[0]
 	}
 
-	cfg, err := config.Load()
+	cfg, err := config.FetchSystemConfigs()
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func runMigrate(args []string) error {
 func runServer() error {
 	slog.Info("starting Airavata server")
 
-	cfg, err := config.Load()
+	cfg, err := config.FetchSystemConfigs()
 	if err != nil {
 		return err
 	}

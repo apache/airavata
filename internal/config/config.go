@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 // Config is the resolved server configuration.
@@ -34,11 +35,14 @@ type Config struct {
 	// Root account
 	RootAccountEnabled bool
 	RootAccountToken   string
+
+	EmailMonitorAddress     string
+	EmailMonitorAppPassword string
 }
 
 // Load reads configuration from the environment, applying the same defaults the Java
 // application.properties declared.
-func Load() (Config, error) {
+func load() (Config, error) {
 	cfg := Config{
 		HTTPAddr:    ":" + env("SERVER_PORT", "9095"),
 		DSN:         env("AIRAVATA_DB_DSN", defaultDSN()),
@@ -51,8 +55,10 @@ func Load() (Config, error) {
 		ClientID:         env("CILOGON_CLIENT_ID", ""),
 		ClientSecret:     env("CILOGON_CLIENT_SECRET", ""),
 
-		RootAccountEnabled: envBool("AIRAVATA_ROOT_ACCOUNT_ENABLED", true),
-		RootAccountToken:   env("AIRAVATA_ROOT_ACCOUNT_TOKEN", ""),
+		RootAccountEnabled:      envBool("AIRAVATA_ROOT_ACCOUNT_ENABLED", true),
+		RootAccountToken:        env("AIRAVATA_ROOT_ACCOUNT_TOKEN", ""),
+		EmailMonitorAddress:     env("AIRAVATA_EMAIL_MONITOR_ADDRESS", ""),
+		EmailMonitorAppPassword: env("AIRAVATA_EMAIL_MONITOR_APP_PASSWORD", ""),
 	}
 
 	// Without a root account and without CILogon credentials there is no way to
@@ -64,6 +70,20 @@ func Load() (Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func FetchSystemConfigs() (Config, error) {
+	// Make this singleton to only load the configuration once.
+	var (
+		once sync.Once
+		cfg  Config
+		err  error
+	)
+	once.Do(func() {
+		cfg, err = load()
+	})
+
+	return cfg, err
 }
 
 // defaultDSN builds the PostgreSQL connection URL from the same host, port, database,

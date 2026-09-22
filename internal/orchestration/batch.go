@@ -22,6 +22,7 @@ type SubmitBatchJobParameters struct {
 
 func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
 	slog.Info("Starting to submit batch job", "taskId", taskID, "processId", processID)
+
 	process, err := a.process(ctx, processID)
 	if err != nil {
 		slog.Error("Failed to retrieve process for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
@@ -33,7 +34,7 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 		return nil, err
 	}
 
-	script, err := a.slurmScript(ctx, process)
+	script, err := a.slurmScript(ctx, process, executionContext.globalJobConfigs)
 	if err != nil {
 		slog.Error("Failed to build slurm script for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
 		return nil, err
@@ -150,7 +151,7 @@ func parseSbatchJobID(out string) (string, error) {
 // Each reference is optional on the record it is read from, so it is checked before it
 // is followed: a run naming no deployment has nothing to submit, and saying so here is
 // clearer than a nil dereference inside the renderer.
-func (a *ExecutionEngine) slurmScript(ctx context.Context, process *model.Process) (string, error) {
+func (a *ExecutionEngine) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *GlobalJobConfigs) (string, error) {
 	batch := process.BatchProcess
 
 	if batch.DeploymentID == nil {
@@ -174,12 +175,9 @@ func (a *ExecutionEngine) slurmScript(ctx context.Context, process *model.Proces
 		}
 	}
 
-	return buildSlurmScript(process, deployment, template, clusterConfig)
+	slog.Info("Building slurm script for process", "processId", process.ID)
+	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs)
 }
-
-// slurmScriptKey names the built script in the execution context, scoped by process so
-// that nothing a later activity reads can belong to a different run.
-func slurmScriptKey(processID string) string { return "slurm-script:" + processID }
 
 func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
 	slog.Info("Starting to cancel batch job", "taskId", taskID, "processId", processID)
