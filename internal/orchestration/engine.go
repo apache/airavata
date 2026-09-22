@@ -36,9 +36,9 @@ type GlobalJobConfigs struct {
 }
 
 type ExecutionContext struct {
-	globalJobConfigs *GlobalJobConfigs
-	data             map[string]interface{}
-	someData         string
+	GlobalJobConfigs *GlobalJobConfigs      `json:"globalJobConfigs,omitempty"`
+	Data             map[string]interface{} `json:"data,omitempty"`
+	SomeData         string                 `json:"someData,omitempty"`
 }
 
 // set records a value under key for the rest of the run to read.
@@ -47,10 +47,10 @@ type ExecutionContext struct {
 // rebuilt from what crossed the workflow backend, so one that writes cannot count on
 // finding the map the workflow started with.
 func (c *ExecutionContext) set(key string, value interface{}) {
-	if c.data == nil {
-		c.data = make(map[string]interface{})
+	if c.Data == nil {
+		c.Data = make(map[string]interface{})
 	}
-	c.data[key] = value
+	c.Data[key] = value
 }
 
 // NewExecutionEngine returns the workflow set scheduling acts.
@@ -148,8 +148,8 @@ func (w *ExecutionEngine) handleBatchJobCompletion(ctx workflow.Context, process
 	}
 
 	executionContext := &ExecutionContext{
-		globalJobConfigs: globalJobConfigs,
-		data:             make(map[string]interface{}),
+		GlobalJobConfigs: globalJobConfigs,
+		Data:             make(map[string]interface{}),
 	}
 
 	if len(jmts) == 0 {
@@ -225,9 +225,9 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 	}
 
 	executionContext := &ExecutionContext{
-		data:             make(map[string]interface{}),
-		globalJobConfigs: globalJobConfigs,
-		someData:         "Fooooo",
+		Data:             make(map[string]interface{}),
+		GlobalJobConfigs: globalJobConfigs,
+		SomeData:         "Fooooo",
 	}
 
 	for _, dst := range dsts { // tasks are already sorted by their task order. Attach input staging tasks

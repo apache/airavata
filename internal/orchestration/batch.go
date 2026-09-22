@@ -34,7 +34,7 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 		return nil, err
 	}
 
-	script, err := a.slurmScript(ctx, process, executionContext.globalJobConfigs)
+	script, err := a.slurmScript(ctx, process, executionContext.GlobalJobConfigs)
 	if err != nil {
 		slog.Error("Failed to build slurm script for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
 		return nil, err
