@@ -90,6 +90,9 @@ type BatchProcessResponse struct {
 
 	InputMappings  []InputMapping  `json:"inputMappings"`
 	OutputMappings []OutputMapping `json:"outputMappings"`
+
+	BatchJobStatuses     []BatchJobStatusResponse `json:"batchJobStatuses"`
+	LatestBatchJobStatus *BatchJobStatusResponse  `json:"latestBatchJobStatus"`
 }
 
 // InputMapping binds one of the template's declared inputs to a value for this run.
@@ -201,6 +204,14 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 	if b == nil {
 		return nil
 	}
+	batchJobStatuses := ToBatchJobStatusResponsesFromPtrs(b.BatchJobStatuses)
+	var latest *BatchJobStatusResponse
+	if len(batchJobStatuses) > 0 {
+		// The association is loaded oldest first (see ProcessRepository.query), so the
+		// last one is the newest.
+		latest = &batchJobStatuses[len(batchJobStatuses)-1]
+	}
+
 	return &BatchProcessResponse{
 		BatchProcessID:       b.ID,
 		DeploymentID:         b.DeploymentID,
@@ -211,6 +222,8 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		BatchJobConfig:       applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
 		InputMappings:        ToInputMappings(b.InputMappings),
 		OutputMappings:       ToOutputMappings(b.OutputMappings),
+		BatchJobStatuses:     batchJobStatuses,
+		LatestBatchJobStatus: latest,
 	}
 }
 

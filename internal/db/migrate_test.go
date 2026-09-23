@@ -50,7 +50,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 		"data_products", "data_product_group_sharings", "data_product_user_sharings",
 		"application_templates", "application_template_inputs", "application_template_outputs",
 		"batch_application_deployments", "batch_job_configs",
-		"processes", "batch_processes", "process_statuses",
+		"processes", "batch_processes", "batch_process_statuses", "process_statuses",
 		"process_template_input_mappings", "process_template_output_mappings",
 		"data_staging_tasks", "job_submission_tasks", "job_monitoring_tasks",
 		"interactive_command_tasks",

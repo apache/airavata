@@ -29,6 +29,7 @@ type ExecutionEngine struct {
 	batchDeployments    *applicationrepo.BatchDeploymentRepository
 	templates           *applicationrepo.TemplateRepository
 	orchestrator        *worker.WorkflowOrchestrator
+	batchStatus         *processrepo.BatchJobStatusRepository
 }
 
 type GlobalJobConfigs struct {
@@ -62,6 +63,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	processes *processrepo.ProcessRepository,
 	batchDeployments *applicationrepo.BatchDeploymentRepository,
 	templates *applicationrepo.TemplateRepository,
+	batchStatus *processrepo.BatchJobStatusRepository,
 ) *ExecutionEngine {
 
 	backend := sqlite.NewSqliteBackend("/tmp/airavataorchestrator.sqlite")
@@ -77,6 +79,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		batchDeployments:    batchDeployments,
 		templates:           templates,
 		orchestrator:        orchestrator,
+		batchStatus:         batchStatus,
 	}
 }
 

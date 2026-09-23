@@ -5,6 +5,7 @@ import (
 	computemodel "github.com/apache/airavata/api/compute/model"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"time"
 )
 
 // BatchJobProcess carries what a BATCH_JOB process needs beyond a Process: the
@@ -46,6 +47,8 @@ type BatchJobProcess struct {
 	OutputMappings []*TemplateOutputMapping `gorm:"foreignKey:BatchProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"outputMappings,omitempty"`
 
 	BaseWorkDir *string `gorm:"column:base_work_dir;type:varchar(1024)" json:"baseWorkDir,omitempty"`
+
+	BatchJobStatuses []*BatchJobStatus `gorm:"foreignKey:BatchProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"batchJobStatuses,omitempty"`
 }
 
 // TableName returns the table backing BatchJobProcess.
@@ -69,4 +72,42 @@ func (p *BatchJobProcess) AfterDelete(tx *gorm.DB) error {
 	}
 	return tx.Where("batch_job_config_id = ?", p.BatchJobConfigID).
 		Delete(&applicationmodel.BatchJobConfig{}).Error
+}
+
+type BatchJobStatusType string
+
+const (
+	// Airavata specific status codes
+	BatchJobStatusSubmitted        BatchJobStatusType = "SUBMITTED"
+	BatchJobStatusSubmissionFailed BatchJobStatusType = "SUBMISSION_FAILED"
+	BatchJobStatusCancelling       BatchJobStatusType = "CANCELLING"
+	BatchJobStatusCancelled        BatchJobStatusType = "CANCELLED"
+
+	// SLURM specific status codes
+	BatchJobStatusBegin         BatchJobStatusType = "BEGIN"
+	BatchJobStatusRequeued      BatchJobStatusType = "REQUEUE"
+	BatchJobStatusInvalidDepend BatchJobStatusType = "INVALID_DEPEND"
+	BatchJobStatusStageOut      BatchJobStatusType = "STAGE_OUT"
+	BatchJobStatusTimeLimit     BatchJobStatusType = "TIME_LIMIT"
+	BatchJobStatusTimeLimit90   BatchJobStatusType = "TIME_LIMIT_90"
+	BatchJobStatusTimeLimit80   BatchJobStatusType = "TIME_LIMIT_80"
+	BatchJobStatusTimeLimit50   BatchJobStatusType = "TIME_LIMIT_50"
+	BatchJobStatusFailed        BatchJobStatusType = "FAIL"
+	BatchJobStatusEnded         BatchJobStatusType = "END"
+)
+
+type BatchJobStatus struct {
+	ID             string             `gorm:"column:batch_process_status_id;primaryKey;type:varchar(36)" json:"batchProcessStatusId"`
+	BatchProcessID string             `gorm:"column:batch_process_id;type:varchar(36);not null;index" json:"batchProcessId"`
+	Status         BatchJobStatusType `gorm:"column:status;type:varchar(255);not null" json:"status"`
+	UpdatedAt      time.Time          `gorm:"column:updated_at;type:timestamp;not null;autoUpdateTime" json:"updatedAt"`
+}
+
+func (BatchJobStatus) TableName() string { return "batch_process_statuses" }
+
+func (s *BatchJobStatus) BeforeCreate(*gorm.DB) error {
+	if s.ID == "" {
+		s.ID = uuid.NewString()
+	}
+	return nil
 }

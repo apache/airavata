@@ -32,7 +32,10 @@ func (r *ProcessRepository) query(ctx context.Context) *gorm.DB {
 	return r.db.WithContext(ctx).
 		Preload("BatchProcess.BatchJobConfig").
 		Preload("BatchProcess.InputMappings").
-		Preload("BatchProcess.OutputMappings")
+		Preload("BatchProcess.OutputMappings").
+		Preload("BatchProcess.BatchJobStatuses", func(db *gorm.DB) *gorm.DB {
+			return db.Order("updated_at")
+		})
 }
 
 // FindAll returns every process.

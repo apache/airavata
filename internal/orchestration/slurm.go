@@ -14,20 +14,6 @@ import (
 	model "github.com/apache/airavata/api/process/model"
 )
 
-// slurmScriptTemplate is the batch script a BATCH_JOB process is submitted with.
-//
-// It is a Jinja template rather than a string built in Go so that the shape of the
-// script stays readable as a script. Every value a run supplies is a {{ }} placeholder,
-// and every optional resource sits behind an {% if %}: an unset field renders no
-// directive at all, which is what lets the scheduler apply its own default rather than
-// being handed a zero the run never asked for.
-//
-// The run section is rendered separately and interpolated here as {{ run_section }},
-// already expanded — see buildSlurmScript.
-//
-// Slurm has no --cpus flag, so the config's CPUs stands in for CPUsPerTask when the
-// run declared only the one: a count of processors per task is the only thing it can
-// mean to a scheduler that counts tasks and the CPUs each is given.
 const slurmScriptTemplate = `#!/bin/bash
 #SBATCH --job-name={{ job_name }}
 #SBATCH --chdir={{ work_dir }}
@@ -35,7 +21,7 @@ const slurmScriptTemplate = `#!/bin/bash
 #SBATCH --error={{ stderr_file }}
 #SBATCH --time={{ wall_time }}
 #SBATCH --mail-user={{ mail_user }}
-#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-type=BEGIN,END,FAIL,REQUEUE,INVALID_DEPEND,STAGE_OUT,TIME_LIMIT,TIME_LIMIT_90,TIME_LIMIT_80,TIME_LIMIT_50
 {% if account %}
 #SBATCH --account={{ account }}
 {% endif %}
@@ -92,17 +78,6 @@ exit ${airavata_status}
 `
 
 // buildSlurmScript renders the submission script for one run.
-//
-// What a job asks for comes from the run's own BatchJobConfig, which the launch copied
-// from the deployment and which the run may have departed from; the deployment's
-// default stands in only when the run carries no snapshot of its own. The deployment
-// contributes the run section — the module loads and the command itself — and the
-// partition; the cluster config contributes the work root when the run named none.
-//
-// The template declares the inputs and outputs by name, and those names are what the
-// run section addresses through {{ inputs.x }} and {{ outputs.y }}. File-valued inputs
-// and every output resolve to a path under the run's work directory, because that is
-// where the staging tasks put them and where they are collected from afterwards.
 func buildSlurmScript(
 	process *model.Process,
 	deployment *appmodel.BatchDeployment,
@@ -163,8 +138,8 @@ func buildSlurmScript(
 		"cpus_per_gpu":    optional(jobConfig.CPUsPerGPU),
 		"constraints":     optional(jobConfig.Constraints),
 
-		"inputs":    inputs,
-		"outputs":   outputs,
+		"inputs":  inputs,
+		"outputs": outputs,
 	}
 
 	// A directive is one line, so a value carrying a newline would not extend the
@@ -193,13 +168,6 @@ func buildSlurmScript(
 	return renderJinja("slurm script for process "+process.ID, slurmScriptTemplate, ctx)
 }
 
-// renderJinja expands one template against ctx.
-//
-// Autoescaping is turned off around the source: pongo2 escapes for HTML by default,
-// which would turn an ampersand or a quote in a path into an entity and break the
-// script. Trimming the newline after a block tag, and the indentation before one, is
-// what lets the optional directives be written as readable {% if %} lines without
-// leaving a blank line behind for every resource the run did not ask for.
 func renderJinja(name, source string, ctx pongo2.Context) (string, error) {
 	tpl, err := pongo2.FromString("{% autoescape off %}" + source + "{% endautoescape %}")
 	if err != nil {
@@ -215,10 +183,6 @@ func renderJinja(name, source string, ctx pongo2.Context) (string, error) {
 	return out.String(), nil
 }
 
-// workDirFor is the directory this run works in: the run's own base directory when it
-// named one, the cluster config's work root otherwise, with the process id beneath it.
-// The per-process segment is what keeps two runs sharing a work root from writing over
-// each other's staged inputs.
 func workDirFor(batch *model.BatchJobProcess, clusterConfig *computemodel.SlurmClusterConfig, processID string) (string, error) {
 	root := ""
 	if batch.BaseWorkDir != nil {
@@ -233,9 +197,6 @@ func workDirFor(batch *model.BatchJobProcess, clusterConfig *computemodel.SlurmC
 	return path.Join(root, processID), nil
 }
 
-// jobNameFor returns the name the job is submitted under, reduced to characters that
-// survive a scheduler and a file name. A run that named none is identified by its
-// process id, which is what the monitoring side has to match on anyway.
 func jobNameFor(batch *model.BatchJobProcess, processID string) string {
 	name := ""
 	if batch.JobName != nil {
@@ -259,10 +220,6 @@ func jobNameFor(batch *model.BatchJobProcess, processID string) string {
 	return safe
 }
 
-// slurmWallTime renders a minute count as a Slurm duration: days-hours:minutes:seconds
-// once it runs past a day, hours:minutes:seconds below that. A run that declared no
-// wall time gets the scheduler's smallest meaningful request rather than a zero, which
-// Slurm reads as "no limit" on some configurations and rejects outright on others.
 func slurmWallTime(minutes int64) string {
 	if minutes <= 0 {
 		minutes = 1
@@ -364,14 +321,6 @@ func isFileInput(t appmodel.TemplateInputType) bool {
 	return false
 }
 
-// mappingValue decodes what a mapping carries into the one or more values the run
-// section should see for it: a {"value": ...} or {"values": [...]} document, or a bare
-// JSON array, which is how a file list is written when there is nothing to say about it
-// beyond its elements.
-//
-// A value that is none of those is taken literally: mappings have been written with a
-// bare string in that column, and reporting those as malformed would fail the run over
-// a value that is perfectly usable.
 func mappingValue(raw *string) ([]string, error) {
 	if raw == nil {
 		return nil, nil

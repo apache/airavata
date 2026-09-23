@@ -199,6 +199,10 @@ CREATE INDEX IF NOT EXISTS "idx_batch_processes_deployment_id" ON "batch_process
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_process_id" ON "batch_processes" ("parent_process_id");
 
+CREATE TABLE "batch_process_statuses" ("batch_process_status_id" varchar(36),"batch_process_id" varchar(36) NOT NULL,"status" varchar(255) NOT NULL,"updated_at" timestamp NOT NULL,PRIMARY KEY ("batch_process_status_id"),CONSTRAINT "fk_batch_processes_batch_job_statuses" FOREIGN KEY ("batch_process_id") REFERENCES "batch_processes"("batch_process_id") ON DELETE CASCADE ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_batch_process_statuses_batch_process_id" ON "batch_process_statuses" ("batch_process_id");
+
 CREATE TABLE "process_statuses" ("process_status_id" varchar(36),"process_id" varchar(36),"status" varchar(255),"log" text,"timestamp" bigint,PRIMARY KEY ("process_status_id"),CONSTRAINT "fk_process_statuses_process" FOREIGN KEY ("process_id") REFERENCES "processes"("process_id") ON DELETE RESTRICT ON UPDATE CASCADE);
 
 CREATE INDEX IF NOT EXISTS "idx_process_statuses_process_id" ON "process_statuses" ("process_id");

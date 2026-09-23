@@ -55,6 +55,10 @@ func Entities() []any {
 		// route for it — only a section of the process body.
 		&processmodel.BatchJobProcess{},
 
+		// What the scheduler reported about the submitted job, hanging off the section
+		// that submitted it.
+		&processmodel.BatchJobStatus{},
+
 		// References Process, which in turn references it back through LastStatusID —
 		// the one circular pair in the schema.
 		&processmodel.ProcessStatus{},

@@ -96,6 +96,7 @@ type Repositories struct {
 	DataProductShares        *datarepo.DataProductSharingRepository
 	Processes                *processrepo.ProcessRepository
 	Statuses                 *processrepo.StatusRepository
+	BatchJobStatuses         *processrepo.BatchJobStatusRepository
 	DataStagingTasks         *processrepo.DataStagingTaskRepository
 	JobSubmissionTasks       *processrepo.JobSubmissionTaskRepository
 	JobMonitoringTasks       *processrepo.JobMonitoringTaskRepository
@@ -120,6 +121,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		DataProductShares:        datarepo.NewDataProductSharingRepository(db),
 		Processes:                processrepo.NewProcessRepository(db),
 		Statuses:                 processrepo.NewStatusRepository(db),
+		BatchJobStatuses:         processrepo.NewBatchJobStatusRepository(db),
 		DataStagingTasks:         processrepo.NewDataStagingTaskRepository(db),
 		JobSubmissionTasks:       processrepo.NewJobSubmissionTaskRepository(db),
 		JobMonitoringTasks:       processrepo.NewJobMonitoringTaskRepository(db),
@@ -153,6 +155,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 	submissionTasks := repos.JobSubmissionTasks
 	monitoringTasks := repos.JobMonitoringTasks
 	commandTasks := repos.InteractiveCommandTasks
+	batchStatus := repos.BatchJobStatuses
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, clusterConfigShares, groupMembers)
@@ -170,7 +173,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
 	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
 
-	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks, monitoringTasks, storages, clusterConfigs, processes, deployments, templates)
+	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks, monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus)
 	executionEngine.StartEngine()
 
 	return &Services{

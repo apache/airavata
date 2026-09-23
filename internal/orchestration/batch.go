@@ -8,6 +8,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"time"
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	model "github.com/apache/airavata/api/process/model"
@@ -100,19 +101,28 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 
 	jobID, err := parseSbatchJobID(stdout)
 	if err != nil {
-		// The job may well be queued: sbatch exited zero, so something was accepted and
-		// only its id was not understood. Failing loudly is still right — without an id
-		// nothing downstream can monitor or cancel it — but the output is logged so the
-		// run can be reconciled by hand.
 		slog.Error("Failed to read job id from sbatch output", "taskId", taskID, "processId", processID, "stdout", stdout, "stderr", stderr, "error", err)
+		a.batchStatus.Create(ctx, &model.BatchJobStatus{
+			BatchProcessID: process.BatchProcess.ID,
+			Status:         model.BatchJobStatusSubmissionFailed,
+			UpdatedAt:      time.Now(),
+		})
 		return nil, err
 	}
 
 	slog.Info("Submitted batch job", "jobId", jobID, "taskId", taskID, "processId", processID, "jobId", jobID)
 
-	// Recorded in both places the rest of the run reads it from: on the task that did the
-	// submitting, and on the batch process, which is what monitoring and cancellation
-	// look at.
+	err = a.batchStatus.Create(ctx, &model.BatchJobStatus{
+		BatchProcessID: process.BatchProcess.ID,
+		Status:         model.BatchJobStatusSubmitted,
+		UpdatedAt:      time.Now(),
+	})
+
+	if err != nil {
+		slog.Error("Failed to record batch job status", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
+		return nil, err
+	}
+
 	jst.JobId = &jobID
 	if err := a.jobSubmissionTasks.Save(ctx, jst); err != nil {
 		slog.Error("Failed to record job id on job submission task", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
