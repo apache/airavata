@@ -86,13 +86,15 @@ func TestBuildSlurmScript(t *testing.T) {
 
 	want := []string{
 		"#!/bin/bash",
-		"#SBATCH --job-name=fold_run_1",
+		// The job is named for the batch process, which is what ties a scheduler
+		// notification back to the run that submitted it.
+		"#SBATCH --job-name=batch-1",
 		"#SBATCH --chdir=/scratch/airavata/proc-1",
 		"#SBATCH --output=/scratch/airavata/proc-1/proc-1.stdout",
 		"#SBATCH --error=/scratch/airavata/proc-1/proc-1.stderr",
 		"#SBATCH --time=1-01:00:00",
 		"#SBATCH --mail-user=airavata@example.com",
-		"#SBATCH --mail-type=BEGIN,END,FAIL",
+		"#SBATCH --mail-type=BEGIN,END,FAIL,REQUEUE,INVALID_DEPEND,STAGE_OUT,TIME_LIMIT,TIME_LIMIT_90,TIME_LIMIT_80,TIME_LIMIT_50",
 		"#SBATCH --account=alloc-123",
 		"#SBATCH --partition=gpu",
 		"#SBATCH --nodes=2",

@@ -8,6 +8,7 @@ import (
 	"github.com/cschleiden/go-workflows/worker"
 	workflow "github.com/cschleiden/go-workflows/workflow"
 	"github.com/google/uuid"
+	"time"
 
 	"log/slog"
 
@@ -103,6 +104,47 @@ func (w *ExecutionEngine) StartEngine() {
 // It handles the email response accordingly.
 func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email Email) error {
 	slog.Info("Handling batch job email response", "from", email.From, "subject", email.Subject)
+	parsed, err := parseBatchJobSubject(email.Subject)
+	if err != nil {
+		slog.Error("Failed to parse batch job email subject", "subject", email.Subject, "error", err)
+		// Do not return error. That will prevent the email from being read.
+		return nil
+	}
+	slog.Info("Parsed batch job email subject", "jobID", parsed.JobID, "jobName", parsed.JobName, "status", parsed.Status)
+
+	process, err := w.processes.FindByID(ctx, parsed.JobName)
+	if err != nil {
+		slog.Error("Processing batch email: Failed to find process by ID", "processID", parsed.JobName, "error", err)
+		return nil
+	}
+
+	if process == nil {
+		slog.Error("Processing batch email: Process is nil", "processID", parsed.JobName)
+		return nil
+	}
+
+	err = w.batchStatus.Create(ctx, &model.BatchJobStatus{
+		BatchProcessID: process.BatchProcess.ID,
+		Status:         parsed.Status,
+		UpdatedAt:      time.Now(),
+	})
+
+	if err != nil {
+		slog.Error("Failed to create batch job status", "processID", process.BatchProcess.ID, "error", err)
+		return nil
+	}
+
+	triggeringStatus := map[model.BatchJobStatusType]struct{}{
+		model.BatchJobStatusFailed: {},
+		model.BatchJobStatusEnded:  {},
+	}
+
+	if _, ok := triggeringStatus[parsed.Status]; ok {
+		slog.Info("Triggering action for batch job status", "status", parsed.Status)
+		// Implement the action to be triggered here
+	}
+
+	slog.Info("Found process", "processID", process.ID)
 	return nil
 }
 

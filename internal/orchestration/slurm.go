@@ -107,7 +107,7 @@ func buildSlurmScript(
 	}
 	outputs := outputPaths(batchProcess, template, workDir)
 
-	jobName := batchProcess.ID
+	jobName := process.ID
 
 	ctx := pongo2.Context{
 		"process_id": process.ID,
