@@ -99,6 +99,11 @@ func (w *ExecutionEngine) StartEngine() {
 	}
 }
 
+func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email Email) error {
+	slog.Info("Handling batch job email response", "from", email.From, "subject", email.Subject)
+	return nil
+}
+
 func (w *ExecutionEngine) LaunchBatchJobSubmission(ctx context.Context, processID string) (string, error) {
 	workflowId := uuid.NewString()
 

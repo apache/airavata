@@ -157,10 +157,6 @@ func parseSbatchJobID(out string) (string, error) {
 }
 
 // slurmScript gathers what a submission script is built from and renders it.
-//
-// Each reference is optional on the record it is read from, so it is checked before it
-// is followed: a run naming no deployment has nothing to submit, and saying so here is
-// clearer than a nil dereference inside the renderer.
 func (a *ExecutionEngine) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *GlobalJobConfigs) (string, error) {
 	batch := process.BatchProcess
 

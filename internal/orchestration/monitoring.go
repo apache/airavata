@@ -108,7 +108,7 @@ func NewEmailMonitor(emailAddress, appPassword string, monitorIntervalSeconds in
 // A pass that fails is logged and retried at the next tick rather than ending the
 // monitor: a mail server refusing connections is ordinarily temporary, and the mail it
 // is holding stays unread until a pass succeeds.
-func (e *EmailMonitor) monitorBatchJobEmails(ctx context.Context) {
+func (e *EmailMonitor) MonitorBatchJobEmails(ctx context.Context) {
 	if err := e.validate(); err != nil {
 		slog.Error("Failed to start email monitor", "address", e.emailAddress, "error", err)
 		return

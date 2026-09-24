@@ -18,6 +18,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
+	"github.com/apache/airavata/internal/orchestration"
 	"github.com/apache/airavata/internal/server"
 )
 
@@ -154,6 +155,9 @@ func runServer() error {
 			errs <- err
 		}
 	}()
+
+	emailMonitor := orchestration.NewEmailMonitor(cfg.EmailMonitorAddress, cfg.EmailMonitorAppPassword, 20, svcs.ExecutionEngine.HandleBatchJobEmailResponse)
+	go emailMonitor.MonitorBatchJobEmails(ctx)
 
 	select {
 	case err := <-errs:
