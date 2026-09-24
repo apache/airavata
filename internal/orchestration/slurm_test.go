@@ -46,7 +46,6 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 			ID:                   "batch-1",
 			DeploymentID:         ptr("dep-1"),
 			SlurmClusterConfigID: "cfg-1",
-			JobName:              ptr("fold run/1"),
 			BatchJobConfig: &appmodel.BatchJobConfig{
 				ID:              "cfg-run",
 				Nodes:           ptr(int32(2)),

@@ -1489,7 +1489,6 @@ PROCESS_ID=$(curl -s -X POST localhost:9095/api/v1/processes \
     "batchProcess": {
       "deploymentId": "'"$DEPLOYMENT_ID"'",
       "slurmClusterConfigId": "'"$CLUSTER_CONFIG_ID"'",
-      "jobName": "alphafold-run-1",
       "baseWorkDir": "/scratch/$USER/alphafold",
       "batchJobConfig": {
         "wallTimeMinutes": 120,
@@ -1523,7 +1522,6 @@ There is no `userId`: ownership comes from the token.
 | `deploymentId` | string | required, cannot be blank |
 | `batchJobConfig` | object | required — the same shape a deployment's `defaultBatchJobConfig` carries |
 | `slurmClusterConfigId` | string | required, cannot be blank; the [cluster config](#slurm-cluster-configs) this run submits under — the account, the key and the work root it runs as |
-| `jobName` | string \| null | optional |
 | `jobId` | string \| null | optional. Writable rather than server-generated: it is the scheduler's identifier for the submitted job, learned at submission time and recorded afterwards |
 | `baseWorkDir` | string \| null | optional; the parent directory on the cluster this run works under. Launching a run that omits it fails, since there is nowhere to stage its files |
 | `inputMappings` | array | optional; replaced wholesale by a `PUT` |
@@ -1580,7 +1578,6 @@ Deleting the process deletes the batch section, and the mappings with it.
     "deploymentId": "c3d4e5f6-a7b8-4901-a2b3-c4d5e6f7a8b9",
     "slurmClusterConfigId": "5f4e3d2c-1b0a-4998-8776-6a5b4c3d2e1f",
     "jobId": null,
-    "jobName": "alphafold-run-1",
     "baseWorkDir": "/scratch/$USER/alphafold",
     "batchJobConfig": {
       "batchJobConfigId": "20e56e93-cf74-4834-a7b3-877df2663257",

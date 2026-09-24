@@ -29,7 +29,6 @@ import (
 type BatchProcessRequest struct {
 	DeploymentID   string                                `json:"deploymentId"`
 	JobID          *string                               `json:"jobId"`
-	JobName        *string                               `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigRequest `json:"batchJobConfig"`
 
 	// SlurmClusterConfigID names the cluster login config this run submits under — the
@@ -81,7 +80,6 @@ type BatchProcessResponse struct {
 	BatchProcessID string                                 `json:"batchProcessId"`
 	DeploymentID   *string                                `json:"deploymentId"`
 	JobID          *string                                `json:"jobId"`
-	JobName        *string                                `json:"jobName"`
 	BatchJobConfig *applicationdto.BatchJobConfigResponse `json:"batchJobConfig"`
 
 	SlurmClusterConfigID string `json:"slurmClusterConfigId"`
@@ -216,7 +214,6 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		BatchProcessID:       b.ID,
 		DeploymentID:         b.DeploymentID,
 		JobID:                b.JobID,
-		JobName:              b.JobName,
 		SlurmClusterConfigID: b.SlurmClusterConfigID,
 		BaseWorkDir:          b.BaseWorkDir,
 		BatchJobConfig:       applicationdto.ToBatchJobConfigResponse(b.BatchJobConfig),
@@ -232,7 +229,6 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 func ApplyBatchProcessRequest(dst *model.BatchJobProcess, src *BatchProcessRequest) {
 	dst.DeploymentID = &src.DeploymentID
 	dst.JobID = src.JobID
-	dst.JobName = src.JobName
 	dst.BaseWorkDir = src.BaseWorkDir
 }
 

@@ -37,8 +37,7 @@ type BatchJobProcess struct {
 	BatchJobConfigID string                           `gorm:"column:batch_job_config_id;type:varchar(36);not null;uniqueIndex" json:"batchJobConfigId"`
 	BatchJobConfig   *applicationmodel.BatchJobConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"batchJobConfig,omitempty"`
 
-	JobID   *string `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
-	JobName *string `gorm:"column:job_name;type:varchar(255)" json:"jobName,omitempty"`
+	JobID *string `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
 
 	// The values this run supplies for the deployment template's declared inputs and
 	// outputs. They hang off the batch process rather than off the process because the

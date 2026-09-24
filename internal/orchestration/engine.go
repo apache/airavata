@@ -99,6 +99,8 @@ func (w *ExecutionEngine) StartEngine() {
 	}
 }
 
+// This is invoked when an email related to a batch job is received.
+// It handles the email response accordingly.
 func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email Email) error {
 	slog.Info("Handling batch job email response", "from", email.From, "subject", email.Subject)
 	return nil

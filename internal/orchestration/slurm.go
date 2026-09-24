@@ -107,7 +107,7 @@ func buildSlurmScript(
 	}
 	outputs := outputPaths(batchProcess, template, workDir)
 
-	jobName := jobNameFor(batchProcess, process.ID)
+	jobName := batchProcess.ID
 
 	ctx := pongo2.Context{
 		"process_id": process.ID,
@@ -195,29 +195,6 @@ func workDirFor(batch *model.BatchJobProcess, clusterConfig *computemodel.SlurmC
 		return "", fmt.Errorf("process %s has no base work dir and its cluster config declares no work root", processID)
 	}
 	return path.Join(root, processID), nil
-}
-
-func jobNameFor(batch *model.BatchJobProcess, processID string) string {
-	name := ""
-	if batch.JobName != nil {
-		name = strings.TrimSpace(*batch.JobName)
-	}
-	if name == "" {
-		name = "airavata-" + processID
-	}
-	safe := strings.Map(func(r rune) rune {
-		switch {
-		case r >= 'a' && r <= 'z', r >= 'A' && r <= 'Z', r >= '0' && r <= '9':
-			return r
-		case r == '-', r == '_', r == '.':
-			return r
-		}
-		return '_'
-	}, name)
-	if len(safe) > 64 {
-		safe = safe[:64]
-	}
-	return safe
 }
 
 func slurmWallTime(minutes int64) string {
