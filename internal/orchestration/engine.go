@@ -141,7 +141,16 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 
 	if _, ok := triggeringStatus[parsed.Status]; ok {
 		slog.Info("Triggering action for batch job status", "status", parsed.Status)
-		// Implement the action to be triggered here
+
+		workflowId := uuid.NewString()
+
+		_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
+			InstanceID: workflowId,
+		}, w.handleBatchJobCompletion, process.ID)
+		if err != nil {
+			slog.Error("Failed to create workflow instance for batch job completion", "error", err)
+			return nil
+		}
 	}
 
 	slog.Info("Found process", "processID", process.ID)
@@ -218,7 +227,7 @@ func (w *ExecutionEngine) handleBatchJobCompletion(ctx workflow.Context, process
 
 	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
 		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jmt.OnFailure, jmt.RetryCount)},
-		w.submitBatchJob, executionContext, processID, jmt.ID).Get(ctx)
+		w.monitorBatchJob, executionContext, processID, jmt.ID).Get(ctx)
 	if err != nil {
 		slog.Error("Failed processing job monitoring task", "processId", processID, "taskId", jmt.ID, "error", err)
 		return err
