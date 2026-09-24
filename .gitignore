@@ -75,3 +75,4 @@ conf/traefik/certs/
 /bin/
 
 docs/example.sh
+.claude/
