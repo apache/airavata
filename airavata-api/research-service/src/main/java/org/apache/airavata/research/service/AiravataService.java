@@ -19,29 +19,70 @@
 */
 package org.apache.airavata.research.service;
 
-import org.apache.airavata.config.UserContext;
-import org.apache.airavata.interfaces.UserProfileProvider;
-import org.apache.airavata.model.user.proto.UserProfile;
+import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.user.UserProfile;
+import org.apache.airavata.research.service.enums.EmailType;
+import org.apache.airavata.research.service.model.UserContext;
+import org.apache.airavata.service.profile.client.ProfileServiceClientFactory;
+import org.apache.airavata.service.profile.user.cpi.UserProfileService;
+import org.apache.airavata.service.profile.user.cpi.exception.UserProfileServiceException;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service("researchAiravataService")
+@Service
 public class AiravataService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AiravataService.class);
 
-    private final UserProfileProvider userProfileProvider;
+    @Value("${airavata.user-profile.server.url:localhost}")
+    private String profileServerUrl;
 
-    public AiravataService(UserProfileProvider userProfileProvider) {
-        this.userProfileProvider = userProfileProvider;
+    @Value("${airavata.user-profile.server.port:8962}")
+    private int profileServerPort;
+
+    @Autowired
+    private EmailService emailService;
+
+    public UserProfileService.Client userProfileClient() {
+        try {
+            LOGGER.info("User profile client initialized");
+            return ProfileServiceClientFactory.createUserProfileServiceClient(profileServerUrl, profileServerPort);
+        } catch (UserProfileServiceException e) {
+            LOGGER.error("Error while creating user profile client", e);
+            throw new RuntimeException(e);
+        }
     }
 
     public UserProfile getUserProfile(String userId) {
-        UserProfile profile = userProfileProvider.getUserProfileByIdAndGateWay(userId, UserContext.gatewayId());
-        if (profile == null) {
-            throw new RuntimeException("User profile not found for id: " + userId);
+        try {
+            return userProfileClient().getUserProfileById(UserContext.authzToken(), userId, UserContext.gatewayId());
+        } catch (TException e) {
+            LOGGER.error("Error while getting user profile with the id: {}", userId, e);
+            throw new RuntimeException("Error while getting user profile with the id: " + userId, e);
         }
-        return profile;
+    }
+
+    public UserProfile getUserProfile(AuthzToken authzToken, String userId, String gatewayId) {
+        try {
+            boolean result = userProfileClient().doesUserExist(authzToken, userId, gatewayId);
+            if (!result) {
+                sendEmail(userId);
+            }
+            return userProfileClient().getUserProfileById(authzToken, userId, gatewayId);
+        } catch (TException e) {
+            LOGGER.error("Error while getting user profile with the id: {} in the gateway: {}", userId, gatewayId, e);
+            throw new RuntimeException(
+                    "Error while getting user profile with the id: " + userId + " in the gateway: " + gatewayId, e);
+        }
+    }
+
+    private void sendEmail(String to) {
+        if (!emailService.hasSentEmail(to, EmailType.NEW_USER)) {
+            emailService.sendSimpleMessage(to, EmailType.NEW_USER);
+        }
     }
 }
