@@ -1,0 +1,108 @@
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+grpc:
+  server:
+    port: 19908
+
+server:
+  port: 8080
+  address: 0.0.0.0
+
+app:
+  datasource:
+    app-catalog:
+      url: jdbc:mariadb://airavata.host:13306/app_catalog
+      username: airavata
+      password: 123456
+      driver-class-name: org.mariadb.jdbc.Driver
+
+airavata:
+  research-hub:
+    url: http://airavata.host:20000
+    dev-user: "airavata@apache.org"
+    adminApiKey: "JUPYTER_ADMIN_API_KEY"
+    limit: 10
+  research-portal:
+    url: http://airavata.host:5173
+    dev-url: http://airavata.host:5173
+  openid:
+    url: "https://auth.dev.cybershuttle.org/realms/default"
+  user-profile:
+    server:
+      url: airavata.host
+      port: 8962
+  registry:
+    host: localhost
+    port: 9930
+    enabled: false  # Disabled for development - using direct database access
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+  datasource:
+    url: "jdbc:h2:mem:testdb"
+    username: "sa"
+    password: ""
+    driver-class-name: org.h2.Driver
+    hikari:
+      pool-name: ResearchCatalogPool
+      leak-detection-threshold: 20000
+  jpa:
+    hibernate:
+      ddl-auto: none  # Don't modify existing app_catalog schema
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        format_sql: true
+    open-in-view: false
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+    tagsSorter: alpha
+    doc-expansion: none
+    oauth:
+      use-pkce-with-authorization-code-grant: true
+      client-id: data-catalog-portal
+
+# Authentication Configuration
+research:
+  auth:
+    jwks-uri: "https://auth.dev.cybershuttle.org/realms/default/protocol/openid-connect/certs"
+    issuer-uri: "https://auth.dev.cybershuttle.org/realms/default"
+    dev-api-key: "dev-research-api-key-12345"
+  cors:
+    allowed-origins: "http://localhost:5173,http://localhost:3000"
+    allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    allowed-headers: "*"
+
+# Logging for security debugging (dev profile)
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+

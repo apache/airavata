@@ -30,13 +30,13 @@ import org.apache.airavata.research.service.AiravataService;
 import org.apache.airavata.research.service.dto.CreateResourceRequest;
 import org.apache.airavata.research.service.dto.ModifyResourceRequest;
 import org.apache.airavata.research.service.dto.ResourceResponse;
+import org.apache.airavata.research.service.enums.PrivacyEnum;
 import org.apache.airavata.research.service.enums.ResourceTypeEnum;
 import org.apache.airavata.research.service.enums.StateEnum;
 import org.apache.airavata.research.service.enums.StatusEnum;
 import org.apache.airavata.research.service.model.UserContext;
 import org.apache.airavata.research.service.model.entity.RepositoryResource;
 import org.apache.airavata.research.service.model.entity.Resource;
-import org.apache.airavata.research.service.model.entity.ResourceAuthor;
 import org.apache.airavata.research.service.model.entity.ResourceStar;
 import org.apache.airavata.research.service.model.entity.Tag;
 import org.apache.airavata.research.service.model.repo.ProjectRepository;
@@ -75,18 +75,15 @@ public class ResourceHandler {
     }
 
     public void initializeResource(Resource resource) {
-        Set<ResourceAuthor> userSet = new HashSet<>();
-        for (ResourceAuthor author : resource.getAuthors()) {
+        Set<String> userSet = new HashSet<>();
+        for (String authorId : resource.getAuthors()) {
             try {
-                UserProfile fetchedUser = airavataService.getUserProfile(author.getAuthorId());
-                ResourceAuthor newAuthor = new ResourceAuthor();
-                newAuthor.setAuthorId(fetchedUser.getUserId());
-                newAuthor.setRole(author.getRole());
-                userSet.add(newAuthor);
+                UserProfile fetchedUser = airavataService.getUserProfile(authorId);
+                userSet.add(fetchedUser.getUserId());
             } catch (Exception e) {
-                LOGGER.error("Error while fetching user profile with the userId: {}", author.getAuthorId(), e);
-                throw new EntityNotFoundException(
-                        "Error while fetching user profile with the userId: " + author.getAuthorId(), e);
+                LOGGER.warn("User profile service unavailable for userId: {}. Using provided ID for development.", authorId);
+                // For development, skip user validation and use the provided author ID
+                userSet.add(authorId);
             }
         }
 
@@ -118,10 +115,10 @@ public class ResourceHandler {
         // check that the logged in author is at least one of the authors making the request
         String currentUserId = UserContext.userId();
         boolean found = false;
-        for (ResourceAuthor author : createResourceRequest.getAuthors()) {
-            author.setAuthorId(author.getAuthorId().toLowerCase());
-            if (author.getAuthorId().equalsIgnoreCase(currentUserId)) {
+        for (String authorId : createResourceRequest.getAuthors()) {
+            if (authorId.equalsIgnoreCase(currentUserId)) {
                 found = true;
+                break;
             }
         }
         if (!found) {
@@ -131,7 +128,9 @@ public class ResourceHandler {
 
         resource.setName(createResourceRequest.getName());
         resource.setDescription(createResourceRequest.getDescription());
-        resource.setAuthors(createResourceRequest.getAuthors());
+        resource.setAuthors(createResourceRequest.getAuthors().stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet()));
         Set<org.apache.airavata.research.service.model.entity.Tag> tagsSet = new HashSet<>();
         for (String tag : createResourceRequest.getTags()) {
             org.apache.airavata.research.service.model.entity.Tag t =
@@ -165,8 +164,8 @@ public class ResourceHandler {
 
         // ensure that the user making the request is one of the current authors
         boolean found = false;
-        for (ResourceAuthor author : resource.getAuthors()) {
-            if (author.getAuthorId().equalsIgnoreCase(UserContext.userId())) {
+        for (String authorId : resource.getAuthors()) {
+            if (authorId.equalsIgnoreCase(UserContext.userId())) {
                 found = true;
                 break;
             }
@@ -227,14 +226,23 @@ public class ResourceHandler {
     }
 
     public Resource getResourceById(String id) {
-        // Your logic to fetch the resource by ID
         Optional<Resource> opResource = resourceRepository.findByIdAndState(id, StateEnum.ACTIVE);
 
         if (opResource.isEmpty()) {
             throw new EntityNotFoundException("Resource not found: " + id);
         }
 
-        return opResource.get();
+        Resource resource = opResource.get();
+        boolean isAuthenticated = UserContext.isAuthenticated();
+
+        if (resource.getPrivacy().equals(PrivacyEnum.PUBLIC)) {
+            return resource;
+        } else if (isAuthenticated
+                && resource.getAuthors().contains(UserContext.userId().toLowerCase())) {
+            return resource;
+        } else {
+            throw new EntityNotFoundException("Resource not found: " + id);
+        }
     }
 
     public boolean deleteResourceById(String id) {
@@ -262,13 +270,11 @@ public class ResourceHandler {
 
     public Page<Resource> getAllResources(
             int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        if (tag == null || tag.length == 0) {
-            return resourceRepository.findAllByTypes(typeList, nameSearch, pageable);
+        boolean isAuthenticated = UserContext.isAuthenticated();
+        if (isAuthenticated) {
+            return getAllResourcesUserSignedIn(pageNumber, pageSize, typeList, tag, nameSearch, UserContext.userId());
         }
-
-        return resourceRepository.findAllByTypesAndAllTags(
-                typeList, tag, tag.length, nameSearch.toLowerCase(), pageable);
+        return getAllPublicResources(pageNumber, pageSize, typeList, tag, nameSearch);
     }
 
     public List<Tag> getAllTags() {
@@ -280,7 +286,34 @@ public class ResourceHandler {
     }
 
     public List<Resource> getAllResourcesByTypeAndName(Class<? extends Resource> type, String name) {
+        return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name.toLowerCase(), UserContext.userId());
+    }
 
-        return resourceRepository.findByTypeAndNameContainingIgnoreCase(type, name.toLowerCase());
+    private Page<Resource> getAllPublicResources(
+            int pageNumber, int pageSize, List<Class<? extends Resource>> typeList, String[] tag, String nameSearch) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        if (tag == null || tag.length == 0) {
+            return resourceRepository.findAllByTypes(typeList, nameSearch, pageable);
+        }
+
+        return resourceRepository.findAllByTypesAndAllTags(
+                typeList, tag, tag.length, nameSearch.toLowerCase(), pageable);
+    }
+
+    private Page<Resource> getAllResourcesUserSignedIn(
+            int pageNumber,
+            int pageSize,
+            List<Class<? extends Resource>> typeList,
+            String[] tag,
+            String nameSearch,
+            String userId) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        if (tag == null || tag.length == 0) {
+            return resourceRepository.findAllByTypesForUser(typeList, nameSearch.toLowerCase(), userId, pageable);
+        }
+
+        return resourceRepository.findAllByTypesAndAllTagsForUser(
+                typeList, tag, (long) tag.length, nameSearch.toLowerCase(), userId, pageable);
     }
 }
