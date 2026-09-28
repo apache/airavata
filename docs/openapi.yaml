@@ -1,0 +1,3727 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements. See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership. The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+openapi: 3.1.0
+
+info:
+  title: Apache Airavata HTTP API
+  version: "1.0.0"
+  description: |
+    The REST API served by `airavata-server` (see `internal/server/server.go`).
+
+    All request and response bodies are JSON (`Content-Type: application/json`).
+
+    ## Authentication
+
+    Authentication is a bearer token validated by CILogon introspection, carried as
+    `Authorization: Bearer <token>`. A request without a token is anonymous rather
+    than rejected at the door: each operation decides for itself whether an anonymous
+    caller is acceptable. A token that is present but invalid is always `401`, with
+    `WWW-Authenticate: Bearer error="invalid_token"`. If the identity provider cannot
+    be reached the call fails `502`, because that is not the caller's fault.
+
+    ## Authorization
+
+    Two schemes are in play, depending on the resource:
+
+    - **Platform roles** (`ADMIN`, `SUPER_ADMIN`) guard the shared catalogue —
+      Slurm clusters, partitions, application templates and batch deployments.
+      Reads of the catalogue are open to anyone, including anonymous callers;
+      writes require a role.
+    - **Ownership and sharing** guards the per-user resources — SSH keys, groups,
+      cluster configs, SCP data storages, data products and processes. Ownership
+      comes from the token and is never carried in a request body, so nothing can be
+      created on someone else's behalf or handed over by editing it. None of these
+      are readable anonymously.
+
+    SSH keys are the strictest case: platform admins are not treated as owners, and
+    there is no share that opens a key up. Private key material and passphrases are
+    write-only — no read endpoint has a field for them.
+
+    ## Errors
+
+    Every failure uses the same envelope (`Error`). Request-body validation adds a
+    `fieldErrors` array naming every constraint that failed, using the JSON path of
+    the offending field including indexes and nesting (`inputs[0].inputType`,
+    `defaultBatchJobConfig.wallTimeMinutes`).
+
+    Internal failures return `500` with a fixed `"Internal server error"` message;
+    the underlying detail is logged rather than returned, since it may name internal
+    state.
+  license:
+    name: Apache License 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: http://localhost:9095
+    description: Local development server (override the port with `SERVER_PORT`)
+
+tags:
+  - name: Health
+    description: Liveness probe.
+  - name: Users
+    description: User accounts.
+  - name: Groups
+    description: Groups and their membership; the subject of a group share.
+  - name: SSH Keys
+    description: Registered keypairs. Private material is write-only.
+  - name: Slurm Clusters
+    description: The machine catalogue and its partitions.
+  - name: Slurm Cluster Configs
+    description: Who a job submits as on a cluster, and with which key.
+  - name: Application Templates
+    description: An application's input/output contract, independent of where it runs.
+  - name: Batch Deployments
+    description: A template bound to a cluster, with the resource request a run starts from.
+  - name: SCP Data Storages
+    description: Hosts data is staged to and from over SCP.
+  - name: Data Products
+    description: Registered datasets on a storage.
+  - name: Processes
+    description: Runs, their status history and their tasks.
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Liveness probe
+      description: |
+        No token is required. The authentication middleware wraps the whole mux
+        rather than individual routes, so a request that does carry a token still has
+        it validated — call this without an `Authorization` header to probe liveness
+        independently of the identity provider.
+      operationId: health
+      security: []
+      responses:
+        "200":
+          description: The server is up.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    const: UP
+                required: [status]
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  # ---------------------------------------------------------------- Users
+
+  /api/v1/users:
+    get:
+      tags: [Users]
+      summary: List users
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: listUsers
+      responses:
+        "200":
+          description: Every registered user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/UserResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Users]
+      summary: Register a user
+      description: |
+        Creates the `users` row an owned resource is attached to. Owning anything in
+        this API requires such a row.
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserRegistration" }
+      responses:
+        "200":
+          description: The registered user.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/users/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+    get:
+      tags: [Users]
+      summary: Read a user
+      description: |
+        The response carries no email, auth method or roles — widening it would leak
+        more about an account than this API ever has.
+      operationId: getUser
+      responses:
+        "200":
+          description: The user.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Users]
+      summary: Update a user
+      description: |
+        Update the user with the provided information.
+      operationId: updateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserRegistration" }
+      responses:
+        "200":
+          description: The updated user.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # --------------------------------------------------------------- Groups
+
+  /api/v1/groups:
+    get:
+      tags: [Groups]
+      summary: List all groups
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: listGroups
+      responses:
+        "200":
+          description: Every group.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/GroupResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Groups]
+      summary: Create a group
+      description: |
+        The owner is taken from the token — there is no owner field — and is not
+        transferable afterwards.
+      operationId: createGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupRequest" }
+      responses:
+        "201":
+          description: The created group.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/groups/me:
+    get:
+      tags: [Groups]
+      summary: List the caller's groups
+      description: The groups the caller owns or is a member of.
+      operationId: listMyGroups
+      responses:
+        "200":
+          description: The caller's groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/GroupResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/groups/{groupId}:
+    parameters:
+      - $ref: "#/components/parameters/GroupId"
+    get:
+      tags: [Groups]
+      summary: Read a group
+      description: |
+        A caller with no standing to know the group exists gets `404` rather than
+        `403`. Members are not inlined; read them through the members sub-resource.
+      operationId: getGroup
+      responses:
+        "200":
+          description: The group.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Groups]
+      summary: Update a group
+      operationId: updateGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupRequest" }
+      responses:
+        "200":
+          description: The updated group.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Groups]
+      summary: Delete a group
+      operationId: deleteGroup
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/groups/{groupId}/members:
+    parameters:
+      - $ref: "#/components/parameters/GroupId"
+    get:
+      tags: [Groups]
+      summary: List group members
+      operationId: listGroupMembers
+      responses:
+        "200":
+          description: The group's memberships.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/GroupMemberResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Groups]
+      summary: Add a group member
+      description: |
+        An omitted `groupRole` admits a plain `MEMBER`; an omitted
+        `groupMemberStatus` admits them as `ACTIVE`.
+      operationId: addGroupMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupMemberRequest" }
+      responses:
+        "201":
+          description: The created membership.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupMemberResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/groups/{groupId}/members/{userId}:
+    parameters:
+      - $ref: "#/components/parameters/GroupId"
+      - $ref: "#/components/parameters/UserId"
+    get:
+      tags: [Groups]
+      summary: Read one membership
+      operationId: getGroupMember
+      responses:
+        "200":
+          description: The membership.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupMemberResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Groups]
+      summary: Update a membership
+      description: |
+        Both fields are optional and an omitted one is left as it stands, so a member
+        can be suspended without restating their role. The user is identified by the
+        path, so a membership cannot be moved to a different user by editing it.
+      operationId: updateGroupMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GroupMemberUpdate" }
+      responses:
+        "200":
+          description: The updated membership.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/GroupMemberResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Groups]
+      summary: Remove a member from a group
+      operationId: removeGroupMember
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------------------- SSH keys
+
+  /api/v1/ssh-keys:
+    get:
+      tags: [SSH Keys]
+      summary: List the caller's SSH keys
+      description: Returns only the caller's own keys. Admins are not exempt.
+      operationId: listSSHKeys
+      responses:
+        "200":
+          description: The caller's keys.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SSHKeyResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [SSH Keys]
+      summary: Register an SSH key
+      description: |
+        Self-service for any authenticated caller with a `users` row. `privateKey` is
+        required on create; `privateKey` and `passphrase` are write-only and are never
+        returned by any read endpoint.
+      operationId: createSSHKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SSHKeyRequest" }
+      responses:
+        "201":
+          description: The registered key, without its private material.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SSHKeyResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/ssh-keys/{sshKeyId}:
+    parameters:
+      - $ref: "#/components/parameters/SSHKeyId"
+    get:
+      tags: [SSH Keys]
+      summary: Read an SSH key
+      description: Owner only.
+      operationId: getSSHKey
+      responses:
+        "200":
+          description: The key, without its private material.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SSHKeyResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [SSH Keys]
+      summary: Update an SSH key
+      description: |
+        Owner only. An update that omits `privateKey` keeps the stored secret.
+      operationId: updateSSHKey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SSHKeyRequest" }
+      responses:
+        "200":
+          description: The updated key.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SSHKeyResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [SSH Keys]
+      summary: Delete an SSH key
+      description: |
+        Owner only. A key still referenced by a cluster config or a data storage
+        cannot be deleted: `409 Conflict`.
+      operationId: deleteSSHKey
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------------- Slurm clusters
+
+  /api/v1/slurm-clusters:
+    get:
+      tags: [Slurm Clusters]
+      summary: List Slurm clusters
+      description: Catalogue read; open without a token.
+      operationId: listSlurmClusters
+      security:
+        - {}
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Every registered cluster, with its partitions inlined.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SlurmClusterResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Slurm Clusters]
+      summary: Register a Slurm cluster
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Describes the machine only — the
+        account a job submits under and the key it presents are a cluster config, so
+        registering a cluster never puts anyone's credentials into the catalogue.
+
+        `partitions` is accepted on create so a cluster whose layout is already known
+        arrives complete.
+      operationId: createSlurmCluster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SlurmClusterRequest" }
+      responses:
+        "201":
+          description: The registered cluster.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SlurmClusterResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-clusters/{slurmClusterId}:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterId"
+    get:
+      tags: [Slurm Clusters]
+      summary: Read a Slurm cluster
+      description: Catalogue read; open without a token.
+      operationId: getSlurmCluster
+      security:
+        - {}
+        - bearerAuth: []
+      responses:
+        "200":
+          description: The cluster, with its partitions inlined.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SlurmClusterResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Slurm Clusters]
+      summary: Update a Slurm cluster
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. An update carrying `partitions`
+        is rejected: the set has no ids to match rows by, and replacing the collection
+        wholesale would delete partitions the caller never mentioned. Use the
+        partition sub-resource instead.
+      operationId: updateSlurmCluster
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SlurmClusterRequest" }
+      responses:
+        "200":
+          description: The updated cluster.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SlurmClusterResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Slurm Clusters]
+      summary: Delete a Slurm cluster
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: deleteSlurmCluster
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-clusters/{slurmClusterId}/partitions:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterId"
+    get:
+      tags: [Slurm Clusters]
+      summary: List a cluster's partitions
+      description: Catalogue read; open without a token.
+      operationId: listClusterPartitions
+      security:
+        - {}
+        - bearerAuth: []
+      responses:
+        "200":
+          description: The cluster's partitions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ClusterPartitionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Slurm Clusters]
+      summary: Add a partition to a cluster
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: createClusterPartition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClusterPartitionRequest" }
+      responses:
+        "201":
+          description: The created partition.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClusterPartitionResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId}:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterId"
+      - $ref: "#/components/parameters/PartitionId"
+    get:
+      tags: [Slurm Clusters]
+      summary: Read a partition
+      description: Catalogue read; open without a token.
+      operationId: getClusterPartition
+      security:
+        - {}
+        - bearerAuth: []
+      responses:
+        "200":
+          description: The partition.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClusterPartitionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Slurm Clusters]
+      summary: Update a partition
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: updateClusterPartition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ClusterPartitionRequest" }
+      responses:
+        "200":
+          description: The updated partition.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ClusterPartitionResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Slurm Clusters]
+      summary: Delete a partition
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: deleteClusterPartition
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------- Slurm cluster configs
+
+  /api/v1/slurm-cluster-configs:
+    get:
+      tags: [Slurm Cluster Configs]
+      summary: List all cluster configs
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: listSlurmClusterConfigs
+      responses:
+        "200":
+          description: Every config.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Slurm Cluster Configs]
+      summary: Create a cluster config
+      description: |
+        Names the account a job submits under on a cluster, the key it presents and
+        the directory it works beneath. The owner comes from the token. The key must
+        be one the caller owns — assigning someone else's key is `403`.
+      operationId: createSlurmClusterConfig
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SlurmClusterConfigRequest" }
+      responses:
+        "201":
+          description: The created config.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/me:
+    get:
+      tags: [Slurm Cluster Configs]
+      summary: List the caller's cluster configs
+      operationId: listMySlurmClusterConfigs
+      responses:
+        "200":
+          description: The configs the caller owns.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/shared-with-me:
+    get:
+      tags: [Slurm Cluster Configs]
+      summary: List cluster configs shared with the caller
+      description: |
+        Each entry carries `permission`, the caller's effective standing — the
+        strongest of the shares reaching them. A group share counts only while the
+        membership is `ACTIVE`.
+      operationId: listSlurmClusterConfigsSharedWithMe
+      responses:
+        "200":
+          description: The configs shared with the caller.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterConfigId"
+    get:
+      tags: [Slurm Cluster Configs]
+      summary: Read a cluster config
+      description: |
+        Requires a `READ` standing: owner, admin, or a share. The cluster is inlined,
+        and the key as its safe summary — name and public key only.
+      operationId: getSlurmClusterConfig
+      responses:
+        "200":
+          description: The config.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Slurm Cluster Configs]
+      summary: Update a cluster config
+      description: |
+        Requires a `WRITE` standing. Re-presenting the key the config already holds is
+        not an assignment, which is what lets a `WRITE` grantee edit a config without
+        owning the key on it.
+      operationId: updateSlurmClusterConfig
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SlurmClusterConfigRequest" }
+      responses:
+        "200":
+          description: The updated config.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Slurm Cluster Configs]
+      summary: Delete a cluster config
+      description: Owner or admin.
+      operationId: deleteSlurmClusterConfig
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterConfigId"
+    get:
+      tags: [Slurm Cluster Configs]
+      summary: List a config's group shares
+      description: Owner or admin.
+      operationId: listSlurmClusterConfigGroupShares
+      responses:
+        "200":
+          description: The group shares on this config.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  {
+                    $ref: "#/components/schemas/SlurmClusterConfigGroupSharingResponse",
+                  }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Slurm Cluster Configs]
+      summary: Share a config with a group
+      description: An omitted `permission` grants `READ`.
+      operationId: shareSlurmClusterConfigWithGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/SlurmClusterConfigGroupSharingRequest",
+              }
+      responses:
+        "201":
+          description: The created share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SlurmClusterConfigGroupSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterConfigId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Slurm Cluster Configs]
+      summary: Change what a group share grants
+      description: The subject is fixed at creation; only the permission is editable.
+      operationId: updateSlurmClusterConfigGroupShare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/SlurmClusterConfigSharingUpdate" }
+      responses:
+        "200":
+          description: The updated share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SlurmClusterConfigGroupSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Slurm Cluster Configs]
+      summary: Revoke a group share
+      operationId: revokeSlurmClusterConfigGroupShare
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterConfigId"
+    get:
+      tags: [Slurm Cluster Configs]
+      summary: List a config's user shares
+      description: Owner or admin.
+      operationId: listSlurmClusterConfigUserShares
+      responses:
+        "200":
+          description: The user shares on this config.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  {
+                    $ref: "#/components/schemas/SlurmClusterConfigUserSharingResponse",
+                  }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Slurm Cluster Configs]
+      summary: Share a config with one user
+      description: An omitted `permission` grants `READ`.
+      operationId: shareSlurmClusterConfigWithUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              {
+                $ref: "#/components/schemas/SlurmClusterConfigUserSharingRequest",
+              }
+      responses:
+        "201":
+          description: The created share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SlurmClusterConfigUserSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterConfigId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Slurm Cluster Configs]
+      summary: Change what a user share grants
+      operationId: updateSlurmClusterConfigUserShare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/SlurmClusterConfigSharingUpdate" }
+      responses:
+        "200":
+          description: The updated share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SlurmClusterConfigUserSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Slurm Cluster Configs]
+      summary: Revoke a user share
+      operationId: revokeSlurmClusterConfigUserShare
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------- Application templates
+
+  /api/v1/application-templates:
+    get:
+      tags: [Application Templates]
+      summary: List application templates
+      description: Catalogue read; open without a token.
+      operationId: listApplicationTemplates
+      security:
+        - {}
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Every template, with its declarations inlined.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TemplateResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Application Templates]
+      summary: Create an application template
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Input names must be unique within
+        a template.
+      operationId: createApplicationTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TemplateRequest" }
+      responses:
+        "201":
+          description: The created template, with server-assigned declaration ids.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TemplateResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/application-templates/{templateId}:
+    parameters:
+      - $ref: "#/components/parameters/TemplateId"
+    get:
+      tags: [Application Templates]
+      summary: Read an application template
+      description: Catalogue read; open without a token.
+      operationId: getApplicationTemplate
+      security:
+        - {}
+        - bearerAuth: []
+      responses:
+        "200":
+          description: The template.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TemplateResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Application Templates]
+      summary: Update an application template
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Declarations are replaced
+        wholesale: `inputId` and `outputId` in the body are ignored and child ids are
+        regenerated rather than matched.
+      operationId: updateApplicationTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TemplateRequest" }
+      responses:
+        "200":
+          description: The updated template.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TemplateResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Application Templates]
+      summary: Delete an application template
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. A template that still has
+        deployments cannot be deleted: `409 Conflict`.
+      operationId: deleteApplicationTemplate
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ----------------------------------------------------- Batch deployments
+
+  /api/v1/slurm-deployments:
+    get:
+      tags: [Batch Deployments]
+      summary: List batch deployments
+      description: |
+        Catalogue read; open without a token. Supply `templateId` to narrow the
+        listing to one template's deployments.
+      operationId: listBatchDeployments
+      security:
+        - {}
+        - bearerAuth: []
+      parameters:
+        - name: templateId
+          in: query
+          required: false
+          description: Return only the deployments of this template.
+          schema: { type: string }
+      responses:
+        "200":
+          description: The matching deployments.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/BatchDeploymentResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Batch Deployments]
+      summary: Create a batch deployment
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Binds a template to a cluster,
+        with the run script section and the resource request a run of it starts from.
+        Which identity a job submits under is a property of the run, so it is named on
+        the process instead.
+      operationId: createBatchDeployment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BatchDeploymentRequest" }
+      responses:
+        "201":
+          description: The created deployment.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BatchDeploymentResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-deployments/{deploymentId}:
+    parameters:
+      - $ref: "#/components/parameters/DeploymentId"
+    get:
+      tags: [Batch Deployments]
+      summary: Read a batch deployment
+      description: Catalogue read; open without a token.
+      operationId: getBatchDeployment
+      security:
+        - {}
+        - bearerAuth: []
+      responses:
+        "200":
+          description: The deployment.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BatchDeploymentResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Batch Deployments]
+      summary: Update a batch deployment
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: updateBatchDeployment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BatchDeploymentRequest" }
+      responses:
+        "200":
+          description: The updated deployment.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BatchDeploymentResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Batch Deployments]
+      summary: Delete a batch deployment
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: deleteBatchDeployment
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ----------------------------------------------------- SCP data storages
+
+  /api/v1/scp-data-storages:
+    get:
+      tags: [SCP Data Storages]
+      summary: List all SCP data storages
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: listSCPDataStorages
+      responses:
+        "200":
+          description: Every storage.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SCPDataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [SCP Data Storages]
+      summary: Register an SCP data storage
+      description: |
+        The owner comes from the token. The key must be one the caller owns. An
+        omitted `port` means 22.
+      operationId: createSCPDataStorage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SCPDataStorageRequest" }
+      responses:
+        "201":
+          description: The registered storage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SCPDataStorageResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/me:
+    get:
+      tags: [SCP Data Storages]
+      summary: List the caller's SCP data storages
+      operationId: listMySCPDataStorages
+      responses:
+        "200":
+          description: The storages the caller owns.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SCPDataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/shared-with-me:
+    get:
+      tags: [SCP Data Storages]
+      summary: List SCP data storages shared with the caller
+      description: |
+        Each entry carries `permission`, the caller's effective standing. `WRITE`
+        implies `READ`, and where several shares reach the same caller the strongest
+        applies.
+      operationId: listSCPDataStoragesSharedWithMe
+      responses:
+        "200":
+          description: The storages shared with the caller.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SCPDataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/{dataStorageId}:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+    get:
+      tags: [SCP Data Storages]
+      summary: Read an SCP data storage
+      description: Requires a `READ` standing. The key is inlined as its safe summary.
+      operationId: getSCPDataStorage
+      responses:
+        "200":
+          description: The storage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SCPDataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [SCP Data Storages]
+      summary: Update an SCP data storage
+      description: Requires a `WRITE` standing.
+      operationId: updateSCPDataStorage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SCPDataStorageRequest" }
+      responses:
+        "200":
+          description: The updated storage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SCPDataStorageResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [SCP Data Storages]
+      summary: Delete an SCP data storage
+      description: Owner or admin.
+      operationId: deleteSCPDataStorage
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/{dataStorageId}/group-shares:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+    get:
+      tags: [SCP Data Storages]
+      summary: List a storage's group shares
+      description: Owner or admin.
+      operationId: listSCPDataStorageGroupShares
+      responses:
+        "200":
+          description: The group shares on this storage.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  {
+                    $ref: "#/components/schemas/SCPDataStorageGroupSharingResponse",
+                  }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [SCP Data Storages]
+      summary: Share a storage with a group
+      description: An omitted `permission` grants `READ`.
+      operationId: shareSCPDataStorageWithGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/SCPDataStorageGroupSharingRequest" }
+      responses:
+        "201":
+          description: The created share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SCPDataStorageGroupSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/{dataStorageId}/group-shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [SCP Data Storages]
+      summary: Change what a group share grants
+      operationId: updateSCPDataStorageGroupShare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SCPDataStorageSharingUpdate" }
+      responses:
+        "200":
+          description: The updated share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SCPDataStorageGroupSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [SCP Data Storages]
+      summary: Revoke a group share
+      operationId: revokeSCPDataStorageGroupShare
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/{dataStorageId}/user-shares:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+    get:
+      tags: [SCP Data Storages]
+      summary: List a storage's user shares
+      description: Owner or admin.
+      operationId: listSCPDataStorageUserShares
+      responses:
+        "200":
+          description: The user shares on this storage.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  {
+                    $ref: "#/components/schemas/SCPDataStorageUserSharingResponse",
+                  }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [SCP Data Storages]
+      summary: Share a storage with one user
+      description: An omitted `permission` grants `READ`.
+      operationId: shareSCPDataStorageWithUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/SCPDataStorageUserSharingRequest" }
+      responses:
+        "201":
+          description: The created share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SCPDataStorageUserSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [SCP Data Storages]
+      summary: Change what a user share grants
+      operationId: updateSCPDataStorageUserShare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SCPDataStorageSharingUpdate" }
+      responses:
+        "200":
+          description: The updated share.
+          content:
+            application/json:
+              schema:
+                {
+                  $ref: "#/components/schemas/SCPDataStorageUserSharingResponse",
+                }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [SCP Data Storages]
+      summary: Revoke a user share
+      operationId: revokeSCPDataStorageUserShare
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # --------------------------------------------------------- Data products
+
+  /api/v1/data-products:
+    get:
+      tags: [Data Products]
+      summary: List all data products
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: listDataProducts
+      responses:
+        "200":
+          description: Every registered dataset.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DataProductResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Data Products]
+      summary: Register a data product
+      description: |
+        A path on an SCP data storage. Ownership comes from the token and the
+        provision status is the server's to move, so neither is accepted in the body.
+      operationId: createDataProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataProductRequest" }
+      responses:
+        "201":
+          description: The registered dataset.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataProductResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/me:
+    get:
+      tags: [Data Products]
+      summary: List the caller's data products
+      operationId: listMyDataProducts
+      responses:
+        "200":
+          description: The datasets the caller owns.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DataProductResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/shared-with-me:
+    get:
+      tags: [Data Products]
+      summary: List data products shared with the caller
+      description: Each entry carries `permission`, the caller's effective standing.
+      operationId: listDataProductsSharedWithMe
+      responses:
+        "200":
+          description: The datasets shared with the caller.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DataProductResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+    get:
+      tags: [Data Products]
+      summary: Read a data product
+      description: Requires a `READ` standing.
+      operationId: getDataProduct
+      responses:
+        "200":
+          description: The dataset.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataProductResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Data Products]
+      summary: Update a data product
+      description: Requires a `WRITE` standing.
+      operationId: updateDataProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataProductRequest" }
+      responses:
+        "200":
+          description: The updated dataset.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataProductResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Data Products]
+      summary: Delete a data product
+      description: Owner or admin.
+      operationId: deleteDataProduct
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}/group-shares:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+    get:
+      tags: [Data Products]
+      summary: List a product's group shares
+      description: Owner or admin.
+      operationId: listDataProductGroupShares
+      responses:
+        "200":
+          description: The group shares on this dataset.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  {
+                    $ref: "#/components/schemas/DataProductGroupSharingResponse",
+                  }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Data Products]
+      summary: Share a product with a group
+      description: |
+        An omitted `permission` grants `READ` — read-only is the safe default for a
+        share, and widening it is a deliberate act.
+      operationId: shareDataProductWithGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/DataProductGroupSharingRequest" }
+      responses:
+        "201":
+          description: The created share.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/DataProductGroupSharingResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}/group-shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Data Products]
+      summary: Change what a group share grants
+      operationId: updateDataProductGroupShare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataProductSharingUpdate" }
+      responses:
+        "200":
+          description: The updated share.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/DataProductGroupSharingResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Data Products]
+      summary: Revoke a group share
+      operationId: revokeDataProductGroupShare
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}/user-shares:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+    get:
+      tags: [Data Products]
+      summary: List a product's user shares
+      description: Owner or admin.
+      operationId: listDataProductUserShares
+      responses:
+        "200":
+          description: The user shares on this dataset.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  {
+                    $ref: "#/components/schemas/DataProductUserSharingResponse",
+                  }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Data Products]
+      summary: Share a product with one user
+      description: An omitted `permission` grants `READ`.
+      operationId: shareDataProductWithUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/DataProductUserSharingRequest" }
+      responses:
+        "201":
+          description: The created share.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/DataProductUserSharingResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}/user-shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Data Products]
+      summary: Change what a user share grants
+      operationId: updateDataProductUserShare
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataProductSharingUpdate" }
+      responses:
+        "200":
+          description: The updated share.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/DataProductUserSharingResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Data Products]
+      summary: Revoke a user share
+      operationId: revokeDataProductUserShare
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------------------ Processes
+
+  /api/v1/processes:
+    get:
+      tags: [Processes]
+      summary: List processes
+      description: |
+        The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
+        the runs of one deployment, which is open to any authenticated caller.
+      operationId: listProcesses
+      parameters:
+        - name: deploymentId
+          in: query
+          required: false
+          description: Return only the runs of this deployment.
+          schema: { type: string }
+      responses:
+        "200":
+          description: The matching processes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProcessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Processes]
+      summary: Create a process
+      description: |
+        The owner comes from the token. A `BATCH_JOB` must carry a `batchProcess`
+        section; any other process type must not. The cluster config named there must
+        be one the caller owns or that has been shared with them.
+      operationId: createProcess
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProcessRequest" }
+      responses:
+        "201":
+          description: The created process.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: Read a process
+      description: Owner or admin. Every section the process carries is nested inside it.
+      operationId: getProcess
+      responses:
+        "200":
+          description: The process.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Processes]
+      summary: Update a process
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. The input and output mapping sets
+        are replaced wholesale.
+      operationId: updateProcess
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProcessRequest" }
+      responses:
+        "200":
+          description: The updated process.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Processes]
+      summary: Delete a process
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: deleteProcess
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/launch:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    post:
+      tags: [Processes]
+      summary: Launch a process
+      description: |
+        Owner only. Takes no body. Answers `202`: the tasks are recorded here, and
+        carrying them out is later work done elsewhere. The body is the process
+        itself, so a caller that launched by id has the run to hand. What the launch
+        produced is read back through the process's task collections.
+      operationId: launchProcess
+      responses:
+        "202":
+          description: The launch was accepted; the process is returned as it now stands.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/statuses:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: List a process's status history
+      description: |
+        Read-only. Statuses are recorded internally — by process submission and by
+        whatever submits and monitors the actual job — never accepted from a client,
+        so there is no `POST` or `PUT` here.
+      operationId: listProcessStatuses
+      responses:
+        "200":
+          description: Every status recorded for the process.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/StatusResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/statuses/{statusId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - name: statusId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Processes]
+      summary: Read one recorded status
+      operationId: getProcessStatus
+      responses:
+        "200":
+          description: The status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StatusResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/data-staging-tasks:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: List a process's data staging tasks
+      operationId: listDataStagingTasks
+      responses:
+        "200":
+          description: The process's staging tasks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DataStagingTaskResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Processes]
+      summary: Create a data staging task
+      description: |
+        The task belongs to the process in the path; there is no `processId` in the
+        body, so a task cannot be moved to a different process by editing it.
+      operationId: createDataStagingTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataStagingTaskRequest" }
+      responses:
+        "201":
+          description: The created task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataStagingTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/data-staging-tasks/{taskId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Processes]
+      summary: Read a data staging task
+      operationId: getDataStagingTask
+      responses:
+        "200":
+          description: The task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataStagingTaskResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Processes]
+      summary: Update a data staging task
+      operationId: updateDataStagingTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataStagingTaskRequest" }
+      responses:
+        "200":
+          description: The updated task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataStagingTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Processes]
+      summary: Delete a data staging task
+      operationId: deleteDataStagingTask
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/job-submission-tasks:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: List a process's job submission tasks
+      operationId: listJobSubmissionTasks
+      responses:
+        "200":
+          description: The process's submission tasks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/JobSubmissionTaskResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Processes]
+      summary: Create a job submission task
+      operationId: createJobSubmissionTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/JobSubmissionTaskRequest" }
+      responses:
+        "201":
+          description: The created task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobSubmissionTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/job-submission-tasks/{taskId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Processes]
+      summary: Read a job submission task
+      operationId: getJobSubmissionTask
+      responses:
+        "200":
+          description: The task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobSubmissionTaskResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Processes]
+      summary: Update a job submission task
+      operationId: updateJobSubmissionTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/JobSubmissionTaskRequest" }
+      responses:
+        "200":
+          description: The updated task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobSubmissionTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Processes]
+      summary: Delete a job submission task
+      operationId: deleteJobSubmissionTask
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/job-monitoring-tasks:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: List a process's job monitoring tasks
+      operationId: listJobMonitoringTasks
+      responses:
+        "200":
+          description: The process's monitoring tasks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  { $ref: "#/components/schemas/JobMonitoringTaskResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Processes]
+      summary: Create a job monitoring task
+      operationId: createJobMonitoringTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/JobMonitoringTaskRequest" }
+      responses:
+        "201":
+          description: The created task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobMonitoringTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/job-monitoring-tasks/{taskId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Processes]
+      summary: Read a job monitoring task
+      operationId: getJobMonitoringTask
+      responses:
+        "200":
+          description: The task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobMonitoringTaskResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Processes]
+      summary: Update a job monitoring task
+      operationId: updateJobMonitoringTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/JobMonitoringTaskRequest" }
+      responses:
+        "200":
+          description: The updated task.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobMonitoringTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Processes]
+      summary: Delete a job monitoring task
+      operationId: deleteJobMonitoringTask
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/interactive-command-tasks:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: List a process's interactive command tasks
+      operationId: listInteractiveCommandTasks
+      responses:
+        "200":
+          description: The process's command tasks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  {
+                    $ref: "#/components/schemas/InteractiveCommandTaskResponse",
+                  }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Processes]
+      summary: Create an interactive command task
+      operationId: createInteractiveCommandTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/InteractiveCommandTaskRequest" }
+      responses:
+        "201":
+          description: The created task.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/InteractiveCommandTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/interactive-command-tasks/{taskId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - $ref: "#/components/parameters/TaskId"
+    get:
+      tags: [Processes]
+      summary: Read an interactive command task
+      operationId: getInteractiveCommandTask
+      responses:
+        "200":
+          description: The task.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/InteractiveCommandTaskResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Processes]
+      summary: Update an interactive command task
+      operationId: updateInteractiveCommandTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              { $ref: "#/components/schemas/InteractiveCommandTaskRequest" }
+      responses:
+        "200":
+          description: The updated task.
+          content:
+            application/json:
+              schema:
+                { $ref: "#/components/schemas/InteractiveCommandTaskResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Processes]
+      summary: Delete an interactive command task
+      operationId: deleteInteractiveCommandTask
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        A CILogon access token, validated by RFC 7662 introspection. The bootstrap
+        root token is also accepted; see INSTALL.md.
+
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema: { type: string }
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      schema: { type: string }
+    SSHKeyId:
+      name: sshKeyId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SlurmClusterId:
+      name: slurmClusterId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    PartitionId:
+      name: partitionId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SlurmClusterConfigId:
+      name: slurmClusterConfigId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    TemplateId:
+      name: templateId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    DeploymentId:
+      name: deploymentId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    DataStorageId:
+      name: dataStorageId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    DataProductId:
+      name: dataProductId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    ProcessId:
+      name: processId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SharingId:
+      name: sharingId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    NoContent:
+      description: Deleted. No body.
+    BadRequest:
+      description: |
+        Malformed JSON, or a body that failed its constraints. Validation failures
+        carry `fieldErrors`.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          examples:
+            validation:
+              summary: Validation failed
+              value:
+                status: 400
+                error: Bad Request
+                message: Validation failed
+                fieldErrors:
+                  - field: clusterName
+                    message: Cluster name cannot be blank
+    Unauthorized:
+      description: |
+        No token where one is required, or a token that is present but unusable. An
+        invalid token also carries `WWW-Authenticate: Bearer error="invalid_token"`.
+      headers:
+        WWW-Authenticate:
+          description: Present when the token was rejected.
+          schema: { type: string }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: Authenticated, but lacking the authority for this call.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: |
+        No such record — or, for a group, a record the caller has no standing to know
+        exists.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+          example:
+            status: 404
+            error: Not Found
+            message: "Slurm cluster not found: c1d2e3f4-5678-4abc-9def-0123456789ab"
+    Conflict:
+      description: |
+        The request collides with existing state — deleting an SSH key still in use,
+        or a template that still has deployments.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    BadGateway:
+      description: |
+        The identity provider could not be reached to validate the token. Not the
+        caller's fault, so it is not reported as an auth failure.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    InternalError:
+      description: |
+        An unexpected server failure. The message is always `"Internal server error"`;
+        the detail is logged rather than returned, since it may name internal state.
+
+        A `502` is also possible on any authenticated call if the identity provider is
+        unreachable.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    # ---------------------------------------------------------- Errors
+
+    FieldError:
+      type: object
+      description: One failed validation constraint.
+      properties:
+        field:
+          type: string
+          description: |
+            The JSON path of the offending field, including indexes and nesting.
+          examples:
+            ["inputs[0].inputType", "defaultBatchJobConfig.wallTimeMinutes"]
+        message: { type: string }
+      required: [field, message]
+
+    Error:
+      type: object
+      description: The envelope every failure response uses.
+      properties:
+        status:
+          type: integer
+          description: The HTTP status, repeated in the body.
+        error:
+          type: string
+          description: The standard reason phrase for `status`.
+        message:
+          type: string
+          description: Human-readable detail.
+        fieldErrors:
+          type: array
+          description: |
+            Present only on request-body validation failures, listing every
+            constraint that failed so a client can report all of them at once.
+          items: { $ref: "#/components/schemas/FieldError" }
+      required: [status, error, message]
+
+    # ----------------------------------------------------------- Enums
+
+    AuthMethod:
+      type: string
+      enum: [CILOGON, SYSTEM]
+    UserStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE, SUSPENDED]
+    GroupRole:
+      type: string
+      enum: [ADMIN, MODERATOR, MEMBER]
+    GroupMemberStatus:
+      type: string
+      enum: [ACTIVE, INACTIVE]
+    ClusterPermission:
+      type: string
+      enum: [READ, WRITE]
+    DataStoragePermission:
+      type: string
+      enum: [READ, WRITE]
+    DataProductPermission:
+      type: string
+      enum: [READ, WRITE]
+    DataStorageType:
+      type: string
+      enum: [SCP, HPC]
+    ProvisionStatus:
+      type: string
+      description: |
+        The lifecycle state of a registered dataset. `REGISTERD` is spelled that way
+        on the wire.
+      enum:
+        [
+          REGISTERD,
+          PROVISIONING,
+          PROVISIONED,
+          DEPROVISIONING,
+          DEPROVISIONED,
+          FAILED,
+        ]
+    TemplateInputType:
+      type: string
+      enum: [STRING, INTEGER, FLOAT, BOOLEAN, FILE, FILE_LIST, DIRECTORY]
+    TemplateOutputType:
+      type: string
+      enum: [FILE, FILE_LIST, DIRECTORY]
+    ProcessType:
+      type: string
+      enum: [BATCH_JOB, CLOUD_JOB]
+    ProcessStatusType:
+      type: string
+      enum: [CREATED, SUBMITTED, RUNNING, COMPLETED, FAILED]
+    OnFailureAction:
+      type: string
+      enum: [RETRY, SKIP, EXIT]
+    BatchJobStatusType:
+      type: string
+      description: |
+        Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `CANCELLING`,
+        `CANCELLED`) plus the Slurm mail states parsed from job notifications.
+      enum:
+        - SUBMITTED
+        - SUBMISSION_FAILED
+        - CANCELLING
+        - CANCELLED
+        - BEGIN
+        - REQUEUE
+        - INVALID_DEPEND
+        - STAGE_OUT
+        - TIME_LIMIT
+        - TIME_LIMIT_90
+        - TIME_LIMIT_80
+        - TIME_LIMIT_50
+        - FAIL
+        - END
+
+    # ------------------------------------------------------------ IAM
+
+    UserRegistration:
+      type: object
+      description: The create/update payload for a user.
+      properties:
+        userId: { type: string }
+        email: { type: [string, "null"], format: email }
+        firstName: { type: [string, "null"] }
+        lastName: { type: [string, "null"] }
+        authMethod:
+          oneOf:
+            - { $ref: "#/components/schemas/AuthMethod" }
+            - { type: "null" }
+      required: [userId]
+
+    UserResponse:
+      type: object
+      description: |
+        The read model for a user. It deliberately omits email, auth method and roles.
+      properties:
+        userId: { type: string }
+        status:
+          oneOf:
+            - { $ref: "#/components/schemas/UserStatus" }
+            - { type: "null" }
+        firstName: { type: [string, "null"] }
+        lastName: { type: [string, "null"] }
+        createdAt:
+          type: integer
+          format: int64
+          description: Milliseconds since the epoch.
+      required: [userId, status, firstName, lastName, createdAt]
+
+    GroupRequest:
+      type: object
+      description: |
+        The create/update payload for a group. There is no owner field: ownership
+        comes from the token and is immutable.
+      properties:
+        groupName: { type: string }
+      required: [groupName]
+
+    GroupResponse:
+      type: object
+      description: |
+        The read model for a group. Members are not inlined — read them through
+        `/api/v1/groups/{groupId}/members`, which keeps a large group's listing out of
+        every response that merely names it.
+      properties:
+        groupId: { type: string }
+        groupName: { type: [string, "null"] }
+        ownerId: { type: [string, "null"] }
+        createdAt: { type: integer, format: int64 }
+      required: [groupId, createdAt]
+
+    GroupMemberRequest:
+      type: object
+      description: |
+        Adds a user to a group. An omitted `groupRole` means `MEMBER`; an omitted
+        `groupMemberStatus` means `ACTIVE`.
+      properties:
+        userId: { type: string }
+        groupRole:
+          oneOf:
+            - { $ref: "#/components/schemas/GroupRole" }
+            - { type: "null" }
+        groupMemberStatus:
+          oneOf:
+            - { $ref: "#/components/schemas/GroupMemberStatus" }
+            - { type: "null" }
+      required: [userId]
+
+    GroupMemberUpdate:
+      type: object
+      description: |
+        Changes an existing membership. Both fields are optional and an omitted one is
+        left as it stands.
+      properties:
+        groupRole:
+          oneOf:
+            - { $ref: "#/components/schemas/GroupRole" }
+            - { type: "null" }
+        groupMemberStatus:
+          oneOf:
+            - { $ref: "#/components/schemas/GroupMemberStatus" }
+            - { type: "null" }
+
+    GroupMemberResponse:
+      type: object
+      properties:
+        groupId: { type: string }
+        userId: { type: string }
+        groupRole: { $ref: "#/components/schemas/GroupRole" }
+        groupMemberStatus: { $ref: "#/components/schemas/GroupMemberStatus" }
+      required: [groupId, userId, groupRole, groupMemberStatus]
+
+    # ---------------------------------------------------- Credentials
+
+    SSHKeyRequest:
+      type: object
+      description: |
+        The create/update payload for a key. `privateKey` is required on create; an
+        update that omits it keeps the stored secret. There is no owner field.
+      properties:
+        sshKeyName: { type: string }
+        publicKey: { type: string }
+        privateKey:
+          type: [string, "null"]
+          description: Write-only. Never returned by any read endpoint.
+        passphrase:
+          type: [string, "null"]
+          description: Write-only. Never returned by any read endpoint.
+      required: [sshKeyName, publicKey]
+
+    SSHKeyResponse:
+      type: object
+      description: |
+        The read model for a key. It has no private key or passphrase field at all —
+        the secrets cannot leak through this endpoint because there is nowhere for
+        them to go.
+      properties:
+        sshKeyId: { type: string, format: uuid }
+        sshKeyName: { type: string }
+        publicKey: { type: string }
+        ownerId: { type: string }
+      required: [sshKeyId, sshKeyName, publicKey, ownerId]
+
+    # -------------------------------------------------------- Compute
+
+    ClusterPartitionRequest:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: [string, "null"] }
+        maxRunTime: { type: [integer, "null"], format: int32 }
+        maxNodes: { type: [integer, "null"], format: int32 }
+        maxProcessors: { type: [integer, "null"], format: int32 }
+        maxJobsInQueue: { type: [integer, "null"], format: int32 }
+        maxMemory: { type: [integer, "null"], format: int64 }
+        cpuPerNode: { type: [integer, "null"], format: int32 }
+        defaultNodeCount: { type: [integer, "null"], format: int32 }
+        defaultCpuCount: { type: [integer, "null"], format: int32 }
+        defaultWalltime: { type: [integer, "null"], format: int64 }
+        gres: { type: [string, "null"] }
+        nodes: { type: [string, "null"] }
+        isDefaultQueue: { type: [boolean, "null"] }
+        isCheckpointable: { type: [boolean, "null"] }
+      required: [name]
+
+    ClusterPartitionResponse:
+      type: object
+      properties:
+        partitionId: { type: string, format: uuid }
+        clusterId: { type: [string, "null"], format: uuid }
+        name: { type: string }
+        description: { type: [string, "null"] }
+        maxRunTime: { type: [integer, "null"], format: int32 }
+        maxNodes: { type: [integer, "null"], format: int32 }
+        maxProcessors: { type: [integer, "null"], format: int32 }
+        maxJobsInQueue: { type: [integer, "null"], format: int32 }
+        maxMemory: { type: [integer, "null"], format: int64 }
+        cpuPerNode: { type: [integer, "null"], format: int32 }
+        defaultNodeCount: { type: [integer, "null"], format: int32 }
+        defaultCpuCount: { type: [integer, "null"], format: int32 }
+        defaultWalltime: { type: [integer, "null"], format: int64 }
+        gres: { type: [string, "null"] }
+        nodes: { type: [string, "null"] }
+        isDefaultQueue: { type: [boolean, "null"] }
+        isCheckpointable: { type: [boolean, "null"] }
+      required: [partitionId, name]
+
+    SlurmClusterRequest:
+      type: object
+      description: |
+        The create/update payload for a cluster. It describes the machine only.
+      properties:
+        clusterName: { type: string }
+        clusterDescription: { type: [string, "null"] }
+        headnodeHost: { type: string }
+        headnodePort: { type: integer, minimum: 1, maximum: 65535 }
+        slurmHome:
+          type: [string, "null"]
+          description: |
+            The install prefix the Slurm client commands are found under. A cluster
+            that omits it runs them off the login shell's `PATH`.
+        dataHost:
+          type: [string, "null"]
+          description: |
+            The optional separate endpoint for data movement. A cluster that names
+            neither `dataHost` nor `dataPort` stages through its head node.
+        dataPort: { type: [integer, "null"], minimum: 1, maximum: 65535 }
+        partitions:
+          type: [array, "null"]
+          description: |
+            Accepted on create only, so a cluster whose layout is already known
+            arrives complete. An update carrying them is rejected.
+          items: { $ref: "#/components/schemas/ClusterPartitionRequest" }
+      required: [clusterName, headnodeHost, headnodePort]
+
+    SlurmClusterResponse:
+      type: object
+      properties:
+        slurmClusterId: { type: string, format: uuid }
+        clusterName: { type: string }
+        clusterDescription: { type: [string, "null"] }
+        headnodeHost: { type: string }
+        headnodePort: { type: integer }
+        slurmHome: { type: [string, "null"] }
+        dataHost: { type: [string, "null"] }
+        dataPort: { type: [integer, "null"] }
+        partitions:
+          type: array
+          items: { $ref: "#/components/schemas/ClusterPartitionResponse" }
+      required:
+        [slurmClusterId, clusterName, headnodeHost, headnodePort, partitions]
+
+    SlurmClusterConfigRequest:
+      type: object
+      description: |
+        The create/update payload for a cluster login config. There is no owner field.
+      properties:
+        name: { type: [string, "null"] }
+        description: { type: [string, "null"] }
+        slurmClusterId: { type: string, format: uuid }
+        loginUser: { type: string }
+        workRoot: { type: string }
+        sshKeyId:
+          type: string
+          format: uuid
+          description: Must be a key the caller owns.
+      required: [slurmClusterId, loginUser, workRoot, sshKeyId]
+
+    SlurmClusterConfigResponse:
+      type: object
+      description: |
+        The cluster is inlined because a config is only meaningful together with the
+        machine it logs in to. The key is inlined as its safe summary.
+      properties:
+        slurmClusterConfigId: { type: string, format: uuid }
+        name: { type: [string, "null"] }
+        description: { type: [string, "null"] }
+        ownerId: { type: [string, "null"] }
+        slurmClusterId: { type: string, format: uuid }
+        slurmCluster:
+          oneOf:
+            - { $ref: "#/components/schemas/SlurmClusterResponse" }
+            - { type: "null" }
+        loginUser: { type: string }
+        workRoot: { type: string }
+        sshKeyId: { type: [string, "null"], format: uuid }
+        sshKey:
+          oneOf:
+            - { $ref: "#/components/schemas/SSHKeyResponse" }
+            - { type: "null" }
+        permission:
+          type: string
+          description: |
+            The caller's effective standing, present only on the listings that compute
+            it (`/shared-with-me`).
+          enum: [READ, WRITE]
+      required: [slurmClusterConfigId, slurmClusterId, loginUser, workRoot]
+
+    SlurmClusterConfigGroupSharingRequest:
+      type: object
+      properties:
+        groupId: { type: string }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/ClusterPermission" }
+            - { type: "null" }
+      required: [groupId]
+
+    SlurmClusterConfigUserSharingRequest:
+      type: object
+      properties:
+        userId: { type: string }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/ClusterPermission" }
+            - { type: "null" }
+      required: [userId]
+
+    SlurmClusterConfigSharingUpdate:
+      type: object
+      properties:
+        permission: { $ref: "#/components/schemas/ClusterPermission" }
+      required: [permission]
+
+    SlurmClusterConfigGroupSharingResponse:
+      type: object
+      properties:
+        slurmClusterConfigGroupSharingId: { type: string, format: uuid }
+        slurmClusterConfigId: { type: string, format: uuid }
+        groupId: { type: string }
+        permission: { $ref: "#/components/schemas/ClusterPermission" }
+      required:
+        [
+          slurmClusterConfigGroupSharingId,
+          slurmClusterConfigId,
+          groupId,
+          permission,
+        ]
+
+    SlurmClusterConfigUserSharingResponse:
+      type: object
+      properties:
+        slurmClusterConfigUserSharingId: { type: string, format: uuid }
+        slurmClusterConfigId: { type: string, format: uuid }
+        userId: { type: string }
+        permission: { $ref: "#/components/schemas/ClusterPermission" }
+      required:
+        [
+          slurmClusterConfigUserSharingId,
+          slurmClusterConfigId,
+          userId,
+          permission,
+        ]
+
+    # ---------------------------------------------------- Application
+
+    TemplateInput:
+      type: object
+      description: |
+        One declared input, used for both reads and writes. `inputId` is echoed back
+        on reads but ignored on writes.
+      properties:
+        inputId: { type: string, format: uuid }
+        inputName: { type: string }
+        displayName: { type: [string, "null"] }
+        inputDescription: { type: [string, "null"] }
+        inputType: { $ref: "#/components/schemas/TemplateInputType" }
+        required:
+          type: boolean
+          description: |
+            Spelled `required` on the wire, not `isRequired`.
+      required: [inputName, inputType]
+
+    TemplateOutput:
+      type: object
+      properties:
+        outputId: { type: string, format: uuid }
+        outputName: { type: string }
+        displayName: { type: [string, "null"] }
+        outputDescription: { type: [string, "null"] }
+        outputType: { $ref: "#/components/schemas/TemplateOutputType" }
+      required: [outputName, outputType]
+
+    TemplateRequest:
+      type: object
+      properties:
+        templateName: { type: string }
+        templateDescription: { type: [string, "null"] }
+        inputs:
+          type: [array, "null"]
+          description: Input names must be unique within a template.
+          items: { $ref: "#/components/schemas/TemplateInput" }
+        outputs:
+          type: [array, "null"]
+          items: { $ref: "#/components/schemas/TemplateOutput" }
+      required: [templateName]
+
+    TemplateResponse:
+      type: object
+      properties:
+        templateId: { type: string, format: uuid }
+        templateName: { type: [string, "null"] }
+        templateDescription: { type: [string, "null"] }
+        inputs:
+          type: array
+          items: { $ref: "#/components/schemas/TemplateInput" }
+        outputs:
+          type: array
+          items: { $ref: "#/components/schemas/TemplateOutput" }
+      required: [templateId, inputs, outputs]
+
+    BatchJobConfigRequest:
+      type: object
+      description: The resource request carried by a deployment or a run.
+      properties:
+        wallTimeMinutes: { type: integer, format: int64, exclusiveMinimum: 0 }
+        allocation: { type: string }
+        cpus: { type: [integer, "null"], format: int32 }
+        mem: { type: [string, "null"] }
+        memPerCpu: { type: [string, "null"] }
+        ntasksPerNode: { type: [integer, "null"], format: int32 }
+        cpusPerTask: { type: [integer, "null"], format: int32 }
+        nodes: { type: [integer, "null"], format: int32 }
+        ntasks: { type: [integer, "null"], format: int32 }
+        gres: { type: [string, "null"] }
+        gpus: { type: [integer, "null"], format: int32 }
+        memPerGpu: { type: [string, "null"] }
+        cpusPerGpu: { type: [string, "null"] }
+        gpusPerNode: { type: [integer, "null"], format: int32 }
+        constraints: { type: [string, "null"] }
+      required: [wallTimeMinutes, allocation]
+
+    BatchJobConfigResponse:
+      type: object
+      properties:
+        batchJobConfigId: { type: string, format: uuid }
+        wallTimeMinutes: { type: integer, format: int64 }
+        allocation: { type: string }
+        cpus: { type: [integer, "null"], format: int32 }
+        mem: { type: [string, "null"] }
+        memPerCpu: { type: [string, "null"] }
+        ntasksPerNode: { type: [integer, "null"], format: int32 }
+        cpusPerTask: { type: [integer, "null"], format: int32 }
+        nodes: { type: [integer, "null"], format: int32 }
+        ntasks: { type: [integer, "null"], format: int32 }
+        gres: { type: [string, "null"] }
+        gpus: { type: [integer, "null"], format: int32 }
+        memPerGpu: { type: [string, "null"] }
+        cpusPerGpu: { type: [string, "null"] }
+        gpusPerNode: { type: [integer, "null"], format: int32 }
+        constraints: { type: [string, "null"] }
+      required: [batchJobConfigId, wallTimeMinutes, allocation]
+
+    BatchDeploymentRequest:
+      type: object
+      properties:
+        templateId: { type: string, format: uuid }
+        slurmClusterId: { type: [string, "null"], format: uuid }
+        slurmRunSection:
+          type: string
+          description: The run script section a job of this deployment executes.
+        defaultBatchJobConfig:
+          allOf: [{ $ref: "#/components/schemas/BatchJobConfigRequest" }]
+          description: |
+            The resource request a run of this deployment starts from. A run carries
+            its own copy and may depart from it.
+        defaultPartition: { type: [string, "null"] }
+      required: [templateId, slurmRunSection, defaultBatchJobConfig]
+
+    BatchDeploymentResponse:
+      type: object
+      properties:
+        deploymentId: { type: string, format: uuid }
+        templateId: { type: [string, "null"], format: uuid }
+        slurmClusterId: { type: [string, "null"], format: uuid }
+        slurmRunSection: { type: string }
+        defaultBatchJobConfig:
+          oneOf:
+            - { $ref: "#/components/schemas/BatchJobConfigResponse" }
+            - { type: "null" }
+        defaultPartition: { type: [string, "null"] }
+      required: [deploymentId, slurmRunSection]
+
+    # ----------------------------------------------------------- Data
+
+    SCPDataStorageRequest:
+      type: object
+      description: |
+        The create/update payload for a storage. There is no owner field.
+      properties:
+        dataName: { type: string }
+        hostName: { type: string }
+        port:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 65535
+          default: 22
+        loginUser: { type: string }
+        sshKeyId:
+          type: string
+          format: uuid
+          description: Must be a key the caller owns.
+      required: [dataName, hostName, loginUser, sshKeyId]
+
+    SCPDataStorageResponse:
+      type: object
+      properties:
+        dataId: { type: string, format: uuid }
+        dataName: { type: [string, "null"] }
+        ownerId: { type: [string, "null"] }
+        hostName: { type: [string, "null"] }
+        port: { type: [integer, "null"] }
+        loginUser: { type: [string, "null"] }
+        sshKeyId: { type: [string, "null"], format: uuid }
+        sshKey:
+          oneOf:
+            - { $ref: "#/components/schemas/SSHKeyResponse" }
+            - { type: "null" }
+        permission:
+          type: string
+          description: |
+            The caller's effective standing, present only on the listings that compute
+            it (`/shared-with-me`).
+          enum: [READ, WRITE]
+      required: [dataId]
+
+    SCPDataStorageGroupSharingRequest:
+      type: object
+      properties:
+        groupId: { type: string }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStoragePermission" }
+            - { type: "null" }
+      required: [groupId]
+
+    SCPDataStorageUserSharingRequest:
+      type: object
+      properties:
+        userId: { type: string }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStoragePermission" }
+            - { type: "null" }
+      required: [userId]
+
+    SCPDataStorageSharingUpdate:
+      type: object
+      properties:
+        permission: { $ref: "#/components/schemas/DataStoragePermission" }
+      required: [permission]
+
+    SCPDataStorageGroupSharingResponse:
+      type: object
+      properties:
+        dataStorageGroupSharingId: { type: string, format: uuid }
+        dataStorageId: { type: [string, "null"], format: uuid }
+        groupId: { type: [string, "null"] }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStoragePermission" }
+            - { type: "null" }
+      required: [dataStorageGroupSharingId]
+
+    SCPDataStorageUserSharingResponse:
+      type: object
+      properties:
+        dataStorageUserSharingId: { type: string, format: uuid }
+        dataStorageId: { type: [string, "null"], format: uuid }
+        userId: { type: [string, "null"] }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStoragePermission" }
+            - { type: "null" }
+      required: [dataStorageUserSharingId]
+
+    DataProductRequest:
+      type: object
+      description: |
+        The create/update payload for a registered dataset. There is no owner field
+        and no provision status: a caller who could set either would be able to
+        register a dataset as someone else's, or claim it was already provisioned.
+      properties:
+        dataName: { type: string }
+        dataDescription: { type: [string, "null"] }
+        isFile: { type: boolean }
+        path: { type: string }
+        dataStorageId: { type: string, format: uuid }
+        dataStorageType:
+          description: Defaults to `SCP`, the only kind `dataStorageId` resolves against.
+          oneOf:
+            - { $ref: "#/components/schemas/DataStorageType" }
+            - { type: "null" }
+      required: [dataName, isFile, path, dataStorageId]
+
+    DataProductResponse:
+      type: object
+      properties:
+        dataId: { type: string, format: uuid }
+        dataName: { type: [string, "null"] }
+        dataDescription: { type: [string, "null"] }
+        isFile: { type: boolean }
+        path: { type: [string, "null"] }
+        provisionStatus:
+          oneOf:
+            - { $ref: "#/components/schemas/ProvisionStatus" }
+            - { type: "null" }
+        ownerId: { type: [string, "null"] }
+        dataStorageId: { type: [string, "null"], format: uuid }
+        dataStorageType: { $ref: "#/components/schemas/DataStorageType" }
+        createdAt: { type: integer, format: int64 }
+        permission:
+          type: string
+          description: |
+            What the calling principal may do with this dataset — a property of the
+            request rather than of the record, which is why it is not stored. Present
+            only on the listings that compute it.
+          enum: [READ, WRITE]
+      required: [dataId, isFile, dataStorageType, createdAt]
+
+    DataProductGroupSharingRequest:
+      type: object
+      properties:
+        groupId: { type: string }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataProductPermission" }
+            - { type: "null" }
+      required: [groupId]
+
+    DataProductUserSharingRequest:
+      type: object
+      properties:
+        userId: { type: string }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataProductPermission" }
+            - { type: "null" }
+      required: [userId]
+
+    DataProductSharingUpdate:
+      type: object
+      description: |
+        The subject is fixed at creation; only the permission is editable.
+      properties:
+        permission: { $ref: "#/components/schemas/DataProductPermission" }
+      required: [permission]
+
+    DataProductGroupSharingResponse:
+      type: object
+      properties:
+        dataProductGroupSharingId: { type: string, format: uuid }
+        dataProductId: { type: [string, "null"], format: uuid }
+        groupId: { type: [string, "null"] }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataProductPermission" }
+            - { type: "null" }
+      required: [dataProductGroupSharingId]
+
+    DataProductUserSharingResponse:
+      type: object
+      properties:
+        dataProductUserSharingId: { type: string, format: uuid }
+        dataProductId: { type: [string, "null"], format: uuid }
+        userId: { type: [string, "null"] }
+        permission:
+          oneOf:
+            - { $ref: "#/components/schemas/DataProductPermission" }
+            - { type: "null" }
+      required: [dataProductUserSharingId]
+
+    # -------------------------------------------------------- Process
+
+    InputMapping:
+      type: object
+      description: |
+        Binds one of the deployment template's declared inputs to a value for this
+        run. `templateInputMappingId` is echoed back on reads but ignored on writes:
+        an update replaces the mapping set wholesale.
+      properties:
+        templateInputMappingId: { type: string, format: uuid }
+        templateInputId: { type: string, format: uuid }
+        value:
+          type: [string, "null"]
+          description: |
+            A JSON document, either `{"value": "..."}` for a single value or
+            `{"values": [...]}` for a list.
+      required: [templateInputId]
+
+    OutputMapping:
+      type: object
+      properties:
+        templateOutputMappingId: { type: string, format: uuid }
+        templateOutputId: { type: string, format: uuid }
+        value:
+          type: [string, "null"]
+          description: |
+            A JSON document, either `{"value": "..."}` for a single value or
+            `{"values": [...]}` for a list.
+      required: [templateOutputId]
+
+    BatchJobStatusResponse:
+      type: object
+      properties:
+        batchProcessStatusId: { type: string, format: uuid }
+        batchProcessId: { type: string, format: uuid }
+        status: { $ref: "#/components/schemas/BatchJobStatusType" }
+        updatedAt:
+          type: integer
+          format: int64
+          description: When the state was recorded, in milliseconds since the epoch.
+      required: [batchProcessStatusId, batchProcessId, status, updatedAt]
+
+    BatchProcessRequest:
+      type: object
+      description: |
+        The `batchProcess` section of a process request. The resource request is
+        carried here rather than copied from the deployment's default, which is what
+        lets a caller ask for different resources for a particular run.
+      properties:
+        deploymentId: { type: string, format: uuid }
+        jobId:
+          type: [string, "null"]
+          description: |
+            The scheduler's identifier for the submitted job — writable rather than
+            server-generated, because it is learned at submission time and recorded
+            afterwards.
+        batchJobConfig: { $ref: "#/components/schemas/BatchJobConfigRequest" }
+        slurmClusterConfigId:
+          type: string
+          format: uuid
+          description: |
+            The cluster login config this run submits under. Required: a deployment
+            names the machine but nobody's identity on it. Only a config the caller
+            owns or that is shared with them is accepted.
+        baseWorkDir:
+          type: [string, "null"]
+          description: |
+            The parent directory on the cluster this run works under; it gets a
+            subdirectory of its own beneath it, named for the process id, which is
+            where file inputs are staged to and file outputs staged from.
+        inputMappings:
+          type: [array, "null"]
+          items: { $ref: "#/components/schemas/InputMapping" }
+        outputMappings:
+          type: [array, "null"]
+          items: { $ref: "#/components/schemas/OutputMapping" }
+      required: [deploymentId, slurmClusterConfigId, batchJobConfig]
+
+    BatchProcessResponse:
+      type: object
+      description: |
+        The `batchProcess` section of a process response. The nested config is a
+        snapshot of what this run actually asked for.
+      properties:
+        batchProcessId: { type: string, format: uuid }
+        deploymentId: { type: [string, "null"], format: uuid }
+        jobId: { type: [string, "null"] }
+        batchJobConfig:
+          oneOf:
+            - { $ref: "#/components/schemas/BatchJobConfigResponse" }
+            - { type: "null" }
+        slurmClusterConfigId: { type: string, format: uuid }
+        baseWorkDir: { type: [string, "null"] }
+        inputMappings:
+          type: array
+          items: { $ref: "#/components/schemas/InputMapping" }
+        outputMappings:
+          type: array
+          items: { $ref: "#/components/schemas/OutputMapping" }
+        batchJobStatuses:
+          type: array
+          description: Oldest first.
+          items: { $ref: "#/components/schemas/BatchJobStatusResponse" }
+        latestBatchJobStatus:
+          oneOf:
+            - { $ref: "#/components/schemas/BatchJobStatusResponse" }
+            - { type: "null" }
+      required:
+        - batchProcessId
+        - slurmClusterConfigId
+        - inputMappings
+        - outputMappings
+        - batchJobStatuses
+
+    ProcessRequest:
+      type: object
+      description: |
+        The create/update payload for a process. There is no owner field. Which
+        sections a body may carry follows from its type: a `BATCH_JOB` without a
+        `batchProcess` describes no job at all, and a `batchProcess` on any other kind
+        is a caller's mistake rather than something to store and ignore.
+      properties:
+        processType: { $ref: "#/components/schemas/ProcessType" }
+        batchProcess:
+          description: Required when `processType` is `BATCH_JOB`; rejected otherwise.
+          oneOf:
+            - { $ref: "#/components/schemas/BatchProcessRequest" }
+            - { type: "null" }
+      required: [processType]
+
+    ProcessResponse:
+      type: object
+      description: |
+        The read model for a process, with every section it carries nested inside it.
+      properties:
+        processId: { type: string, format: uuid }
+        userId:
+          type: [string, "null"]
+          description: The owner, taken from the token at creation.
+        processType:
+          oneOf:
+            - { $ref: "#/components/schemas/ProcessType" }
+            - { type: "null" }
+        lastStatusId: { type: [string, "null"], format: uuid }
+        batchProcess:
+          oneOf:
+            - { $ref: "#/components/schemas/BatchProcessResponse" }
+            - { type: "null" }
+      required: [processId]
+
+    StatusResponse:
+      type: object
+      description: |
+        One recorded process status. There is no request counterpart: statuses are
+        never created or updated from a client body.
+      properties:
+        processStatusId: { type: string, format: uuid }
+        processId: { type: [string, "null"], format: uuid }
+        status:
+          oneOf:
+            - { $ref: "#/components/schemas/ProcessStatusType" }
+            - { type: "null" }
+        log: { type: [string, "null"] }
+        timestamp:
+          type: [integer, "null"]
+          format: int64
+          description: When the status was recorded, in milliseconds since the epoch.
+      required: [processStatusId]
+
+    DataStagingTaskRequest:
+      type: object
+      description: |
+        Both paths are required: a staging task that names neither where data comes
+        from nor where it goes describes no transfer at all.
+      properties:
+        sourceDataStorageId: { type: [string, "null"], format: uuid }
+        sourceDataStorageType:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStorageType" }
+            - { type: "null" }
+        destinationDataStorageId: { type: [string, "null"], format: uuid }
+        destinationDataStorageType:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStorageType" }
+            - { type: "null" }
+        sourcePath: { type: string }
+        destinationPath: { type: string }
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"], minimum: 0 }
+        taskOrder: { type: [integer, "null"], minimum: 0 }
+      required: [sourcePath, destinationPath]
+
+    DataStagingTaskResponse:
+      type: object
+      properties:
+        taskId: { type: string, format: uuid }
+        processId: { type: [string, "null"], format: uuid }
+        sourceDataStorageId: { type: [string, "null"], format: uuid }
+        sourceDataStorageType:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStorageType" }
+            - { type: "null" }
+        destinationDataStorageId: { type: [string, "null"], format: uuid }
+        destinationDataStorageType:
+          oneOf:
+            - { $ref: "#/components/schemas/DataStorageType" }
+            - { type: "null" }
+        sourcePath: { type: [string, "null"] }
+        destinationPath: { type: [string, "null"] }
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"] }
+        taskOrder: { type: [integer, "null"] }
+      required: [taskId]
+
+    JobSubmissionTaskRequest:
+      type: object
+      properties:
+        jobId:
+          type: [string, "null"]
+          description: |
+            The scheduler's identifier for the submitted job — writable rather than
+            server-generated.
+        workingDir: { type: [string, "null"] }
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"], minimum: 0 }
+        taskOrder: { type: [integer, "null"], minimum: 0 }
+
+    JobSubmissionTaskResponse:
+      type: object
+      properties:
+        taskId: { type: string, format: uuid }
+        processId: { type: [string, "null"], format: uuid }
+        jobId: { type: [string, "null"] }
+        workingDir: { type: [string, "null"] }
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"] }
+        taskOrder: { type: [integer, "null"] }
+      required: [taskId]
+
+    JobMonitoringTaskRequest:
+      type: object
+      properties:
+        jobId: { type: [string, "null"] }
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"], minimum: 0 }
+        taskOrder: { type: [integer, "null"], minimum: 0 }
+
+    JobMonitoringTaskResponse:
+      type: object
+      properties:
+        taskId: { type: string, format: uuid }
+        processId: { type: [string, "null"], format: uuid }
+        jobId: { type: [string, "null"] }
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"] }
+        taskOrder: { type: [integer, "null"] }
+      required: [taskId]
+
+    InteractiveCommandTaskRequest:
+      type: object
+      properties:
+        command: { type: string }
+        output:
+          type: [string, "null"]
+          description: |
+            The result of running the command — writable for the same reason `jobId`
+            is, recorded once whatever executed it knows the answer.
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"], minimum: 0 }
+        taskOrder: { type: [integer, "null"], minimum: 0 }
+      required: [command]
+
+    InteractiveCommandTaskResponse:
+      type: object
+      properties:
+        taskId: { type: string, format: uuid }
+        processId: { type: [string, "null"], format: uuid }
+        command: { type: [string, "null"] }
+        output: { type: [string, "null"] }
+        onFailure:
+          oneOf:
+            - { $ref: "#/components/schemas/OnFailureAction" }
+            - { type: "null" }
+        retryCount: { type: [integer, "null"] }
+        taskOrder: { type: [integer, "null"] }
+      required: [taskId]
