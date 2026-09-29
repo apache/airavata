@@ -301,6 +301,48 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 
 		if *tempInput.InputType == appmod.TemplateInputTypeFileList {
 			// Create a data staging task for the list input
+			if input.Value == nil || *input.Value == "" {
+				return fmt.Errorf("Input mapping %s has no value", input.TemplateInputMappingID)
+			}
+
+			dataProductIds := strings.Split(*input.Value, ",")
+			for index, dataProductId := range dataProductIds {
+				dataProductId = strings.TrimSpace(dataProductId)
+
+				if dataProductId == "" {
+					return fmt.Errorf("Input mapping %s has an empty data product ID at index %d",
+						input.TemplateInputMappingID, index)
+				}
+
+				dataProduct, err := s.dataProductService.Get(ctx, dataProductId)
+				if err != nil {
+					return fmt.Errorf("Failed to find data product %s: %v", dataProductId, err)
+				}
+
+				destPath := workingDir + "/" + *&tempInput.InputName 
+
+				failureAction := procmodel.OnFailureActionRetry
+				retryCount := 3
+				taskOrder := 0
+
+				dataStagingTask := &procmodel.DataStagingTask{
+					ProcessID:             &process.ProcessID,
+					SourceDataStorageID:   dataProduct.DataStorageID,
+					SourcePath:            dataProduct.Path,
+					SourceDataStorageType: &dataProduct.DataStorageType,
+
+					DestinationDataStorageID:   &clusterConfig.SlurmClusterConfigID,
+					DestinationDataStorageType: &hpcStorageType,
+					DestinationPath:			&destPath,
+					OnFailure:                  &failureAction,
+					RetryCount:                 &retryCount,
+					TaskOrder:                  &taskOrder,
+				}
+
+				if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
+					return err
+				}
+			}
 		}
 
 		if *tempInput.InputType == appmod.TemplateInputTypeDirectory {
