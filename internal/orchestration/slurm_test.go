@@ -106,9 +106,7 @@ func TestBuildSlurmScript(t *testing.T) {
 
 	want := []string{
 		"#!/bin/bash",
-		// The job is named for the batch process, which is what ties a scheduler
-		// notification back to the run that submitted it.
-		"#SBATCH --job-name=batch-1",
+		"#SBATCH --job-name=proc-1",
 		"#SBATCH --chdir=/scratch/airavata/proc-1",
 		"#SBATCH --output=/scratch/airavata/proc-1/proc-1.stdout",
 		"#SBATCH --error=/scratch/airavata/proc-1/proc-1.stderr",

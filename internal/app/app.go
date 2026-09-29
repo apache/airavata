@@ -46,6 +46,7 @@ import (
 	processrepo "github.com/apache/airavata/api/process/repository"
 	processsvc "github.com/apache/airavata/api/process/service"
 	orchestration "github.com/apache/airavata/internal/orchestration"
+	"github.com/cschleiden/go-workflows/backend"
 )
 
 // Services is every service the application exposes, built over one database.
@@ -153,7 +154,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 //
 // The repositories stay local: they are an implementation detail of the services above
 // them, and nothing outside this function has ever wanted one directly.
-func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services {
+func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBackend backend.Backend) *Services {
 	// Repositories.
 	users := repos.Users
 	groups := repos.Groups
@@ -193,7 +194,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
 	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
 
-	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks, monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus)
+	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, workflowBackend)
 	executionEngine.StartEngine()
 
 	return &Services{

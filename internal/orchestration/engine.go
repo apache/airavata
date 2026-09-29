@@ -22,8 +22,9 @@ package orchestration
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/cschleiden/go-workflows/backend/sqlite"
+	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/client"
 	"github.com/cschleiden/go-workflows/worker"
 	workflow "github.com/cschleiden/go-workflows/workflow"
@@ -85,10 +86,15 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	batchDeployments *applicationrepo.BatchDeploymentRepository,
 	templates *applicationrepo.TemplateRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
+	workflowBackend backend.Backend,
 ) *ExecutionEngine {
 
-	backend := sqlite.NewSqliteBackend("/tmp/airavataorchestrator.sqlite")
-	orchestrator := worker.NewWorkflowOrchestrator(backend, nil)
+	// workflowBackend may be nil in tests to prevent sqlite driver collision. Only create
+	// the orchestrator if a backend is provided. This has to be fixed later by intoducing a custom test backend.
+	var orchestrator *worker.WorkflowOrchestrator
+	if workflowBackend != nil {
+		orchestrator = worker.NewWorkflowOrchestrator(workflowBackend, nil)
+	}
 
 	return &ExecutionEngine{
 		dataStagingTasks:    dataStagingTasks,
@@ -105,6 +111,10 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 }
 
 func (w *ExecutionEngine) StartEngine() {
+	if w.orchestrator == nil {
+		slog.Info("Execution engine built without a workflow backend; not starting the workflow worker")
+		return
+	}
 
 	slog.Info("Starting execution engine...........")
 	ctx := context.Background()
@@ -162,6 +172,11 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 	if _, ok := triggeringStatus[parsed.Status]; ok {
 		slog.Info("Triggering action for batch job status", "status", parsed.Status)
 
+		if w.orchestrator == nil {
+			slog.Error("Cannot run batch job completion workflow", "error", ErrNoWorkflowBackend)
+			return nil
+		}
+
 		workflowId := uuid.NewString()
 
 		_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
@@ -177,7 +192,13 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 	return nil
 }
 
+var ErrNoWorkflowBackend = errors.New("execution engine was built without a workflow backend")
+
 func (w *ExecutionEngine) LaunchBatchJobSubmission(ctx context.Context, processID string) (string, error) {
+	if w.orchestrator == nil {
+		return "", ErrNoWorkflowBackend
+	}
+
 	workflowId := uuid.NewString()
 
 	_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
@@ -190,6 +211,10 @@ func (w *ExecutionEngine) LaunchBatchJobSubmission(ctx context.Context, processI
 }
 
 func (w *ExecutionEngine) LaunchBatchJobCompletion(ctx context.Context, processID string) (string, error) {
+	if w.orchestrator == nil {
+		return "", ErrNoWorkflowBackend
+	}
+
 	workflowId := uuid.NewString()
 
 	_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{

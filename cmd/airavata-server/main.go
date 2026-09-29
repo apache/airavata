@@ -40,6 +40,8 @@ import (
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/orchestration"
 	"github.com/apache/airavata/internal/server"
+	"github.com/cschleiden/go-workflows/backend/sqlite"
+	"github.com/cschleiden/go-workflows/backend"
 )
 
 func main() {
@@ -154,7 +156,17 @@ func runServer() error {
 	// The object graph, built once. The HTTP handler takes it, and so does the workflow
 	// worker once it has a backend to run against — both act through the same services
 	// rather than each assembling a set of their own.
-	svcs := app.NewServices(cfg, gdb, repos)
+
+	var workflowBackend backend.Backend
+	if cfg.WorkflowBackendType == "sqlite" {
+		workflowBackend = sqlite.NewSqliteBackend(cfg.WorkflowBackendSqlitePath)
+	}
+
+	if workflowBackend == nil {
+		return fmt.Errorf("no workflow backend configured")
+	}
+
+	svcs := app.NewServices(cfg, gdb, repos, workflowBackend)
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,

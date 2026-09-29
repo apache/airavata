@@ -58,6 +58,9 @@ type Config struct {
 
 	EmailMonitorAddress     string
 	EmailMonitorAppPassword string
+
+	WorkflowBackendType       string
+	WorkflowBackendSqlitePath string
 }
 
 // Load reads configuration from the environment, applying the same defaults the Java
@@ -75,10 +78,12 @@ func load() (Config, error) {
 		ClientID:         env("CILOGON_CLIENT_ID", ""),
 		ClientSecret:     env("CILOGON_CLIENT_SECRET", ""),
 
-		RootAccountEnabled:      envBool("AIRAVATA_ROOT_ACCOUNT_ENABLED", true),
-		RootAccountToken:        env("AIRAVATA_ROOT_ACCOUNT_TOKEN", ""),
-		EmailMonitorAddress:     env("AIRAVATA_EMAIL_MONITOR_ADDRESS", ""),
-		EmailMonitorAppPassword: env("AIRAVATA_EMAIL_MONITOR_APP_PASSWORD", ""),
+		RootAccountEnabled:        envBool("AIRAVATA_ROOT_ACCOUNT_ENABLED", true),
+		RootAccountToken:          env("AIRAVATA_ROOT_ACCOUNT_TOKEN", ""),
+		EmailMonitorAddress:       env("AIRAVATA_EMAIL_MONITOR_ADDRESS", ""),
+		EmailMonitorAppPassword:   env("AIRAVATA_EMAIL_MONITOR_APP_PASSWORD", ""),
+		WorkflowBackendType:       env("AIRAVATA_WORKFLOW_BACKEND_TYPE", "sqlite"),
+		WorkflowBackendSqlitePath: env("AIRAVATA_WORKFLOW_BACKEND_SQLITE_PATH", "/tmp/airavataorchestrator.sqlite"),
 	}
 
 	// Without a root account and without CILogon credentials there is no way to

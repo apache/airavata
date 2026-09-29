@@ -166,7 +166,7 @@ func (s *LaunchService) requireNotLaunched(ctx context.Context, processID string
 		return err
 	}
 	if len(staging)+len(submissions) > 0 {
-		//return httpx.Conflict("Process %s has already been launched", processID)
+		return httpx.Conflict("Process %s has already been launched", processID)
 	}
 	return nil
 }
