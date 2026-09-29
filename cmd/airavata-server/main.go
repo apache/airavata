@@ -40,8 +40,8 @@ import (
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/orchestration"
 	"github.com/apache/airavata/internal/server"
-	"github.com/cschleiden/go-workflows/backend/sqlite"
 	"github.com/cschleiden/go-workflows/backend"
+	"github.com/cschleiden/go-workflows/backend/sqlite"
 )
 
 func main() {
