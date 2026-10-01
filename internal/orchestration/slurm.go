@@ -137,8 +137,8 @@ func buildSlurmScript(
 		// carry the path bare, but the cd in the body is, and a work root with a space
 		// in it would otherwise become two arguments.
 		"work_dir_quoted": shellQuote(workDir),
-		"stdout_file":     path.Join(workDir, process.ID+".stdout"),
-		"stderr_file":     path.Join(workDir, process.ID+".stderr"),
+		"stdout_file":     path.Join(workDir, "stdout.txt"),
+		"stderr_file":     path.Join(workDir, "stderr.txt"),
 		"wall_time":       slurmWallTime(jobConfig.WallTimeMinutes),
 		"account":         strings.TrimSpace(jobConfig.Allocation),
 		"partition":       optional(deployment.DefaultPartition),

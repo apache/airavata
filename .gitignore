@@ -74,5 +74,5 @@ conf/traefik/certs/
 # Go build output
 /bin/
 
-docs/example.sh
+docs/example*
 .claude/
