@@ -24,12 +24,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
+	internalptr "github.com/apache/airavata/internal/ptr"
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/client"
 	"github.com/cschleiden/go-workflows/worker"
 	workflow "github.com/cschleiden/go-workflows/workflow"
 	"github.com/google/uuid"
-	"time"
 
 	"log/slog"
 
@@ -52,6 +54,7 @@ type ExecutionEngine struct {
 	templates           *applicationrepo.TemplateRepository
 	orchestrator        *worker.WorkflowOrchestrator
 	batchStatus         *processrepo.BatchJobStatusRepository
+	processStatus       *processrepo.StatusRepository
 }
 
 type GlobalJobConfigs struct {
@@ -86,6 +89,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	batchDeployments *applicationrepo.BatchDeploymentRepository,
 	templates *applicationrepo.TemplateRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
+	processStatus *processrepo.StatusRepository,
 	workflowBackend backend.Backend,
 ) *ExecutionEngine {
 
@@ -107,6 +111,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		templates:           templates,
 		orchestrator:        orchestrator,
 		batchStatus:         batchStatus,
+		processStatus:       processStatus,
 	}
 }
 
@@ -123,6 +128,7 @@ func (w *ExecutionEngine) StartEngine() {
 	w.orchestrator.RegisterActivity(w.copyData)
 	w.orchestrator.RegisterActivity(w.submitBatchJob)
 	w.orchestrator.RegisterActivity(w.monitorBatchJob)
+	w.orchestrator.RegisterActivity(w.completeProcess)
 
 	if err := w.orchestrator.Start(ctx); err != nil {
 		slog.Error("Failed to start execution engine", "error", err)
@@ -148,6 +154,8 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 		return nil
 	}
 
+	slog.Info("Found process", "processID", process.ID)
+
 	if process == nil {
 		slog.Error("Processing batch email: Process is nil", "processID", parsed.JobName)
 		return nil
@@ -169,6 +177,7 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 		model.BatchJobStatusEnded:  {},
 	}
 
+	// Trigger actions for specific batch job statuses (failed or ended)
 	if _, ok := triggeringStatus[parsed.Status]; ok {
 		slog.Info("Triggering action for batch job status", "status", parsed.Status)
 
@@ -188,7 +197,21 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 		}
 	}
 
-	slog.Info("Found process", "processID", process.ID)
+	if parsed.Status == model.BatchJobStatusBegin {
+		slog.Info("Handling begun batch job", "processID", process.ID)
+		// Update the process status to indicate that the batch job has begun
+		runningStatus := model.ProcessStatusTypeRunning
+		if err := w.processStatus.Create(ctx, &model.ProcessStatus{
+			ProcessID: &process.ID,
+			Status:    &runningStatus,
+			Log:       internalptr.To("Batch job has begun"),
+			Timestamp: internalptr.To(time.Now().UnixMilli()),
+		}); err != nil {
+			slog.Error("Failed to create process status", "processID", process.ID, "error", err)
+			return nil
+		}
+	}
+
 	return nil
 }
 
@@ -271,7 +294,7 @@ func (w *ExecutionEngine) handleBatchJobCompletion(ctx workflow.Context, process
 	jmt := jmts[0]
 
 	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jmt.OnFailure, jmt.RetryCount)},
+		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jmt.OnFailure, *jmt.RetryCount)},
 		w.monitorBatchJob, executionContext, processID, jmt.ID).Get(ctx)
 	if err != nil {
 		slog.Error("Failed processing job monitoring task", "processId", processID, "taskId", jmt.ID, "error", err)
@@ -281,13 +304,21 @@ func (w *ExecutionEngine) handleBatchJobCompletion(ctx workflow.Context, process
 	for _, dst := range dsts { // Attach output staging tasks
 		if dst.TaskOrder != nil && *dst.TaskOrder > *jmt.TaskOrder {
 			executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, dst.RetryCount)},
+				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, *dst.RetryCount)},
 				w.copyData, executionContext, processID, dst.ID).Get(ctx)
 			if err != nil {
 				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
 				return err
 			}
 		}
+	}
+
+	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
+		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(model.OnFailureActionExit, 0)},
+		w.completeProcess, executionContext, processID).Get(ctx)
+	if err != nil {
+		slog.Error("Failed completing process", "processId", processID, "error", err)
+		return err
 	}
 
 	return nil
@@ -339,7 +370,7 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 	for _, dst := range dsts { // tasks are already sorted by their task order. Attach input staging tasks
 		if dst.TaskOrder != nil && *dst.TaskOrder < *jst.TaskOrder {
 			executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, dst.RetryCount)},
+				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, *dst.RetryCount)},
 				w.copyData, executionContext, processID, dst.ID).Get(ctx)
 			if err != nil {
 				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
@@ -349,7 +380,7 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 	}
 
 	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jst.OnFailure, jst.RetryCount)},
+		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jst.OnFailure, *jst.RetryCount)},
 		w.submitBatchJob, executionContext, processID, jst.ID).Get(ctx)
 	if err != nil {
 		slog.Error("Failed processing job submission task", "processId", processID, "taskId", jst.ID, "error", err)
@@ -359,13 +390,13 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 	return nil
 }
 
-func retryOptions(onFailure model.OnFailureAction, retryCount *int) workflow.RetryOptions {
+func retryOptions(onFailure model.OnFailureAction, retryCount int) workflow.RetryOptions {
 	opts := workflow.RetryOptions{MaxAttempts: 1}
 	if onFailure != model.OnFailureActionRetry {
 		return opts
 	}
 	// retryCount counts retries, so the first run is one attempt on top of it.
-	opts.MaxAttempts = 1 + *retryCount
+	opts.MaxAttempts = 1 + retryCount
 	opts.BackoffCoefficient = workflow.DefaultRetryOptions.BackoffCoefficient
 	return opts
 }

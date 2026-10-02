@@ -195,7 +195,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, workflowBackend)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -232,7 +232,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
-			sshKeySvc, scpDataStorageSvc, dataProductSvc, stagingTasks, submissionTasks,
+			sshKeySvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, executionEngine),
 
 		ExecutionEngine: executionEngine,

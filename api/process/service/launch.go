@@ -57,6 +57,7 @@ type LaunchService struct {
 	sshKeyService          *credentialsev.SSHKeyService
 	scpDataStorageService  *datasev.SCPDataStorageService
 	dataProductService     *datasev.DataProductService
+	statusService          *StatusService
 
 	dataStagingTasks   *repository.DataStagingTaskRepository
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository
@@ -77,6 +78,7 @@ func NewLaunchService(
 	sshKeyService *credentialsev.SSHKeyService,
 	scpDataStorageService *datasev.SCPDataStorageService,
 	dataProductService *datasev.DataProductService,
+	statusService *StatusService,
 
 	dataStagingTasks *repository.DataStagingTaskRepository,
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository,
@@ -95,6 +97,7 @@ func NewLaunchService(
 		sshKeyService:          sshKeyService,
 		scpDataStorageService:  scpDataStorageService,
 		dataProductService:     dataProductService,
+		statusService:          statusService,
 		dataStagingTasks:       dataStagingTasks,
 		jobSubmissionTasks:     jobSubmissionTasks,
 		monitoringTasks:        monitoringTasks,
@@ -388,6 +391,9 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
 	s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
 
+	if _, err := s.statusService.Record(ctx, process.ProcessID, procmodel.ProcessStatusTypeSubmitted, nil); err != nil {
+		return err
+	}
 	return nil
 }
 
