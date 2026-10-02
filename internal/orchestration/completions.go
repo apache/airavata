@@ -2,11 +2,10 @@ package orchestration
 
 import (
 	"context"
-	slog "log/slog"
 	model "github.com/apache/airavata/api/process/model"
-	"time"
 	internalptr "github.com/apache/airavata/internal/ptr"
-
+	slog "log/slog"
+	"time"
 )
 
 func (a *ExecutionEngine) completeProcess(ctx context.Context, executionContext *ExecutionContext, processID string) (*ExecutionContext, error) {

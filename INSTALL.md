@@ -28,7 +28,7 @@ From a clean checkout, this brings up a database and a running API:
 docker compose -f dev-tools/compose/compose.yml up -d postgres
 
 # 2. Build
-gofmt -l . && go build ./... && echo "build ok" && go vet ./... && echo "vet ok"
+gofmt -w .
 go build -o bin/airavata-server ./cmd/airavata-server
 
 # 3. Run
