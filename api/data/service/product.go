@@ -63,14 +63,14 @@ func (a productAccess) requireProduct(ctx context.Context, id string) (*model.Da
 
 // permissionOf returns the caller's effective permission on product and whether they
 // control it.
-func (a productAccess) permissionOf(ctx context.Context, product *model.DataProduct) (permission, bool, error) {
+func (a productAccess) permissionOf(ctx context.Context, product *model.DataProduct) (model.AccessPermission, bool, error) {
 	userShares, err := a.sharing.FindUserSharesByProductID(ctx, product.ID)
-	if err != nil {
-		return permNone, false, err
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return model.AccessPermissionNone, false, err
 	}
 	groupShares, err := a.sharing.FindGroupSharesByProductID(ctx, product.ID)
-	if err != nil {
-		return permNone, false, err
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return model.AccessPermissionNone, false, err
 	}
 
 	users := make([]share, 0, len(userShares))
@@ -79,19 +79,22 @@ func (a productAccess) permissionOf(ctx context.Context, product *model.DataProd
 	}
 	groups := make([]share, 0, len(groupShares))
 	for i := range groupShares {
+		// Group membership validations should happen at the caller side. The function assumes that
+		// the provided groupShares are already filtered to include only active memberships.
+
 		groups = append(groups, newShare(groupShares[i].GroupID, permissionString(groupShares[i].Permission)))
 	}
 	return a.access.permissionOf(ctx, product.OwnerID, users, groups)
 }
 
 // require checks that the caller holds at least want.
-func (a productAccess) require(ctx context.Context, product *model.DataProduct, want permission) (permission, bool, error) {
+func (a productAccess) require(ctx context.Context, product *model.DataProduct, want model.AccessPermission) (model.AccessPermission, bool, error) {
 	held, controls, err := a.permissionOf(ctx, product)
 	if err != nil {
-		return permNone, false, err
+		return model.AccessPermissionNone, false, err
 	}
 	if !held.Allows(want) {
-		return permNone, false, httpx.Forbidden(
+		return model.AccessPermissionNone, false, httpx.Forbidden(
 			"Access denied: data product %s is not shared with you for %s", product.ID, want)
 	}
 	return held, controls, nil
@@ -199,7 +202,7 @@ func (s *DataProductService) ListSharedWithMe(ctx context.Context) ([]dto.DataPr
 		if err != nil {
 			return nil, err
 		}
-		if held == permNone {
+		if held == model.AccessPermissionNone {
 			continue
 		}
 		out = append(out, dto.ToDataProductResponseWith(&products[i], string(held)))
@@ -213,7 +216,7 @@ func (s *DataProductService) Get(ctx context.Context, id string) (*dto.DataProdu
 	if err != nil {
 		return nil, err
 	}
-	held, _, err := s.require(ctx, product, permRead)
+	held, _, err := s.require(ctx, product, model.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -254,7 +257,7 @@ func (s *DataProductService) Create(ctx context.Context, req *dto.DataProductReq
 		if err := products.Save(ctx, product); err != nil {
 			return err
 		}
-		out = dto.ToDataProductResponseWith(product, string(permWrite))
+		out = dto.ToDataProductResponseWith(product, string(model.AccessPermissionWrite))
 		return nil
 	})
 	if err != nil {
@@ -277,7 +280,7 @@ func (s *DataProductService) Update(ctx context.Context, id string, req *dto.Dat
 		if err != nil {
 			return notFoundAs(err, "Data product not found: %s", id)
 		}
-		held, _, err := s.productAccess.withTx(tx).require(ctx, product, permWrite)
+		held, _, err := s.productAccess.withTx(tx).require(ctx, product, model.AccessPermissionWrite)
 		if err != nil {
 			return err
 		}

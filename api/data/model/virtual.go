@@ -109,7 +109,7 @@ type VirtualDataDirectoryGroupSharing struct {
 	GroupID *string         `gorm:"column:group_id;type:varchar(36);index;uniqueIndex:uk_virtual_data_directory_group_sharing" json:"groupId,omitempty"`
 	Group   *iammodel.Group `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
-	Permission *DataProductPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
+	Permission *AccessPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
 }
 
 func (VirtualDataDirectoryGroupSharing) TableName() string {
@@ -139,7 +139,7 @@ type VirtualDataDirectoryUserSharing struct {
 	UserID *string        `gorm:"column:user_id;type:varchar(255);index;uniqueIndex:uk_virtual_data_directory_user_sharing" json:"userId,omitempty"`
 	User   *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
-	Permission *DataProductPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
+	Permission *AccessPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
 }
 
 func (VirtualDataDirectoryUserSharing) TableName() string {

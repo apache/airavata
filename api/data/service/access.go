@@ -32,6 +32,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
+	model "github.com/apache/airavata/api/data/model"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 )
 
@@ -43,34 +44,11 @@ func notFoundAs(err error, format string, args ...any) error {
 	return err
 }
 
-// permission is the access level a sharing row grants, normalised across the two
-// permission types the entities declare.
-//
-// DataProductPermission and DataStoragePermission are distinct types with identical
-// values, so the resolver works in this common currency rather than being written
-// twice. Each service converts at its boundary.
-type permission string
-
-const (
-	permNone  permission = ""
-	permRead  permission = "READ"
-	permWrite permission = "WRITE"
-)
-
-// Allows reports whether holding p is enough to do something requiring want. WRITE
-// implies READ; nothing implies WRITE.
-func (p permission) Allows(want permission) bool {
-	if p == permNone || want == permNone {
-		return false
-	}
-	return p == permWrite || p == want
-}
-
 // share is one sharing row reduced to what an access decision needs: who it names and
 // what it grants.
 type share struct {
 	subject string
-	grants  permission
+	grants  model.AccessPermission
 }
 
 // newShare converts a stored (subject, permission) pair. A share with no subject or no
@@ -81,10 +59,10 @@ func newShare(subject *string, grants *string) share {
 		s.subject = *subject
 	}
 	if grants != nil {
-		s.grants = permission(*grants)
+		s.grants = model.AccessPermission(*grants)
 	}
-	if s.grants != permRead && s.grants != permWrite {
-		s.grants = permNone
+	if s.grants != model.AccessPermissionRead && s.grants != model.AccessPermissionWrite {
+		s.grants = model.AccessPermissionNone
 	}
 	return s
 }
@@ -108,28 +86,27 @@ func (a access) withTx(tx *gorm.DB) access {
 // permissionOf returns the caller's effective permission and whether they control the
 // record. ownerID is nil for records that have no owner at all — a storage — in which
 // case only admins and shares reach it.
-func (a access) permissionOf(ctx context.Context, ownerID *string, userShares, groupShares []share) (permission, bool, error) {
+// Returns the effective access permission for the caller, whether they control the record, and any error encountered
+func (a access) permissionOf(ctx context.Context, ownerID *string, userShares, groupShares []share) (model.AccessPermission, bool, error) {
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
-		return permNone, false, err
+		return model.AccessPermissionNone, false, err
 	}
 	if principal.IsAdmin() || (ownerID != nil && *ownerID == principal.Name) {
-		return permWrite, true, nil
+		return model.AccessPermissionWrite, true, nil
 	}
 
-	best := permNone
+	best := model.AccessPermissionNone
 	for _, s := range userShares {
 		if s.subject == principal.Name {
 			best = strongest(best, s.grants)
 		}
 	}
 
-	// A group share reaches the caller only through an ACTIVE membership: a suspended
-	// member keeps their place in the group without keeping access through it.
 	if len(groupShares) > 0 {
 		memberships, err := a.members.FindByUserID(ctx, principal.Name)
 		if err != nil {
-			return permNone, false, err
+			return model.AccessPermissionNone, false, err
 		}
 		active := make(map[string]bool, len(memberships))
 		for i := range memberships {
@@ -147,11 +124,11 @@ func (a access) permissionOf(ctx context.Context, ownerID *string, userShares, g
 	return best, false, nil
 }
 
-func strongest(have, candidate permission) permission {
-	if candidate == permNone {
+func strongest(have, candidate model.AccessPermission) model.AccessPermission {
+	if candidate == model.AccessPermissionNone {
 		return have
 	}
-	if candidate == permWrite || have == permNone {
+	if candidate == model.AccessPermissionWrite || have == model.AccessPermissionNone {
 		return candidate
 	}
 	return have

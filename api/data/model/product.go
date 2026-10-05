@@ -87,22 +87,6 @@ func (p *DataProduct) OwnedBy(userID string) bool {
 	return p.OwnerID != nil && *p.OwnerID == userID
 }
 
-type DataProductPermission string
-
-const (
-	DataProductPermissionRead  DataProductPermission = "READ"
-	DataProductPermissionWrite DataProductPermission = "WRITE"
-)
-
-// Valid reports whether p is a recognised permission.
-func (p DataProductPermission) Valid() bool {
-	switch p {
-	case DataProductPermissionRead, DataProductPermissionWrite:
-		return true
-	}
-	return false
-}
-
 // DataProductGroupSharing grants a group access to one product. Every active member of
 // the group holds the permission it names.
 type DataProductGroupSharing struct {
@@ -114,7 +98,7 @@ type DataProductGroupSharing struct {
 	GroupID *string         `gorm:"column:group_id;type:varchar(36);index" json:"groupId,omitempty"`
 	Group   *iammodel.Group `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
-	Permission *DataProductPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
+	Permission *AccessPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
 }
 
 // TableName returns the table backing DataProductGroupSharing.
@@ -138,7 +122,7 @@ type DataProductUserSharing struct {
 	UserID *string        `gorm:"column:user_id;type:varchar(255);index" json:"userId,omitempty"`
 	User   *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 
-	Permission *DataProductPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
+	Permission *AccessPermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
 }
 
 // TableName returns the table backing DataProductUserSharing.

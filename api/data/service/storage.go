@@ -68,14 +68,14 @@ func (a storageAccess) requireStorage(ctx context.Context, id string) (*model.SC
 
 // permissionOf returns the caller's effective permission on storage and whether they
 // control it.
-func (a storageAccess) permissionOf(ctx context.Context, storage *model.SCPDataStorage) (permission, bool, error) {
+func (a storageAccess) permissionOf(ctx context.Context, storage *model.SCPDataStorage) (model.AccessPermission, bool, error) {
 	userShares, err := a.sharing.FindUserSharesByStorageID(ctx, storage.ID)
 	if err != nil {
-		return permNone, false, err
+		return model.AccessPermissionNone, false, err
 	}
 	groupShares, err := a.sharing.FindGroupSharesByStorageID(ctx, storage.ID)
 	if err != nil {
-		return permNone, false, err
+		return model.AccessPermissionNone, false, err
 	}
 
 	users := make([]share, 0, len(userShares))
@@ -90,13 +90,13 @@ func (a storageAccess) permissionOf(ctx context.Context, storage *model.SCPDataS
 }
 
 // require checks that the caller holds at least want.
-func (a storageAccess) require(ctx context.Context, storage *model.SCPDataStorage, want permission) (permission, error) {
+func (a storageAccess) require(ctx context.Context, storage *model.SCPDataStorage, want model.AccessPermission) (model.AccessPermission, error) {
 	held, _, err := a.permissionOf(ctx, storage)
 	if err != nil {
-		return permNone, err
+		return model.AccessPermissionNone, err
 	}
 	if !held.Allows(want) {
-		return permNone, httpx.Forbidden(
+		return model.AccessPermissionNone, httpx.Forbidden(
 			"Access denied: SCP data storage %s is not shared with you for %s", storage.ID, want)
 	}
 	return held, nil
@@ -119,7 +119,7 @@ func (a storageAccess) requireControl(ctx context.Context, storage *model.SCPDat
 // rule.
 func requireStorageReadable(ctx context.Context, base access, sharing *repository.SCPDataStorageSharingRepository, storage *model.SCPDataStorage) error {
 	a := storageAccess{access: base, sharing: sharing}
-	_, err := a.require(ctx, storage, permRead)
+	_, err := a.require(ctx, storage, model.AccessPermissionRead)
 	return err
 }
 
@@ -204,7 +204,7 @@ func (s *SCPDataStorageService) ListSharedWithMe(ctx context.Context) ([]dto.SCP
 		if err != nil {
 			return nil, err
 		}
-		if held == permNone {
+		if held == model.AccessPermissionNone {
 			continue
 		}
 		out = append(out, dto.ToSCPDataStorageResponseWith(&storages[i], string(held)))
@@ -218,7 +218,7 @@ func (s *SCPDataStorageService) Get(ctx context.Context, id string) (*dto.SCPDat
 	if err != nil {
 		return nil, err
 	}
-	held, err := s.require(ctx, storage, permRead)
+	held, err := s.require(ctx, storage, model.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +275,7 @@ func (s *SCPDataStorageService) Create(ctx context.Context, req *dto.SCPDataStor
 		if err := storages.Save(ctx, storage); err != nil {
 			return err
 		}
-		out = dto.ToSCPDataStorageResponseWith(storage, string(permWrite))
+		out = dto.ToSCPDataStorageResponseWith(storage, string(model.AccessPermissionWrite))
 		return nil
 	})
 	if err != nil {
@@ -298,7 +298,7 @@ func (s *SCPDataStorageService) Update(ctx context.Context, id string, req *dto.
 		if err != nil {
 			return notFoundAs(err, "SCP data storage not found: %s", id)
 		}
-		held, err := s.storageAccess.withTx(tx).require(ctx, storage, permWrite)
+		held, err := s.storageAccess.withTx(tx).require(ctx, storage, model.AccessPermissionWrite)
 		if err != nil {
 			return err
 		}

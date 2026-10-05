@@ -79,10 +79,13 @@ type Services struct {
 	BatchDeployment *applicationsvc.BatchDeploymentService
 
 	// Data.
-	SCPDataStorage        *datasvc.SCPDataStorageService
-	SCPDataStorageSharing *datasvc.SCPDataStorageSharingService
-	DataProduct           *datasvc.DataProductService
-	DataProductSharing    *datasvc.DataProductSharingService
+	SCPDataStorage              *datasvc.SCPDataStorageService
+	SCPDataStorageSharing       *datasvc.SCPDataStorageSharingService
+	DataProduct                 *datasvc.DataProductService
+	DataProductSharing          *datasvc.DataProductSharingService
+	VirtualDataDirectory        *datasvc.VirtualDataDirectoryService
+	VirtualDataFile             *datasvc.VirtualDataFileService
+	VirtualDataDirectorySharing *datasvc.VirtualDataDirectorySharingService
 
 	// Processes. There is no batch process service: a batch process is a section of
 	// the process that owns it, written and read through ProcessService.
@@ -115,6 +118,9 @@ type Repositories struct {
 	SCPDataStorageShares     *datarepo.SCPDataStorageSharingRepository
 	DataProducts             *datarepo.DataProductRepository
 	DataProductShares        *datarepo.DataProductSharingRepository
+	VirtualDataDirectories   *datarepo.VirtualDataDirectoryRepository
+	VirtualDataFiles         *datarepo.VirtualDataFileRepository
+	VirtualDataDirShares     *datarepo.VirtualDataDirectorySharingRepository
 	Processes                *processrepo.ProcessRepository
 	Statuses                 *processrepo.StatusRepository
 	BatchJobStatuses         *processrepo.BatchJobStatusRepository
@@ -140,6 +146,9 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		SCPDataStorageShares:     datarepo.NewSCPDataStorageSharingRepository(db),
 		DataProducts:             datarepo.NewDataProductRepository(db),
 		DataProductShares:        datarepo.NewDataProductSharingRepository(db),
+		VirtualDataDirectories:   datarepo.NewVirtualDataDirectoryRepository(db),
+		VirtualDataFiles:         datarepo.NewVirtualDataFileRepository(db),
+		VirtualDataDirShares:     datarepo.NewVirtualDataDirectorySharingRepository(db),
 		Processes:                processrepo.NewProcessRepository(db),
 		Statuses:                 processrepo.NewStatusRepository(db),
 		BatchJobStatuses:         processrepo.NewBatchJobStatusRepository(db),
@@ -170,6 +179,9 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	storageShares := repos.SCPDataStorageShares
 	products := repos.DataProducts
 	productShares := repos.DataProductShares
+	virtualDirs := repos.VirtualDataDirectories
+	virtualFiles := repos.VirtualDataFiles
+	virtualDirShares := repos.VirtualDataDirShares
 	processes := repos.Processes
 	statuses := repos.Statuses
 	stagingTasks := repos.DataStagingTasks
@@ -192,6 +204,9 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, storageShares, groups, users, groupMembers)
 	dataProductSvc := datasvc.NewDataProductService(db, products, productShares, storages, storageShares, users, groupMembers)
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
+	virtualDataDirectorySvc := datasvc.NewVirtualDataDirectoryService(db, virtualDirs, virtualFiles, virtualDirShares, products, productShares, users, groupMembers)
+	virtualDataFileSvc := datasvc.NewVirtualDataFileService(db, virtualDirs, virtualFiles, virtualDirShares, products, productShares, groupMembers)
+	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, virtualDirShares, groups, users, groupMembers)
 	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
@@ -222,6 +237,10 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		SCPDataStorageSharing: scpDataStorageSharingSvc,
 		DataProduct:           dataProductSvc,
 		DataProductSharing:    dataProductSharingSvc,
+
+		VirtualDataDirectory:        virtualDataDirectorySvc,
+		VirtualDataFile:             virtualDataFileSvc,
+		VirtualDataDirectorySharing: virtualDataDirectorySharingSvc,
 
 		Process:                processSvs,
 		ProcessStatus:          statusSvc,

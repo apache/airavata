@@ -129,8 +129,8 @@ func ToDataProductResponses(in []model.DataProduct) []DataProductResponse {
 
 // DataProductGroupSharingRequest shares a product with a group.
 type DataProductGroupSharingRequest struct {
-	GroupID    string                       `json:"groupId"`
-	Permission *model.DataProductPermission `json:"permission"`
+	GroupID    string                  `json:"groupId"`
+	Permission *model.AccessPermission `json:"permission"`
 }
 
 // Validate implements httpx.Validator.
@@ -143,14 +143,14 @@ func (r *DataProductGroupSharingRequest) Validate() []httpx.FieldError {
 
 // Grant returns the permission to store, defaulting to READ. Read-only is the safe
 // default for a share: widening it is a deliberate act.
-func (r *DataProductGroupSharingRequest) Grant() model.DataProductPermission {
+func (r *DataProductGroupSharingRequest) Grant() model.AccessPermission {
 	return productGrantOrRead(r.Permission)
 }
 
 // DataProductUserSharingRequest shares a product with one user.
 type DataProductUserSharingRequest struct {
-	UserID     string                       `json:"userId"`
-	Permission *model.DataProductPermission `json:"permission"`
+	UserID     string                  `json:"userId"`
+	Permission *model.AccessPermission `json:"permission"`
 }
 
 // Validate implements httpx.Validator.
@@ -162,14 +162,14 @@ func (r *DataProductUserSharingRequest) Validate() []httpx.FieldError {
 }
 
 // Grant returns the permission to store, defaulting to READ.
-func (r *DataProductUserSharingRequest) Grant() model.DataProductPermission {
+func (r *DataProductUserSharingRequest) Grant() model.AccessPermission {
 	return productGrantOrRead(r.Permission)
 }
 
 // DataProductSharingUpdate changes what an existing product share grants. The subject
 // is fixed at creation; only the permission is editable.
 type DataProductSharingUpdate struct {
-	Permission *model.DataProductPermission `json:"permission"`
+	Permission *model.AccessPermission `json:"permission"`
 }
 
 // Validate implements httpx.Validator.
@@ -182,10 +182,10 @@ func (r *DataProductSharingUpdate) Validate() []httpx.FieldError {
 
 // DataProductGroupSharingResponse is the read model for a group share.
 type DataProductGroupSharingResponse struct {
-	SharingID     string                       `json:"dataProductGroupSharingId"`
-	DataProductID *string                      `json:"dataProductId"`
-	GroupID       *string                      `json:"groupId"`
-	Permission    *model.DataProductPermission `json:"permission"`
+	SharingID     string                  `json:"dataProductGroupSharingId"`
+	DataProductID *string                 `json:"dataProductId"`
+	GroupID       *string                 `json:"groupId"`
+	Permission    *model.AccessPermission `json:"permission"`
 }
 
 func ToDataProductGroupSharingResponse(s *model.DataProductGroupSharing) DataProductGroupSharingResponse {
@@ -207,10 +207,10 @@ func ToDataProductGroupSharingResponses(in []model.DataProductGroupSharing) []Da
 
 // DataProductUserSharingResponse is the read model for a user share.
 type DataProductUserSharingResponse struct {
-	SharingID     string                       `json:"dataProductUserSharingId"`
-	DataProductID *string                      `json:"dataProductId"`
-	UserID        *string                      `json:"userId"`
-	Permission    *model.DataProductPermission `json:"permission"`
+	SharingID     string                  `json:"dataProductUserSharingId"`
+	DataProductID *string                 `json:"dataProductId"`
+	UserID        *string                 `json:"userId"`
+	Permission    *model.AccessPermission `json:"permission"`
 }
 
 func ToDataProductUserSharingResponse(s *model.DataProductUserSharing) DataProductUserSharingResponse {
@@ -230,15 +230,15 @@ func ToDataProductUserSharingResponses(in []model.DataProductUserSharing) []Data
 	return out
 }
 
-func validateProductPermission(c *httpx.Constraints, p *model.DataProductPermission) {
+func validateProductPermission(c *httpx.Constraints, p *model.AccessPermission) {
 	if p != nil && !p.Valid() {
 		c.Add("permission", "Permission must be one of READ, WRITE")
 	}
 }
 
-func productGrantOrRead(p *model.DataProductPermission) model.DataProductPermission {
+func productGrantOrRead(p *model.AccessPermission) model.AccessPermission {
 	if p == nil {
-		return model.DataProductPermissionRead
+		return model.AccessPermissionRead
 	}
 	return *p
 }

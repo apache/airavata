@@ -59,6 +59,12 @@ func Entities() []any {
 		&computemodel.SlurmClusterConfig{},
 		&applicationmodel.BatchDeployment{},
 
+		// The nodes of a virtual dataset: a tree of references to registered products.
+		// The directory table references itself, so it has to precede the files and the
+		// sharing rows that hang off it.
+		&datamodel.VirtualDataDirectory{},
+		&datamodel.VirtualDataFile{},
+
 		// A run. Everything below in this package hangs off it.
 		&processmodel.Process{},
 
@@ -69,6 +75,8 @@ func Entities() []any {
 		&computemodel.SlurmClusterConfigUserSharing{},
 		&datamodel.DataProductGroupSharing{},
 		&datamodel.DataProductUserSharing{},
+		&datamodel.VirtualDataDirectoryGroupSharing{},
+		&datamodel.VirtualDataDirectoryUserSharing{},
 
 		// What a BATCH_JOB run carries beyond a Process. Owned by the process rather
 		// than addressable on its own, which is why there is no repository, service or
