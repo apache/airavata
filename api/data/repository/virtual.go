@@ -26,7 +26,6 @@ import (
 	"gorm.io/gorm"
 
 	model "github.com/apache/airavata/api/data/model"
-	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
 type VirtualDataDirectoryRepository struct{ db *gorm.DB }
@@ -82,21 +81,19 @@ func (r *VirtualDataDirectoryRepository) FindByNameUnderParent(ctx context.Conte
 	return &out, nil
 }
 
-func (r *VirtualDataDirectoryRepository) FindSharedWith(ctx context.Context, userID string) ([]model.VirtualDataDirectory, error) {
-	sharedDirectly := r.db.Model(&model.VirtualDataDirectoryUserSharing{}).
-		Select("virtual_data_directory_id").
-		Where("user_id = ?", userID)
-
-	sharedByGroup := r.db.Model(&model.VirtualDataDirectoryGroupSharing{}).
-		Select("virtual_data_directory_id").
-		Where("group_id IN (?)", r.db.Model(&iammodel.GroupMember{}).
-			Select("group_id").
-			Where("user_id = ? AND group_member_status = ?", userID, iammodel.GroupMemberStatusActive))
-
+// FindByIDsExcludingOwner returns the directorys named by ids that userID does not own.
+//
+// The ids come from the sharing table, which no longer knows what kind of record it is
+// opening up beyond its type tag; this turns them back into entities. Directories the
+// caller owns are dropped, because ownership is not a share and the caller asking
+// "what has been shared with me?" already has /me for their own.
+func (r *VirtualDataDirectoryRepository) FindByIDsExcludingOwner(ctx context.Context, ids []string, userID string) ([]model.VirtualDataDirectory, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
 	var out []model.VirtualDataDirectory
 	err := r.db.WithContext(ctx).
-		Where("(virtual_data_directory_id IN (?) OR virtual_data_directory_id IN (?)) AND (user_id IS NULL OR user_id <> ?)",
-			sharedDirectly, sharedByGroup, userID).
+		Where("virtual_data_directory_id IN ? AND (user_id IS NULL OR user_id <> ?)", ids, userID).
 		Find(&out).Error
 	return out, err
 }
@@ -167,135 +164,36 @@ func (r *VirtualDataFileRepository) Delete(ctx context.Context, f *model.Virtual
 	return r.db.WithContext(ctx).Delete(f).Error
 }
 
-type VirtualDataDirectorySharingRepository struct{ db *gorm.DB }
-
-func NewVirtualDataDirectorySharingRepository(db *gorm.DB) *VirtualDataDirectorySharingRepository {
-	return &VirtualDataDirectorySharingRepository{db: db}
-}
-
-func (r *VirtualDataDirectorySharingRepository) WithTx(tx *gorm.DB) *VirtualDataDirectorySharingRepository {
-	return &VirtualDataDirectorySharingRepository{db: tx}
-}
-
-// FindGroupSharesByDirectoryID returns every group share of one directory.
-func (r *VirtualDataDirectorySharingRepository) FindGroupSharesByDirectoryID(ctx context.Context, directoryID string) ([]model.VirtualDataDirectoryGroupSharing, error) {
-	var out []model.VirtualDataDirectoryGroupSharing
-	err := r.db.WithContext(ctx).Where("virtual_data_directory_id = ?", directoryID).Find(&out).Error
-	return out, err
-}
-
-// FindGroupSharesByDirectoryIDs returns every group share of any of directoryIDs.
+// FindSubtreeIDs returns id and the ids of every directory beneath it, breadth first.
 //
-// Resolving access to a node means asking about it and every ancestor at once, so the
-// whole chain is fetched in one query rather than one per level.
-func (r *VirtualDataDirectorySharingRepository) FindGroupSharesByDirectoryIDs(ctx context.Context, directoryIDs []string) ([]model.VirtualDataDirectoryGroupSharing, error) {
-	if len(directoryIDs) == 0 {
-		return nil, nil
-	}
-	var out []model.VirtualDataDirectoryGroupSharing
-	err := r.db.WithContext(ctx).Where("virtual_data_directory_id IN ?", directoryIDs).Find(&out).Error
-	return out, err
-}
-
-// FindGroupShare returns one group share scoped to its directory, or
-// gorm.ErrRecordNotFound. Scoping is deliberate, for the reason the product sharing
-// repository gives.
-func (r *VirtualDataDirectorySharingRepository) FindGroupShare(ctx context.Context, directoryID, sharingID string) (*model.VirtualDataDirectoryGroupSharing, error) {
-	var out model.VirtualDataDirectoryGroupSharing
-	err := r.db.WithContext(ctx).First(&out,
-		"virtual_data_directory_group_sharing_id = ? AND virtual_data_directory_id = ?", sharingID, directoryID).Error
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// FindGroupShareByGroupID returns the share of one directory with one group, or
-// gorm.ErrRecordNotFound.
-func (r *VirtualDataDirectorySharingRepository) FindGroupShareByGroupID(ctx context.Context, directoryID, groupID string) (*model.VirtualDataDirectoryGroupSharing, error) {
-	var out model.VirtualDataDirectoryGroupSharing
-	err := r.db.WithContext(ctx).First(&out,
-		"virtual_data_directory_id = ? AND group_id = ?", directoryID, groupID).Error
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// SaveGroupShare inserts or updates a group share.
-func (r *VirtualDataDirectorySharingRepository) SaveGroupShare(ctx context.Context, s *model.VirtualDataDirectoryGroupSharing) error {
-	return r.db.WithContext(ctx).Save(s).Error
-}
-
-// DeleteGroupShare removes a group share.
-func (r *VirtualDataDirectorySharingRepository) DeleteGroupShare(ctx context.Context, s *model.VirtualDataDirectoryGroupSharing) error {
-	return r.db.WithContext(ctx).Delete(s).Error
-}
-
-// FindUserSharesByDirectoryID returns every user share of one directory.
-func (r *VirtualDataDirectorySharingRepository) FindUserSharesByDirectoryID(ctx context.Context, directoryID string) ([]model.VirtualDataDirectoryUserSharing, error) {
-	var out []model.VirtualDataDirectoryUserSharing
-	err := r.db.WithContext(ctx).Where("virtual_data_directory_id = ?", directoryID).Find(&out).Error
-	return out, err
-}
-
-// FindUserSharesByDirectoryIDs returns every user share of any of directoryIDs.
-func (r *VirtualDataDirectorySharingRepository) FindUserSharesByDirectoryIDs(ctx context.Context, directoryIDs []string) ([]model.VirtualDataDirectoryUserSharing, error) {
-	if len(directoryIDs) == 0 {
-		return nil, nil
-	}
-	var out []model.VirtualDataDirectoryUserSharing
-	err := r.db.WithContext(ctx).Where("virtual_data_directory_id IN ?", directoryIDs).Find(&out).Error
-	return out, err
-}
-
-// FindUserShare returns one user share scoped to its directory, or
-// gorm.ErrRecordNotFound.
-func (r *VirtualDataDirectorySharingRepository) FindUserShare(ctx context.Context, directoryID, sharingID string) (*model.VirtualDataDirectoryUserSharing, error) {
-	var out model.VirtualDataDirectoryUserSharing
-	err := r.db.WithContext(ctx).First(&out,
-		"virtual_data_directory_user_sharing_id = ? AND virtual_data_directory_id = ?", sharingID, directoryID).Error
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// FindUserShareByUserID returns the share of one directory with one user, or
-// gorm.ErrRecordNotFound.
-func (r *VirtualDataDirectorySharingRepository) FindUserShareByUserID(ctx context.Context, directoryID, userID string) (*model.VirtualDataDirectoryUserSharing, error) {
-	var out model.VirtualDataDirectoryUserSharing
-	err := r.db.WithContext(ctx).First(&out,
-		"virtual_data_directory_id = ? AND user_id = ?", directoryID, userID).Error
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// SaveUserShare inserts or updates a user share.
-func (r *VirtualDataDirectorySharingRepository) SaveUserShare(ctx context.Context, s *model.VirtualDataDirectoryUserSharing) error {
-	return r.db.WithContext(ctx).Save(s).Error
-}
-
-// DeleteUserShare removes a user share.
-func (r *VirtualDataDirectorySharingRepository) DeleteUserShare(ctx context.Context, s *model.VirtualDataDirectoryUserSharing) error {
-	return r.db.WithContext(ctx).Delete(s).Error
-}
-
-// DeleteByDirectoryIDs removes every share of any of directoryIDs.
+// Deleting a directory cascades the rows under it through the self-referencing foreign
+// key, but the shares hanging off those rows point at nothing and so are not cascaded
+// with them. The caller deletes them by id, which is what this is for.
 //
-// Deleting a directory takes its subtree with it through the cascade, but the shares
-// hanging off those nodes cascade too, so this exists for the one case the cascade
-// does not cover: revoking a whole subtree's shares without deleting it.
-func (r *VirtualDataDirectorySharingRepository) DeleteByDirectoryIDs(ctx context.Context, directoryIDs []string) error {
-	if len(directoryIDs) == 0 {
-		return nil
+// maxDepth bounds the walk: the schema cannot express "no cycles", and a cycle would
+// otherwise make this loop forever. Nodes already seen are not revisited, so a cycle
+// yields a finite set rather than a wrong one.
+func (r *VirtualDataDirectoryRepository) FindSubtreeIDs(ctx context.Context, id string, maxDepth int) ([]string, error) {
+	all := []string{id}
+	seen := map[string]bool{id: true}
+
+	frontier := []string{id}
+	for depth := 0; depth < maxDepth && len(frontier) > 0; depth++ {
+		var next []string
+		if err := r.db.WithContext(ctx).Model(&model.VirtualDataDirectory{}).
+			Where("parent_directory_id IN ?", frontier).
+			Pluck("virtual_data_directory_id", &next).Error; err != nil {
+			return nil, err
+		}
+		frontier = frontier[:0]
+		for _, child := range next {
+			if seen[child] {
+				continue
+			}
+			seen[child] = true
+			all = append(all, child)
+			frontier = append(frontier, child)
+		}
 	}
-	if err := r.db.WithContext(ctx).Where("virtual_data_directory_id IN ?", directoryIDs).
-		Delete(&model.VirtualDataDirectoryGroupSharing{}).Error; err != nil {
-		return err
-	}
-	return r.db.WithContext(ctx).Where("virtual_data_directory_id IN ?", directoryIDs).
-		Delete(&model.VirtualDataDirectoryUserSharing{}).Error
+	return all, nil
 }

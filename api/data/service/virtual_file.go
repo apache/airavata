@@ -30,6 +30,8 @@ import (
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
 )
 
 // VirtualDataFileService manages the leaves of virtual datasets.
@@ -45,13 +47,12 @@ func NewVirtualDataFileService(
 	db *gorm.DB,
 	directories *repository.VirtualDataDirectoryRepository,
 	files *repository.VirtualDataFileRepository,
-	sharing *repository.VirtualDataDirectorySharingRepository,
+	sharing *sharingrepo.Repository,
 	products *repository.DataProductRepository,
-	productSharing *repository.DataProductSharingRepository,
 	members *iamrepo.GroupMemberRepository,
 ) *VirtualDataFileService {
 	return &VirtualDataFileService{
-		virtualTree: newVirtualTree(directories, files, sharing, products, productSharing, members),
+		virtualTree: newVirtualTree(directories, files, sharing, products, members),
 		db:          db,
 	}
 }
@@ -63,7 +64,7 @@ func (s *VirtualDataFileService) ListByDirectory(ctx context.Context, directoryI
 	if err != nil {
 		return nil, err
 	}
-	held, _, err := s.require(ctx, dir, model.AccessPermissionRead)
+	held, _, err := s.require(ctx, dir, sharingmodel.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +82,7 @@ func (s *VirtualDataFileService) Get(ctx context.Context, id string) (*dto.Virtu
 	if err != nil {
 		return nil, err
 	}
-	held, _, err := s.requireOnParent(ctx, file, model.AccessPermissionRead)
+	held, _, err := s.requireOnParent(ctx, file, sharingmodel.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,7 @@ func (s *VirtualDataFileService) Create(ctx context.Context, req *dto.VirtualDat
 		if err := tree.files.Save(ctx, file); err != nil {
 			return err
 		}
-		out = dto.ToVirtualDataFileResponseWith(file, string(model.AccessPermissionWrite))
+		out = dto.ToVirtualDataFileResponseWith(file, string(sharingmodel.AccessPermissionWrite))
 		return nil
 	})
 	if err != nil {
@@ -134,7 +135,7 @@ func (s *VirtualDataFileService) Update(ctx context.Context, id string, req *dto
 		if err != nil {
 			return notFoundAs(err, "Virtual data file not found: %s", id)
 		}
-		held, _, err := tree.requireOnParent(ctx, file, model.AccessPermissionWrite)
+		held, _, err := tree.requireOnParent(ctx, file, sharingmodel.AccessPermissionWrite)
 		if err != nil {
 			return err
 		}
@@ -173,7 +174,7 @@ func (s *VirtualDataFileService) Delete(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	if _, _, err := s.requireOnParent(ctx, file, model.AccessPermissionWrite); err != nil {
+	if _, _, err := s.requireOnParent(ctx, file, sharingmodel.AccessPermissionWrite); err != nil {
 		return err
 	}
 	return s.files.Delete(ctx, file)
@@ -194,14 +195,14 @@ func (t virtualTree) requireFile(ctx context.Context, id string) (*model.Virtual
 // A file with no parent cannot happen — the entity refuses to save one — but it is
 // reported rather than assumed, because the alternative is a nil dereference on a row
 // that predates that rule.
-func (t virtualTree) requireOnParent(ctx context.Context, file *model.VirtualDataFile, want model.AccessPermission) (model.AccessPermission, bool, error) {
+func (t virtualTree) requireOnParent(ctx context.Context, file *model.VirtualDataFile, want sharingmodel.AccessPermission) (sharingmodel.AccessPermission, bool, error) {
 	if file.ParentDirectoryID == nil {
-		return model.AccessPermissionNone, false, notFoundAs(gorm.ErrRecordNotFound,
+		return sharingmodel.AccessPermissionNone, false, notFoundAs(gorm.ErrRecordNotFound,
 			"Virtual data file %s is not in any directory", file.ID)
 	}
 	parent, err := t.requireDirectory(ctx, *file.ParentDirectoryID)
 	if err != nil {
-		return model.AccessPermissionNone, false, err
+		return sharingmodel.AccessPermissionNone, false, err
 	}
 	return t.require(ctx, parent, want)
 }

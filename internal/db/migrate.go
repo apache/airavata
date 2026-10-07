@@ -30,6 +30,7 @@ import (
 	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	processmodel "github.com/apache/airavata/api/process/model"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
 )
 
 // Entities lists every persistent model, ordered so that a table is always created
@@ -68,15 +69,12 @@ func Entities() []any {
 		// A run. Everything below in this package hangs off it.
 		&processmodel.Process{},
 
-		// Sharing rows reference the record they open up, and a group or a user.
-		&datamodel.SCPDataStorageGroupSharing{},
-		&datamodel.SCPDataStorageUserSharing{},
-		&computemodel.SlurmClusterConfigGroupSharing{},
-		&computemodel.SlurmClusterConfigUserSharing{},
-		&datamodel.DataProductGroupSharing{},
-		&datamodel.DataProductUserSharing{},
-		&datamodel.VirtualDataDirectoryGroupSharing{},
-		&datamodel.VirtualDataDirectoryUserSharing{},
+		// Every share in the platform, of any resource and either principal kind, is a
+		// row in one table. It references nothing: a column cannot point at four
+		// resource tables, nor at users and groups at once, so the services delete a
+		// record's shares alongside the record, and the group service withdraws a
+		// deleted group's grants.
+		&sharingmodel.Sharing{},
 
 		// What a BATCH_JOB run carries beyond a Process. Owned by the process rather
 		// than addressable on its own, which is why there is no repository, service or

@@ -29,23 +29,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// ClusterPermission is the access level a cluster-config sharing row grants.
-type ClusterPermission string
-
-const (
-	ClusterPermissionRead  ClusterPermission = "READ"
-	ClusterPermissionWrite ClusterPermission = "WRITE"
-)
-
-// Valid reports whether p is one of the declared permissions.
-func (p ClusterPermission) Valid() bool {
-	switch p {
-	case ClusterPermissionRead, ClusterPermissionWrite:
-		return true
-	}
-	return false
-}
-
 // SlurmCluster is a Slurm cluster Airavata can submit to.
 //
 // It describes the machine and nothing about who reaches it: the head node to submit
@@ -132,58 +115,6 @@ func (c *SlurmClusterConfig) OwnedBy(userID string) bool {
 func (c *SlurmClusterConfig) BeforeCreate(*gorm.DB) error {
 	if c.ID == "" {
 		c.ID = uuid.NewString()
-	}
-	return nil
-}
-
-// SlurmClusterConfigUserSharing grants one named user access to one cluster config.
-type SlurmClusterConfigUserSharing struct {
-	ID string `gorm:"column:slurm_cluster_config_user_sharing_id;primaryKey;type:varchar(36)" json:"slurmClusterConfigUserSharingId"`
-
-	SlurmClusterConfigID string              `gorm:"column:slurm_cluster_config_id;type:varchar(36);index" json:"slurmClusterConfigId"`
-	SlurmClusterConfig   *SlurmClusterConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	UserID string         `gorm:"column:user_id;type:varchar(255);not null;index" json:"userId"`
-	User   *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	Permission ClusterPermission `gorm:"column:permission;type:varchar(10);not null" json:"permission"`
-}
-
-// TableName returns the table backing SlurmClusterConfigUserSharing.
-func (SlurmClusterConfigUserSharing) TableName() string {
-	return "slurm_cluster_config_user_sharings"
-}
-
-// BeforeCreate assigns a UUID when none was supplied.
-func (s *SlurmClusterConfigUserSharing) BeforeCreate(*gorm.DB) error {
-	if s.ID == "" {
-		s.ID = uuid.NewString()
-	}
-	return nil
-}
-
-// SlurmClusterConfigGroupSharing grants a group access to one cluster config.
-type SlurmClusterConfigGroupSharing struct {
-	ID string `gorm:"column:slurm_cluster_config_group_sharing_id;primaryKey;type:varchar(36)" json:"slurmClusterConfigGroupSharingId"`
-
-	SlurmClusterConfigID string              `gorm:"column:slurm_cluster_config_id;type:varchar(36);index" json:"slurmClusterConfigId"`
-	SlurmClusterConfig   *SlurmClusterConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	GroupID string          `gorm:"column:group_id;type:varchar(255);not null;index" json:"groupId"`
-	Group   *iammodel.Group `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	Permission ClusterPermission `gorm:"column:permission;type:varchar(10);not null" json:"permission"`
-}
-
-// TableName returns the table backing SlurmClusterConfigGroupSharing.
-func (SlurmClusterConfigGroupSharing) TableName() string {
-	return "slurm_cluster_config_group_sharings"
-}
-
-// BeforeCreate assigns a UUID when none was supplied.
-func (s *SlurmClusterConfigGroupSharing) BeforeCreate(*gorm.DB) error {
-	if s.ID == "" {
-		s.ID = uuid.NewString()
 	}
 	return nil
 }

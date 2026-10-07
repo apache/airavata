@@ -32,6 +32,9 @@ import (
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
+	sharingsvc "github.com/apache/airavata/api/sharing/service"
 )
 
 // maxTreeDepth bounds every walk up a dataset's ancestry.
@@ -51,12 +54,12 @@ const maxTreeDepth = 64
 type directoryAccess struct {
 	access
 	directories *repository.VirtualDataDirectoryRepository
-	sharing     *repository.VirtualDataDirectorySharingRepository
+	sharing     *sharingrepo.Repository
 }
 
 func (a directoryAccess) withTx(tx *gorm.DB) directoryAccess {
 	return directoryAccess{
-		access:      a.access.withTx(tx),
+		access:      a.access.WithTx(tx),
 		directories: a.directories.WithTx(tx),
 		sharing:     a.sharing.WithTx(tx),
 	}
@@ -101,68 +104,57 @@ func (a directoryAccess) lineageOf(ctx context.Context, dir *model.VirtualDataDi
 	return lineage, nil
 }
 
-// permissionOf returns the caller's effective permission on dir and whether they control it.
-// Permission: real permission held by the caller on the directory.
-// Controls: whether the caller owns the directory.
-func (a directoryAccess) permissionOf(ctx context.Context, dir *model.VirtualDataDirectory) (model.AccessPermission, bool, error) {
+// permissionOf returns the caller's effective permission on dir and whether they
+// control it.
+//
+// Ownership is checked against the whole lineage, and the shares of every node in it
+// are pooled before being resolved: a share opens a subtree, so the strongest grant
+// reaching the caller anywhere above this node is what they hold here. The pooled set
+// goes to the common resolver with no owner, because ownership has already been
+// decided here.
+//
+// The lineage is resolved before any share is read. Answering from this node's own
+// share alone would be wrong in both directions: it would miss a stronger grant made
+// further up, and it would report a mere grantee on a dataset the caller owns.
+func (a directoryAccess) permissionOf(ctx context.Context, dir *model.VirtualDataDirectory) (sharingmodel.AccessPermission, bool, error) {
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
-		return model.AccessPermissionNone, false, err
+		return sharingmodel.AccessPermissionNone, false, err
 	}
 	if principal.IsAdmin() {
-		return model.AccessPermissionWrite, true, nil
-	}
-
-	userShare, err := a.sharing.FindUserShareByUserID(ctx, dir.ID, principal.Name)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return model.AccessPermissionNone, false, err
-	}
-
-	if userShare != nil {
-		return *userShare.Permission, false, nil
+		return sharingmodel.AccessPermissionWrite, true, nil
 	}
 
 	lineage, err := a.lineageOf(ctx, dir)
 	if err != nil {
-		return model.AccessPermissionNone, false, err
+		return sharingmodel.AccessPermissionNone, false, err
 	}
 
 	ids := make([]string, 0, len(lineage))
 	for i := range lineage {
 		if ownsDirectory(&lineage[i], principal.Name) {
-			return model.AccessPermissionWrite, true, nil
+			return sharingmodel.AccessPermissionWrite, true, nil
 		}
 		ids = append(ids, lineage[i].ID)
 	}
 
-	userShares, err := a.sharing.FindUserSharesByDirectoryIDs(ctx, ids)
+	// One query for the whole chain, which is what the single sharing table buys: the
+	// subtree's grants of both principal kinds come back together.
+	shares, err := a.sharing.FindByResources(ctx, sharingmodel.ResourceTypeVirtualDataDirectory, ids)
 	if err != nil {
-		return model.AccessPermissionNone, false, err
+		return sharingmodel.AccessPermissionNone, false, err
 	}
-	groupShares, err := a.sharing.FindGroupSharesByDirectoryIDs(ctx, ids)
-	if err != nil {
-		return model.AccessPermissionNone, false, err
-	}
-
-	users := make([]share, 0, len(userShares))
-	for i := range userShares {
-		users = append(users, newShare(userShares[i].UserID, permissionString(userShares[i].Permission)))
-	}
-	groups := make([]share, 0, len(groupShares))
-	for i := range groupShares {
-		groups = append(groups, newShare(groupShares[i].GroupID, permissionString(groupShares[i].Permission)))
-	}
-	return a.access.permissionOf(ctx, nil, users, groups)
+	return a.access.PermissionOf(ctx, nil, shares)
 }
 
 // require checks that the caller holds at least want on dir.
-func (a directoryAccess) require(ctx context.Context, dir *model.VirtualDataDirectory, want model.AccessPermission) (model.AccessPermission, bool, error) {
+func (a directoryAccess) require(ctx context.Context, dir *model.VirtualDataDirectory, want sharingmodel.AccessPermission) (sharingmodel.AccessPermission, bool, error) {
 	held, controls, err := a.permissionOf(ctx, dir)
 	if err != nil {
-		return model.AccessPermissionNone, false, err
+		return sharingmodel.AccessPermissionNone, false, err
 	}
 	if !held.Allows(want) {
-		return model.AccessPermissionNone, false, httpx.Forbidden(
+		return sharingmodel.AccessPermissionNone, false, httpx.Forbidden(
 			"Access denied: virtual data directory %s is not shared with you for %s", dir.ID, want)
 	}
 	return held, controls, nil
@@ -205,7 +197,7 @@ func (t virtualTree) requireWritableParent(ctx context.Context, parentID string)
 	if err != nil {
 		return nil, err
 	}
-	if _, _, err := t.require(ctx, parent, model.AccessPermissionWrite); err != nil {
+	if _, _, err := t.require(ctx, parent, sharingmodel.AccessPermissionWrite); err != nil {
 		return nil, err
 	}
 	if productBacked(parent) {
@@ -292,7 +284,7 @@ func (t virtualTree) resolveProduct(ctx context.Context, productID *string, want
 	if err != nil {
 		return err
 	}
-	if _, _, err := t.products.require(ctx, product, model.AccessPermissionRead); err != nil {
+	if _, _, err := t.products.require(ctx, product, sharingmodel.AccessPermissionRead); err != nil {
 		return err
 	}
 	if product.IsFile != wantFile {
@@ -308,22 +300,21 @@ func (t virtualTree) resolveProduct(ctx context.Context, productID *string, want
 func newVirtualTree(
 	directories *repository.VirtualDataDirectoryRepository,
 	files *repository.VirtualDataFileRepository,
-	sharing *repository.VirtualDataDirectorySharingRepository,
+	sharing *sharingrepo.Repository,
 	products *repository.DataProductRepository,
-	productSharing *repository.DataProductSharingRepository,
 	members *iamrepo.GroupMemberRepository,
 ) virtualTree {
 	return virtualTree{
 		directoryAccess: directoryAccess{
-			access:      access{members: members},
+			access:      sharingsvc.NewAccess(members),
 			directories: directories,
 			sharing:     sharing,
 		},
 		files: files,
 		products: productAccess{
-			access:   access{members: members},
+			access:   sharingsvc.NewAccess(members),
 			products: products,
-			sharing:  productSharing,
+			sharing:  sharing,
 		},
 	}
 }

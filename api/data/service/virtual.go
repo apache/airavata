@@ -32,6 +32,8 @@ import (
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
 )
 
 // VirtualDataDirectoryService manages the directory nodes of virtual datasets.
@@ -50,14 +52,13 @@ func NewVirtualDataDirectoryService(
 	db *gorm.DB,
 	directories *repository.VirtualDataDirectoryRepository,
 	files *repository.VirtualDataFileRepository,
-	sharing *repository.VirtualDataDirectorySharingRepository,
+	sharing *sharingrepo.Repository,
 	products *repository.DataProductRepository,
-	productSharing *repository.DataProductSharingRepository,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
 ) *VirtualDataDirectoryService {
 	return &VirtualDataDirectoryService{
-		virtualTree: newVirtualTree(directories, files, sharing, products, productSharing, members),
+		virtualTree: newVirtualTree(directories, files, sharing, products, members),
 		db:          db,
 		users:       users,
 	}
@@ -92,7 +93,7 @@ func (s *VirtualDataDirectoryService) ListMine(ctx context.Context) ([]dto.Virtu
 
 	out := make([]dto.VirtualDataDirectoryResponse, 0, len(dirs))
 	for i := range dirs {
-		out = append(out, dto.ToVirtualDataDirectoryResponseWith(&dirs[i], string(model.AccessPermissionWrite)))
+		out = append(out, dto.ToVirtualDataDirectoryResponseWith(&dirs[i], string(sharingmodel.AccessPermissionWrite)))
 	}
 	return out, nil
 }
@@ -107,7 +108,11 @@ func (s *VirtualDataDirectoryService) ListSharedWithMe(ctx context.Context) ([]d
 	if err != nil {
 		return nil, err
 	}
-	dirs, err := s.directories.FindSharedWith(ctx, principal.Name)
+	ids, err := s.sharing.ResourceIDsSharedWith(ctx, sharingmodel.ResourceTypeVirtualDataDirectory, principal.Name)
+	if err != nil {
+		return nil, err
+	}
+	dirs, err := s.directories.FindByIDsExcludingOwner(ctx, ids, principal.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +125,7 @@ func (s *VirtualDataDirectoryService) ListSharedWithMe(ctx context.Context) ([]d
 		if err != nil {
 			return nil, err
 		}
-		if held == model.AccessPermissionNone {
+		if held == sharingmodel.AccessPermissionNone {
 			continue
 		}
 		out = append(out, dto.ToVirtualDataDirectoryResponseWith(&dirs[i], string(held)))
@@ -134,7 +139,7 @@ func (s *VirtualDataDirectoryService) Get(ctx context.Context, id string) (*dto.
 	if err != nil {
 		return nil, err
 	}
-	held, _, err := s.require(ctx, dir, model.AccessPermissionRead)
+	held, _, err := s.require(ctx, dir, sharingmodel.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -152,7 +157,7 @@ func (s *VirtualDataDirectoryService) GetContents(ctx context.Context, id string
 	if err != nil {
 		return nil, err
 	}
-	held, _, err := s.require(ctx, dir, model.AccessPermissionRead)
+	held, _, err := s.require(ctx, dir, sharingmodel.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +237,7 @@ func (s *VirtualDataDirectoryService) Create(ctx context.Context, req *dto.Virtu
 		if err := tree.directories.Save(ctx, dir); err != nil {
 			return err
 		}
-		out = dto.ToVirtualDataDirectoryResponseWith(dir, string(model.AccessPermissionWrite))
+		out = dto.ToVirtualDataDirectoryResponseWith(dir, string(sharingmodel.AccessPermissionWrite))
 		return nil
 	})
 	if err != nil {
@@ -256,7 +261,7 @@ func (s *VirtualDataDirectoryService) Update(ctx context.Context, id string, req
 		if err != nil {
 			return notFoundAs(err, "Virtual data directory not found: %s", id)
 		}
-		held, _, err := tree.require(ctx, dir, model.AccessPermissionWrite)
+		held, _, err := tree.require(ctx, dir, sharingmodel.AccessPermissionWrite)
 		if err != nil {
 			return err
 		}
@@ -306,8 +311,11 @@ func (s *VirtualDataDirectoryService) Update(ctx context.Context, id string, req
 // an admin.
 //
 // Control rather than WRITE: the subtree can hold nodes other people were granted
-// access to, and withdrawing that is the owner's decision. The entries below and their
-// shares go through the cascading foreign keys.
+// access to, and withdrawing that is the owner's decision.
+//
+// The directory rows below are cascaded away by the database. Their shares are not —
+// nothing in the sharing table points at a directory — so they are collected and
+// deleted here, in the same transaction, before the subtree they describe is gone.
 func (s *VirtualDataDirectoryService) Delete(ctx context.Context, id string) error {
 	dir, err := s.requireDirectory(ctx, id)
 	if err != nil {
@@ -316,5 +324,18 @@ func (s *VirtualDataDirectoryService) Delete(ctx context.Context, id string) err
 	if err := s.requireControl(ctx, dir); err != nil {
 		return err
 	}
-	return s.directories.Delete(ctx, dir)
+
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		directories := s.directories.WithTx(tx)
+
+		subtree, err := directories.FindSubtreeIDs(ctx, dir.ID, maxTreeDepth)
+		if err != nil {
+			return err
+		}
+		if err := s.sharing.WithTx(tx).DeleteByResources(
+			ctx, sharingmodel.ResourceTypeVirtualDataDirectory, subtree); err != nil {
+			return err
+		}
+		return directories.Delete(ctx, dir)
+	})
 }

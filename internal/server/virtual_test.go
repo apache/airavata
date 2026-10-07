@@ -170,8 +170,8 @@ func TestVirtualDatasetRefusesUnreadableProduct(t *testing.T) {
 	}, http.StatusForbidden)
 
 	// Once Alice shares the product, Bob may cite it.
-	h.mustDo(http.MethodPost, "/api/v1/data-products/"+aliceProduct+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob", "permission": "READ"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/data-products/"+aliceProduct+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "READ"}, http.StatusCreated)
 	h.mustDo(http.MethodPost, "/api/v1/virtual-data-files", tokenBob, map[string]any{
 		"fileName": "shared", "parentDirectoryId": bobRoot, "dataProductId": aliceProduct,
 	}, http.StatusCreated)
@@ -192,8 +192,8 @@ func TestVirtualDatasetShareIsInherited(t *testing.T) {
 	// Before any share, Bob reaches nothing.
 	h.mustDo(http.MethodGet, "/api/v1/virtual-data-directories/"+subID, tokenBob, nil, http.StatusForbidden)
 
-	h.mustDo(http.MethodPost, "/api/v1/virtual-data-directories/"+root+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob", "permission": "READ"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/virtual-data-directories/"+root+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "READ"}, http.StatusCreated)
 
 	// READ at the root reaches the nested node.
 	got := h.mustDo(http.MethodGet, "/api/v1/virtual-data-directories/"+subID, tokenBob, nil, http.StatusOK)
@@ -219,12 +219,12 @@ func TestVirtualDatasetWriteShareCannotDeleteDirectory(t *testing.T) {
 	h := newHarness(t)
 
 	_, productID := h.seedProduct("write", tokenAlice)
-	h.mustDo(http.MethodPost, "/api/v1/data-products/"+productID+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob", "permission": "READ"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/data-products/"+productID+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "READ"}, http.StatusCreated)
 
 	root := h.seedDataset("experiment", tokenAlice)
-	h.mustDo(http.MethodPost, "/api/v1/virtual-data-directories/"+root+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob", "permission": "WRITE"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/virtual-data-directories/"+root+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "WRITE"}, http.StatusCreated)
 
 	// Bob may add a directory and a file.
 	sub := h.mustDo(http.MethodPost, "/api/v1/virtual-data-directories", tokenBob, map[string]any{
@@ -246,7 +246,7 @@ func TestVirtualDatasetWriteShareCannotDeleteDirectory(t *testing.T) {
 
 	// He may not delete a directory, nor manage the share list.
 	h.mustDo(http.MethodDelete, "/api/v1/virtual-data-directories/"+subID, tokenBob, nil, http.StatusForbidden)
-	h.mustDo(http.MethodGet, "/api/v1/virtual-data-directories/"+root+"/user-shares", tokenBob, nil, http.StatusForbidden)
+	h.mustDo(http.MethodGet, "/api/v1/virtual-data-directories/"+root+"/shares", tokenBob, nil, http.StatusForbidden)
 
 	// The owner can.
 	h.mustDo(http.MethodDelete, "/api/v1/virtual-data-directories/"+subID, tokenAlice, nil, http.StatusNoContent)

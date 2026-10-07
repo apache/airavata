@@ -36,6 +36,7 @@ import (
 	datactl "github.com/apache/airavata/api/data/controller"
 	iamctl "github.com/apache/airavata/api/iam/controller"
 	processctl "github.com/apache/airavata/api/process/controller"
+	sharingctl "github.com/apache/airavata/api/sharing/controller"
 )
 
 // New builds the fully wired HTTP handler over an already-assembled object graph.
@@ -52,16 +53,19 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	computectl.NewSlurmClusterController(svcs.SlurmCluster).Register(mux)
 	computectl.NewClusterPartitionController(svcs.ClusterPartition).Register(mux)
 	computectl.NewSlurmClusterConfigController(svcs.SlurmClusterConfig).Register(mux)
-	computectl.NewSlurmClusterConfigSharingController(svcs.SlurmClusterConfigSharing).Register(mux)
 	applicationctl.NewTemplateController(svcs.Template).Register(mux)
 	applicationctl.NewBatchDeploymentController(svcs.BatchDeployment).Register(mux)
 	datactl.NewSCPDataStorageController(svcs.SCPDataStorage).Register(mux)
-	datactl.NewSCPDataStorageSharingController(svcs.SCPDataStorageSharing).Register(mux)
 	datactl.NewDataProductController(svcs.DataProduct).Register(mux)
-	datactl.NewDataProductSharingController(svcs.DataProductSharing).Register(mux)
 	datactl.NewVirtualDataDirectoryController(svcs.VirtualDataDirectory).Register(mux)
 	datactl.NewVirtualDataFileController(svcs.VirtualDataFile).Register(mux)
-	datactl.NewVirtualDataDirectorySharingController(svcs.VirtualDataDirectorySharing).Register(mux)
+	// One sharing controller per shareable record, all four over the same service type
+	// and the same table. Adding a shareable record adds a line here, not a vertical's
+	// worth of sharing code.
+	sharingctl.New(svcs.SCPDataStorageSharing, "/api/v1/scp-data-storages", "dataStorageId").Register(mux)
+	sharingctl.New(svcs.DataProductSharing, "/api/v1/data-products", "dataProductId").Register(mux)
+	sharingctl.New(svcs.VirtualDataDirectorySharing, "/api/v1/virtual-data-directories", "virtualDataDirectoryId").Register(mux)
+	sharingctl.New(svcs.SlurmClusterConfigSharing, "/api/v1/slurm-cluster-configs", "slurmClusterConfigId").Register(mux)
 	processctl.NewProcessController(svcs.Process).Register(mux)
 	processctl.NewLaunchController(svcs.Launch).Register(mux)
 	processctl.NewStatusController(svcs.ProcessStatus).Register(mux)

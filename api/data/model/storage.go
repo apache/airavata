@@ -29,13 +29,6 @@ import (
 	iammodel "github.com/apache/airavata/api/iam/model"
 )
 
-type DataStoragePermission string
-
-const (
-	DataStoragePermissionRead  DataStoragePermission = "READ"
-	DataStoragePermissionWrite DataStoragePermission = "WRITE"
-)
-
 type DataStorageType string
 
 const (
@@ -46,14 +39,6 @@ const (
 func (t DataStorageType) Valid() bool {
 	switch t {
 	case DataStorageTypeSCP, DataStorageTypeHPC:
-		return true
-	}
-	return false
-}
-
-func (p DataStoragePermission) Valid() bool {
-	switch p {
-	case DataStoragePermissionRead, DataStoragePermissionWrite:
 		return true
 	}
 	return false
@@ -103,54 +88,6 @@ func (s *SCPDataStorage) OwnedBy(userID string) bool {
 
 // BeforeCreate assigns a UUID when none was supplied.
 func (s *SCPDataStorage) BeforeCreate(*gorm.DB) error {
-	if s.ID == "" {
-		s.ID = uuid.NewString()
-	}
-	return nil
-}
-
-// SCPDataStorageGroupSharing grants a group access to one storage.
-type SCPDataStorageGroupSharing struct {
-	ID string `gorm:"column:data_storage_group_sharing_id;primaryKey;type:varchar(36)" json:"dataStorageGroupSharingId"`
-
-	DataStorageID *string         `gorm:"column:data_storage_id;type:varchar(36);index" json:"dataStorageId,omitempty"`
-	DataStorage   *SCPDataStorage `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	GroupID *string         `gorm:"column:group_id;type:varchar(36);index" json:"groupId,omitempty"`
-	Group   *iammodel.Group `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	Permission *DataStoragePermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
-}
-
-// TableName returns the table backing SCPDataStorageGroupSharing.
-func (SCPDataStorageGroupSharing) TableName() string { return "scp_data_storage_group_sharings" }
-
-// BeforeCreate assigns a UUID when none was supplied.
-func (s *SCPDataStorageGroupSharing) BeforeCreate(*gorm.DB) error {
-	if s.ID == "" {
-		s.ID = uuid.NewString()
-	}
-	return nil
-}
-
-// SCPDataStorageUserSharing grants one named user access to one storage.
-type SCPDataStorageUserSharing struct {
-	ID string `gorm:"column:data_storage_user_sharing_id;primaryKey;type:varchar(36)" json:"dataStorageUserSharingId"`
-
-	DataStorageID *string         `gorm:"column:data_storage_id;type:varchar(36);index" json:"dataStorageId,omitempty"`
-	DataStorage   *SCPDataStorage `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	UserID *string        `gorm:"column:user_id;type:varchar(255);index" json:"userId,omitempty"`
-	User   *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
-
-	Permission *DataStoragePermission `gorm:"column:permission;type:varchar(32)" json:"permission,omitempty"`
-}
-
-// TableName returns the table backing SCPDataStorageUserSharing.
-func (SCPDataStorageUserSharing) TableName() string { return "scp_data_storage_user_sharings" }
-
-// BeforeCreate assigns a UUID when none was supplied.
-func (s *SCPDataStorageUserSharing) BeforeCreate(*gorm.DB) error {
 	if s.ID == "" {
 		s.ID = uuid.NewString()
 	}
