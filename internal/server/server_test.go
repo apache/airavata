@@ -41,8 +41,8 @@ import (
 	"github.com/apache/airavata/internal/role"
 	"github.com/apache/airavata/internal/server"
 
-	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
 )
 
 // stubIntrospector maps a bearer token straight to a principal, standing in for
@@ -690,8 +690,8 @@ func TestClusterConfigIsSelfServiceAndPrivate(t *testing.T) {
 	}
 
 	// A share opens it, and reports what it grants.
-	h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs/"+configID+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs/"+configID+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob"}, http.StatusCreated)
 	got := h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID, tokenBob, nil, http.StatusOK)
 	if got["permission"] != "READ" {
 		t.Errorf("grantee permission = %v, want READ", got["permission"])
@@ -703,10 +703,10 @@ func TestClusterConfigIsSelfServiceAndPrivate(t *testing.T) {
 
 	// The share list itself is the owner's: it names who can submit under this
 	// identity, which is more than a grantee needs to know.
-	if rec := h.do(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID+"/user-shares", tokenBob, nil); rec.Code != http.StatusForbidden {
+	if rec := h.do(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID+"/shares", tokenBob, nil); rec.Code != http.StatusForbidden {
 		t.Errorf("grantee share list: status = %d, want 403", rec.Code)
 	}
-	h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID+"/user-shares", tokenAlice, nil, http.StatusOK)
+	h.mustDo(http.MethodGet, "/api/v1/slurm-cluster-configs/"+configID+"/shares", tokenAlice, nil, http.StatusOK)
 }
 
 // The literal /me and /shared-with-me patterns must win over /{slurmClusterConfigId},
@@ -737,10 +737,10 @@ func TestStrongestShareWins(t *testing.T) {
 		map[string]any{"userId": "bob"}, http.StatusCreated)
 
 	base := "/api/v1/slurm-cluster-configs/" + configID
-	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob", "permission": "READ"}, http.StatusCreated)
-	h.mustDo(http.MethodPost, base+"/group-shares", tokenAlice,
-		map[string]any{"groupId": groupID, "permission": "WRITE"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "READ"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "GROUP", "principalId": groupID, "permission": "WRITE"}, http.StatusCreated)
 
 	got := h.mustDo(http.MethodGet, base, tokenBob, nil, http.StatusOK)
 	if got["permission"] != "WRITE" {
@@ -778,9 +778,9 @@ func (h *harness) seedProduct(name, token string) (storageID, productID string) 
 // shareStorageWithUser grants one user access to a storage, as its owner.
 func (h *harness) shareStorageWithUser(storageID, userID, permission, ownerToken string) string {
 	h.t.Helper()
-	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages/"+storageID+"/user-shares", ownerToken,
-		map[string]any{"userId": userID, "permission": permission}, http.StatusCreated)
-	return out["dataStorageUserSharingId"].(string)
+	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages/"+storageID+"/shares", ownerToken,
+		map[string]any{"principalType": "USER", "principalId": userID, "permission": permission}, http.StatusCreated)
+	return out["resourceSharingId"].(string)
 }
 
 // principalOf maps a test token to the user id it authenticates as.
@@ -853,7 +853,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	if rec := h.do(http.MethodPut, base, tokenBob, repoint); rec.Code != http.StatusForbidden {
 		t.Errorf("update with READ: status = %d, want 403", rec.Code)
 	}
-	if rec := h.do(http.MethodGet, base+"/user-shares", tokenBob, nil); rec.Code != http.StatusForbidden {
+	if rec := h.do(http.MethodGet, base+"/shares", tokenBob, nil); rec.Code != http.StatusForbidden {
 		t.Errorf("grantee listing the shares: status = %d, want 403", rec.Code)
 	}
 	if rec := h.do(http.MethodDelete, base, tokenBob, nil); rec.Code != http.StatusForbidden {
@@ -861,7 +861,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	}
 
 	// Widened to WRITE the update goes through, but control still does not.
-	h.mustDo(http.MethodPut, base+"/user-shares/"+sharingID, tokenAlice,
+	h.mustDo(http.MethodPut, base+"/shares/"+sharingID, tokenAlice,
 		map[string]any{"permission": "WRITE"}, http.StatusOK)
 	updated := h.mustDo(http.MethodPut, base, tokenBob, repoint, http.StatusOK)
 	if updated["ownerId"] != "alice" {
@@ -872,7 +872,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	}
 
 	// Revoked, the access goes with it.
-	h.mustDo(http.MethodDelete, base+"/user-shares/"+sharingID, tokenAlice, nil, http.StatusNoContent)
+	h.mustDo(http.MethodDelete, base+"/shares/"+sharingID, tokenAlice, nil, http.StatusNoContent)
 	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
 		t.Errorf("read after revoke: status = %d, want 403", rec.Code)
 	}
@@ -923,8 +923,8 @@ func TestStorageGroupSharing(t *testing.T) {
 	h.mustDo(http.MethodPost, "/api/v1/groups/"+groupID+"/members", tokenAlice,
 		map[string]any{"userId": "bob"}, http.StatusCreated)
 
-	h.mustDo(http.MethodPost, "/api/v1/scp-data-storages/"+storageID+"/group-shares", tokenAlice,
-		map[string]any{"groupId": groupID, "permission": "WRITE"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/scp-data-storages/"+storageID+"/shares", tokenAlice,
+		map[string]any{"principalType": "GROUP", "principalId": groupID, "permission": "WRITE"}, http.StatusCreated)
 
 	got := h.mustDo(http.MethodGet, "/api/v1/scp-data-storages/"+storageID, tokenBob, nil, http.StatusOK)
 	if got["permission"] != "WRITE" {
@@ -995,8 +995,8 @@ func TestProductIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 		t.Errorf("alice's own products = %d, want 1", len(mine))
 	}
 
-	share := h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob"}, http.StatusCreated)
+	share := h.mustDo(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob"}, http.StatusCreated)
 	if share["permission"] != "READ" {
 		t.Errorf("permission = %v, want READ by default", share["permission"])
 	}
@@ -1014,7 +1014,7 @@ func TestProductIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	if rec := h.do(http.MethodPut, base, tokenBob, update); rec.Code != http.StatusForbidden {
 		t.Errorf("update with READ: status = %d, want 403", rec.Code)
 	}
-	if rec := h.do(http.MethodGet, base+"/user-shares", tokenBob, nil); rec.Code != http.StatusForbidden {
+	if rec := h.do(http.MethodGet, base+"/shares", tokenBob, nil); rec.Code != http.StatusForbidden {
 		t.Errorf("grantee listing the shares: status = %d, want 403", rec.Code)
 	}
 	if rec := h.do(http.MethodDelete, base, tokenBob, nil); rec.Code != http.StatusForbidden {
@@ -1023,7 +1023,7 @@ func TestProductIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 
 	// Widened to WRITE the update goes through, but only once bob can reach the
 	// storage it is registered on.
-	h.mustDo(http.MethodPut, base+"/user-shares/"+share["dataProductUserSharingId"].(string), tokenAlice,
+	h.mustDo(http.MethodPut, base+"/shares/"+share["resourceSharingId"].(string), tokenAlice,
 		map[string]any{"permission": "WRITE"}, http.StatusOK)
 	if rec := h.do(http.MethodPut, base, tokenBob, update); rec.Code != http.StatusForbidden {
 		t.Errorf("update by a grantee with no access to the storage: status = %d, want 403", rec.Code)
@@ -1067,27 +1067,25 @@ func TestStorageInUseCannotBeDeleted(t *testing.T) {
 	h.mustDo(http.MethodDelete, "/api/v1/scp-data-storages/"+storageID, tokenAlice, nil, http.StatusNoContent)
 }
 
-// Shares point at the record with RESTRICT, so deleting one has to take its shares
-// with it rather than tripping over them.
+// Nothing in the sharing table points at the record it opens up, so deleting a product
+// has to take its shares with it or leave rows behind that name a product that is gone.
 func TestDeletingProductRemovesItsShares(t *testing.T) {
 	h := newHarness(t)
 	_, productID := h.seedProduct("doomed-dataset", tokenAlice)
 	groupID := h.seedGroup("doomed-data-group", tokenAlice)
 	base := "/api/v1/data-products/" + productID
 
-	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice, map[string]any{"userId": "bob"}, http.StatusCreated)
-	h.mustDo(http.MethodPost, base+"/group-shares", tokenAlice, map[string]any{"groupId": groupID}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base+"/shares", tokenAlice, map[string]any{"principalType": "USER", "principalId": "bob"}, http.StatusCreated)
+	h.mustDo(http.MethodPost, base+"/shares", tokenAlice, map[string]any{"principalType": "GROUP", "principalId": groupID}, http.StatusCreated)
 
 	h.mustDo(http.MethodDelete, base, tokenAlice, nil, http.StatusNoContent)
 
 	var remaining int64
-	h.db.Model(&datamodel.DataProductUserSharing{}).Where("data_product_id = ?", productID).Count(&remaining)
+	h.db.Model(&sharingmodel.Sharing{}).
+		Where("resource_type = ? AND resource_id = ?", sharingmodel.ResourceTypeDataProduct, productID).
+		Count(&remaining)
 	if remaining != 0 {
-		t.Errorf("%d user shares survived the delete, want 0", remaining)
-	}
-	h.db.Model(&datamodel.DataProductGroupSharing{}).Where("data_product_id = ?", productID).Count(&remaining)
-	if remaining != 0 {
-		t.Errorf("%d group shares survived the delete, want 0", remaining)
+		t.Errorf("%d shares survived the delete, want 0", remaining)
 	}
 }
 
@@ -1096,25 +1094,25 @@ func TestDataSharingRejectsBadRequests(t *testing.T) {
 	_, productID := h.seedProduct("validation-dataset", tokenAlice)
 	base := "/api/v1/data-products/" + productID
 
-	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
-		map[string]any{"userId": "nobody"}); rec.Code != http.StatusNotFound {
+	if rec := h.do(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "nobody"}); rec.Code != http.StatusNotFound {
 		t.Errorf("sharing with an unknown user: status = %d, want 404", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, base+"/group-shares", tokenAlice,
-		map[string]any{"groupId": "nope"}); rec.Code != http.StatusNotFound {
+	if rec := h.do(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "GROUP", "principalId": "nope"}); rec.Code != http.StatusNotFound {
 		t.Errorf("sharing with an unknown group: status = %d, want 404", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob", "permission": "ROOT"}); rec.Code != http.StatusBadRequest {
+	if rec := h.do(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "ROOT"}); rec.Code != http.StatusBadRequest {
 		t.Errorf("unrecognised permission: status = %d, want 400", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
-		map[string]any{"userId": "alice"}); rec.Code != http.StatusConflict {
+	if rec := h.do(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "alice"}); rec.Code != http.StatusConflict {
 		t.Errorf("sharing with the owner: status = %d, want 409", rec.Code)
 	}
-	h.mustDo(http.MethodPost, base+"/user-shares", tokenAlice, map[string]any{"userId": "bob"}, http.StatusCreated)
-	if rec := h.do(http.MethodPost, base+"/user-shares", tokenAlice,
-		map[string]any{"userId": "bob", "permission": "WRITE"}); rec.Code != http.StatusConflict {
+	h.mustDo(http.MethodPost, base+"/shares", tokenAlice, map[string]any{"principalType": "USER", "principalId": "bob"}, http.StatusCreated)
+	if rec := h.do(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "WRITE"}); rec.Code != http.StatusConflict {
 		t.Errorf("duplicate share: status = %d, want 409", rec.Code)
 	}
 
@@ -1126,10 +1124,10 @@ func TestDataSharingRejectsBadRequests(t *testing.T) {
 
 	// A sharing id from one product is not reachable through another's path.
 	_, otherID := h.seedProduct("other-dataset", tokenAlice)
-	shares := h.list(base+"/user-shares", tokenAlice)
-	sharingID := shares[0]["dataProductUserSharingId"].(string)
+	shares := h.list(base+"/shares", tokenAlice)
+	sharingID := shares[0]["resourceSharingId"].(string)
 	if rec := h.do(http.MethodDelete,
-		"/api/v1/data-products/"+otherID+"/user-shares/"+sharingID, tokenAlice, nil); rec.Code != http.StatusNotFound {
+		"/api/v1/data-products/"+otherID+"/shares/"+sharingID, tokenAlice, nil); rec.Code != http.StatusNotFound {
 		t.Errorf("cross-product share delete: status = %d, want 404", rec.Code)
 	}
 }

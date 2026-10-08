@@ -33,6 +33,9 @@ import (
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
 	"github.com/apache/airavata/api/iam/repository"
+
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
 )
 
 // groupAccess resolves what the calling principal may do within a group. Both the
@@ -134,14 +137,21 @@ type GroupService struct {
 	groupAccess
 	db    *gorm.DB
 	users *repository.UserRepository
+
+	// shares is the platform's sharing table, held here only so that deleting a group
+	// withdraws what it was granted. The rows carry no foreign key to groups — the
+	// column names a user or a group depending on the row — so nothing in the database
+	// would remove them.
+	shares *sharingrepo.Repository
 }
 
 // NewGroupService returns a group service.
-func NewGroupService(db *gorm.DB, groups *repository.GroupRepository, members *repository.GroupMemberRepository, users *repository.UserRepository) *GroupService {
+func NewGroupService(db *gorm.DB, groups *repository.GroupRepository, members *repository.GroupMemberRepository, users *repository.UserRepository, shares *sharingrepo.Repository) *GroupService {
 	return &GroupService{
 		groupAccess: groupAccess{groups: groups, members: members},
 		db:          db,
 		users:       users,
+		shares:      shares,
 	}
 }
 
@@ -246,7 +256,13 @@ func (s *GroupService) Update(ctx context.Context, groupID string, req *dto.Grou
 	return &out, nil
 }
 
-// Delete removes a group, taking its membership rows with it.
+// Delete removes a group, taking its membership rows and whatever was shared with it.
+//
+// The memberships are cascaded away by the database. The shares are not, so they go
+// here, in the same transaction. They would grant nothing once the group is gone —
+// access through a group is resolved from active memberships, and those are being
+// deleted — but they would accumulate, and a listing of a record's shares would name a
+// group that no longer exists.
 func (s *GroupService) Delete(ctx context.Context, groupID string) error {
 	group, err := s.requireGroup(ctx, groupID)
 	if err != nil {
@@ -255,7 +271,14 @@ func (s *GroupService) Delete(ctx context.Context, groupID string) error {
 	if _, err := s.requireOwner(ctx, group); err != nil {
 		return err
 	}
-	return s.groups.Delete(ctx, group)
+
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := s.shares.WithTx(tx).DeleteByPrincipal(
+			ctx, sharingmodel.PrincipalTypeGroup, group.ID); err != nil {
+			return err
+		}
+		return s.groups.WithTx(tx).Delete(ctx, group)
+	})
 }
 
 // GroupMemberService manages memberships as a sub-resource of their group.

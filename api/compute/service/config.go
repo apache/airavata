@@ -22,7 +22,6 @@ package service
 
 import (
 	"context"
-	"errors"
 
 	"gorm.io/gorm"
 
@@ -35,6 +34,9 @@ import (
 	credmodel "github.com/apache/airavata/api/credentials/model"
 	credsvc "github.com/apache/airavata/api/credentials/service"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
+	sharingsvc "github.com/apache/airavata/api/sharing/service"
 )
 
 // configAccess resolves what the calling principal may do with a cluster config.
@@ -47,12 +49,12 @@ import (
 type configAccess struct {
 	access
 	configs *repository.SlurmClusterConfigRepository
-	sharing *repository.SlurmClusterConfigSharingRepository
+	sharing *sharingrepo.Repository
 }
 
 func (a configAccess) withTx(tx *gorm.DB) configAccess {
 	return configAccess{
-		access:  a.access.withTx(tx),
+		access:  a.access.WithTx(tx),
 		configs: a.configs.WithTx(tx),
 		sharing: a.sharing.WithTx(tx),
 	}
@@ -69,35 +71,22 @@ func (a configAccess) requireConfig(ctx context.Context, id string) (*model.Slur
 
 // permissionOf returns the caller's effective permission on config and whether they
 // control it.
-func (a configAccess) permissionOf(ctx context.Context, config *model.SlurmClusterConfig) (permission, bool, error) {
-	userShares, err := a.sharing.FindUserSharesByConfigID(ctx, config.ID)
+func (a configAccess) permissionOf(ctx context.Context, config *model.SlurmClusterConfig) (sharingmodel.AccessPermission, bool, error) {
+	shares, err := a.sharing.FindByResource(ctx, sharingmodel.ResourceTypeSlurmClusterConfig, config.ID)
 	if err != nil {
-		return permNone, false, err
+		return sharingmodel.AccessPermissionNone, false, err
 	}
-	groupShares, err := a.sharing.FindGroupSharesByConfigID(ctx, config.ID)
-	if err != nil {
-		return permNone, false, err
-	}
-
-	users := make([]share, 0, len(userShares))
-	for i := range userShares {
-		users = append(users, newShare(userShares[i].UserID, userShares[i].Permission))
-	}
-	groups := make([]share, 0, len(groupShares))
-	for i := range groupShares {
-		groups = append(groups, newShare(groupShares[i].GroupID, groupShares[i].Permission))
-	}
-	return a.access.permissionOf(ctx, config.OwnerID, users, groups)
+	return a.access.PermissionOf(ctx, config.OwnerID, shares)
 }
 
 // require checks that the caller holds at least want.
-func (a configAccess) require(ctx context.Context, config *model.SlurmClusterConfig, want permission) (permission, error) {
+func (a configAccess) require(ctx context.Context, config *model.SlurmClusterConfig, want sharingmodel.AccessPermission) (sharingmodel.AccessPermission, error) {
 	held, _, err := a.permissionOf(ctx, config)
 	if err != nil {
-		return permNone, err
+		return sharingmodel.AccessPermissionNone, err
 	}
 	if !held.Allows(want) {
-		return permNone, httpx.Forbidden(
+		return sharingmodel.AccessPermissionNone, httpx.Forbidden(
 			"Access denied: Slurm cluster config %s is not shared with you for %s", config.ID, want)
 	}
 	return held, nil
@@ -126,10 +115,10 @@ type ConfigAccess struct{ configAccess }
 // NewConfigAccess returns a checker over the config and sharing tables.
 func NewConfigAccess(
 	configs *repository.SlurmClusterConfigRepository,
-	sharing *repository.SlurmClusterConfigSharingRepository,
+	sharing *sharingrepo.Repository,
 	members *iamrepo.GroupMemberRepository,
 ) *ConfigAccess {
-	return &ConfigAccess{configAccess{access: access{members: members}, configs: configs, sharing: sharing}}
+	return &ConfigAccess{configAccess{access: sharingsvc.NewAccess(members), configs: configs, sharing: sharing}}
 }
 
 // WithTx returns a checker bound to tx, for checks made from inside a transaction.
@@ -147,7 +136,7 @@ func (a *ConfigAccess) RequireUsable(ctx context.Context, id string) (*model.Slu
 	if err != nil {
 		return nil, err
 	}
-	if _, err := a.require(ctx, config, permRead); err != nil {
+	if _, err := a.require(ctx, config, sharingmodel.AccessPermissionRead); err != nil {
 		return nil, err
 	}
 	return config, nil
@@ -171,7 +160,7 @@ type SlurmClusterConfigService struct {
 func NewSlurmClusterConfigService(
 	db *gorm.DB,
 	configs *repository.SlurmClusterConfigRepository,
-	sharing *repository.SlurmClusterConfigSharingRepository,
+	sharing *sharingrepo.Repository,
 	clusters *repository.SlurmClusterRepository,
 	keys *credsvc.KeyAccess,
 	users *iamrepo.UserRepository,
@@ -179,7 +168,7 @@ func NewSlurmClusterConfigService(
 ) *SlurmClusterConfigService {
 	return &SlurmClusterConfigService{
 		configAccess: configAccess{
-			access:  access{members: members},
+			access:  sharingsvc.NewAccess(members),
 			configs: configs,
 			sharing: sharing,
 		},
@@ -223,7 +212,11 @@ func (s *SlurmClusterConfigService) ListSharedWithMe(ctx context.Context) ([]dto
 	if err != nil {
 		return nil, err
 	}
-	configs, err := s.configs.FindSharedWith(ctx, principal.Name)
+	ids, err := s.sharing.ResourceIDsSharedWith(ctx, sharingmodel.ResourceTypeSlurmClusterConfig, principal.Name)
+	if err != nil {
+		return nil, err
+	}
+	configs, err := s.configs.FindByIDsExcludingOwner(ctx, ids, principal.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +227,7 @@ func (s *SlurmClusterConfigService) ListSharedWithMe(ctx context.Context) ([]dto
 		if err != nil {
 			return nil, err
 		}
-		if held == permNone {
+		if held == sharingmodel.AccessPermissionNone {
 			continue
 		}
 		out = append(out, dto.ToSlurmClusterConfigResponseWith(&configs[i], string(held)))
@@ -248,7 +241,7 @@ func (s *SlurmClusterConfigService) Get(ctx context.Context, id string) (*dto.Sl
 	if err != nil {
 		return nil, err
 	}
-	held, err := s.require(ctx, config, permRead)
+	held, err := s.require(ctx, config, sharingmodel.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -317,7 +310,7 @@ func (s *SlurmClusterConfigService) Create(ctx context.Context, req *dto.SlurmCl
 		if err := configs.Save(ctx, config); err != nil {
 			return err
 		}
-		out = dto.ToSlurmClusterConfigResponseWith(config, string(permWrite))
+		out = dto.ToSlurmClusterConfigResponseWith(config, string(sharingmodel.AccessPermissionWrite))
 		return nil
 	})
 	if err != nil {
@@ -340,7 +333,7 @@ func (s *SlurmClusterConfigService) Update(ctx context.Context, id string, req *
 		if err != nil {
 			return notFoundAs(err, "Slurm cluster config not found: %s", id)
 		}
-		held, err := s.configAccess.withTx(tx).require(ctx, config, permWrite)
+		held, err := s.configAccess.withTx(tx).require(ctx, config, sharingmodel.AccessPermissionWrite)
 		if err != nil {
 			return err
 		}
@@ -379,223 +372,9 @@ func (s *SlurmClusterConfigService) Delete(ctx context.Context, id string) error
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := s.sharing.WithTx(tx).DeleteByConfigID(ctx, config.ID); err != nil {
+		if err := s.sharing.WithTx(tx).DeleteByResources(ctx, sharingmodel.ResourceTypeSlurmClusterConfig, []string{config.ID}); err != nil {
 			return err
 		}
 		return s.configs.WithTx(tx).Delete(ctx, config)
 	})
-}
-
-// SlurmClusterConfigSharingService manages who, besides the owner, may use a config.
-//
-// Only the owner (or a platform admin) may read or change the share list: it names who
-// can submit jobs as a particular account on a particular machine, which is more than a
-// grantee needs to know.
-type SlurmClusterConfigSharingService struct {
-	configAccess
-	db     *gorm.DB
-	groups *iamrepo.GroupRepository
-	users  *iamrepo.UserRepository
-}
-
-// NewSlurmClusterConfigSharingService returns a config sharing service.
-func NewSlurmClusterConfigSharingService(
-	db *gorm.DB,
-	configs *repository.SlurmClusterConfigRepository,
-	sharing *repository.SlurmClusterConfigSharingRepository,
-	groups *iamrepo.GroupRepository,
-	users *iamrepo.UserRepository,
-	members *iamrepo.GroupMemberRepository,
-) *SlurmClusterConfigSharingService {
-	return &SlurmClusterConfigSharingService{
-		configAccess: configAccess{
-			access:  access{members: members},
-			configs: configs,
-			sharing: sharing,
-		},
-		db:     db,
-		groups: groups,
-		users:  users,
-	}
-}
-
-// ListGroupShares returns every group a config is shared with.
-func (s *SlurmClusterConfigSharingService) ListGroupShares(ctx context.Context, configID string) ([]dto.SlurmClusterConfigGroupSharingResponse, error) {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return nil, err
-	}
-	shares, err := s.sharing.FindGroupSharesByConfigID(ctx, config.ID)
-	if err != nil {
-		return nil, err
-	}
-	return dto.ToSlurmClusterConfigGroupSharingResponses(shares), nil
-}
-
-// ShareWithGroup grants a group access to a config.
-func (s *SlurmClusterConfigSharingService) ShareWithGroup(ctx context.Context, configID string, req *dto.SlurmClusterConfigGroupSharingRequest) (*dto.SlurmClusterConfigGroupSharingResponse, error) {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return nil, err
-	}
-
-	var out dto.SlurmClusterConfigGroupSharingResponse
-	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		sharing, groups := s.sharing.WithTx(tx), s.groups.WithTx(tx)
-
-		if _, err := groups.FindByID(ctx, req.GroupID); err != nil {
-			return notFoundAs(err, "Group not found: %s", req.GroupID)
-		}
-		if _, err := sharing.FindGroupShareByGroupID(ctx, config.ID, req.GroupID); err == nil {
-			return httpx.Conflict("Slurm cluster config %s is already shared with group %s", config.ID, req.GroupID)
-		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return err
-		}
-
-		share := &model.SlurmClusterConfigGroupSharing{
-			SlurmClusterConfigID: config.ID,
-			GroupID:              req.GroupID,
-			Permission:           req.Grant(),
-		}
-		if err := sharing.SaveGroupShare(ctx, share); err != nil {
-			return err
-		}
-		out = dto.ToSlurmClusterConfigGroupSharingResponse(share)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// UpdateGroupShare changes what a group share grants.
-func (s *SlurmClusterConfigSharingService) UpdateGroupShare(ctx context.Context, configID, sharingID string, req *dto.SlurmClusterConfigSharingUpdate) (*dto.SlurmClusterConfigGroupSharingResponse, error) {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return nil, err
-	}
-	share, err := s.sharing.FindGroupShare(ctx, config.ID, sharingID)
-	if err != nil {
-		return nil, notFoundAs(err, "Group sharing not found: %s on Slurm cluster config %s", sharingID, config.ID)
-	}
-
-	share.Permission = *req.Permission
-	if err := s.sharing.SaveGroupShare(ctx, share); err != nil {
-		return nil, err
-	}
-	out := dto.ToSlurmClusterConfigGroupSharingResponse(share)
-	return &out, nil
-}
-
-// RevokeGroupShare withdraws a group's access.
-func (s *SlurmClusterConfigSharingService) RevokeGroupShare(ctx context.Context, configID, sharingID string) error {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return err
-	}
-	share, err := s.sharing.FindGroupShare(ctx, config.ID, sharingID)
-	if err != nil {
-		return notFoundAs(err, "Group sharing not found: %s on Slurm cluster config %s", sharingID, config.ID)
-	}
-	return s.sharing.DeleteGroupShare(ctx, share)
-}
-
-// ListUserShares returns every user a config is shared with.
-func (s *SlurmClusterConfigSharingService) ListUserShares(ctx context.Context, configID string) ([]dto.SlurmClusterConfigUserSharingResponse, error) {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return nil, err
-	}
-	shares, err := s.sharing.FindUserSharesByConfigID(ctx, config.ID)
-	if err != nil {
-		return nil, err
-	}
-	return dto.ToSlurmClusterConfigUserSharingResponses(shares), nil
-}
-
-// ShareWithUser grants one user access to a config.
-//
-// Sharing with the owner is refused rather than stored: it would grant nothing the
-// owner does not already have.
-func (s *SlurmClusterConfigSharingService) ShareWithUser(ctx context.Context, configID string, req *dto.SlurmClusterConfigUserSharingRequest) (*dto.SlurmClusterConfigUserSharingResponse, error) {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return nil, err
-	}
-	if config.OwnedBy(req.UserID) {
-		return nil, httpx.Conflict("User %s already owns Slurm cluster config %s", req.UserID, config.ID)
-	}
-
-	var out dto.SlurmClusterConfigUserSharingResponse
-	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		sharing, users := s.sharing.WithTx(tx), s.users.WithTx(tx)
-
-		if _, err := users.FindByID(ctx, req.UserID); err != nil {
-			return notFoundAs(err, "User not found with ID: %s", req.UserID)
-		}
-		if _, err := sharing.FindUserShareByUserID(ctx, config.ID, req.UserID); err == nil {
-			return httpx.Conflict("Slurm cluster config %s is already shared with user %s", config.ID, req.UserID)
-		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return err
-		}
-
-		share := &model.SlurmClusterConfigUserSharing{
-			SlurmClusterConfigID: config.ID,
-			UserID:               req.UserID,
-			Permission:           req.Grant(),
-		}
-		if err := sharing.SaveUserShare(ctx, share); err != nil {
-			return err
-		}
-		out = dto.ToSlurmClusterConfigUserSharingResponse(share)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// UpdateUserShare changes what a user share grants.
-func (s *SlurmClusterConfigSharingService) UpdateUserShare(ctx context.Context, configID, sharingID string, req *dto.SlurmClusterConfigSharingUpdate) (*dto.SlurmClusterConfigUserSharingResponse, error) {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return nil, err
-	}
-	share, err := s.sharing.FindUserShare(ctx, config.ID, sharingID)
-	if err != nil {
-		return nil, notFoundAs(err, "User sharing not found: %s on Slurm cluster config %s", sharingID, config.ID)
-	}
-
-	share.Permission = *req.Permission
-	if err := s.sharing.SaveUserShare(ctx, share); err != nil {
-		return nil, err
-	}
-	out := dto.ToSlurmClusterConfigUserSharingResponse(share)
-	return &out, nil
-}
-
-// RevokeUserShare withdraws a user's access.
-func (s *SlurmClusterConfigSharingService) RevokeUserShare(ctx context.Context, configID, sharingID string) error {
-	config, err := s.requireControlledConfig(ctx, configID)
-	if err != nil {
-		return err
-	}
-	share, err := s.sharing.FindUserShare(ctx, config.ID, sharingID)
-	if err != nil {
-		return notFoundAs(err, "User sharing not found: %s on Slurm cluster config %s", sharingID, config.ID)
-	}
-	return s.sharing.DeleteUserShare(ctx, share)
-}
-
-func (s *SlurmClusterConfigSharingService) requireControlledConfig(ctx context.Context, configID string) (*model.SlurmClusterConfig, error) {
-	config, err := s.requireConfig(ctx, configID)
-	if err != nil {
-		return nil, err
-	}
-	if err := s.requireControl(ctx, config); err != nil {
-		return nil, err
-	}
-	return config, nil
 }

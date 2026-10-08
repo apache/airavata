@@ -91,6 +91,10 @@ tags:
     description: Hosts data is staged to and from over SCP.
   - name: Data Products
     description: Registered datasets on a storage.
+  - name: Sharing
+    description: >-
+      Granting access to a shareable record. One shape for every resource kind: the
+      subject's kind is a field, not a choice of endpoint. See docs/sharing.md.
   - name: Processes
     description: Runs, their status history and their tasks.
 
@@ -900,197 +904,6 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
-  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares:
-    parameters:
-      - $ref: "#/components/parameters/SlurmClusterConfigId"
-    get:
-      tags: [Slurm Cluster Configs]
-      summary: List a config's group shares
-      description: Owner or admin.
-      operationId: listSlurmClusterConfigGroupShares
-      responses:
-        "200":
-          description: The group shares on this config.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  {
-                    $ref: "#/components/schemas/SlurmClusterConfigGroupSharingResponse",
-                  }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    post:
-      tags: [Slurm Cluster Configs]
-      summary: Share a config with a group
-      description: An omitted `permission` grants `READ`.
-      operationId: shareSlurmClusterConfigWithGroup
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              {
-                $ref: "#/components/schemas/SlurmClusterConfigGroupSharingRequest",
-              }
-      responses:
-        "201":
-          description: The created share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SlurmClusterConfigGroupSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares/{sharingId}:
-    parameters:
-      - $ref: "#/components/parameters/SlurmClusterConfigId"
-      - $ref: "#/components/parameters/SharingId"
-    put:
-      tags: [Slurm Cluster Configs]
-      summary: Change what a group share grants
-      description: The subject is fixed at creation; only the permission is editable.
-      operationId: updateSlurmClusterConfigGroupShare
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/SlurmClusterConfigSharingUpdate" }
-      responses:
-        "200":
-          description: The updated share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SlurmClusterConfigGroupSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    delete:
-      tags: [Slurm Cluster Configs]
-      summary: Revoke a group share
-      operationId: revokeSlurmClusterConfigGroupShare
-      responses:
-        "204": { $ref: "#/components/responses/NoContent" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares:
-    parameters:
-      - $ref: "#/components/parameters/SlurmClusterConfigId"
-    get:
-      tags: [Slurm Cluster Configs]
-      summary: List a config's user shares
-      description: Owner or admin.
-      operationId: listSlurmClusterConfigUserShares
-      responses:
-        "200":
-          description: The user shares on this config.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  {
-                    $ref: "#/components/schemas/SlurmClusterConfigUserSharingResponse",
-                  }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    post:
-      tags: [Slurm Cluster Configs]
-      summary: Share a config with one user
-      description: An omitted `permission` grants `READ`.
-      operationId: shareSlurmClusterConfigWithUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              {
-                $ref: "#/components/schemas/SlurmClusterConfigUserSharingRequest",
-              }
-      responses:
-        "201":
-          description: The created share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SlurmClusterConfigUserSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares/{sharingId}:
-    parameters:
-      - $ref: "#/components/parameters/SlurmClusterConfigId"
-      - $ref: "#/components/parameters/SharingId"
-    put:
-      tags: [Slurm Cluster Configs]
-      summary: Change what a user share grants
-      operationId: updateSlurmClusterConfigUserShare
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/SlurmClusterConfigSharingUpdate" }
-      responses:
-        "200":
-          description: The updated share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SlurmClusterConfigUserSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    delete:
-      tags: [Slurm Cluster Configs]
-      summary: Revoke a user share
-      operationId: revokeSlurmClusterConfigUserShare
-      responses:
-        "204": { $ref: "#/components/responses/NoContent" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  # ------------------------------------------------- Application templates
-
   /api/v1/application-templates:
     get:
       tags: [Application Templates]
@@ -1451,190 +1264,6 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
-  /api/v1/scp-data-storages/{dataStorageId}/group-shares:
-    parameters:
-      - $ref: "#/components/parameters/DataStorageId"
-    get:
-      tags: [SCP Data Storages]
-      summary: List a storage's group shares
-      description: Owner or admin.
-      operationId: listSCPDataStorageGroupShares
-      responses:
-        "200":
-          description: The group shares on this storage.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  {
-                    $ref: "#/components/schemas/SCPDataStorageGroupSharingResponse",
-                  }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    post:
-      tags: [SCP Data Storages]
-      summary: Share a storage with a group
-      description: An omitted `permission` grants `READ`.
-      operationId: shareSCPDataStorageWithGroup
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/SCPDataStorageGroupSharingRequest" }
-      responses:
-        "201":
-          description: The created share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SCPDataStorageGroupSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/scp-data-storages/{dataStorageId}/group-shares/{sharingId}:
-    parameters:
-      - $ref: "#/components/parameters/DataStorageId"
-      - $ref: "#/components/parameters/SharingId"
-    put:
-      tags: [SCP Data Storages]
-      summary: Change what a group share grants
-      operationId: updateSCPDataStorageGroupShare
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/SCPDataStorageSharingUpdate" }
-      responses:
-        "200":
-          description: The updated share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SCPDataStorageGroupSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    delete:
-      tags: [SCP Data Storages]
-      summary: Revoke a group share
-      operationId: revokeSCPDataStorageGroupShare
-      responses:
-        "204": { $ref: "#/components/responses/NoContent" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/scp-data-storages/{dataStorageId}/user-shares:
-    parameters:
-      - $ref: "#/components/parameters/DataStorageId"
-    get:
-      tags: [SCP Data Storages]
-      summary: List a storage's user shares
-      description: Owner or admin.
-      operationId: listSCPDataStorageUserShares
-      responses:
-        "200":
-          description: The user shares on this storage.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  {
-                    $ref: "#/components/schemas/SCPDataStorageUserSharingResponse",
-                  }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    post:
-      tags: [SCP Data Storages]
-      summary: Share a storage with one user
-      description: An omitted `permission` grants `READ`.
-      operationId: shareSCPDataStorageWithUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/SCPDataStorageUserSharingRequest" }
-      responses:
-        "201":
-          description: The created share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SCPDataStorageUserSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}:
-    parameters:
-      - $ref: "#/components/parameters/DataStorageId"
-      - $ref: "#/components/parameters/SharingId"
-    put:
-      tags: [SCP Data Storages]
-      summary: Change what a user share grants
-      operationId: updateSCPDataStorageUserShare
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/SCPDataStorageSharingUpdate" }
-      responses:
-        "200":
-          description: The updated share.
-          content:
-            application/json:
-              schema:
-                {
-                  $ref: "#/components/schemas/SCPDataStorageUserSharingResponse",
-                }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    delete:
-      tags: [SCP Data Storages]
-      summary: Revoke a user share
-      operationId: revokeSCPDataStorageUserShare
-      responses:
-        "204": { $ref: "#/components/responses/NoContent" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  # --------------------------------------------------------- Data products
-
   /api/v1/data-products:
     get:
       tags: [Data Products]
@@ -1769,184 +1398,6 @@ paths:
         "409": { $ref: "#/components/responses/Conflict" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/data-products/{dataProductId}/group-shares:
-    parameters:
-      - $ref: "#/components/parameters/DataProductId"
-    get:
-      tags: [Data Products]
-      summary: List a product's group shares
-      description: Owner or admin.
-      operationId: listDataProductGroupShares
-      responses:
-        "200":
-          description: The group shares on this dataset.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  {
-                    $ref: "#/components/schemas/DataProductGroupSharingResponse",
-                  }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    post:
-      tags: [Data Products]
-      summary: Share a product with a group
-      description: |
-        An omitted `permission` grants `READ` — read-only is the safe default for a
-        share, and widening it is a deliberate act.
-      operationId: shareDataProductWithGroup
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/DataProductGroupSharingRequest" }
-      responses:
-        "201":
-          description: The created share.
-          content:
-            application/json:
-              schema:
-                { $ref: "#/components/schemas/DataProductGroupSharingResponse" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/data-products/{dataProductId}/group-shares/{sharingId}:
-    parameters:
-      - $ref: "#/components/parameters/DataProductId"
-      - $ref: "#/components/parameters/SharingId"
-    put:
-      tags: [Data Products]
-      summary: Change what a group share grants
-      operationId: updateDataProductGroupShare
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/DataProductSharingUpdate" }
-      responses:
-        "200":
-          description: The updated share.
-          content:
-            application/json:
-              schema:
-                { $ref: "#/components/schemas/DataProductGroupSharingResponse" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    delete:
-      tags: [Data Products]
-      summary: Revoke a group share
-      operationId: revokeDataProductGroupShare
-      responses:
-        "204": { $ref: "#/components/responses/NoContent" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/data-products/{dataProductId}/user-shares:
-    parameters:
-      - $ref: "#/components/parameters/DataProductId"
-    get:
-      tags: [Data Products]
-      summary: List a product's user shares
-      description: Owner or admin.
-      operationId: listDataProductUserShares
-      responses:
-        "200":
-          description: The user shares on this dataset.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  {
-                    $ref: "#/components/schemas/DataProductUserSharingResponse",
-                  }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    post:
-      tags: [Data Products]
-      summary: Share a product with one user
-      description: An omitted `permission` grants `READ`.
-      operationId: shareDataProductWithUser
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              { $ref: "#/components/schemas/DataProductUserSharingRequest" }
-      responses:
-        "201":
-          description: The created share.
-          content:
-            application/json:
-              schema:
-                { $ref: "#/components/schemas/DataProductUserSharingResponse" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  /api/v1/data-products/{dataProductId}/user-shares/{sharingId}:
-    parameters:
-      - $ref: "#/components/parameters/DataProductId"
-      - $ref: "#/components/parameters/SharingId"
-    put:
-      tags: [Data Products]
-      summary: Change what a user share grants
-      operationId: updateDataProductUserShare
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/DataProductSharingUpdate" }
-      responses:
-        "200":
-          description: The updated share.
-          content:
-            application/json:
-              schema:
-                { $ref: "#/components/schemas/DataProductUserSharingResponse" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-    delete:
-      tags: [Data Products]
-      summary: Revoke a user share
-      operationId: revokeDataProductUserShare
-      responses:
-        "204": { $ref: "#/components/responses/NoContent" }
-        "401": { $ref: "#/components/responses/Unauthorized" }
-        "403": { $ref: "#/components/responses/Forbidden" }
-        "404": { $ref: "#/components/responses/NotFound" }
-        "502": { $ref: "#/components/responses/BadGateway" }
-        "500": { $ref: "#/components/responses/InternalError" }
-
-  # ------------------------------------------------------------ Processes
 
   /api/v1/processes:
     get:
@@ -2520,6 +1971,342 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/scp-data-storages/{dataStorageId}/shares:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+    get:
+      tags: [Sharing]
+      summary: List who has access to this SCP data storage
+      description: >-
+        Both principal kinds together. Restricted to the owner and platform admins:
+        the list names who holds the record, which is more than a grantee needs to
+        know.
+      responses:
+        "200":
+          description: The grants made on this record.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShareResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Sharing]
+      summary: Grant a principal access to this SCP data storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareRequest" }
+      responses:
+        "201":
+          description: The grant that was created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Sharing]
+      summary: Change what a grant confers
+      description: >-
+        Only the permission is editable. The subject is fixed when the grant is
+        created, because moving it to a different principal would be a revoke and a
+        grant wearing one id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareUpdate" }
+      responses:
+        "200":
+          description: The updated grant.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Sharing]
+      summary: Revoke a grant
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}/shares:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+    get:
+      tags: [Sharing]
+      summary: List who has access to this data product
+      description: >-
+        Both principal kinds together. Restricted to the owner and platform admins:
+        the list names who holds the record, which is more than a grantee needs to
+        know.
+      responses:
+        "200":
+          description: The grants made on this record.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShareResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Sharing]
+      summary: Grant a principal access to this data product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareRequest" }
+      responses:
+        "201":
+          description: The grant that was created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}/shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Sharing]
+      summary: Change what a grant confers
+      description: >-
+        Only the permission is editable. The subject is fixed when the grant is
+        created, because moving it to a different principal would be a revoke and a
+        grant wearing one id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareUpdate" }
+      responses:
+        "200":
+          description: The updated grant.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Sharing]
+      summary: Revoke a grant
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/virtual-data-directories/{virtualDataDirectoryId}/shares:
+    parameters:
+      - $ref: "#/components/parameters/VirtualDataDirectoryId"
+    get:
+      tags: [Sharing]
+      summary: List who has access to this virtual data directory
+      description: >-
+        Both principal kinds together. Restricted to the owner and platform admins:
+        the list names who holds the record, which is more than a grantee needs to
+        know.
+      responses:
+        "200":
+          description: The grants made on this record.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShareResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Sharing]
+      summary: Grant a principal access to this virtual data directory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareRequest" }
+      responses:
+        "201":
+          description: The grant that was created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/virtual-data-directories/{virtualDataDirectoryId}/shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/VirtualDataDirectoryId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Sharing]
+      summary: Change what a grant confers
+      description: >-
+        Only the permission is editable. The subject is fixed when the grant is
+        created, because moving it to a different principal would be a revoke and a
+        grant wearing one id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareUpdate" }
+      responses:
+        "200":
+          description: The updated grant.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Sharing]
+      summary: Revoke a grant
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterConfigId"
+    get:
+      tags: [Sharing]
+      summary: List who has access to this Slurm cluster config
+      description: >-
+        Both principal kinds together. Restricted to the owner and platform admins:
+        the list names who holds the record, which is more than a grantee needs to
+        know.
+      responses:
+        "200":
+          description: The grants made on this record.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShareResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Sharing]
+      summary: Grant a principal access to this Slurm cluster config
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareRequest" }
+      responses:
+        "201":
+          description: The grant that was created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/SlurmClusterConfigId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Sharing]
+      summary: Change what a grant confers
+      description: >-
+        Only the permission is editable. The subject is fixed when the grant is
+        created, because moving it to a different principal would be a revoke and a
+        grant wearing one id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareUpdate" }
+      responses:
+        "200":
+          description: The updated grant.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Sharing]
+      summary: Revoke a grant
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
 components:
   securitySchemes:
     bearerAuth:
@@ -2587,6 +2374,11 @@ components:
       schema: { type: string, format: uuid }
     TaskId:
       name: taskId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    VirtualDataDirectoryId:
+      name: virtualDataDirectoryId
       in: path
       required: true
       schema: { type: string, format: uuid }
@@ -2669,6 +2461,57 @@ components:
           schema: { $ref: "#/components/schemas/Error" }
 
   schemas:
+    ShareRequest:
+      type: object
+      description: >-
+        A grant. The same body for every shareable record: the record is named by the
+        path, and the subject's kind is principalType rather than a separate endpoint.
+      required: [principalType, principalId]
+      properties:
+        principalType:
+          type: string
+          enum: [USER, GROUP]
+          description: >-
+            USER reaches exactly that account. GROUP reaches every ACTIVE member of
+            the group, resolved at access time rather than stored.
+        principalId:
+          type: string
+          description: A user id for USER, a group id for GROUP. Must already exist.
+        permission:
+          type: [string, "null"]
+          enum: [READ, WRITE, null]
+          description: >-
+            Defaults to READ when omitted; widening is a deliberate act. WRITE implies
+            READ. Neither reaches deleting the record or managing its share list.
+
+    ShareUpdate:
+      type: object
+      description: Changes what an existing grant confers. The subject is fixed at creation.
+      required: [permission]
+      properties:
+        permission:
+          type: string
+          enum: [READ, WRITE]
+
+    ShareResponse:
+      type: object
+      description: >-
+        One grant. The resource is echoed back even though the caller named it in the
+        path, so a row stays unambiguous once it leaves the response it arrived in.
+      properties:
+        resourceSharingId: { type: string }
+        resourceType:
+          type: string
+          enum: [DATA_PRODUCT, SCP_DATA_STORAGE, VIRTUAL_DATA_DIRECTORY, SLURM_CLUSTER_CONFIG]
+        resourceId: { type: string }
+        principalType:
+          type: string
+          enum: [USER, GROUP]
+        principalId: { type: string }
+        permission:
+          type: string
+          enum: [READ, WRITE]
+
     # ---------------------------------------------------------- Errors
 
     FieldError:
@@ -3044,62 +2887,6 @@ components:
           enum: [READ, WRITE]
       required: [slurmClusterConfigId, slurmClusterId, loginUser, workRoot]
 
-    SlurmClusterConfigGroupSharingRequest:
-      type: object
-      properties:
-        groupId: { type: string }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/ClusterPermission" }
-            - { type: "null" }
-      required: [groupId]
-
-    SlurmClusterConfigUserSharingRequest:
-      type: object
-      properties:
-        userId: { type: string }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/ClusterPermission" }
-            - { type: "null" }
-      required: [userId]
-
-    SlurmClusterConfigSharingUpdate:
-      type: object
-      properties:
-        permission: { $ref: "#/components/schemas/ClusterPermission" }
-      required: [permission]
-
-    SlurmClusterConfigGroupSharingResponse:
-      type: object
-      properties:
-        slurmClusterConfigGroupSharingId: { type: string, format: uuid }
-        slurmClusterConfigId: { type: string, format: uuid }
-        groupId: { type: string }
-        permission: { $ref: "#/components/schemas/ClusterPermission" }
-      required:
-        [
-          slurmClusterConfigGroupSharingId,
-          slurmClusterConfigId,
-          groupId,
-          permission,
-        ]
-
-    SlurmClusterConfigUserSharingResponse:
-      type: object
-      properties:
-        slurmClusterConfigUserSharingId: { type: string, format: uuid }
-        slurmClusterConfigId: { type: string, format: uuid }
-        userId: { type: string }
-        permission: { $ref: "#/components/schemas/ClusterPermission" }
-      required:
-        [
-          slurmClusterConfigUserSharingId,
-          slurmClusterConfigId,
-          userId,
-          permission,
-        ]
-
     # ---------------------------------------------------- Application
 
     TemplateInput:
@@ -3272,56 +3059,6 @@ components:
           enum: [READ, WRITE]
       required: [dataId]
 
-    SCPDataStorageGroupSharingRequest:
-      type: object
-      properties:
-        groupId: { type: string }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataStoragePermission" }
-            - { type: "null" }
-      required: [groupId]
-
-    SCPDataStorageUserSharingRequest:
-      type: object
-      properties:
-        userId: { type: string }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataStoragePermission" }
-            - { type: "null" }
-      required: [userId]
-
-    SCPDataStorageSharingUpdate:
-      type: object
-      properties:
-        permission: { $ref: "#/components/schemas/DataStoragePermission" }
-      required: [permission]
-
-    SCPDataStorageGroupSharingResponse:
-      type: object
-      properties:
-        dataStorageGroupSharingId: { type: string, format: uuid }
-        dataStorageId: { type: [string, "null"], format: uuid }
-        groupId: { type: [string, "null"] }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataStoragePermission" }
-            - { type: "null" }
-      required: [dataStorageGroupSharingId]
-
-    SCPDataStorageUserSharingResponse:
-      type: object
-      properties:
-        dataStorageUserSharingId: { type: string, format: uuid }
-        dataStorageId: { type: [string, "null"], format: uuid }
-        userId: { type: [string, "null"] }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataStoragePermission" }
-            - { type: "null" }
-      required: [dataStorageUserSharingId]
-
     DataProductRequest:
       type: object
       description: |
@@ -3365,58 +3102,6 @@ components:
             only on the listings that compute it.
           enum: [READ, WRITE]
       required: [dataId, isFile, dataStorageType, createdAt]
-
-    DataProductGroupSharingRequest:
-      type: object
-      properties:
-        groupId: { type: string }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataProductPermission" }
-            - { type: "null" }
-      required: [groupId]
-
-    DataProductUserSharingRequest:
-      type: object
-      properties:
-        userId: { type: string }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataProductPermission" }
-            - { type: "null" }
-      required: [userId]
-
-    DataProductSharingUpdate:
-      type: object
-      description: |
-        The subject is fixed at creation; only the permission is editable.
-      properties:
-        permission: { $ref: "#/components/schemas/DataProductPermission" }
-      required: [permission]
-
-    DataProductGroupSharingResponse:
-      type: object
-      properties:
-        dataProductGroupSharingId: { type: string, format: uuid }
-        dataProductId: { type: [string, "null"], format: uuid }
-        groupId: { type: [string, "null"] }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataProductPermission" }
-            - { type: "null" }
-      required: [dataProductGroupSharingId]
-
-    DataProductUserSharingResponse:
-      type: object
-      properties:
-        dataProductUserSharingId: { type: string, format: uuid }
-        dataProductId: { type: [string, "null"], format: uuid }
-        userId: { type: [string, "null"] }
-        permission:
-          oneOf:
-            - { $ref: "#/components/schemas/DataProductPermission" }
-            - { type: "null" }
-      required: [dataProductUserSharingId]
 
     # -------------------------------------------------------- Process
 

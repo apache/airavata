@@ -2,7 +2,7 @@
 
 Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via the `SERVER_PORT` env var).
 
-This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.
+This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.\n\nSharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
 
 All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH keys](#ssh-keys), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a key, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
@@ -696,61 +696,29 @@ DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
 ### Share a Slurm Cluster Config
 
 ```
-GET    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares
-POST   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares
-PUT    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares/{sharingId}
-DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/user-shares/{sharingId}
-
-GET    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares
-POST   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares
-PUT    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares/{sharingId}
-DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/group-shares/{sharingId}
+GET    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares
+POST   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares
+PUT    /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares/{sharingId}
+DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares/{sharingId}
 ```
 
 Restricted to the config's owner and platform admins — reading the list included. It names who can submit jobs as a particular account on a particular machine, which is more than a grantee needs to know.
 
-A group share reaches someone only through an **ACTIVE** membership: an inactive member keeps their place in the group without keeping access through it.
-
 ```bash
 # Share with one user, read-only.
-curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/user-shares \
+curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/shares \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{ "userId": "cilogon:67890", "permission": "READ" }'
+  -d '{ "principalType": "USER", "principalId": "cilogon:67890", "permission": "READ" }'
 
 # Or with a whole group, letting them launch under it.
-curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/group-shares \
+curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/shares \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{ "groupId": "'"$GROUP_ID"'", "permission": "WRITE" }'
+  -d '{ "principalType": "GROUP", "principalId": "'"$GROUP_ID"'", "permission": "WRITE" }'
 ```
 
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `userId` / `groupId` | string | required, cannot be blank; must reference an existing user or group |
-| `permission` | `READ` \| `WRITE` \| null | optional, defaults to `READ` |
-
-`PUT` changes what an existing share grants and requires `permission`. `DELETE` revokes it and returns `204 No Content`.
-
-**Response — `201 Created`**
-
-```json
-{
-  "slurmClusterConfigUserSharingId": "2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f",
-  "slurmClusterConfigId": "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d",
-  "userId": "cilogon:67890",
-  "permission": "READ"
-}
-```
-
-| Status | When |
-|---|---|
-| `400 Bad Request` | `userId`/`groupId` blank, or an unrecognised `permission` |
-| `403 Forbidden` | the caller is not the owner — a grantee cannot read or change the share list |
-| `404 Not Found` | no such config, group or user; or a `sharingId` that belongs to a different config |
-| `409 Conflict` | already shared with that group or user (widen the existing share instead), or shared with the owner, which would grant nothing |
+Bodies, responses and errors are the same for every shareable record and are documented once in **[sharing.md](sharing.md)**.
 
 ## Application Templates
 
@@ -1091,15 +1059,10 @@ GET    /api/v1/scp-data-storages/{dataStorageId}                   (READ)
 PUT    /api/v1/scp-data-storages/{dataStorageId}                   (WRITE)
 DELETE /api/v1/scp-data-storages/{dataStorageId}                   (owner)
 
-GET    /api/v1/scp-data-storages/{dataStorageId}/group-shares      (owner)
-POST   /api/v1/scp-data-storages/{dataStorageId}/group-shares      (owner)
-PUT    /api/v1/scp-data-storages/{dataStorageId}/group-shares/{sharingId}
-DELETE /api/v1/scp-data-storages/{dataStorageId}/group-shares/{sharingId}
-
-GET    /api/v1/scp-data-storages/{dataStorageId}/user-shares       (owner)
-POST   /api/v1/scp-data-storages/{dataStorageId}/user-shares       (owner)
-PUT    /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}
-DELETE /api/v1/scp-data-storages/{dataStorageId}/user-shares/{sharingId}
+GET    /api/v1/scp-data-storages/{dataStorageId}/shares            (owner)
+POST   /api/v1/scp-data-storages/{dataStorageId}/shares            (owner)
+PUT    /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId} (owner)
+DELETE /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId} (owner)
 ```
 ## SCP Data Storage Registration
 
@@ -1168,17 +1131,19 @@ The key is inlined as its safe (public-only) summary — the private material is
 ### Share an SCP Data Storage
 
 ```
-POST /api/v1/scp-data-storages/{dataStorageId}/user-shares
-POST /api/v1/scp-data-storages/{dataStorageId}/group-shares
+GET    /api/v1/scp-data-storages/{dataStorageId}/shares
+POST   /api/v1/scp-data-storages/{dataStorageId}/shares
+PUT    /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId}
+DELETE /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId}
 ```
 
-Bodies and errors match [Share a Data Product](#share-a-data-product) below: `userId`/`groupId` plus an optional `permission` defaulting to `READ`, restricted to the storage's owner and platform admins.
+Restricted to the storage's owner and platform admins, reads included. See **[sharing.md](sharing.md)** for the request body, response shape and errors, which are the same for every shareable record.
 
 ```bash
-curl -s -X POST localhost:9095/api/v1/scp-data-storages/"$STORAGE_ID"/group-shares \
+curl -s -X POST localhost:9095/api/v1/scp-data-storages/"$STORAGE_ID"/shares \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{ "groupId": "'"$GROUP_ID"'", "permission": "READ" }'
+  -d '{ "principalType": "GROUP", "principalId": "'"$GROUP_ID"'", "permission": "READ" }'
 ```
 
 ## Data Products
@@ -1191,7 +1156,7 @@ A data product is a registered dataset: a path on an [SCP data storage](#scp-dat
 | `WRITE` share | the above, and edit the product |
 | Owner (or admin) | the above, and delete it, and manage its shares |
 
-`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as [SCP data storages](#share-an-scp-data-storage). A group share applies only while the member's group membership is `ACTIVE`.
+`WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as every other shareable record — see [sharing.md](sharing.md). A group share applies only while the member's group membership is `ACTIVE`.
 
 Anyone else gets `403 Forbidden`, and no listing leaks a product: `GET /api/v1/data-products` is admin-only, `/me` returns what the caller owns, and `/shared-with-me` what has been shared with them.
 
@@ -1258,49 +1223,22 @@ A product names no credential of its own: the host its data sits on and the acco
 ### Share a Data Product
 
 ```
-GET    /api/v1/data-products/{dataProductId}/group-shares
-POST   /api/v1/data-products/{dataProductId}/group-shares
-PUT    /api/v1/data-products/{dataProductId}/group-shares/{sharingId}
-DELETE /api/v1/data-products/{dataProductId}/group-shares/{sharingId}
-
-GET    /api/v1/data-products/{dataProductId}/user-shares
-POST   /api/v1/data-products/{dataProductId}/user-shares
-PUT    /api/v1/data-products/{dataProductId}/user-shares/{sharingId}
-DELETE /api/v1/data-products/{dataProductId}/user-shares/{sharingId}
+GET    /api/v1/data-products/{dataProductId}/shares
+POST   /api/v1/data-products/{dataProductId}/shares
+PUT    /api/v1/data-products/{dataProductId}/shares/{sharingId}
+DELETE /api/v1/data-products/{dataProductId}/shares/{sharingId}
 ```
 
 Every one of these — reads included — is restricted to the owner and platform admins: the share list names who holds a dataset, which is more than a grantee needs to know.
 
-**Request body**
-
-| Field | Type | Notes |
-|---|---|---|
-| `groupId` / `userId` | string | required; must reference an existing record |
-| `permission` | string \| null | optional, `READ` or `WRITE`; defaults to `READ` |
-
-`PUT` takes only `permission`, which is required there — the subject of a share is fixed at creation.
-
-**Response — `201 Created`**
-
-```json
-{
-  "dataProductUserSharingId": "2b3c4d5e-6f70-4a8b-9c0d-1e2f3a4b5c6d",
-  "dataProductId": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
-  "userId": "cilogon:67890",
-  "permission": "READ"
-}
+```bash
+curl -s -X POST localhost:9095/api/v1/data-products/"$DATA_PRODUCT_ID"/shares \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "principalType": "USER", "principalId": "cilogon:67890", "permission": "READ" }'
 ```
 
-A group share is the same shape with `dataProductGroupSharingId` and `groupId`.
-
-**Errors**
-
-| Status | Cause |
-|---|---|
-| `400 Bad Request` | `groupId`/`userId` blank, or an unrecognised `permission` |
-| `403 Forbidden` | the caller is not the owner |
-| `404 Not Found` | no such product, group or user; or a `sharingId` belonging to a different product |
-| `409 Conflict` | already shared with that group or user, or shared with the owner |
+The request body, the response shape and the errors are identical for all four shareable records and are documented once in **[sharing.md](sharing.md)**.
 
 ## Groups
 

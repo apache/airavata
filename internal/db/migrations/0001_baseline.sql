@@ -189,6 +189,43 @@ CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_user_id" ON "data_pro
 
 CREATE INDEX IF NOT EXISTS "idx_data_product_user_sharings_data_product_id" ON "data_product_user_sharings" ("data_product_id");
 
+-- The nodes of a virtual dataset: a tree of references to registered products.
+-- The directory table references itself, so it precedes the files and the sharing
+-- rows that hang off it.
+CREATE TABLE "virtual_data_directories" ("virtual_data_directory_id" varchar(36),"directory_name" varchar(255),"parent_directory_id" varchar(36),"data_product_id" varchar(36),"user_id" varchar(255),"created_at" bigint NOT NULL,PRIMARY KEY ("virtual_data_directory_id"),CONSTRAINT "fk_virtual_data_directories_directories" FOREIGN KEY ("parent_directory_id") REFERENCES "virtual_data_directories"("virtual_data_directory_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_virtual_data_directories_data_product" FOREIGN KEY ("data_product_id") REFERENCES "data_products"("data_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_virtual_data_directories_owner" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_directories_owner_id" ON "virtual_data_directories" ("user_id");
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_directories_data_product_id" ON "virtual_data_directories" ("data_product_id");
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_directories_parent_directory_id" ON "virtual_data_directories" ("parent_directory_id");
+
+CREATE UNIQUE INDEX IF NOT EXISTS "uk_virtual_data_directory_name" ON "virtual_data_directories" ("directory_name","parent_directory_id");
+
+CREATE TABLE "virtual_data_files" ("virtual_data_file_id" varchar(36),"file_name" varchar(255),"parent_directory_id" varchar(36),"data_product_id" varchar(36),"created_at" bigint NOT NULL,PRIMARY KEY ("virtual_data_file_id"),CONSTRAINT "fk_virtual_data_files_data_product" FOREIGN KEY ("data_product_id") REFERENCES "data_products"("data_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_virtual_data_directories_files" FOREIGN KEY ("parent_directory_id") REFERENCES "virtual_data_directories"("virtual_data_directory_id") ON DELETE CASCADE ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_files_data_product_id" ON "virtual_data_files" ("data_product_id");
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_files_parent_directory_id" ON "virtual_data_files" ("parent_directory_id");
+
+CREATE UNIQUE INDEX IF NOT EXISTS "uk_virtual_data_file_name" ON "virtual_data_files" ("file_name","parent_directory_id");
+
+CREATE TABLE "virtual_data_directory_group_sharings" ("virtual_data_directory_group_sharing_id" varchar(36),"virtual_data_directory_id" varchar(36),"group_id" varchar(36),"permission" varchar(32),PRIMARY KEY ("virtual_data_directory_group_sharing_id"),CONSTRAINT "fk_virtual_data_directory_group_sharings_virtual_data_directory" FOREIGN KEY ("virtual_data_directory_id") REFERENCES "virtual_data_directories"("virtual_data_directory_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_virtual_data_directory_group_sharings_group" FOREIGN KEY ("group_id") REFERENCES "groups"("group_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_directory_group_sharings_group_id" ON "virtual_data_directory_group_sharings" ("group_id");
+
+CREATE UNIQUE INDEX IF NOT EXISTS "uk_virtual_data_directory_group_sharing" ON "virtual_data_directory_group_sharings" ("virtual_data_directory_id","group_id");
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_directory_group_sharings_virtual_data_d210b918" ON "virtual_data_directory_group_sharings" ("virtual_data_directory_id");
+
+CREATE TABLE "virtual_data_directory_user_sharings" ("virtual_data_directory_user_sharing_id" varchar(36),"virtual_data_directory_id" varchar(36),"user_id" varchar(255),"permission" varchar(32),PRIMARY KEY ("virtual_data_directory_user_sharing_id"),CONSTRAINT "fk_virtual_data_directory_user_sharings_virtual_data_directory" FOREIGN KEY ("virtual_data_directory_id") REFERENCES "virtual_data_directories"("virtual_data_directory_id") ON DELETE CASCADE ON UPDATE CASCADE,CONSTRAINT "fk_virtual_data_directory_user_sharings_user" FOREIGN KEY ("user_id") REFERENCES "users"("user_id") ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_directory_user_sharings_user_id" ON "virtual_data_directory_user_sharings" ("user_id");
+
+CREATE UNIQUE INDEX IF NOT EXISTS "uk_virtual_data_directory_user_sharing" ON "virtual_data_directory_user_sharings" ("virtual_data_directory_id","user_id");
+
+CREATE INDEX IF NOT EXISTS "idx_virtual_data_directory_user_sharings_virtual_data_d663afca0" ON "virtual_data_directory_user_sharings" ("virtual_data_directory_id");
+
 CREATE TABLE "batch_processes" ("batch_process_id" varchar(36),"parent_process_id" varchar(36),"deployment_id" varchar(36),"slurm_cluster_config_id" varchar(36) NOT NULL,"batch_job_config_id" varchar(36) NOT NULL,"job_id" varchar(255),"base_work_dir" varchar(1024),PRIMARY KEY ("batch_process_id"),CONSTRAINT "fk_batch_processes_deployment" FOREIGN KEY ("deployment_id") REFERENCES "batch_application_deployments"("deployment_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_slurm_cluster_config" FOREIGN KEY ("slurm_cluster_config_id") REFERENCES "slurm_cluster_configs"("slurm_cluster_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_batch_processes_batch_job_config" FOREIGN KEY ("batch_job_config_id") REFERENCES "batch_job_configs"("batch_job_config_id") ON DELETE RESTRICT ON UPDATE CASCADE,CONSTRAINT "fk_processes_batch_process" FOREIGN KEY ("parent_process_id") REFERENCES "processes"("process_id") ON DELETE CASCADE ON UPDATE CASCADE);
 
 CREATE UNIQUE INDEX IF NOT EXISTS "idx_batch_processes_batch_job_config_id" ON "batch_processes" ("batch_job_config_id");
