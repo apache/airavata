@@ -9,7 +9,7 @@ Airavata API (`cmd/airavata-server`).
 
 | Requirement | Version | Check using |
 |---|---|---|
-| **Go** | 1.24.2+ | `go version` |
+| **Go** | 1.25+ | `go version` |
 | **PostgreSQL** | 14+ | `psql --version` |
 | **Docker Engine** | 20.10+ *(optional — only to run PostgreSQL locally)* | `docker -v` |
 | **Docker Compose** | 2.0+ *(optional)* | `docker compose version` |
@@ -241,26 +241,20 @@ curl -s -X POST localhost:9095/api/v1/slurm-clusters \
   -d '{"clusterName":"expanse","headnodeHost":"login.expanse.sdsc.edu","headnodePort":22}'
 ```
 
-### Two things that need a manual step
-
-**1. Owning resources requires a matching `users` row.**
+### Owning resources requires a matching `users` row
 
 Endpoints that create *owned* resources — SSH keys, cluster configs, data storages,
 processes — resolve the caller to a user record and refuse if none exists:
 
 ```
-404  No user record found for authenticated principal: root
+404  No user record found for authenticated principal: <user>
 ```
 
-The root token bypasses introspection, so no record is created for it. Insert one if
-you intend to own resources as `root`:
+When the root account is enabled, the server creates the `root` row on startup if it
+is missing, so `root` can own resources with no manual step. Any other principal needs
+a row, which you can create through the API (see "Registering users" below).
 
-```sql
-INSERT INTO users (user_id, auth_method, first_name, last_name, status, created_at)
-VALUES ('root', 'SYSTEM', 'Root', 'Account', 'ACTIVE', UNIX_TIMESTAMP() * 1000);
-```
-
-**2. Granting a role requires a manual insert.**
+### Granting a role requires a manual insert
 
 Authorities are read from `user_roles`, but no endpoint writes to that table — user
 registration sets a status and timestamp, and updates deliberately cannot change roles.
@@ -346,7 +340,7 @@ caller lacking the required role returns `403`.
 | `401` with `WWW-Authenticate: Bearer error="invalid_token"` | The token was rejected by introspection, or it is a stale root token from a previous start. Restart and use the newly printed token, or pin it with `AIRAVATA_ROOT_ACCOUNT_TOKEN`. |
 | `502 Unable to validate bearer token` | CILogon is unreachable. This is reported separately from `401` because it is not the caller's fault. |
 | `403 Access denied` on a write | The caller authenticated but lacks `ADMIN`/`SUPER_ADMIN`. Grant the role in `user_roles`. |
-| `404 No user record found for authenticated principal` | The caller has no `users` row. See "First run" above. |
+| `404 No user record found for authenticated principal` | The caller has no `users` row. Register the user (see "First run" above). The `root` row is created automatically on startup. |
 | `409 Key is in use by a credential` | An SSH key cannot be deleted while a credential references it. Delete the credential first. |
 | `409 Template has deployments` | A template cannot be deleted while deployments reference it. Delete the deployments first. |
 
