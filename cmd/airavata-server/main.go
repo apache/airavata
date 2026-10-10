@@ -166,7 +166,10 @@ func runServer() error {
 		return fmt.Errorf("no workflow backend configured")
 	}
 
-	svcs := app.NewServices(cfg, gdb, repos, workflowBackend)
+	svcs, err := app.NewServices(cfg, gdb, repos, workflowBackend)
+	if err != nil {
+		return fmt.Errorf("build services: %w", err)
+	}
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,

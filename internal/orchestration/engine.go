@@ -115,10 +115,10 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	}
 }
 
-func (w *ExecutionEngine) StartEngine() {
+func (w *ExecutionEngine) StartEngine() error {
 	if w.orchestrator == nil {
 		slog.Info("Execution engine built without a workflow backend; not starting the workflow worker")
-		return
+		return nil
 	}
 
 	slog.Info("Starting execution engine...........")
@@ -131,9 +131,9 @@ func (w *ExecutionEngine) StartEngine() {
 	w.orchestrator.RegisterActivity(w.completeProcess)
 
 	if err := w.orchestrator.Start(ctx); err != nil {
-		slog.Error("Failed to start execution engine", "error", err)
-		panic("Could not start execution engine")
+		return err
 	}
+	return nil
 }
 
 // This is invoked when an email related to a batch job is received.
