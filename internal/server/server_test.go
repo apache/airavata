@@ -70,6 +70,10 @@ type harness struct {
 	db   *gorm.DB
 	cfg  config.Config
 	svcs *app.Services
+
+	// introspector is kept so a test that swaps a service out can rebuild the handler
+	// over the same principals.
+	introspector auth.Introspector
 }
 
 func newHarness(t *testing.T) *harness {
@@ -114,18 +118,26 @@ func newHarness(t *testing.T) *harness {
 	// passing nil for workflow backend to prevent test panic due to sqlite driver collision
 	svcs := app.NewServices(cfg, gdb, repos, nil)
 	return &harness{
-		t:    t,
-		db:   gdb,
-		cfg:  cfg,
-		svcs: svcs,
-		srv:  server.New(cfg, svcs, introspector),
+		t:            t,
+		db:           gdb,
+		cfg:          cfg,
+		svcs:         svcs,
+		srv:          server.New(cfg, svcs, introspector),
+		introspector: introspector,
 	}
 }
 
 // withIntrospector rebuilds the handler over the same services, for a test that needs a
 // different set of principals than the three every harness seeds.
 func (h *harness) withIntrospector(introspector auth.Introspector) {
+	h.introspector = introspector
 	h.srv = server.New(h.cfg, h.svcs, introspector)
+}
+
+// rebuild re-registers the routes over h.svcs, for a test that has replaced one of the
+// services since the harness was built.
+func (h *harness) rebuild() {
+	h.srv = server.New(h.cfg, h.svcs, h.introspector)
 }
 
 // do issues a request. An empty token means an anonymous caller.

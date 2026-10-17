@@ -57,6 +57,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	applicationctl.NewBatchDeploymentController(svcs.BatchDeployment).Register(mux)
 	datactl.NewSCPDataStorageController(svcs.SCPDataStorage).Register(mux)
 	datactl.NewDataProductController(svcs.DataProduct).Register(mux)
+	datactl.NewDataTransferController(svcs.DataTransfer).Register(mux)
 	datactl.NewVirtualDataDirectoryController(svcs.VirtualDataDirectory).Register(mux)
 	datactl.NewVirtualDataFileController(svcs.VirtualDataFile).Register(mux)
 	// One sharing controller per shareable record, all four over the same service type
