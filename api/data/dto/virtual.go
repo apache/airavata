@@ -66,10 +66,6 @@ func (r *VirtualDataDirectoryRequest) Name() string {
 // Permission is what the calling principal may do with it: WRITE for the owner and for
 // admins, otherwise whatever the strongest share reaching this node or any ancestor
 // grants. It is a property of the request rather than of the record.
-//
-// Files and Directories are filled only by the endpoints that return contents; a
-// listing leaves them out rather than returning an empty array, so "not asked for" and
-// "empty directory" stay distinct.
 type VirtualDataDirectoryResponse struct {
 	VirtualDataDirectoryID string  `json:"virtualDataDirectoryId"`
 	DirectoryName          *string `json:"directoryName"`
@@ -80,8 +76,8 @@ type VirtualDataDirectoryResponse struct {
 
 	Permission *string `json:"permission,omitempty"`
 
-	Files       []VirtualDataFileResponse      `json:"virtualDataFiles,omitempty"`
-	Directories []VirtualDataDirectoryResponse `json:"virtualDataDirectories,omitempty"`
+	Files       *[]VirtualDataFileResponse      `json:"virtualDataFiles,omitempty"`
+	Directories *[]VirtualDataDirectoryResponse `json:"virtualDataDirectories,omitempty"`
 }
 
 func ToVirtualDataDirectoryResponse(d *model.VirtualDataDirectory) VirtualDataDirectoryResponse {

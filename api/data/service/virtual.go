@@ -182,12 +182,17 @@ func (s *VirtualDataDirectoryService) GetContents(ctx context.Context, id string
 	// Everything below inherits this node's permission, so it is reported rather than
 	// re-resolved per entry: access is granted on subtrees, and nothing under a node
 	// can grant less than the node itself.
-	out.Files = dto.ToVirtualDataFileResponsesWith(files, string(held))
-	out.Directories = make([]dto.VirtualDataDirectoryResponse, 0, len(children))
+	//
+	// Both lists are always sent, empty included, so a caller reading the contents of a
+	// directory never has to tell a missing field from an empty one.
+	fileEntries := dto.ToVirtualDataFileResponsesWith(files, string(held))
+	dirEntries := make([]dto.VirtualDataDirectoryResponse, 0, len(children))
 	for i := range children {
-		out.Directories = append(out.Directories,
+		dirEntries = append(dirEntries,
 			dto.ToVirtualDataDirectoryResponseWith(&children[i], string(held)))
 	}
+	out.Files = &fileEntries
+	out.Directories = &dirEntries
 	return &out, nil
 }
 

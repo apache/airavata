@@ -73,8 +73,14 @@ func TestVirtualDatasetRoundTrip(t *testing.T) {
 	if len(dirs) != 1 {
 		t.Fatalf("root holds %d directories, want 1", len(dirs))
 	}
-	if _, ok := contents["virtualDataFiles"]; ok {
-		t.Error("root reported files it does not have")
+	// An empty list is still reported, so a caller never has to tell a missing field
+	// from an empty directory.
+	emptyFiles, ok := contents["virtualDataFiles"].([]any)
+	if !ok {
+		t.Errorf("root omitted virtualDataFiles, want an empty array; got %v", contents["virtualDataFiles"])
+	}
+	if len(emptyFiles) != 0 {
+		t.Errorf("root holds %d files, want 0", len(emptyFiles))
 	}
 
 	// The subdirectory lists the file.
@@ -92,6 +98,15 @@ func TestVirtualDatasetRoundTrip(t *testing.T) {
 	mine := h.list("/api/v1/virtual-data-directories/me", tokenAlice)
 	if len(mine) != 1 || mine[0]["virtualDataDirectoryId"] != root {
 		t.Errorf("own datasets = %v, want just the root", mine)
+	}
+
+	// A listing reports no contents at all, which is not the same as reporting empty
+	// ones: the root it names does hold a subdirectory.
+	if _, ok := mine[0]["virtualDataDirectories"]; ok {
+		t.Error("a listing reported contents it was not asked for")
+	}
+	if _, ok := mine[0]["virtualDataFiles"]; ok {
+		t.Error("a listing reported contents it was not asked for")
 	}
 }
 
@@ -150,9 +165,14 @@ func TestVirtualDatasetProductKinds(t *testing.T) {
 		"fileName": "y", "parentDirectoryId": graftedID, "dataProductId": fileProduct,
 	}, http.StatusConflict)
 
+	// Its contents are omitted rather than reported empty: an empty array would claim
+	// there is nothing there, and what is on disk is not this API's to describe.
 	contents := h.mustDo(http.MethodGet, "/api/v1/virtual-data-directories/"+graftedID+"/contents",
 		tokenAlice, nil, http.StatusOK)
 	if _, ok := contents["virtualDataFiles"]; ok {
+		t.Error("a product-backed directory reported entries of its own")
+	}
+	if _, ok := contents["virtualDataDirectories"]; ok {
 		t.Error("a product-backed directory reported entries of its own")
 	}
 }
