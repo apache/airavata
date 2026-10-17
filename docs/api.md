@@ -42,7 +42,8 @@ The statuses in use:
 | `403 Forbidden` | authenticated, but lacking the authority for this call |
 | `404 Not Found` | no such record — or, for [groups](#groups), a record the caller has no standing to know exists |
 | `409 Conflict` | the request collides with existing state, e.g. deleting an SSH key still in use |
-| `502 Bad Gateway` | the identity provider could not be reached to validate the token; not the caller's fault |
+| `413 Content Too Large` | the body ran past a size cap — only [data product content](#upload-and-download-data-product-content) has one |
+| `502 Bad Gateway` | an upstream could not be reached: the identity provider when validating a token, or the storage host when [transferring data product content](#upload-and-download-data-product-content). Not the caller's fault either way |
 
 Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
@@ -1152,8 +1153,8 @@ A data product is a registered dataset: a path on an [SCP data storage](#scp-dat
 
 | Standing | May do |
 |---|---|
-| `READ` share | read the product, and see it under `/shared-with-me` |
-| `WRITE` share | the above, and edit the product |
+| `READ` share | read the product, [download its content](#upload-and-download-data-product-content), and see it under `/shared-with-me` |
+| `WRITE` share | the above, and edit the product and [upload its content](#upload-and-download-data-product-content) |
 | Owner (or admin) | the above, and delete it, and manage its shares |
 
 `WRITE` implies `READ`, control is not reachable through a share, and where several shares reach the same caller the strongest applies — the same rules as every other shareable record — see [sharing.md](sharing.md). A group share applies only while the member's group membership is `ACTIVE`.
@@ -1219,6 +1220,88 @@ There is no `ownerId` and no `provisionStatus`: ownership comes from the token, 
 A product names no credential of its own: the host its data sits on and the account it is reached as both come from its [storage](#scp-data-storages), so there is nothing here that could disagree with them. `dataStorageId` carries no foreign key — it is qualified by `dataStorageType` — so it is resolved by the service: an unknown id is `404` and one the caller cannot reach is `403`.
 
 `DELETE` returns `204 No Content`, is refused for anyone but the owner and admins, and takes the product's shares with it.
+
+### Upload and Download Data Product Content
+
+```
+GET /api/v1/data-products/{dataProductId}/content
+PUT /api/v1/data-products/{dataProductId}/content
+```
+
+The routes above register *where* a dataset lives; these two move the bytes. The content is fetched from — or written to — the product's `path` on its [storage](#scp-data-storages), over the same SCP implementation a [data staging task](#create-data-staging-task) uses.
+
+| Route | Standing needed |
+|---|---|
+| `GET .../content` | `READ` on the product |
+| `PUT .../content` | `WRITE` on the product |
+
+**The standing is on the product, and nothing else.** A product names a storage and that storage names an SSH key, but no standing on the storage is required and the key is never exposed: the platform reaches the host under the credential the storage owner registered, exactly as a staging task does. Requiring a storage share as well would make sharing a product useless on its own, and sharing the storage instead would hand over every dataset on that host rather than the one meant.
+
+Only a **file** product can be transferred — `isFile: false` is `400`, because a directory moves as a tree and single-file SCP does not do that.
+
+**Download**
+
+```bash
+curl -s -X GET localhost:9095/api/v1/data-products/"$DATA_PRODUCT_ID"/content \
+  -H "Authorization: Bearer $TOKEN" \
+  -o sample.fasta
+```
+
+The response is `application/octet-stream` with `Content-Length` set and `Content-Disposition: attachment; filename=<basename of the product's path>`.
+
+**Upload**
+
+The body may be sent raw, or as a `multipart/form-data` part named `file`:
+
+```bash
+# Raw body
+curl -s -X PUT localhost:9095/api/v1/data-products/"$DATA_PRODUCT_ID"/content \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @sample.fasta
+
+# Multipart, as a browser form sends it
+curl -s -X PUT localhost:9095/api/v1/data-products/"$DATA_PRODUCT_ID"/content \
+  -H "Authorization: Bearer $TOKEN" \
+  -F file=@sample.fasta
+```
+
+The remote name always comes from the product's `path`, never from a part's filename: a product names where its data lives, and an upload does not get to move it. Missing parent directories are created first. Bodies are capped at 5 GiB, since the content is staged on the server's disk before it is sent on; a larger one is `413`.
+
+`PUT` rather than `POST` because the product already names where its content goes, so sending it twice puts the same bytes in the same place rather than creating a second anything.
+
+**Response — `200 OK`** — the product, now `PROVISIONED`:
+
+```json
+{
+  "dataId": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+  "dataName": "sample-fasta",
+  "isFile": true,
+  "path": "/home/exouser/data/sample.fasta",
+  "provisionStatus": "PROVISIONED",
+  "ownerId": "cilogon:12345",
+  "dataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
+  "dataStorageType": "SCP",
+  "createdAt": 1755043200000,
+  "permission": "WRITE"
+}
+```
+
+A successful upload is what moves a product from `REGISTERD` to `PROVISIONED` — the data it was registered for is now where it says. A failed one leaves the status alone: the response already reports the failure, and a transfer that could not reach the host says nothing about whatever was provisioned there before.
+
+**Failures**
+
+| Status | Means |
+|---|---|
+| `400` | the product is a directory, is not on SCP storage, or the body could not be read |
+| `403` | no `READ` (download) or `WRITE` (upload) standing on the product |
+| `404` | no such product |
+| `409` | the product names no path, or its storage is missing the host, login user or key |
+| `413` | the body ran past the upload cap |
+| `502` | the storage host could not be reached, or refused the transfer |
+
+A `502` is the host's failure rather than the request's; the underlying SSH error is logged server-side and kept out of the response body.
+
 
 ### Share a Data Product
 

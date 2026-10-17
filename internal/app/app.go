@@ -85,6 +85,7 @@ type Services struct {
 	SCPDataStorageSharing       *sharingsvc.Service
 	DataProduct                 *datasvc.DataProductService
 	DataProductSharing          *sharingsvc.Service
+	DataTransfer                *datasvc.DataTransferService
 	VirtualDataDirectory        *datasvc.VirtualDataDirectoryService
 	VirtualDataFile             *datasvc.VirtualDataFileService
 	VirtualDataDirectorySharing *sharingsvc.Service
@@ -197,6 +198,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, shares, groups, users, groupMembers)
 	dataProductSvc := datasvc.NewDataProductService(db, products, shares, storages, users, groupMembers)
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, shares, groups, users, groupMembers)
+	dataTransferSvc := datasvc.NewDataTransferService(db, products, shares, storages, groupMembers, datasvc.NewSCPTransport())
 	virtualDataDirectorySvc := datasvc.NewVirtualDataDirectoryService(db, virtualDirs, virtualFiles, shares, products, users, groupMembers)
 	virtualDataFileSvc := datasvc.NewVirtualDataFileService(db, virtualDirs, virtualFiles, shares, products, groupMembers)
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
@@ -230,6 +232,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		SCPDataStorageSharing: scpDataStorageSharingSvc,
 		DataProduct:           dataProductSvc,
 		DataProductSharing:    dataProductSharingSvc,
+		DataTransfer:          dataTransferSvc,
 
 		VirtualDataDirectory:        virtualDataDirectorySvc,
 		VirtualDataFile:             virtualDataFileSvc,
