@@ -112,7 +112,10 @@ func newHarness(t *testing.T) *harness {
 
 	repos := app.NewRepositories(gdb)
 	// passing nil for workflow backend to prevent test panic due to sqlite driver collision
-	svcs := app.NewServices(cfg, gdb, repos, nil)
+	svcs, err := app.NewServices(cfg, gdb, repos, nil)
+	if err != nil {
+		t.Fatalf("Failed to initialize services: %v", err)
+	}
 	return &harness{
 		t:    t,
 		db:   gdb,

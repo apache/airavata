@@ -159,7 +159,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 //
 // The repositories stay local: they are an implementation detail of the services above
 // them, and nothing outside this function has ever wanted one directly.
-func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBackend backend.Backend) *Services {
+func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBackend backend.Backend) (*Services, error) {
 	// Repositories.
 	users := repos.Users
 	groups := repos.Groups
@@ -204,7 +204,10 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
 		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend)
-	executionEngine.StartEngine()
+	
+	if err := executionEngine.StartEngine(); err != nil {
+		return nil, err
+	}
 
 	return &Services{
 		Config: cfg,
@@ -248,5 +251,5 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 			monitoringTasks, commandTasks, executionEngine),
 
 		ExecutionEngine: executionEngine,
-	}
+	}, nil
 }
