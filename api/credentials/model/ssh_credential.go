@@ -18,7 +18,7 @@
 * under the License.
  */
 
-// Package model holds the SSH key entity.
+// Package model holds the SSH credential entity.
 package model
 
 import (
@@ -27,7 +27,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// SSHKey is a registered SSH keypair.
+// SSHCredential is a registered SSH credential.
 //
 // PrivateKey and Passphrase are secrets: they are stored here but deliberately have
 // no field on the read-side response DTO, so they cannot leak through a GET. Update
@@ -35,22 +35,24 @@ import (
 // ptr.NonBlank.
 //
 // It belongs to whoever registered it, and — unlike every other owned record here —
-// there is no sharing model to reach it by. A key is the credential itself rather than
-// something reached with one, so a cluster config or a data storage may only present a
-// key its own owner registered. Sharing the config is how someone else submits under
-// it; the key never leaves its owner.
-//
-// Java: org.apache.airavata.credentials.model.SSHKeyEntity
-type SSHKey struct {
-	ID string `gorm:"column:ssh_key_id;primaryKey;type:varchar(36)" json:"sshKeyId"`
+// there is no sharing model to reach it by. A credential is the secret material itself
+// rather than something reached with it, so a cluster config or a data storage may only
+// present a credential its own owner registered. Sharing the config is how someone else
+// submits under it; the credential never leaves its owner.
+type SSHCredential struct {
+	ID string `gorm:"column:ssh_credential_id;primaryKey;type:varchar(36)" json:"sshCredentialId"`
 
-	SSHKeyName string `gorm:"column:ssh_key_name;type:varchar(255);not null" json:"sshKeyName"`
+	SSHCredentialName string `gorm:"column:ssh_credential_name;type:varchar(255);not null" json:"sshCredentialName"`
 
-	// @Lob in Java: keys are far longer than a default varchar.
-	PublicKey  string `gorm:"column:public_key;type:text;not null" json:"publicKey"`
-	PrivateKey string `gorm:"column:private_key;type:text;not null" json:"-"`
-
+	PublicKey  string  `gorm:"column:public_key;type:text;not null" json:"publicKey"`
+	PrivateKey string  `gorm:"column:private_key;type:text;not null" json:"-"`
 	Passphrase *string `gorm:"column:passphrase;type:varchar(255)" json:"-"`
+
+	// Certificate based authentication. This indicates whether the SSH credential uses a certificate for authentication.
+	IsCertificate bool `gorm:"column:is_certificate;not null" json:"isCertificate"`
+
+	// FullInteractive indicates whether the SSH requires full interactive authentication.
+	FullInteractive bool `gorm:"column:full_interactive;not null" json:"fullInteractive"`
 
 	// OwnerID is varchar(255) to match users.user_id: a CILogon subject is far longer
 	// than a UUID. RESTRICT, so a user who still owns keys cannot be deleted out from
@@ -59,18 +61,16 @@ type SSHKey struct {
 	Owner   *iam.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 }
 
-// OwnedBy reports whether userID owns this key. A key with no owner is owned by
-// nobody, so it must not match the empty principal name.
-func (k *SSHKey) OwnedBy(userID string) bool {
+func (k *SSHCredential) OwnedBy(userID string) bool {
 	return k.OwnerID != "" && k.OwnerID == userID
 }
 
-// TableName returns the table backing SSHKey.
-func (SSHKey) TableName() string { return "ssh_keys" }
+// TableName returns the table backing SSHCredential.
+func (SSHCredential) TableName() string { return "ssh_credentials" }
 
 // BeforeCreate assigns a UUID when none was supplied, replacing Hibernate's
 // @GeneratedValue(strategy = GenerationType.UUID).
-func (k *SSHKey) BeforeCreate(*gorm.DB) error {
+func (k *SSHCredential) BeforeCreate(*gorm.DB) error {
 	if k.ID == "" {
 		k.ID = uuid.NewString()
 	}

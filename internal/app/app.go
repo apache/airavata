@@ -68,7 +68,7 @@ type Services struct {
 	GroupMember *iamsvc.GroupMemberService
 
 	// Credentials.
-	SSHKey *credentialssvc.SSHKeyService
+	SSHCredential *credentialssvc.SSHCredentialService
 
 	// Compute.
 	SlurmCluster              *computesvc.SlurmClusterService
@@ -110,7 +110,7 @@ type Repositories struct {
 	Users                   *iamrepo.UserRepository
 	Groups                  *iamrepo.GroupRepository
 	GroupMembers            *iamrepo.GroupMemberRepository
-	SSHKeys                 *credentialsrepo.SSHKeyRepository
+	SSHCredentials          *credentialsrepo.SSHCredentialRepository
 	SlurmClusters           *computerepo.SlurmClusterRepository
 	ClusterPartitions       *computerepo.ClusterPartitionRepository
 	SlurmClusterConfigs     *computerepo.SlurmClusterConfigRepository
@@ -135,7 +135,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Users:                   iamrepo.NewUserRepository(db),
 		Groups:                  iamrepo.NewGroupRepository(db),
 		GroupMembers:            iamrepo.NewGroupMemberRepository(db),
-		SSHKeys:                 credentialsrepo.NewSSHKeyRepository(db),
+		SSHCredentials:          credentialsrepo.NewSSHCredentialRepository(db),
 		SlurmClusters:           computerepo.NewSlurmClusterRepository(db),
 		ClusterPartitions:       computerepo.NewClusterPartitionRepository(db),
 		SlurmClusterConfigs:     computerepo.NewSlurmClusterConfigRepository(db),
@@ -165,7 +165,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	users := repos.Users
 	groups := repos.Groups
 	groupMembers := repos.GroupMembers
-	sshKeys := repos.SSHKeys
+	sshCredentials := repos.SSHCredentials
 	clusters := repos.SlurmClusters
 	partitions := repos.ClusterPartitions
 	clusterConfigs := repos.SlurmClusterConfigs
@@ -186,7 +186,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, shares, groupMembers)
-	keyAccess := credentialssvc.NewKeyAccess(sshKeys)
+	keyAccess := credentialssvc.NewKeyAccess(sshCredentials)
 	processSvs := processsvc.NewProcessService(db, processes, deployments, configAccess, users, statusSvc)
 	batchDeploymentSvc := applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters)
 	templateSvc := applicationsvc.NewTemplateService(db, templates, deployments)
@@ -202,7 +202,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	virtualDataDirectorySvc := datasvc.NewVirtualDataDirectoryService(db, virtualDirs, virtualFiles, shares, products, users, groupMembers)
 	virtualDataFileSvc := datasvc.NewVirtualDataFileService(db, virtualDirs, virtualFiles, shares, products, groupMembers)
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
-	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
+	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
 		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend)
@@ -218,7 +218,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.
-		SSHKey: sshKeySvc,
+		SSHCredential: sshCredentialSvc,
 
 		SlurmCluster:              slurmClusterSvc,
 		ClusterPartition:          clusterPartitionSvc,
@@ -247,7 +247,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
-			sshKeySvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
+			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, executionEngine),
 
 		ExecutionEngine: executionEngine,

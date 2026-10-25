@@ -41,7 +41,7 @@ func Entities() []any {
 	return []any{
 		// No outbound references.
 		&iammodel.User{},
-		&credentialsmodel.SSHKey{},
+		&credentialsmodel.SSHCredential{},
 		&applicationmodel.Template{},
 		&applicationmodel.BatchJobConfig{},
 

@@ -23,7 +23,7 @@ package service
 import (
 	"context"
 
-	"github.com/apache/airavata/internal/orchestration"
+	ssh "github.com/apache/airavata/internal/ssh"
 )
 
 type SCPTransport struct{}
@@ -32,13 +32,13 @@ type SCPTransport struct{}
 func NewSCPTransport() SCPTransport { return SCPTransport{} }
 
 func (SCPTransport) Download(ctx context.Context, ep Endpoint, remotePath, localPath string) error {
-	return orchestration.DownloadFileFromSCP(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, remotePath, localPath)
+	return ssh.DownloadFileFromSCP(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, remotePath, localPath)
 }
 
 func (SCPTransport) Upload(ctx context.Context, ep Endpoint, localPath, remotePath string) error {
-	return orchestration.UploadFileToSCP(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, localPath, remotePath)
+	return ssh.UploadFileToSCP(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, localPath, remotePath)
 }
 
 func (SCPTransport) MakeDirectory(ctx context.Context, ep Endpoint, remoteDir string) error {
-	return orchestration.CreateDirectorySSH(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, remoteDir)
+	return ssh.CreateDirectorySSH(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, remoteDir)
 }

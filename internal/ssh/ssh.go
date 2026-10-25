@@ -18,7 +18,7 @@
 * under the License.
  */
 
-package orchestration
+package ssh
 
 import (
 	"bufio"
@@ -27,7 +27,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log/slog"
 	"net"
 	"os"
 	"path/filepath"
@@ -39,120 +38,113 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Note: Only use DownloadFileFromSCP and UploadFileToSCP for SCP transfers. Do not use
-// any of the utility methods outside of this file. They are considered internal implementation details. Also,
-// DO NOT change internal implementation logic unless you fully understand the implications.
+// ========================== Utility section =====================================
 
-// Copies a single remote file to localPath over SSH
-func DownloadFileFromSCP(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string, localPath string) error {
-	target := fmt.Sprintf("scp download %s@%s:%s", username, host, remotePath)
+// scpOK is the byte each side of the SCP wire protocol writes to acknowledge the
+// other's last message. A leading 0x01 or 0x02 instead introduces a one-line error,
+// which is the only way a remote scp reports a missing or unreadable path.
+const scpOK = 0x00
 
-	t, err := intializeSession(ctx, host, port, username, key, "-f", remotePath, target)
-	if err != nil {
-		return err
-	}
-	defer t.close()
+// scpDialTimeout bounds the TCP connect and the SSH handshake behind it. A staging
+// activity is retried by the workflow, so a host that is merely down should fail the
+// attempt quickly rather than hold a worker slot until the OS gives up on the socket.
+const scpDialTimeout = 30 * time.Second
 
-	if err := receiveSCPFile(t.stdout, t.stdin, localPath); err != nil {
-		return t.fail(err)
-	}
-	if err := t.finish(); err != nil {
-		return err
-	}
-
-	slog.Info("Downloaded file over SCP", "host", host, "remotePath", remotePath, "localPath", localPath)
-	return nil
+type FileMetadata struct {
+	Path string
+	Size int64
+	Mode os.FileMode
 }
 
-// Uploads a single local file to a remote endpoint
-func UploadFileToSCP(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, localPath string, remotePath string) error {
-	target := fmt.Sprintf("scp upload %s@%s:%s", username, host, remotePath)
-
-	// Validate the local file before attempting the SCP upload.
-	file, err := os.Open(localPath)
-	if err != nil {
-		return fmt.Errorf("%s: %w", target, err)
-	}
-	defer file.Close()
-	info, err := file.Stat()
-	if err != nil {
-		return fmt.Errorf("%s: %w", target, err)
-	}
-	if info.IsDir() {
-		return fmt.Errorf("%s: %s is a directory: recursive scp upload is not supported", target, localPath)
-	}
-	if !info.Mode().IsRegular() {
-		return fmt.Errorf("%s: %s is not a regular file, so the size it would announce cannot be trusted", target, localPath)
-	}
-
-	t, err := intializeSession(ctx, host, port, username, key, "-t", remotePath, target)
-	if err != nil {
-		return err
-	}
-	defer t.close()
-
-	if err := sendSCPFile(t.stdout, t.stdin, file, filepath.Base(localPath), info.Mode().Perm(), info.Size()); err != nil {
-		return t.fail(err)
-	}
-	if err := t.finish(); err != nil {
-		return err
-	}
-
-	slog.Info("Uploaded file over SCP", "host", host, "localPath", localPath, "remotePath", remotePath)
-	return nil
+type scpTransfer struct {
+	client  *ssh.Client
+	session *ssh.Session
+	stdin   io.WriteCloser
+	stdout  *bufio.Reader
+	stderr  *bytes.Buffer
+	ctx     context.Context
+	done    chan struct{}
+	target  string
 }
 
-// Creates remotePath on the host, including any missing parent directories, and does
-// nothing if it is already there.
-func CreateDirectorySSH(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string) error {
-	target := fmt.Sprintf("ssh mkdir %s@%s:%s", username, host, remotePath)
-
-	if strings.TrimSpace(remotePath) == "" {
-		return fmt.Errorf("%s: no remote directory was named", target)
-	}
-
-	if _, _, err := runSSHCommand(ctx, host, port, username, key, "mkdir -p "+shellQuote(remotePath), target); err != nil {
-		return err
-	}
-
-	slog.Info("Created directory over SSH", "host", host, "remotePath", remotePath)
-	return nil
-}
-
-// Reads the mode, size and name a remote scp announces for a single remote file,
-// without transferring its contents.
-func GetSCPFileMetadata(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, remotePath string) (*FileMetadata, error) {
-	target := fmt.Sprintf("scp stat %s@%s:%s", username, host, remotePath)
-
-	t, err := intializeSession(ctx, host, port, username, key, "-f", remotePath, target)
+func dialSSH(ctx context.Context, host string, port int, username string, key credmodel.SSHCredential) (*ssh.Client, error) {
+	signer, err := signerFor(key)
 	if err != nil {
 		return nil, err
 	}
-	defer t.close()
+	hostKeys := ssh.InsecureIgnoreHostKey()
+	if port == 0 {
+		port = 22
+	}
+	addr := net.JoinHostPort(host, strconv.Itoa(port))
 
-	// The opening acknowledgement invites the header, and nothing beyond it.
-	if err := scpAck(t.stdin); err != nil {
-		return nil, t.fail(err)
-	}
-	msg, err := readSCPMessage(t.stdout)
+	// DialContext rather than ssh.Dial: the activity's context has to be able to
+	// abandon a connect that is going nowhere.
+	dialer := net.Dialer{Timeout: scpDialTimeout}
+	conn, err := dialer.DialContext(ctx, "tcp", addr)
 	if err != nil {
-		return nil, t.fail(err)
+		return nil, fmt.Errorf("connecting to %s: %w", addr, err)
 	}
-	if msg[0] != 'C' {
-		return nil, t.fail(fmt.Errorf("remote path is not a plain file: scp announced %q", msg))
+	if deadline, ok := ctx.Deadline(); ok {
+		_ = conn.SetDeadline(deadline)
 	}
-	mode, size, name, err := parseSCPFileHeader(msg)
+	sshConn, chans, reqs, err := ssh.NewClientConn(conn, addr, &ssh.ClientConfig{
+		User:            username,
+		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
+		HostKeyCallback: hostKeys,
+		Timeout:         scpDialTimeout,
+	})
 	if err != nil {
-		return nil, t.fail(err)
+		conn.Close()
+		return nil, fmt.Errorf("ssh handshake with %s: %w", addr, err)
 	}
+	// The handshake deadline must not outlive the handshake: a transfer reads for as
+	// long as the file takes.
+	_ = conn.SetDeadline(time.Time{})
+	return ssh.NewClient(sshConn, chans, reqs), nil
+}
 
-	// Path carries the name scp announced, which is the remote basename rather than
-	// the path asked about.
-	return &FileMetadata{
-		Path: name,
-		Size: size,
-		Mode: mode,
-	}, nil
+func intializeScpSession(ctx context.Context, host string, port int, username string, key credmodel.SSHCredential, direction, remotePath, target string) (*scpTransfer, error) {
+	client, err := dialSSH(ctx, host, port, username, key)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", target, err)
+	}
+	session, err := client.NewSession()
+	if err != nil {
+		client.Close()
+		return nil, fmt.Errorf("%s: opening session: %w", target, err)
+	}
+	t := &scpTransfer{client: client, session: session, ctx: ctx, target: target, done: make(chan struct{})}
+	if t.stdin, err = session.StdinPipe(); err != nil {
+		session.Close()
+		client.Close()
+		return nil, fmt.Errorf("%s: %w", target, err)
+	}
+	stdout, err := session.StdoutPipe()
+	if err != nil {
+		session.Close()
+		client.Close()
+		return nil, fmt.Errorf("%s: %w", target, err)
+	}
+	t.stdout = bufio.NewReader(stdout)
+	t.stderr = &bytes.Buffer{}
+	session.Stderr = t.stderr
+
+	// A session read blocks on the network, so cancellation has to arrive by closing
+	// the session under it. done stops the watcher when the transfer finishes first.
+	go func() {
+		select {
+		case <-ctx.Done():
+			session.Close()
+		case <-t.done:
+		}
+	}()
+
+	if err := session.Start("scp " + direction + " " + ShellQuote(remotePath)); err != nil {
+		t.close()
+		return nil, fmt.Errorf("%s: starting remote scp: %w", target, err)
+	}
+	return t, nil
 }
 
 // runSSHCommand runs one command on the host and waits for it to finish, returning
@@ -164,7 +156,7 @@ func GetSCPFileMetadata(ctx context.Context, host string, port int, username str
 // to stderr is folded into the error as well, so a caller that only checks err is no
 // worse off than before. The streams are returned as the command wrote them, trailing
 // newline included; a caller parsing them should trim.
-func runSSHCommand(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, command, target string) (string, string, error) {
+func RunSSHCommand(ctx context.Context, host string, port int, username string, key credmodel.SSHCredential, command, target string) (string, string, error) {
 	client, err := dialSSH(ctx, host, port, username, key)
 	if err != nil {
 		return "", "", fmt.Errorf("%s: %w", target, err)
@@ -201,72 +193,6 @@ func runSSHCommand(ctx context.Context, host string, port int, username string, 
 		return stdout.String(), stderr.String(), fmt.Errorf("%s: %w", target, err)
 	}
 	return stdout.String(), stderr.String(), nil
-}
-
-// ========================== Utility section =====================================
-
-// scpOK is the byte each side of the SCP wire protocol writes to acknowledge the
-// other's last message. A leading 0x01 or 0x02 instead introduces a one-line error,
-// which is the only way a remote scp reports a missing or unreadable path.
-const scpOK = 0x00
-
-// scpDialTimeout bounds the TCP connect and the SSH handshake behind it. A staging
-// activity is retried by the workflow, so a host that is merely down should fail the
-// attempt quickly rather than hold a worker slot until the OS gives up on the socket.
-const scpDialTimeout = 30 * time.Second
-
-type scpTransfer struct {
-	client  *ssh.Client
-	session *ssh.Session
-	stdin   io.WriteCloser
-	stdout  *bufio.Reader
-	stderr  *bytes.Buffer
-	ctx     context.Context
-	done    chan struct{}
-	target  string
-}
-
-func intializeSession(ctx context.Context, host string, port int, username string, key credmodel.SSHKey, direction, remotePath, target string) (*scpTransfer, error) {
-	client, err := dialSSH(ctx, host, port, username, key)
-	if err != nil {
-		return nil, fmt.Errorf("%s: %w", target, err)
-	}
-	session, err := client.NewSession()
-	if err != nil {
-		client.Close()
-		return nil, fmt.Errorf("%s: opening session: %w", target, err)
-	}
-	t := &scpTransfer{client: client, session: session, ctx: ctx, target: target, done: make(chan struct{})}
-	if t.stdin, err = session.StdinPipe(); err != nil {
-		session.Close()
-		client.Close()
-		return nil, fmt.Errorf("%s: %w", target, err)
-	}
-	stdout, err := session.StdoutPipe()
-	if err != nil {
-		session.Close()
-		client.Close()
-		return nil, fmt.Errorf("%s: %w", target, err)
-	}
-	t.stdout = bufio.NewReader(stdout)
-	t.stderr = &bytes.Buffer{}
-	session.Stderr = t.stderr
-
-	// A session read blocks on the network, so cancellation has to arrive by closing
-	// the session under it. done stops the watcher when the transfer finishes first.
-	go func() {
-		select {
-		case <-ctx.Done():
-			session.Close()
-		case <-t.done:
-		}
-	}()
-
-	if err := session.Start("scp " + direction + " " + shellQuote(remotePath)); err != nil {
-		t.close()
-		return nil, fmt.Errorf("%s: starting remote scp: %w", target, err)
-	}
-	return t, nil
 }
 
 func (t *scpTransfer) close() {
@@ -490,61 +416,24 @@ func scpAck(w io.Writer) error {
 	return nil
 }
 
-func dialSSH(ctx context.Context, host string, port int, username string, key credmodel.SSHKey) (*ssh.Client, error) {
-	signer, err := signerFor(key)
-	if err != nil {
-		return nil, err
-	}
-	hostKeys := ssh.InsecureIgnoreHostKey()
-	if port == 0 {
-		port = 22
-	}
-	addr := net.JoinHostPort(host, strconv.Itoa(port))
-
-	// DialContext rather than ssh.Dial: the activity's context has to be able to
-	// abandon a connect that is going nowhere.
-	dialer := net.Dialer{Timeout: scpDialTimeout}
-	conn, err := dialer.DialContext(ctx, "tcp", addr)
-	if err != nil {
-		return nil, fmt.Errorf("connecting to %s: %w", addr, err)
-	}
-	if deadline, ok := ctx.Deadline(); ok {
-		_ = conn.SetDeadline(deadline)
-	}
-	sshConn, chans, reqs, err := ssh.NewClientConn(conn, addr, &ssh.ClientConfig{
-		User:            username,
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
-		HostKeyCallback: hostKeys,
-		Timeout:         scpDialTimeout,
-	})
-	if err != nil {
-		conn.Close()
-		return nil, fmt.Errorf("ssh handshake with %s: %w", addr, err)
-	}
-	// The handshake deadline must not outlive the handshake: a transfer reads for as
-	// long as the file takes.
-	_ = conn.SetDeadline(time.Time{})
-	return ssh.NewClient(sshConn, chans, reqs), nil
-}
-
-func signerFor(key credmodel.SSHKey) (ssh.Signer, error) {
+func signerFor(key credmodel.SSHCredential) (ssh.Signer, error) {
 	pem := []byte(key.PrivateKey)
 	if key.Passphrase != nil && *key.Passphrase != "" {
 		signer, err := ssh.ParsePrivateKeyWithPassphrase(pem, []byte(*key.Passphrase))
 		if err != nil {
-			return nil, fmt.Errorf("ssh key %s could not be decrypted with its registered passphrase", key.ID)
+			return nil, fmt.Errorf("ssh credential %s could not be decrypted with its registered passphrase", key.ID)
 		}
 		return signer, nil
 	}
 	signer, err := ssh.ParsePrivateKey(pem)
 	if err != nil {
-		return nil, fmt.Errorf("ssh key %s could not be parsed (is it passphrase protected without a registered passphrase?)", key.ID)
+		return nil, fmt.Errorf("ssh credential %s could not be parsed (is it passphrase protected without a registered passphrase?)", key.ID)
 	}
 	return signer, nil
 }
 
-// shellQuote wraps s for the remote login shell, which is what runs the scp command
+// ShellQuote wraps s for the remote login shell, which is what runs the scp command
 // line. A path is user supplied, so it cannot be interpolated bare.
-func shellQuote(s string) string {
+func ShellQuote(s string) string {
 	return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'"
 }

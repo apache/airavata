@@ -62,7 +62,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 
 	want := []string{
 		"users", "user_roles", "groups", "group_members",
-		"ssh_keys",
+		"ssh_credentials",
 		"slurm_clusters", "cluster_partitions",
 		"slurm_cluster_configs",
 		"scp_data_storages",

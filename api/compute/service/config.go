@@ -145,7 +145,7 @@ func (a *ConfigAccess) RequireUsable(ctx context.Context, id string) (*model.Slu
 // SlurmClusterConfigService manages the login configs jobs are submitted through.
 //
 // Registering one is self-service: any authenticated caller may declare how they reach
-// a cluster from the catalogue, under one of their own SSH keys, and it belongs to
+// a cluster from the catalogue, under one of their own SSH credentials, and it belongs to
 // them. Everyone else reaches it through its sharing rules — which is how they submit
 // under a key they do not hold.
 type SlurmClusterConfigService struct {
@@ -257,18 +257,18 @@ func (s *SlurmClusterConfigService) Get(ctx context.Context, id string) (*dto.Sl
 // the caller to own it; keeping the one already there does not, so a grantee with WRITE
 // can edit a config without owning the key it logs in with — and still cannot point it
 // at a key of their own.
-func (s *SlurmClusterConfigService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.SlurmClusterConfigRequest, held *string) (*model.SlurmCluster, *credmodel.SSHKey, error) {
+func (s *SlurmClusterConfigService) resolveReferences(ctx context.Context, tx *gorm.DB, req *dto.SlurmClusterConfigRequest, held *string) (*model.SlurmCluster, *credmodel.SSHCredential, error) {
 	cluster, err := s.clusters.WithTx(tx).FindByID(ctx, req.SlurmClusterID)
 	if err != nil {
 		return nil, nil, notFoundAs(err, "Slurm cluster not found: %s", req.SlurmClusterID)
 	}
 
 	keys := s.keys.WithTx(tx)
-	if held != nil && *held == req.SSHKeyID {
-		key, err := keys.Find(ctx, req.SSHKeyID)
+	if held != nil && *held == req.SSHCredentialID {
+		key, err := keys.Find(ctx, req.SSHCredentialID)
 		return cluster, key, err
 	}
-	key, err := keys.RequireOwned(ctx, req.SSHKeyID)
+	key, err := keys.RequireOwned(ctx, req.SSHCredentialID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -276,7 +276,7 @@ func (s *SlurmClusterConfigService) resolveReferences(ctx context.Context, tx *g
 }
 
 // Create registers a config owned by the calling user, against an existing cluster and
-// an existing SSH key.
+// an existing SSH credential.
 //
 // The owner is taken from the token, so there is no way to register a config on
 // someone else's behalf.
@@ -300,11 +300,11 @@ func (s *SlurmClusterConfigService) Create(ctx context.Context, req *dto.SlurmCl
 		}
 
 		config := &model.SlurmClusterConfig{
-			SlurmClusterID: cluster.ID,
-			SlurmCluster:   cluster,
-			SSHKeyID:       &key.ID,
-			SSHKey:         key,
-			OwnerID:        &owner.ID,
+			SlurmClusterID:  cluster.ID,
+			SlurmCluster:    cluster,
+			SSHCredentialID: &key.ID,
+			SSHCredential:   key,
+			OwnerID:         &owner.ID,
 		}
 		dto.ApplySlurmClusterConfigRequest(config, req)
 		if err := configs.Save(ctx, config); err != nil {
@@ -337,7 +337,7 @@ func (s *SlurmClusterConfigService) Update(ctx context.Context, id string, req *
 		if err != nil {
 			return err
 		}
-		cluster, key, err := s.resolveReferences(ctx, tx, req, config.SSHKeyID)
+		cluster, key, err := s.resolveReferences(ctx, tx, req, config.SSHCredentialID)
 		if err != nil {
 			return err
 		}
@@ -345,8 +345,8 @@ func (s *SlurmClusterConfigService) Update(ctx context.Context, id string, req *
 		dto.ApplySlurmClusterConfigRequest(config, req)
 		config.SlurmClusterID = cluster.ID
 		config.SlurmCluster = cluster
-		config.SSHKeyID = &key.ID
-		config.SSHKey = key
+		config.SSHCredentialID = &key.ID
+		config.SSHCredential = key
 		if err := configs.Save(ctx, config); err != nil {
 			return err
 		}

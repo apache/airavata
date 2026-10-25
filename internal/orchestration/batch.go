@@ -32,6 +32,7 @@ import (
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	model "github.com/apache/airavata/api/process/model"
+	ssh "github.com/apache/airavata/internal/ssh"
 )
 
 type SubmitBatchJobParameters struct {
@@ -88,8 +89,8 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 	}
 
 	slog.Info("Creating job working directory through SSH", "taskId", taskID, "processId", processID, "destinationDirectory", *jst.WorkingDir)
-	if err := CreateDirectorySSH(ctx, clusterConfig.SlurmCluster.HeadnodeHost, clusterConfig.SlurmCluster.HeadnodePort,
-		clusterConfig.LoginUser, *clusterConfig.SSHKey, *jst.WorkingDir); err != nil {
+	if err := ssh.CreateDirectorySSH(ctx, clusterConfig.SlurmCluster.HeadnodeHost, clusterConfig.SlurmCluster.HeadnodePort,
+		clusterConfig.LoginUser, *clusterConfig.SSHCredential, *jst.WorkingDir); err != nil {
 		slog.Error("Failed to create destination directory through SSH", "taskId", taskID, "processId", processID,
 			"destinationDirectory", *jst.WorkingDir, "error", err)
 		return nil, err
@@ -97,9 +98,9 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 
 	scriptUploadPath := path.Join(*jst.WorkingDir, "script.slurm")
 	slog.Info("Uploading slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
-	if err := UploadFileToSCP(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
+	if err := ssh.UploadFileToSCP(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
 		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
-		*clusterConfig.SSHKey, scriptPath, scriptUploadPath); err != nil {
+		*clusterConfig.SSHCredential, scriptPath, scriptUploadPath); err != nil {
 		slog.Error("Failed to upload slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "error", err)
 		return nil, err
 	}
@@ -116,11 +117,11 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 	// sbatch is run from the working directory so that a script writing relative paths —
 	// and the job's own stdout and stderr files — land beside the staged inputs rather
 	// than in the login user's home.
-	submitCommand := "cd " + shellQuote(*jst.WorkingDir) + " && " + shellQuote(sbatchPath) + " " + shellQuote(scriptUploadPath)
+	submitCommand := "cd " + ssh.ShellQuote(*jst.WorkingDir) + " && " + ssh.ShellQuote(sbatchPath) + " " + ssh.ShellQuote(scriptUploadPath)
 
-	stdout, stderr, err := runSSHCommand(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
+	stdout, stderr, err := ssh.RunSSHCommand(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
 		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
-		*clusterConfig.SSHKey, submitCommand,
+		*clusterConfig.SSHCredential, submitCommand,
 		fmt.Sprintf("ssh sbatch %s@%s:%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost, scriptUploadPath))
 	if err != nil {
 		slog.Error("Failed to submit slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "stdout", stdout, "stderr", stderr, "error", err)

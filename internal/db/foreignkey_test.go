@@ -42,7 +42,7 @@ func TestForeignKeyDirections(t *testing.T) {
 	}
 	want := []fk{
 		{"user_roles", "user_id", "users", "user_id"},
-		{"ssh_keys", "owner_id", "users", "user_id"},
+		{"ssh_credentials", "owner_id", "users", "user_id"},
 		{"groups", "user_id", "users", "user_id"},
 		{"group_members", "group_id", "groups", "group_id"},
 		{"group_members", "user_id", "users", "user_id"},
@@ -51,9 +51,9 @@ func TestForeignKeyDirections(t *testing.T) {
 		// carries its own headnode and data host, a storage its own host, and the
 		// account reaching either belongs to a cluster config or the storage itself.
 		{"slurm_cluster_configs", "slurm_cluster_id", "slurm_clusters", "slurm_cluster_id"},
-		{"slurm_cluster_configs", "ssh_key_id", "ssh_keys", "ssh_key_id"},
+		{"slurm_cluster_configs", "ssh_credential_id", "ssh_credentials", "ssh_credential_id"},
 		{"slurm_cluster_configs", "user_id", "users", "user_id"},
-		{"scp_data_storages", "ssh_key_id", "ssh_keys", "ssh_key_id"},
+		{"scp_data_storages", "ssh_credential_id", "ssh_credentials", "ssh_credential_id"},
 		{"scp_data_storages", "user_id", "users", "user_id"},
 		{"data_products", "user_id", "users", "user_id"},
 		// resource_sharings names its resource and its principal by (type, id) and so

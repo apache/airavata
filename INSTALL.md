@@ -227,7 +227,7 @@ with no database.
 ## First run
 
 The root token authenticates as the principal `root` with the `SUPER_ADMIN` authority.
-That is enough to administer clusters, SSH keys, templates and deployments right away:
+That is enough to administer clusters, SSH credentials, templates and deployments right away:
 
 ```bash
 TOKEN='<the token printed at startup>'
@@ -243,7 +243,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-clusters \
 
 ### Owning resources requires a matching `users` row
 
-Endpoints that create *owned* resources — SSH keys, cluster configs, data storages,
+Endpoints that create *owned* resources — SSH credentials, cluster configs, data storages,
 processes — resolve the caller to a user record and refuse if none exists:
 
 ```
@@ -292,17 +292,18 @@ curl -s localhost:9095/api/v1/slurm-clusters # readable without a token
 ```
 
 Catalogue reads — clusters, partitions, templates and deployments — are open to
-anonymous callers. SSH keys are not: a key is private to whoever registered it.
+anonymous callers. SSH credentials are not: a credential is private to whoever
+registered it.
 Beyond those:
 
-- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating SSH keys, cluster
+- **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating SSH credentials, cluster
   configs, data storages, data products and processes, which any authenticated caller
   may do for themselves.
 - **Owner-scoped reads** (`/slurm-cluster-configs/{id}`, `/users/{id}`) require
   authentication and are refused unless the caller owns the record, holds a share, or is
-  an admin. `/ssh-keys/{id}` is stricter still: the owner and nobody else, admins
-  included, because a key is the credential itself rather than something reached with
-  one.
+  an admin. `/ssh-credentials/{id}` is stricter still: the owner and nobody else, admins
+  included, because a credential *is* the secret material rather than something reached
+  with it.
 - **Unfiltered listings** of cluster configs, data storages, processes and users require
   `ADMIN`, because they expose who holds access to what.
 
@@ -341,7 +342,7 @@ caller lacking the required role returns `403`.
 | `502 Unable to validate bearer token` | CILogon is unreachable. This is reported separately from `401` because it is not the caller's fault. |
 | `403 Access denied` on a write | The caller authenticated but lacks `ADMIN`/`SUPER_ADMIN`. Grant the role in `user_roles`. |
 | `404 No user record found for authenticated principal` | The caller has no `users` row. Register the user (see "First run" above). The `root` row is created automatically on startup. |
-| `409 Key is in use by a credential` | An SSH key cannot be deleted while a credential references it. Delete the credential first. |
+| `409 SSH credential <id> is still presented by N record(s)` | A credential cannot be deleted while a cluster config or a data storage still presents it. Repoint or delete those first. |
 | `409 Template has deployments` | A template cannot be deleted while deployments reference it. Delete the deployments first. |
 
 ---

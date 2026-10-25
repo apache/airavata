@@ -92,8 +92,8 @@ type SlurmClusterConfig struct {
 
 	WorkRoot string `gorm:"column:work_root;type:varchar(1024);not null" json:"workRoot"`
 
-	SSHKeyID *string      `gorm:"column:ssh_key_id;type:varchar(36);index" json:"sshKeyId,omitempty"`
-	SSHKey   *cred.SSHKey `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshKey,omitempty"`
+	SSHCredentialID *string             `gorm:"column:ssh_credential_id;type:varchar(36);index" json:"sshCredentialId,omitempty"`
+	SSHCredential   *cred.SSHCredential `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"sshCredential,omitempty"`
 
 	// OwnerID is named for its role because ownership, not mere reference, is what the
 	// authorisation checks read. RESTRICT: a user who still owns configs cannot be

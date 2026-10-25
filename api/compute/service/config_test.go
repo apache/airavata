@@ -87,7 +87,7 @@ func newConfigFixture(t *testing.T) *configFixture {
 	if err := gdb.Create(cluster).Error; err != nil {
 		t.Fatalf("create cluster: %v", err)
 	}
-	key := &credmodel.SSHKey{SSHKeyName: "alice-key", PublicKey: "ssh-ed25519 AAAA", PrivateKey: "secret", OwnerID: "alice"}
+	key := &credmodel.SSHCredential{SSHCredentialName: "alice-key", PublicKey: "ssh-ed25519 AAAA", PrivateKey: "secret", OwnerID: "alice"}
 	if err := gdb.Create(key).Error; err != nil {
 		t.Fatalf("create key: %v", err)
 	}
@@ -95,7 +95,7 @@ func newConfigFixture(t *testing.T) *configFixture {
 	configs := computerepo.NewSlurmClusterConfigRepository(gdb)
 	shares := sharingrepo.NewRepository(gdb)
 	clusters := computerepo.NewSlurmClusterRepository(gdb)
-	keys := credrepo.NewSSHKeyRepository(gdb)
+	keys := credrepo.NewSSHCredentialRepository(gdb)
 	users := iamrepo.NewUserRepository(gdb)
 	groups := iamrepo.NewGroupRepository(gdb)
 	members := iamrepo.NewGroupMemberRepository(gdb)
@@ -114,11 +114,11 @@ func newConfigFixture(t *testing.T) *configFixture {
 
 func (f *configFixture) req() *dto.SlurmClusterConfigRequest {
 	return &dto.SlurmClusterConfigRequest{
-		Name:           str("expanse allocation"),
-		SlurmClusterID: f.clusterID,
-		LoginUser:      "alice",
-		WorkRoot:       "/scratch/alice",
-		SSHKeyID:       f.keyID,
+		Name:            str("expanse allocation"),
+		SlurmClusterID:  f.clusterID,
+		LoginUser:       "alice",
+		WorkRoot:        "/scratch/alice",
+		SSHCredentialID: f.keyID,
 	}
 }
 
@@ -148,8 +148,8 @@ func TestConfigCreateTakesOwnerFromToken(t *testing.T) {
 	if out.SlurmCluster == nil || out.SlurmCluster.ClusterName != "expanse" {
 		t.Errorf("slurmCluster = %+v, want the expanse cluster inlined", out.SlurmCluster)
 	}
-	if out.SSHKey == nil || out.SSHKey.SSHKeyName != "alice-key" {
-		t.Errorf("sshKey = %+v, want the key summary inlined", out.SSHKey)
+	if out.SSHCredential == nil || out.SSHCredential.SSHCredentialName != "alice-key" {
+		t.Errorf("sshCredential = %+v, want the key summary inlined", out.SSHCredential)
 	}
 }
 
@@ -350,7 +350,7 @@ func TestConfigReferencesMustResolve(t *testing.T) {
 	}
 
 	req = f.req()
-	req.SSHKeyID = "no-such-key"
+	req.SSHCredentialID = "no-such-key"
 	if _, err := f.configs.Create(f.owner, req); httpx.StatusOf(err) != 404 {
 		t.Errorf("unknown key = %v (status %d), want 404", err, httpx.StatusOf(err))
 	}

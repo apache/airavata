@@ -32,6 +32,7 @@ import (
 	appmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	model "github.com/apache/airavata/api/process/model"
+	ssh "github.com/apache/airavata/internal/ssh"
 )
 
 const slurmScriptTemplate = `#!/bin/bash
@@ -136,7 +137,7 @@ func buildSlurmScript(
 		// The same directory as a shell word. An SBATCH directive is not shell and must
 		// carry the path bare, but the cd in the body is, and a work root with a space
 		// in it would otherwise become two arguments.
-		"work_dir_quoted": shellQuote(workDir),
+		"work_dir_quoted": ssh.ShellQuote(workDir),
 		"stdout_file":     path.Join(workDir, "stdout.txt"),
 		"stderr_file":     path.Join(workDir, "stderr.txt"),
 		"wall_time":       slurmWallTime(jobConfig.WallTimeMinutes),

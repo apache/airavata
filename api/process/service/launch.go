@@ -54,7 +54,7 @@ type LaunchService struct {
 	templateService        *appserv.TemplateService
 	clusterService         *computesev.SlurmClusterService
 	clusterConfigService   *computesev.SlurmClusterConfigService
-	sshKeyService          *credentialsev.SSHKeyService
+	sshCredentialService   *credentialsev.SSHCredentialService
 	scpDataStorageService  *datasev.SCPDataStorageService
 	dataProductService     *datasev.DataProductService
 	statusService          *StatusService
@@ -75,7 +75,7 @@ func NewLaunchService(
 	templateService *appserv.TemplateService,
 	clusterService *computesev.SlurmClusterService,
 	clusterConfigService *computesev.SlurmClusterConfigService,
-	sshKeyService *credentialsev.SSHKeyService,
+	sshCredentialService *credentialsev.SSHCredentialService,
 	scpDataStorageService *datasev.SCPDataStorageService,
 	dataProductService *datasev.DataProductService,
 	statusService *StatusService,
@@ -94,7 +94,7 @@ func NewLaunchService(
 		templateService:        templateService,
 		clusterService:         clusterService,
 		clusterConfigService:   clusterConfigService,
-		sshKeyService:          sshKeyService,
+		sshCredentialService:   sshCredentialService,
 		scpDataStorageService:  scpDataStorageService,
 		dataProductService:     dataProductService,
 		statusService:          statusService,
