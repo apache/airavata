@@ -1399,6 +1399,122 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/data-products/{dataProductId}/content:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+    get:
+      tags: [Data Products]
+      summary: Download a data product's content
+      description: |
+        Streams the file the product names, fetched from its storage over SCP.
+
+        Requires a `READ` standing **on the product**. No standing on the storage is
+        needed: the platform reaches the host under the credential the storage owner
+        registered, and that key is never exposed. Requiring a storage share as well
+        would make sharing a product useless on its own; granting one instead would
+        hand over every dataset on that host.
+
+        Only a file product can be transferred — a directory product is `400`.
+      operationId: downloadDataProductContent
+      responses:
+        "200":
+          description: |
+            The file's bytes. `Content-Disposition` names the basename of the
+            product's remote path.
+          headers:
+            Content-Disposition:
+              schema: { type: string }
+              description: '`attachment; filename=<basename of the product path>`'
+          content:
+            application/octet-stream:
+              schema: { type: string, format: binary }
+        "400":
+          description: The product is a directory, or does not live on SCP storage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: |
+            The product names no path, or its storage is missing the host, login user
+            or key a transfer needs.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "502":
+          description: The storage host could not be reached, or refused the transfer.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Data Products]
+      summary: Upload a data product's content
+      description: |
+        Writes the body to the path the product names, replacing whatever was there,
+        and moves the product to `PROVISIONED`. A failed transfer leaves the status
+        alone. Missing parent directories are created first.
+
+        Requires a `WRITE` standing **on the product** — the same standing editing the
+        record takes, since the path is part of the record. As with the download, no
+        standing on the storage is needed.
+
+        The content may be sent as the raw request body, which is what
+        `curl --data-binary @file` sends, or as a `multipart/form-data` part named
+        `file`, which is what a browser form sends. The remote name always comes from
+        the product, never from a part's filename. Bodies are capped at 5 GiB.
+
+        `PUT` rather than `POST`: the product already names where its content goes, so
+        sending it twice puts the same bytes in the same place.
+      operationId: uploadDataProductContent
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file: { type: string, format: binary }
+              required: [file]
+      responses:
+        "200":
+          description: The product, now `PROVISIONED`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataProductResponse" }
+        "400":
+          description: |
+            The product is a directory, does not live on SCP storage, or the body
+            could not be read.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409":
+          description: |
+            The product names no path, or its storage is missing the host, login user
+            or key a transfer needs.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "413":
+          description: The body exceeded the 5 GiB upload cap.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "502":
+          description: The storage host could not be reached, or refused the transfer.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/processes:
     get:
       tags: [Processes]
