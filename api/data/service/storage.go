@@ -22,7 +22,6 @@ package service
 
 import (
 	"context"
-	"errors"
 
 	"gorm.io/gorm"
 
@@ -35,23 +34,26 @@ import (
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
+	sharingsvc "github.com/apache/airavata/api/sharing/service"
 )
 
 // storageAccess resolves what the calling principal may do with a storage.
 //
-// Same model as a data product: strongest of ownership, a user share, and a group
-// share reaching an active membership, with platform admins treated as owners.
-// Control — deleting a storage and managing its shares — is not reachable through a
-// share.
+// Same model as a data product: strongest of ownership, a share naming the caller, and
+// a share naming a group they are an active member of, with platform admins treated as
+// owners. Control — deleting a storage and managing its shares — is not reachable
+// through a share.
 type storageAccess struct {
 	access
 	storages *repository.SCPDataStorageRepository
-	sharing  *repository.SCPDataStorageSharingRepository
+	sharing  *sharingrepo.Repository
 }
 
 func (a storageAccess) withTx(tx *gorm.DB) storageAccess {
 	return storageAccess{
-		access:   a.access.withTx(tx),
+		access:   a.access.WithTx(tx),
 		storages: a.storages.WithTx(tx),
 		sharing:  a.sharing.WithTx(tx),
 	}
@@ -68,35 +70,22 @@ func (a storageAccess) requireStorage(ctx context.Context, id string) (*model.SC
 
 // permissionOf returns the caller's effective permission on storage and whether they
 // control it.
-func (a storageAccess) permissionOf(ctx context.Context, storage *model.SCPDataStorage) (permission, bool, error) {
-	userShares, err := a.sharing.FindUserSharesByStorageID(ctx, storage.ID)
+func (a storageAccess) permissionOf(ctx context.Context, storage *model.SCPDataStorage) (sharingmodel.AccessPermission, bool, error) {
+	shares, err := a.sharing.FindByResource(ctx, sharingmodel.ResourceTypeSCPDataStorage, storage.ID)
 	if err != nil {
-		return permNone, false, err
+		return sharingmodel.AccessPermissionNone, false, err
 	}
-	groupShares, err := a.sharing.FindGroupSharesByStorageID(ctx, storage.ID)
-	if err != nil {
-		return permNone, false, err
-	}
-
-	users := make([]share, 0, len(userShares))
-	for i := range userShares {
-		users = append(users, newShare(userShares[i].UserID, permissionString(userShares[i].Permission)))
-	}
-	groups := make([]share, 0, len(groupShares))
-	for i := range groupShares {
-		groups = append(groups, newShare(groupShares[i].GroupID, permissionString(groupShares[i].Permission)))
-	}
-	return a.access.permissionOf(ctx, storage.OwnerID, users, groups)
+	return a.access.PermissionOf(ctx, storage.OwnerID, shares)
 }
 
 // require checks that the caller holds at least want.
-func (a storageAccess) require(ctx context.Context, storage *model.SCPDataStorage, want permission) (permission, error) {
+func (a storageAccess) require(ctx context.Context, storage *model.SCPDataStorage, want sharingmodel.AccessPermission) (sharingmodel.AccessPermission, error) {
 	held, _, err := a.permissionOf(ctx, storage)
 	if err != nil {
-		return permNone, err
+		return sharingmodel.AccessPermissionNone, err
 	}
 	if !held.Allows(want) {
-		return permNone, httpx.Forbidden(
+		return sharingmodel.AccessPermissionNone, httpx.Forbidden(
 			"Access denied: SCP data storage %s is not shared with you for %s", storage.ID, want)
 	}
 	return held, nil
@@ -117,9 +106,9 @@ func (a storageAccess) requireControl(ctx context.Context, storage *model.SCPDat
 // requireStorageReadable is the check the product service runs before letting a
 // dataset be registered into a storage. It lives here so both services read the same
 // rule.
-func requireStorageReadable(ctx context.Context, base access, sharing *repository.SCPDataStorageSharingRepository, storage *model.SCPDataStorage) error {
+func requireStorageReadable(ctx context.Context, base access, sharing *sharingrepo.Repository, storage *model.SCPDataStorage) error {
 	a := storageAccess{access: base, sharing: sharing}
-	_, err := a.require(ctx, storage, permRead)
+	_, err := a.require(ctx, storage, sharingmodel.AccessPermissionRead)
 	return err
 }
 
@@ -141,7 +130,7 @@ type SCPDataStorageService struct {
 func NewSCPDataStorageService(
 	db *gorm.DB,
 	storages *repository.SCPDataStorageRepository,
-	sharing *repository.SCPDataStorageSharingRepository,
+	sharing *sharingrepo.Repository,
 	keys *credsvc.KeyAccess,
 	products *repository.DataProductRepository,
 	users *iamrepo.UserRepository,
@@ -149,7 +138,7 @@ func NewSCPDataStorageService(
 ) *SCPDataStorageService {
 	return &SCPDataStorageService{
 		storageAccess: storageAccess{
-			access:   access{members: members},
+			access:   sharingsvc.NewAccess(members),
 			storages: storages,
 			sharing:  sharing,
 		},
@@ -193,7 +182,11 @@ func (s *SCPDataStorageService) ListSharedWithMe(ctx context.Context) ([]dto.SCP
 	if err != nil {
 		return nil, err
 	}
-	storages, err := s.storages.FindSharedWith(ctx, principal.Name)
+	ids, err := s.sharing.ResourceIDsSharedWith(ctx, sharingmodel.ResourceTypeSCPDataStorage, principal.Name)
+	if err != nil {
+		return nil, err
+	}
+	storages, err := s.storages.FindByIDsExcludingOwner(ctx, ids, principal.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +197,7 @@ func (s *SCPDataStorageService) ListSharedWithMe(ctx context.Context) ([]dto.SCP
 		if err != nil {
 			return nil, err
 		}
-		if held == permNone {
+		if held == sharingmodel.AccessPermissionNone {
 			continue
 		}
 		out = append(out, dto.ToSCPDataStorageResponseWith(&storages[i], string(held)))
@@ -218,7 +211,7 @@ func (s *SCPDataStorageService) Get(ctx context.Context, id string) (*dto.SCPDat
 	if err != nil {
 		return nil, err
 	}
-	held, err := s.require(ctx, storage, permRead)
+	held, err := s.require(ctx, storage, sharingmodel.AccessPermissionRead)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +268,7 @@ func (s *SCPDataStorageService) Create(ctx context.Context, req *dto.SCPDataStor
 		if err := storages.Save(ctx, storage); err != nil {
 			return err
 		}
-		out = dto.ToSCPDataStorageResponseWith(storage, string(permWrite))
+		out = dto.ToSCPDataStorageResponseWith(storage, string(sharingmodel.AccessPermissionWrite))
 		return nil
 	})
 	if err != nil {
@@ -298,7 +291,7 @@ func (s *SCPDataStorageService) Update(ctx context.Context, id string, req *dto.
 		if err != nil {
 			return notFoundAs(err, "SCP data storage not found: %s", id)
 		}
-		held, err := s.storageAccess.withTx(tx).require(ctx, storage, permWrite)
+		held, err := s.storageAccess.withTx(tx).require(ctx, storage, sharingmodel.AccessPermissionWrite)
 		if err != nil {
 			return err
 		}
@@ -344,224 +337,9 @@ func (s *SCPDataStorageService) Delete(ctx context.Context, id string) error {
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := s.sharing.WithTx(tx).DeleteByStorageID(ctx, storage.ID); err != nil {
+		if err := s.sharing.WithTx(tx).DeleteByResources(ctx, sharingmodel.ResourceTypeSCPDataStorage, []string{storage.ID}); err != nil {
 			return err
 		}
 		return s.storages.WithTx(tx).Delete(ctx, storage)
 	})
-}
-
-// SCPDataStorageSharingService manages who, besides the owner, may use a storage.
-//
-// Only the owner (or a platform admin) may read or change the share list: it names who
-// can reach a host and a path, which is more than a grantee needs to know.
-type SCPDataStorageSharingService struct {
-	storageAccess
-	db     *gorm.DB
-	groups *iamrepo.GroupRepository
-	users  *iamrepo.UserRepository
-}
-
-// NewSCPDataStorageSharingService returns a storage sharing service.
-func NewSCPDataStorageSharingService(
-	db *gorm.DB,
-	storages *repository.SCPDataStorageRepository,
-	sharing *repository.SCPDataStorageSharingRepository,
-	groups *iamrepo.GroupRepository,
-	users *iamrepo.UserRepository,
-	members *iamrepo.GroupMemberRepository,
-) *SCPDataStorageSharingService {
-	return &SCPDataStorageSharingService{
-		storageAccess: storageAccess{
-			access:   access{members: members},
-			storages: storages,
-			sharing:  sharing,
-		},
-		db:     db,
-		groups: groups,
-		users:  users,
-	}
-}
-
-// ListGroupShares returns every group a storage is shared with.
-func (s *SCPDataStorageSharingService) ListGroupShares(ctx context.Context, storageID string) ([]dto.SCPDataStorageGroupSharingResponse, error) {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return nil, err
-	}
-	shares, err := s.sharing.FindGroupSharesByStorageID(ctx, storage.ID)
-	if err != nil {
-		return nil, err
-	}
-	return dto.ToSCPDataStorageGroupSharingResponses(shares), nil
-}
-
-// ShareWithGroup grants a group access to a storage.
-func (s *SCPDataStorageSharingService) ShareWithGroup(ctx context.Context, storageID string, req *dto.SCPDataStorageGroupSharingRequest) (*dto.SCPDataStorageGroupSharingResponse, error) {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return nil, err
-	}
-
-	var out dto.SCPDataStorageGroupSharingResponse
-	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		sharing, groups := s.sharing.WithTx(tx), s.groups.WithTx(tx)
-
-		if _, err := groups.FindByID(ctx, req.GroupID); err != nil {
-			return notFoundAs(err, "Group not found: %s", req.GroupID)
-		}
-		if _, err := sharing.FindGroupShareByGroupID(ctx, storage.ID, req.GroupID); err == nil {
-			return httpx.Conflict("SCP data storage %s is already shared with group %s", storage.ID, req.GroupID)
-		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return err
-		}
-
-		permission := req.Grant()
-		share := &model.SCPDataStorageGroupSharing{
-			DataStorageID: &storage.ID,
-			GroupID:       &req.GroupID,
-			Permission:    &permission,
-		}
-		if err := sharing.SaveGroupShare(ctx, share); err != nil {
-			return err
-		}
-		out = dto.ToSCPDataStorageGroupSharingResponse(share)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// UpdateGroupShare changes what a group share grants.
-func (s *SCPDataStorageSharingService) UpdateGroupShare(ctx context.Context, storageID, sharingID string, req *dto.SCPDataStorageSharingUpdate) (*dto.SCPDataStorageGroupSharingResponse, error) {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return nil, err
-	}
-	share, err := s.sharing.FindGroupShare(ctx, storage.ID, sharingID)
-	if err != nil {
-		return nil, notFoundAs(err, "Group sharing not found: %s on SCP data storage %s", sharingID, storage.ID)
-	}
-
-	share.Permission = req.Permission
-	if err := s.sharing.SaveGroupShare(ctx, share); err != nil {
-		return nil, err
-	}
-	out := dto.ToSCPDataStorageGroupSharingResponse(share)
-	return &out, nil
-}
-
-// RevokeGroupShare withdraws a group's access.
-func (s *SCPDataStorageSharingService) RevokeGroupShare(ctx context.Context, storageID, sharingID string) error {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return err
-	}
-	share, err := s.sharing.FindGroupShare(ctx, storage.ID, sharingID)
-	if err != nil {
-		return notFoundAs(err, "Group sharing not found: %s on SCP data storage %s", sharingID, storage.ID)
-	}
-	return s.sharing.DeleteGroupShare(ctx, share)
-}
-
-// ListUserShares returns every user a storage is shared with.
-func (s *SCPDataStorageSharingService) ListUserShares(ctx context.Context, storageID string) ([]dto.SCPDataStorageUserSharingResponse, error) {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return nil, err
-	}
-	shares, err := s.sharing.FindUserSharesByStorageID(ctx, storage.ID)
-	if err != nil {
-		return nil, err
-	}
-	return dto.ToSCPDataStorageUserSharingResponses(shares), nil
-}
-
-// ShareWithUser grants one user access to a storage.
-//
-// Sharing with the owner is refused rather than stored: it would grant nothing the
-// owner does not already have.
-func (s *SCPDataStorageSharingService) ShareWithUser(ctx context.Context, storageID string, req *dto.SCPDataStorageUserSharingRequest) (*dto.SCPDataStorageUserSharingResponse, error) {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return nil, err
-	}
-	if storage.OwnedBy(req.UserID) {
-		return nil, httpx.Conflict("User %s already owns SCP data storage %s", req.UserID, storage.ID)
-	}
-
-	var out dto.SCPDataStorageUserSharingResponse
-	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		sharing, users := s.sharing.WithTx(tx), s.users.WithTx(tx)
-
-		if _, err := users.FindByID(ctx, req.UserID); err != nil {
-			return notFoundAs(err, "User not found with ID: %s", req.UserID)
-		}
-		if _, err := sharing.FindUserShareByUserID(ctx, storage.ID, req.UserID); err == nil {
-			return httpx.Conflict("SCP data storage %s is already shared with user %s", storage.ID, req.UserID)
-		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return err
-		}
-
-		permission := req.Grant()
-		share := &model.SCPDataStorageUserSharing{
-			DataStorageID: &storage.ID,
-			UserID:        &req.UserID,
-			Permission:    &permission,
-		}
-		if err := sharing.SaveUserShare(ctx, share); err != nil {
-			return err
-		}
-		out = dto.ToSCPDataStorageUserSharingResponse(share)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-// UpdateUserShare changes what a user share grants.
-func (s *SCPDataStorageSharingService) UpdateUserShare(ctx context.Context, storageID, sharingID string, req *dto.SCPDataStorageSharingUpdate) (*dto.SCPDataStorageUserSharingResponse, error) {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return nil, err
-	}
-	share, err := s.sharing.FindUserShare(ctx, storage.ID, sharingID)
-	if err != nil {
-		return nil, notFoundAs(err, "User sharing not found: %s on SCP data storage %s", sharingID, storage.ID)
-	}
-
-	share.Permission = req.Permission
-	if err := s.sharing.SaveUserShare(ctx, share); err != nil {
-		return nil, err
-	}
-	out := dto.ToSCPDataStorageUserSharingResponse(share)
-	return &out, nil
-}
-
-// RevokeUserShare withdraws a user's access.
-func (s *SCPDataStorageSharingService) RevokeUserShare(ctx context.Context, storageID, sharingID string) error {
-	storage, err := s.requireControlledStorage(ctx, storageID)
-	if err != nil {
-		return err
-	}
-	share, err := s.sharing.FindUserShare(ctx, storage.ID, sharingID)
-	if err != nil {
-		return notFoundAs(err, "User sharing not found: %s on SCP data storage %s", sharingID, storage.ID)
-	}
-	return s.sharing.DeleteUserShare(ctx, share)
-}
-
-func (s *SCPDataStorageSharingService) requireControlledStorage(ctx context.Context, storageID string) (*model.SCPDataStorage, error) {
-	storage, err := s.requireStorage(ctx, storageID)
-	if err != nil {
-		return nil, err
-	}
-	if err := s.requireControl(ctx, storage); err != nil {
-		return nil, err
-	}
-	return storage, nil
 }

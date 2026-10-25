@@ -38,6 +38,17 @@ import (
 	credsvc "github.com/apache/airavata/api/credentials/service"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
+	sharingdto "github.com/apache/airavata/api/sharing/dto"
+	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
+	sharingsvc "github.com/apache/airavata/api/sharing/service"
+)
+
+// The sharing API takes the subject's kind as a field, so the tests need an
+// addressable constant of each.
+var (
+	principalUser  = sharingmodel.PrincipalTypeUser
+	principalGroup = sharingmodel.PrincipalTypeGroup
 )
 
 // configFixture is everything a cluster-config test needs: the two services under
@@ -46,7 +57,7 @@ import (
 type configFixture struct {
 	gdb       *gorm.DB
 	configs   *service.SlurmClusterConfigService
-	sharing   *service.SlurmClusterConfigSharingService
+	sharing   *sharingsvc.Service
 	clusterID string
 	keyID     string
 
@@ -82,7 +93,7 @@ func newConfigFixture(t *testing.T) *configFixture {
 	}
 
 	configs := computerepo.NewSlurmClusterConfigRepository(gdb)
-	shares := computerepo.NewSlurmClusterConfigSharingRepository(gdb)
+	shares := sharingrepo.NewRepository(gdb)
 	clusters := computerepo.NewSlurmClusterRepository(gdb)
 	keys := credrepo.NewSSHKeyRepository(gdb)
 	users := iamrepo.NewUserRepository(gdb)
@@ -164,8 +175,8 @@ func TestUserShareGrantsRead(t *testing.T) {
 	f := newConfigFixture(t)
 	out := f.mustCreate(t)
 
-	if _, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "bob"}); err != nil {
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "bob"}); err != nil {
 		t.Fatalf("ShareWithUser: %v", err)
 	}
 
@@ -199,9 +210,9 @@ func TestWriteShareStopsShortOfControl(t *testing.T) {
 	f := newConfigFixture(t)
 	out := f.mustCreate(t)
 
-	write := computemodel.ClusterPermissionWrite
-	if _, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "bob", Permission: &write}); err != nil {
+	write := sharingmodel.AccessPermissionWrite
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "bob", Permission: &write}); err != nil {
 		t.Fatalf("ShareWithUser: %v", err)
 	}
 
@@ -210,7 +221,7 @@ func TestWriteShareStopsShortOfControl(t *testing.T) {
 	if _, err := f.configs.Update(f.outsider, out.SlurmClusterConfigID, req); err != nil {
 		t.Fatalf("grantee Update: %v", err)
 	}
-	if _, err := f.sharing.ListUserShares(f.outsider, out.SlurmClusterConfigID); httpx.StatusOf(err) != 403 {
+	if _, err := f.sharing.List(f.outsider, out.SlurmClusterConfigID); httpx.StatusOf(err) != 403 {
 		t.Errorf("grantee ListUserShares = %v (status %d), want 403", err, httpx.StatusOf(err))
 	}
 	if err := f.configs.Delete(f.outsider, out.SlurmClusterConfigID); httpx.StatusOf(err) != 403 {
@@ -224,9 +235,9 @@ func TestUpdateLeavesOwnerAlone(t *testing.T) {
 	f := newConfigFixture(t)
 	out := f.mustCreate(t)
 
-	write := computemodel.ClusterPermissionWrite
-	if _, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "bob", Permission: &write}); err != nil {
+	write := sharingmodel.AccessPermissionWrite
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "bob", Permission: &write}); err != nil {
 		t.Fatalf("ShareWithUser: %v", err)
 	}
 	got, err := f.configs.Update(f.outsider, out.SlurmClusterConfigID, f.req())
@@ -256,8 +267,8 @@ func TestGroupShareNeedsAnActiveMembership(t *testing.T) {
 	if err := f.gdb.Create(member).Error; err != nil {
 		t.Fatalf("create membership: %v", err)
 	}
-	if _, err := f.sharing.ShareWithGroup(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigGroupSharingRequest{GroupID: group.ID}); err != nil {
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalGroup, PrincipalID: group.ID}); err != nil {
 		t.Fatalf("ShareWithGroup: %v", err)
 	}
 
@@ -280,16 +291,16 @@ func TestDuplicateAndSelfSharesAreRefused(t *testing.T) {
 	f := newConfigFixture(t)
 	out := f.mustCreate(t)
 
-	if _, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "alice"}); httpx.StatusOf(err) != 409 {
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "alice"}); httpx.StatusOf(err) != 409 {
 		t.Errorf("share with owner = %v (status %d), want 409", err, httpx.StatusOf(err))
 	}
-	if _, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "bob"}); err != nil {
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "bob"}); err != nil {
 		t.Fatalf("ShareWithUser: %v", err)
 	}
-	if _, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "bob"}); httpx.StatusOf(err) != 409 {
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "bob"}); httpx.StatusOf(err) != 409 {
 		t.Errorf("duplicate share = %v (status %d), want 409", err, httpx.StatusOf(err))
 	}
 }
@@ -300,28 +311,28 @@ func TestRevokeAndDeleteClearShares(t *testing.T) {
 	f := newConfigFixture(t)
 	out := f.mustCreate(t)
 
-	share, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "bob"})
+	share, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "bob"})
 	if err != nil {
 		t.Fatalf("ShareWithUser: %v", err)
 	}
-	if err := f.sharing.RevokeUserShare(f.owner, out.SlurmClusterConfigID, share.SharingID); err != nil {
+	if err := f.sharing.Revoke(f.owner, out.SlurmClusterConfigID, share.SharingID); err != nil {
 		t.Fatalf("RevokeUserShare: %v", err)
 	}
 	if _, err := f.configs.Get(f.outsider, out.SlurmClusterConfigID); httpx.StatusOf(err) != 403 {
 		t.Errorf("after revoke, Get = %v (status %d), want 403", err, httpx.StatusOf(err))
 	}
 
-	if _, err := f.sharing.ShareWithUser(f.owner, out.SlurmClusterConfigID,
-		&dto.SlurmClusterConfigUserSharingRequest{UserID: "bob"}); err != nil {
+	if _, err := f.sharing.Share(f.owner, out.SlurmClusterConfigID,
+		&sharingdto.ShareRequest{PrincipalType: &principalUser, PrincipalID: "bob"}); err != nil {
 		t.Fatalf("re-share: %v", err)
 	}
 	if err := f.configs.Delete(f.owner, out.SlurmClusterConfigID); err != nil {
 		t.Fatalf("Delete: %v", err)
 	}
 	var remaining int64
-	f.gdb.Model(&computemodel.SlurmClusterConfigUserSharing{}).
-		Where("slurm_cluster_config_id = ?", out.SlurmClusterConfigID).Count(&remaining)
+	f.gdb.Model(&sharingmodel.Sharing{}).
+		Where("resource_type = ? AND resource_id = ?", sharingmodel.ResourceTypeSlurmClusterConfig, out.SlurmClusterConfigID).Count(&remaining)
 	if remaining != 0 {
 		t.Errorf("%d share rows survived the config delete, want 0", remaining)
 	}

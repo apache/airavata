@@ -45,7 +45,10 @@ import (
 	iamsvc "github.com/apache/airavata/api/iam/service"
 	processrepo "github.com/apache/airavata/api/process/repository"
 	processsvc "github.com/apache/airavata/api/process/service"
+	sharingrepo "github.com/apache/airavata/api/sharing/repository"
+	sharingsvc "github.com/apache/airavata/api/sharing/service"
 	orchestration "github.com/apache/airavata/internal/orchestration"
+	"github.com/cschleiden/go-workflows/backend"
 )
 
 // Services is every service the application exposes, built over one database.
@@ -71,17 +74,21 @@ type Services struct {
 	SlurmCluster              *computesvc.SlurmClusterService
 	ClusterPartition          *computesvc.ClusterPartitionService
 	SlurmClusterConfig        *computesvc.SlurmClusterConfigService
-	SlurmClusterConfigSharing *computesvc.SlurmClusterConfigSharingService
+	SlurmClusterConfigSharing *sharingsvc.Service
 
 	// Application catalogue.
 	Template        *applicationsvc.TemplateService
 	BatchDeployment *applicationsvc.BatchDeploymentService
 
 	// Data.
-	SCPDataStorage        *datasvc.SCPDataStorageService
-	SCPDataStorageSharing *datasvc.SCPDataStorageSharingService
-	DataProduct           *datasvc.DataProductService
-	DataProductSharing    *datasvc.DataProductSharingService
+	SCPDataStorage              *datasvc.SCPDataStorageService
+	SCPDataStorageSharing       *sharingsvc.Service
+	DataProduct                 *datasvc.DataProductService
+	DataProductSharing          *sharingsvc.Service
+	DataTransfer                *datasvc.DataTransferService
+	VirtualDataDirectory        *datasvc.VirtualDataDirectoryService
+	VirtualDataFile             *datasvc.VirtualDataFileService
+	VirtualDataDirectorySharing *sharingsvc.Service
 
 	// Processes. There is no batch process service: a batch process is a section of
 	// the process that owns it, written and read through ProcessService.
@@ -100,52 +107,52 @@ type Services struct {
 }
 
 type Repositories struct {
-	Users                    *iamrepo.UserRepository
-	Groups                   *iamrepo.GroupRepository
-	GroupMembers             *iamrepo.GroupMemberRepository
-	SSHKeys                  *credentialsrepo.SSHKeyRepository
-	SlurmClusters            *computerepo.SlurmClusterRepository
-	ClusterPartitions        *computerepo.ClusterPartitionRepository
-	SlurmClusterConfigs      *computerepo.SlurmClusterConfigRepository
-	SlurmClusterConfigShares *computerepo.SlurmClusterConfigSharingRepository
-	Templates                *applicationrepo.TemplateRepository
-	BatchDeployments         *applicationrepo.BatchDeploymentRepository
-	SCPDataStorages          *datarepo.SCPDataStorageRepository
-	SCPDataStorageShares     *datarepo.SCPDataStorageSharingRepository
-	DataProducts             *datarepo.DataProductRepository
-	DataProductShares        *datarepo.DataProductSharingRepository
-	Processes                *processrepo.ProcessRepository
-	Statuses                 *processrepo.StatusRepository
-	BatchJobStatuses         *processrepo.BatchJobStatusRepository
-	DataStagingTasks         *processrepo.DataStagingTaskRepository
-	JobSubmissionTasks       *processrepo.JobSubmissionTaskRepository
-	JobMonitoringTasks       *processrepo.JobMonitoringTaskRepository
-	InteractiveCommandTasks  *processrepo.InteractiveCommandTaskRepository
+	Users                   *iamrepo.UserRepository
+	Groups                  *iamrepo.GroupRepository
+	GroupMembers            *iamrepo.GroupMemberRepository
+	SSHKeys                 *credentialsrepo.SSHKeyRepository
+	SlurmClusters           *computerepo.SlurmClusterRepository
+	ClusterPartitions       *computerepo.ClusterPartitionRepository
+	SlurmClusterConfigs     *computerepo.SlurmClusterConfigRepository
+	Templates               *applicationrepo.TemplateRepository
+	BatchDeployments        *applicationrepo.BatchDeploymentRepository
+	SCPDataStorages         *datarepo.SCPDataStorageRepository
+	DataProducts            *datarepo.DataProductRepository
+	VirtualDataDirectories  *datarepo.VirtualDataDirectoryRepository
+	VirtualDataFiles        *datarepo.VirtualDataFileRepository
+	Shares                  *sharingrepo.Repository
+	Processes               *processrepo.ProcessRepository
+	Statuses                *processrepo.StatusRepository
+	BatchJobStatuses        *processrepo.BatchJobStatusRepository
+	DataStagingTasks        *processrepo.DataStagingTaskRepository
+	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
+	JobMonitoringTasks      *processrepo.JobMonitoringTaskRepository
+	InteractiveCommandTasks *processrepo.InteractiveCommandTaskRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
 	return &Repositories{
-		Users:                    iamrepo.NewUserRepository(db),
-		Groups:                   iamrepo.NewGroupRepository(db),
-		GroupMembers:             iamrepo.NewGroupMemberRepository(db),
-		SSHKeys:                  credentialsrepo.NewSSHKeyRepository(db),
-		SlurmClusters:            computerepo.NewSlurmClusterRepository(db),
-		ClusterPartitions:        computerepo.NewClusterPartitionRepository(db),
-		SlurmClusterConfigs:      computerepo.NewSlurmClusterConfigRepository(db),
-		SlurmClusterConfigShares: computerepo.NewSlurmClusterConfigSharingRepository(db),
-		Templates:                applicationrepo.NewTemplateRepository(db),
-		BatchDeployments:         applicationrepo.NewBatchDeploymentRepository(db),
-		SCPDataStorages:          datarepo.NewSCPDataStorageRepository(db),
-		SCPDataStorageShares:     datarepo.NewSCPDataStorageSharingRepository(db),
-		DataProducts:             datarepo.NewDataProductRepository(db),
-		DataProductShares:        datarepo.NewDataProductSharingRepository(db),
-		Processes:                processrepo.NewProcessRepository(db),
-		Statuses:                 processrepo.NewStatusRepository(db),
-		BatchJobStatuses:         processrepo.NewBatchJobStatusRepository(db),
-		DataStagingTasks:         processrepo.NewDataStagingTaskRepository(db),
-		JobSubmissionTasks:       processrepo.NewJobSubmissionTaskRepository(db),
-		JobMonitoringTasks:       processrepo.NewJobMonitoringTaskRepository(db),
-		InteractiveCommandTasks:  processrepo.NewInteractiveCommandTaskRepository(db),
+		Users:                   iamrepo.NewUserRepository(db),
+		Groups:                  iamrepo.NewGroupRepository(db),
+		GroupMembers:            iamrepo.NewGroupMemberRepository(db),
+		SSHKeys:                 credentialsrepo.NewSSHKeyRepository(db),
+		SlurmClusters:           computerepo.NewSlurmClusterRepository(db),
+		ClusterPartitions:       computerepo.NewClusterPartitionRepository(db),
+		SlurmClusterConfigs:     computerepo.NewSlurmClusterConfigRepository(db),
+		Templates:               applicationrepo.NewTemplateRepository(db),
+		BatchDeployments:        applicationrepo.NewBatchDeploymentRepository(db),
+		SCPDataStorages:         datarepo.NewSCPDataStorageRepository(db),
+		DataProducts:            datarepo.NewDataProductRepository(db),
+		VirtualDataDirectories:  datarepo.NewVirtualDataDirectoryRepository(db),
+		VirtualDataFiles:        datarepo.NewVirtualDataFileRepository(db),
+		Shares:                  sharingrepo.NewRepository(db),
+		Processes:               processrepo.NewProcessRepository(db),
+		Statuses:                processrepo.NewStatusRepository(db),
+		BatchJobStatuses:        processrepo.NewBatchJobStatusRepository(db),
+		DataStagingTasks:        processrepo.NewDataStagingTaskRepository(db),
+		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
+		JobMonitoringTasks:      processrepo.NewJobMonitoringTaskRepository(db),
+		InteractiveCommandTasks: processrepo.NewInteractiveCommandTaskRepository(db),
 	}
 }
 
@@ -153,7 +160,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 //
 // The repositories stay local: they are an implementation detail of the services above
 // them, and nothing outside this function has ever wanted one directly.
-func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services {
+func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBackend backend.Backend) *Services {
 	// Repositories.
 	users := repos.Users
 	groups := repos.Groups
@@ -162,13 +169,13 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 	clusters := repos.SlurmClusters
 	partitions := repos.ClusterPartitions
 	clusterConfigs := repos.SlurmClusterConfigs
-	clusterConfigShares := repos.SlurmClusterConfigShares
 	templates := repos.Templates
 	deployments := repos.BatchDeployments
 	storages := repos.SCPDataStorages
-	storageShares := repos.SCPDataStorageShares
+	shares := repos.Shares
 	products := repos.DataProducts
-	productShares := repos.DataProductShares
+	virtualDirs := repos.VirtualDataDirectories
+	virtualFiles := repos.VirtualDataFiles
 	processes := repos.Processes
 	statuses := repos.Statuses
 	stagingTasks := repos.DataStagingTasks
@@ -178,22 +185,27 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 	batchStatus := repos.BatchJobStatuses
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
-	configAccess := computesvc.NewConfigAccess(clusterConfigs, clusterConfigShares, groupMembers)
+	configAccess := computesvc.NewConfigAccess(clusterConfigs, shares, groupMembers)
 	keyAccess := credentialssvc.NewKeyAccess(sshKeys)
 	processSvs := processsvc.NewProcessService(db, processes, deployments, configAccess, users, statusSvc)
 	batchDeploymentSvc := applicationsvc.NewBatchDeploymentService(db, deployments, templates, clusters)
 	templateSvc := applicationsvc.NewTemplateService(db, templates, deployments)
 	slurmClusterSvc := computesvc.NewSlurmClusterService(db, clusters, partitions, clusterConfigs)
-	slurmClusterConfigSvc := computesvc.NewSlurmClusterConfigService(db, clusterConfigs, clusterConfigShares, clusters, keyAccess, users, groupMembers)
-	slurmClusterConfigSharingSvc := computesvc.NewSlurmClusterConfigSharingService(db, clusterConfigs, clusterConfigShares, groups, users, groupMembers)
+	slurmClusterConfigSvc := computesvc.NewSlurmClusterConfigService(db, clusterConfigs, shares, clusters, keyAccess, users, groupMembers)
+	slurmClusterConfigSharingSvc := computesvc.NewSlurmClusterConfigSharingService(db, clusterConfigs, shares, groups, users, groupMembers)
 	clusterPartitionSvc := computesvc.NewClusterPartitionService(db, partitions, clusters)
-	scpDataStorageSvc := datasvc.NewSCPDataStorageService(db, storages, storageShares, keyAccess, products, users, groupMembers)
-	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, storageShares, groups, users, groupMembers)
-	dataProductSvc := datasvc.NewDataProductService(db, products, productShares, storages, storageShares, users, groupMembers)
-	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, productShares, groups, users, groupMembers)
+	scpDataStorageSvc := datasvc.NewSCPDataStorageService(db, storages, shares, keyAccess, products, users, groupMembers)
+	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, shares, groups, users, groupMembers)
+	dataProductSvc := datasvc.NewDataProductService(db, products, shares, storages, users, groupMembers)
+	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, shares, groups, users, groupMembers)
+	dataTransferSvc := datasvc.NewDataTransferService(db, products, shares, storages, groupMembers, datasvc.NewSCPTransport())
+	virtualDataDirectorySvc := datasvc.NewVirtualDataDirectoryService(db, virtualDirs, virtualFiles, shares, products, users, groupMembers)
+	virtualDataFileSvc := datasvc.NewVirtualDataFileService(db, virtualDirs, virtualFiles, shares, products, groupMembers)
+	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshKeySvc := credentialssvc.NewSSHKeyService(sshKeys, users, clusterConfigs, storages)
 
-	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks, monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus)
+	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -201,7 +213,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 		DB:     db,
 
 		User:        iamsvc.NewUserService(db, users),
-		Group:       iamsvc.NewGroupService(db, groups, groupMembers, users),
+		Group:       iamsvc.NewGroupService(db, groups, groupMembers, users, shares),
 		GroupMember: iamsvc.NewGroupMemberService(db, groups, groupMembers, users),
 
 		// A key is deleted only when nothing presents it, and what can present one
@@ -220,6 +232,11 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 		SCPDataStorageSharing: scpDataStorageSharingSvc,
 		DataProduct:           dataProductSvc,
 		DataProductSharing:    dataProductSharingSvc,
+		DataTransfer:          dataTransferSvc,
+
+		VirtualDataDirectory:        virtualDataDirectorySvc,
+		VirtualDataFile:             virtualDataFileSvc,
+		VirtualDataDirectorySharing: virtualDataDirectorySharingSvc,
 
 		Process:                processSvs,
 		ProcessStatus:          statusSvc,
@@ -230,7 +247,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories) *Services 
 
 		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
-			sshKeySvc, scpDataStorageSvc, dataProductSvc, stagingTasks, submissionTasks,
+			sshKeySvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, executionEngine),
 
 		ExecutionEngine: executionEngine,

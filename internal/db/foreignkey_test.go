@@ -53,21 +53,13 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"slurm_cluster_configs", "slurm_cluster_id", "slurm_clusters", "slurm_cluster_id"},
 		{"slurm_cluster_configs", "ssh_key_id", "ssh_keys", "ssh_key_id"},
 		{"slurm_cluster_configs", "user_id", "users", "user_id"},
-		{"slurm_cluster_config_group_sharings", "slurm_cluster_config_id", "slurm_cluster_configs", "slurm_cluster_config_id"},
-		{"slurm_cluster_config_group_sharings", "group_id", "groups", "group_id"},
-		{"slurm_cluster_config_user_sharings", "slurm_cluster_config_id", "slurm_cluster_configs", "slurm_cluster_config_id"},
-		{"slurm_cluster_config_user_sharings", "user_id", "users", "user_id"},
 		{"scp_data_storages", "ssh_key_id", "ssh_keys", "ssh_key_id"},
 		{"scp_data_storages", "user_id", "users", "user_id"},
-		{"scp_data_storage_group_sharings", "data_storage_id", "scp_data_storages", "data_id"},
-		{"scp_data_storage_group_sharings", "group_id", "groups", "group_id"},
-		{"scp_data_storage_user_sharings", "data_storage_id", "scp_data_storages", "data_id"},
-		{"scp_data_storage_user_sharings", "user_id", "users", "user_id"},
 		{"data_products", "user_id", "users", "user_id"},
-		{"data_product_group_sharings", "data_product_id", "data_products", "data_id"},
-		{"data_product_group_sharings", "group_id", "groups", "group_id"},
-		{"data_product_user_sharings", "data_product_id", "data_products", "data_id"},
-		{"data_product_user_sharings", "user_id", "users", "user_id"},
+		// resource_sharings names its resource and its principal by (type, id) and so
+		// carries no foreign key at all: a column cannot reference four resource
+		// tables, nor users and groups at once. The services delete a record's shares
+		// with the record, and a group's shares with the group.
 		{"application_template_inputs", "template_id", "application_templates", "template_id"},
 		{"application_template_outputs", "template_id", "application_templates", "template_id"},
 		{"batch_application_deployments", "cluster_id", "slurm_clusters", "slurm_cluster_id"},

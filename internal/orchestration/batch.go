@@ -87,6 +87,14 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 		return nil, err
 	}
 
+	slog.Info("Creating job working directory through SSH", "taskId", taskID, "processId", processID, "destinationDirectory", *jst.WorkingDir)
+	if err := CreateDirectorySSH(ctx, clusterConfig.SlurmCluster.HeadnodeHost, clusterConfig.SlurmCluster.HeadnodePort,
+		clusterConfig.LoginUser, *clusterConfig.SSHKey, *jst.WorkingDir); err != nil {
+		slog.Error("Failed to create destination directory through SSH", "taskId", taskID, "processId", processID,
+			"destinationDirectory", *jst.WorkingDir, "error", err)
+		return nil, err
+	}
+
 	scriptUploadPath := path.Join(*jst.WorkingDir, "script.slurm")
 	slog.Info("Uploading slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
 	if err := UploadFileToSCP(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
