@@ -15,7 +15,7 @@ Four kinds of record, each reached under its own collection:
 | Virtual data directory | `VIRTUAL_DATA_DIRECTORY` | `/api/v1/virtual-data-directories/{virtualDataDirectoryId}/shares` |
 | [Slurm cluster config](api.md#slurm-cluster-configs) | `SLURM_CLUSTER_CONFIG` | `/api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares` |
 
-[SSH keys](api.md#ssh-keys) are deliberately **not** shareable. A key is the credential itself rather than something reached with one, so lending it out is what sharing a cluster config or a data storage is *for* — the key stays with its owner while other people submit and stage under it.
+[SSH credentials](api.md#ssh-credentials) are deliberately **not** shareable. A credential *is* the secret material rather than something reached with it, so lending it out is what sharing a cluster config or a data storage is *for* — the credential stays with its owner while other people submit and stage under it.
 
 ## The model
 

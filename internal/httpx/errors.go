@@ -69,7 +69,7 @@ func BadRequest(format string, args ...any) *Error {
 }
 
 // Conflict reports a request that collides with existing state — the two cases here
-// are deleting an SSH key still in use and deleting a template that still has
+// are deleting an SSH credential still in use and deleting a template that still has
 // deployments.
 func Conflict(format string, args ...any) *Error {
 	return &Error{Status: http.StatusConflict, Message: fmt.Sprintf(format, args...)}

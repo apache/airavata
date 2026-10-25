@@ -49,7 +49,7 @@ type Endpoint struct {
 	Host      string
 	Port      int
 	LoginUser string
-	Key       credmodel.SSHKey
+	Key       credmodel.SSHCredential
 }
 
 // Transport moves a single file between this server and the host an Endpoint names.
@@ -252,7 +252,7 @@ func (s *DataTransferService) locate(ctx context.Context, product *model.DataPro
 	if err != nil {
 		return "", ep, notFoundAs(err, "SCP data storage not found: %s", *product.DataStorageID)
 	}
-	if storage.HostName == nil || storage.LoginUser == nil || storage.SSHKey == nil {
+	if storage.HostName == nil || storage.LoginUser == nil || storage.SSHCredential == nil {
 		return "", ep, httpx.Conflict(
 			"SCP data storage %s is missing the host, login user or key a transfer needs", storage.ID)
 	}
@@ -265,7 +265,7 @@ func (s *DataTransferService) locate(ctx context.Context, product *model.DataPro
 		Host:      *storage.HostName,
 		Port:      port,
 		LoginUser: *storage.LoginUser,
-		Key:       *storage.SSHKey,
+		Key:       *storage.SSHCredential,
 	}, nil
 }
 

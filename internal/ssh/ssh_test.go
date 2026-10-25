@@ -18,7 +18,7 @@
 * under the License.
  */
 
-package orchestration
+package ssh
 
 import (
 	"os"
@@ -55,7 +55,7 @@ func TestSCPDownload(t *testing.T) {
 
 	startTime := time.Now()
 
-	err = DownloadFileFromSCP(t.Context(), host, 22, username, credmodel.SSHKey{
+	err = DownloadFileFromSCP(t.Context(), host, 22, username, credmodel.SSHCredential{
 		PrivateKey: privateKeyStr,
 		Passphrase: &passphrase,
 	}, "/home/"+username+"/random.bin", "/tmp/random.bin")
@@ -104,7 +104,7 @@ func TestSCPUpload(t *testing.T) {
 
 	startTime := time.Now()
 
-	err = UploadFileToSCP(t.Context(), host, 22, username, credmodel.SSHKey{
+	err = UploadFileToSCP(t.Context(), host, 22, username, credmodel.SSHCredential{
 		PrivateKey: privateKeyStr,
 		Passphrase: &passphrase,
 	}, "/tmp/random.bin", "/home/"+username+"/randomupload.bin")
@@ -113,7 +113,7 @@ func TestSCPUpload(t *testing.T) {
 	}
 	t.Logf("SCP upload completed in %v", time.Since(startTime))
 
-	metadata, err := GetSCPFileMetadata(t.Context(), host, 22, username, credmodel.SSHKey{
+	metadata, err := GetSCPFileMetadata(t.Context(), host, 22, username, credmodel.SSHCredential{
 		PrivateKey: privateKeyStr,
 		Passphrase: &passphrase,
 	}, "/home/"+username+"/randomupload.bin")

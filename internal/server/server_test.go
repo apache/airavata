@@ -215,22 +215,22 @@ func (h *harness) seedCluster(name string) string {
 func (h *harness) seedClusterConfig(token, name string) (configID, clusterID string) {
 	h.t.Helper()
 	clusterID = h.seedCluster(name)
-	keyID := h.seedSSHKey(name, token)
+	keyID := h.seedSSHCredential(name, token)
 	out := h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs", token, map[string]any{
 		"name": name, "slurmClusterId": clusterID,
-		"loginUser": "runner", "workRoot": "/scratch/runner", "sshKeyId": keyID,
+		"loginUser": "runner", "workRoot": "/scratch/runner", "sshCredentialId": keyID,
 	}, http.StatusCreated)
 	return out["slurmClusterConfigId"].(string), clusterID
 }
 
-// seedSSHKey registers a key owned by the caller of token and returns its id. The
+// seedSSHCredential registers a key owned by the caller of token and returns its id. The
 // owner matters: only they may put it on a cluster config or a data storage.
-func (h *harness) seedSSHKey(name, token string) string {
+func (h *harness) seedSSHCredential(name, token string) string {
 	h.t.Helper()
-	key := h.mustDo(http.MethodPost, "/api/v1/ssh-keys", token, map[string]any{
-		"sshKeyName": name, "publicKey": "ssh-ed25519 AAAA", "privateKey": "PRIVATE",
+	key := h.mustDo(http.MethodPost, "/api/v1/ssh-credentials", token, map[string]any{
+		"sshCredentialName": name, "publicKey": "ssh-ed25519 AAAA", "privateKey": "PRIVATE",
 	}, http.StatusCreated)
-	return key["sshKeyId"].(string)
+	return key["sshCredentialId"].(string)
 }
 
 func TestHealthIsOpen(t *testing.T) {
@@ -344,22 +344,22 @@ func TestDeletingClusterCascadesToPartitions(t *testing.T) {
 }
 
 // The private key must never appear in a response, and creation must insist on one.
-func TestSSHKeySecretsAreNeverReturnedAndRequiredOnCreate(t *testing.T) {
+func TestSSHCredentialSecretsAreNeverReturnedAndRequiredOnCreate(t *testing.T) {
 	h := newHarness(t)
 
-	rec := h.do(http.MethodPost, "/api/v1/ssh-keys", tokenAdmin, map[string]any{
-		"sshKeyName": "k", "publicKey": "ssh-ed25519 AAAA",
+	rec := h.do(http.MethodPost, "/api/v1/ssh-credentials", tokenAdmin, map[string]any{
+		"sshCredentialName": "k", "publicKey": "ssh-ed25519 AAAA",
 	})
 	if rec.Code != http.StatusBadRequest {
 		t.Fatalf("create without a private key: status = %d, want 400", rec.Code)
 	}
 
-	created := h.mustDo(http.MethodPost, "/api/v1/ssh-keys", tokenAdmin, map[string]any{
-		"sshKeyName": "k", "publicKey": "ssh-ed25519 AAAA", "privateKey": "SUPER-SECRET",
+	created := h.mustDo(http.MethodPost, "/api/v1/ssh-credentials", tokenAdmin, map[string]any{
+		"sshCredentialName": "k", "publicKey": "ssh-ed25519 AAAA", "privateKey": "SUPER-SECRET",
 		"passphrase": "hunter2",
 	}, http.StatusCreated)
 
-	for _, path := range []string{"/api/v1/ssh-keys", "/api/v1/ssh-keys/" + created["sshKeyId"].(string)} {
+	for _, path := range []string{"/api/v1/ssh-credentials", "/api/v1/ssh-credentials/" + created["sshCredentialId"].(string)} {
 		body := h.do(http.MethodGet, path, tokenAdmin, nil).Body.String()
 		if strings.Contains(body, "SUPER-SECRET") || strings.Contains(body, "hunter2") {
 			t.Errorf("GET %s leaked a secret: %s", path, body)
@@ -369,25 +369,25 @@ func TestSSHKeySecretsAreNeverReturnedAndRequiredOnCreate(t *testing.T) {
 
 // A client round-tripping a response has no private key to send back, so a blank one
 // must mean "leave it alone" rather than "erase it".
-func TestUpdatingSSHKeyWithoutSecretsPreservesThem(t *testing.T) {
+func TestUpdatingSSHCredentialWithoutSecretsPreservesThem(t *testing.T) {
 	h := newHarness(t)
-	created := h.mustDo(http.MethodPost, "/api/v1/ssh-keys", tokenAdmin, map[string]any{
-		"sshKeyName": "k", "publicKey": "ssh-ed25519 AAAA", "privateKey": "ORIGINAL",
+	created := h.mustDo(http.MethodPost, "/api/v1/ssh-credentials", tokenAdmin, map[string]any{
+		"sshCredentialName": "k", "publicKey": "ssh-ed25519 AAAA", "privateKey": "ORIGINAL",
 		"passphrase": "original-pass",
 	}, http.StatusCreated)
-	keyID := created["sshKeyId"].(string)
+	keyID := created["sshCredentialId"].(string)
 
-	h.mustDo(http.MethodPut, "/api/v1/ssh-keys/"+keyID, tokenAdmin, map[string]any{
-		"sshKeyName": "renamed", "publicKey": "ssh-ed25519 BBBB", "privateKey": "",
+	h.mustDo(http.MethodPut, "/api/v1/ssh-credentials/"+keyID, tokenAdmin, map[string]any{
+		"sshCredentialName": "renamed", "publicKey": "ssh-ed25519 BBBB", "privateKey": "",
 	}, http.StatusOK)
 
 	var stored struct {
-		PrivateKey string
-		Passphrase *string
-		SSHKeyName string
+		PrivateKey        string
+		Passphrase        *string
+		SSHCredentialName string
 	}
-	h.db.Table("ssh_keys").Select("private_key, passphrase, ssh_key_name").
-		Where("ssh_key_id = ?", keyID).Scan(&stored)
+	h.db.Table("ssh_credentials").Select("private_key, passphrase, ssh_credential_name").
+		Where("ssh_credential_id = ?", keyID).Scan(&stored)
 
 	if stored.PrivateKey != "ORIGINAL" {
 		t.Errorf("private key = %q, want it preserved across an update that omitted it", stored.PrivateKey)
@@ -395,25 +395,25 @@ func TestUpdatingSSHKeyWithoutSecretsPreservesThem(t *testing.T) {
 	if stored.Passphrase == nil || *stored.Passphrase != "original-pass" {
 		t.Errorf("passphrase = %v, want it preserved", stored.Passphrase)
 	}
-	if stored.SSHKeyName != "renamed" {
-		t.Errorf("name = %q, want the update applied", stored.SSHKeyName)
+	if stored.SSHCredentialName != "renamed" {
+		t.Errorf("name = %q, want the update applied", stored.SSHCredentialName)
 	}
 }
 
 // A key belongs to whoever registered it and to nobody else. There is no share to open
 // one up, and platform admins get no standing on one either — reading or repointing
 // someone's key material is not an administrative act.
-func TestSSHKeyIsPrivateToItsOwner(t *testing.T) {
+func TestSSHCredentialIsPrivateToItsOwner(t *testing.T) {
 	h := newHarness(t)
-	keyID := h.seedSSHKey("alices-key", tokenAlice)
-	base := "/api/v1/ssh-keys/" + keyID
+	keyID := h.seedSSHCredential("alices-key", tokenAlice)
+	base := "/api/v1/ssh-credentials/" + keyID
 
 	created := h.mustDo(http.MethodGet, base, tokenAlice, nil, http.StatusOK)
 	if created["ownerId"] != "alice" {
 		t.Errorf("ownerId = %v, want it taken from the token", created["ownerId"])
 	}
 
-	update := map[string]any{"sshKeyName": "renamed", "publicKey": "ssh-ed25519 AAAA"}
+	update := map[string]any{"sshCredentialName": "renamed", "publicKey": "ssh-ed25519 AAAA"}
 	for _, token := range []string{tokenBob, tokenAdmin} {
 		if rec := h.do(http.MethodGet, base, token, nil); rec.Code != http.StatusForbidden {
 			t.Errorf("read by %s: status = %d, want 403", token, rec.Code)
@@ -428,15 +428,15 @@ func TestSSHKeyIsPrivateToItsOwner(t *testing.T) {
 	h.mustDo(http.MethodPut, base, tokenAlice, update, http.StatusOK)
 
 	// Listing is the caller's own keys, so it never becomes a way around the above.
-	if mine := h.list("/api/v1/ssh-keys", tokenAlice); len(mine) != 1 {
+	if mine := h.list("/api/v1/ssh-credentials", tokenAlice); len(mine) != 1 {
 		t.Errorf("alice's keys = %d, want 1", len(mine))
 	}
 	for _, token := range []string{tokenBob, tokenAdmin} {
-		if theirs := h.list("/api/v1/ssh-keys", token); len(theirs) != 0 {
+		if theirs := h.list("/api/v1/ssh-credentials", token); len(theirs) != 0 {
 			t.Errorf("%s sees %d of alice's keys, want 0", token, len(theirs))
 		}
 	}
-	if rec := h.do(http.MethodGet, "/api/v1/ssh-keys", "", nil); rec.Code != http.StatusUnauthorized {
+	if rec := h.do(http.MethodGet, "/api/v1/ssh-credentials", "", nil); rec.Code != http.StatusUnauthorized {
 		t.Errorf("anonymous list: status = %d, want 401", rec.Code)
 	}
 }
@@ -445,19 +445,19 @@ func TestSSHKeyIsPrivateToItsOwner(t *testing.T) {
 // under a name of the caller's choosing, so it is refused unless they own the key.
 func TestAssigningAKeyRequiresOwningIt(t *testing.T) {
 	h := newHarness(t)
-	aliceKey := h.seedSSHKey("alices-key", tokenAlice)
+	aliceKey := h.seedSSHCredential("alices-key", tokenAlice)
 	clusterID := h.seedCluster("shared-machine")
 
 	config := map[string]any{
 		"slurmClusterId": clusterID, "loginUser": "bob",
-		"workRoot": "/scratch/bob", "sshKeyId": aliceKey,
+		"workRoot": "/scratch/bob", "sshCredentialId": aliceKey,
 	}
 	if rec := h.do(http.MethodPost, "/api/v1/slurm-cluster-configs", tokenBob, config); rec.Code != http.StatusForbidden {
 		t.Errorf("config on another user's key: status = %d, want 403", rec.Code)
 	}
 	storage := map[string]any{
 		"dataName": "bobs-scratch", "hostName": "data.example.edu",
-		"loginUser": "bob", "sshKeyId": aliceKey,
+		"loginUser": "bob", "sshCredentialId": aliceKey,
 	}
 	if rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenBob, storage); rec.Code != http.StatusForbidden {
 		t.Errorf("storage on another user's key: status = %d, want 403", rec.Code)
@@ -469,8 +469,8 @@ func TestAssigningAKeyRequiresOwningIt(t *testing.T) {
 	}
 
 	// With his own key, both go through.
-	bobKey := h.seedSSHKey("bobs-key", tokenBob)
-	config["sshKeyId"], storage["sshKeyId"] = bobKey, bobKey
+	bobKey := h.seedSSHCredential("bobs-key", tokenBob)
+	config["sshCredentialId"], storage["sshCredentialId"] = bobKey, bobKey
 	h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs", tokenBob, config, http.StatusCreated)
 	h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", tokenBob, storage, http.StatusCreated)
 }
@@ -487,7 +487,7 @@ func TestGranteeMayEditAroundAKeyTheyDoNotOwn(t *testing.T) {
 	body := func(keyID string) map[string]any {
 		return map[string]any{
 			"dataName": "renamed", "hostName": "shared-staging.example.edu",
-			"loginUser": "runner", "sshKeyId": keyID,
+			"loginUser": "runner", "sshCredentialId": keyID,
 		}
 	}
 
@@ -496,49 +496,49 @@ func TestGranteeMayEditAroundAKeyTheyDoNotOwn(t *testing.T) {
 	h.mustDo(http.MethodPut, base, tokenBob, body(aliceKey), http.StatusOK)
 
 	// Putting a third party's key on it is refused — bob owns neither.
-	adminKey := h.seedSSHKey("admins-key", tokenAdmin)
+	adminKey := h.seedSSHCredential("admins-key", tokenAdmin)
 	if rec := h.do(http.MethodPut, base, tokenBob, body(adminKey)); rec.Code != http.StatusForbidden {
 		t.Errorf("grantee assigning a third party's key: status = %d, want 403", rec.Code)
 	}
 
 	// His own key he may lend: assigning is allowed exactly when the caller owns the
 	// key, so after the swap the storage stages under bob's.
-	bobKey := h.seedSSHKey("bobs-key", tokenBob)
+	bobKey := h.seedSSHCredential("bobs-key", tokenBob)
 	updated := h.mustDo(http.MethodPut, base, tokenBob, body(bobKey), http.StatusOK)
-	if updated["sshKeyId"] != bobKey {
-		t.Errorf("sshKeyId = %v, want bob's key %s", updated["sshKeyId"], bobKey)
+	if updated["sshCredentialId"] != bobKey {
+		t.Errorf("sshCredentialId = %v, want bob's key %s", updated["sshCredentialId"], bobKey)
 	}
 }
 
 // Nothing in the schema stops a key from being deleted out from under a credential,
 // so the service has to.
-func TestDeletingSSHKeyInUseConflicts(t *testing.T) {
+func TestDeletingSSHCredentialInUseConflicts(t *testing.T) {
 	h := newHarness(t)
 
 	// Held by a cluster config: what a run logs in with.
-	configKey := h.seedSSHKey("config-key", tokenAlice)
+	configKey := h.seedSSHCredential("config-key", tokenAlice)
 	clusterID := h.seedCluster("in-use")
 	h.mustDo(http.MethodPost, "/api/v1/slurm-cluster-configs", tokenAlice, map[string]any{
 		"slurmClusterId": clusterID, "loginUser": "runner",
-		"workRoot": "/scratch/runner", "sshKeyId": configKey,
+		"workRoot": "/scratch/runner", "sshCredentialId": configKey,
 	}, http.StatusCreated)
-	if rec := h.do(http.MethodDelete, "/api/v1/ssh-keys/"+configKey, tokenAlice, nil); rec.Code != http.StatusConflict {
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-credentials/"+configKey, tokenAlice, nil); rec.Code != http.StatusConflict {
 		t.Errorf("delete of a key a config presents: status = %d, want 409", rec.Code)
 	}
 
 	// Held by a data storage: what a dataset is staged under.
-	storageKey := h.seedSSHKey("storage-key", tokenAlice)
+	storageKey := h.seedSSHCredential("storage-key", tokenAlice)
 	h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", tokenAlice, map[string]any{
 		"dataName": "in-use", "hostName": "in-use.example.edu",
-		"loginUser": "runner", "sshKeyId": storageKey,
+		"loginUser": "runner", "sshCredentialId": storageKey,
 	}, http.StatusCreated)
-	if rec := h.do(http.MethodDelete, "/api/v1/ssh-keys/"+storageKey, tokenAlice, nil); rec.Code != http.StatusConflict {
+	if rec := h.do(http.MethodDelete, "/api/v1/ssh-credentials/"+storageKey, tokenAlice, nil); rec.Code != http.StatusConflict {
 		t.Errorf("delete of a key a storage presents: status = %d, want 409", rec.Code)
 	}
 
 	// Presented by nothing, it goes.
-	freeKey := h.seedSSHKey("free-key", tokenAlice)
-	h.mustDo(http.MethodDelete, "/api/v1/ssh-keys/"+freeKey, tokenAlice, nil, http.StatusNoContent)
+	freeKey := h.seedSSHCredential("free-key", tokenAlice)
+	h.mustDo(http.MethodDelete, "/api/v1/ssh-credentials/"+freeKey, tokenAlice, nil, http.StatusNoContent)
 }
 
 func TestDeletingTemplateWithDeploymentsConflicts(t *testing.T) {
@@ -765,13 +765,13 @@ func TestStrongestShareWins(t *testing.T) {
 }
 
 // seedStorage registers an SCP data storage owned by the caller of token, returning the
-// SSH key it stages under along with its id.
+// SSH credential it stages under along with its id.
 func (h *harness) seedStorage(name, token string) (keyID, storageID string) {
 	h.t.Helper()
-	keyID = h.seedSSHKey(name, token)
+	keyID = h.seedSSHCredential(name, token)
 	out := h.mustDo(http.MethodPost, "/api/v1/scp-data-storages", token, map[string]any{
 		"dataName": name, "hostName": name + ".example.edu",
-		"loginUser": "runner", "sshKeyId": keyID,
+		"loginUser": "runner", "sshCredentialId": keyID,
 	}, http.StatusCreated)
 	return keyID, out["dataId"].(string)
 }
@@ -826,8 +826,8 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	if created["port"].(float64) != 22 {
 		t.Errorf("port = %v, want the default 22 rather than the zero value", created["port"])
 	}
-	if created["sshKey"] == nil {
-		t.Error("storage response did not inline its SSH key")
+	if created["sshCredential"] == nil {
+		t.Error("storage response did not inline its SSH credential")
 	}
 
 	if rec := h.do(http.MethodGet, base, tokenBob, nil); rec.Code != http.StatusForbidden {
@@ -860,7 +860,7 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 	// READ is not WRITE, and no share confers control.
 	repoint := map[string]any{
 		"dataName": "renamed", "hostName": "staging.example.edu",
-		"loginUser": "runner", "sshKeyId": keyID,
+		"loginUser": "runner", "sshCredentialId": keyID,
 	}
 	if rec := h.do(http.MethodPut, base, tokenBob, repoint); rec.Code != http.StatusForbidden {
 		t.Errorf("update with READ: status = %d, want 403", rec.Code)
@@ -895,11 +895,11 @@ func TestStorageIsReachableOnlyByOwnerAndGrantees(t *testing.T) {
 // rather than a storage pointing at a key that does not exist.
 func TestStorageRegistrationValidatesItsHostAndKey(t *testing.T) {
 	h := newHarness(t)
-	keyID := h.seedSSHKey("validation", tokenAlice)
+	keyID := h.seedSSHCredential("validation", tokenAlice)
 	body := func(over map[string]any) map[string]any {
 		out := map[string]any{
 			"dataName": "scratch", "hostName": "login.example.edu",
-			"loginUser": "runner", "sshKeyId": keyID,
+			"loginUser": "runner", "sshCredentialId": keyID,
 		}
 		for k, v := range over {
 			out[k] = v
@@ -922,8 +922,8 @@ func TestStorageRegistrationValidatesItsHostAndKey(t *testing.T) {
 		t.Errorf("out-of-range port: status = %d, want 400", rec.Code)
 	}
 	if rec := h.do(http.MethodPost, "/api/v1/scp-data-storages", tokenAlice,
-		body(map[string]any{"sshKeyId": "nope"})); rec.Code != http.StatusNotFound {
-		t.Errorf("unknown SSH key: status = %d, want 404", rec.Code)
+		body(map[string]any{"sshCredentialId": "nope"})); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown SSH credential: status = %d, want 404", rec.Code)
 	}
 }
 
@@ -1996,7 +1996,7 @@ func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
 func TestUnregisteredPrincipalCannotOwnResources(t *testing.T) {
 	h := newHarness(t)
 	clusterID := h.seedCluster("ghost")
-	keyID := h.seedSSHKey("ghost", tokenAlice)
+	keyID := h.seedSSHCredential("ghost", tokenAlice)
 
 	// A token naming a principal with no users row.
 	introspector := stubIntrospector{
@@ -2006,7 +2006,7 @@ func TestUnregisteredPrincipalCannotOwnResources(t *testing.T) {
 
 	rec := h.do(http.MethodPost, "/api/v1/slurm-cluster-configs", "ghost-token", map[string]any{
 		"slurmClusterId": clusterID, "loginUser": "ghost",
-		"workRoot": "/scratch/ghost", "sshKeyId": keyID,
+		"workRoot": "/scratch/ghost", "sshCredentialId": keyID,
 	})
 	if rec.Code != http.StatusNotFound {
 		t.Errorf("status = %d, want 404\nbody: %s", rec.Code, rec.Body.String())
@@ -2308,7 +2308,7 @@ func TestUnknownResourcesReportNotFound(t *testing.T) {
 	for _, path := range []string{
 		"/api/v1/slurm-clusters/nope",
 		"/api/v1/slurm-cluster-configs/nope",
-		"/api/v1/ssh-keys/nope",
+		"/api/v1/ssh-credentials/nope",
 		"/api/v1/application-templates/nope",
 		"/api/v1/slurm-deployments/nope",
 		"/api/v1/processes/nope",

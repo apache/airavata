@@ -29,13 +29,8 @@ import (
 	"path/filepath"
 
 	datamodel "github.com/apache/airavata/api/data/model"
+	ssh "github.com/apache/airavata/internal/ssh"
 )
-
-type FileMetadata struct {
-	Path string
-	Size int64
-	Mode os.FileMode
-}
 
 func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *ExecutionContext, processId string, dataStagingTaskId string) (*ExecutionContext, error) {
 	dataStagingTask, err := a.dataStagingTasks.FindByIDAndProcessID(ctx, dataStagingTaskId, processId)
@@ -54,7 +49,7 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 			return nil, err
 		}
 
-		err = DownloadFileFromSCP(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHKey,
+		err = ssh.DownloadFileFromSCP(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHCredential,
 			*dataStagingTask.SourcePath, localTempDataPath)
 		if err != nil {
 			slog.Error("Failed to download file through SCP", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
@@ -71,8 +66,8 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 			return nil, err
 		}
 
-		err = DownloadFileFromSCP(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser,
-			*s.SSHKey, *dataStagingTask.SourcePath, localTempDataPath)
+		err = ssh.DownloadFileFromSCP(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser,
+			*s.SSHCredential, *dataStagingTask.SourcePath, localTempDataPath)
 		if err != nil {
 			slog.Error("Failed to download file from HPC", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"sourcePath", *dataStagingTask.SourcePath, "destinationPath", localTempDataPath, "error", err)
@@ -89,13 +84,13 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 		}
 
 		// Ensure the destination directory exists before attempting the SCP upload.
-		if err := CreateDirectorySSH(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHKey, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
+		if err := ssh.CreateDirectorySSH(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHCredential, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
 			slog.Error("Failed to create destination directory through SSH", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"destinationDirectory", filepath.Dir(*dataStagingTask.DestinationPath), "error", err)
 			return nil, err
 		}
 
-		err = UploadFileToSCP(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHKey, localTempDataPath, *dataStagingTask.DestinationPath)
+		err = ssh.UploadFileToSCP(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHCredential, localTempDataPath, *dataStagingTask.DestinationPath)
 		if err != nil {
 			slog.Error("Failed to upload file through SCP", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"sourcePath", localTempDataPath, "destinationPath", *dataStagingTask.DestinationPath, "error", err)
@@ -113,15 +108,15 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 		}
 
 		// Ensure the destination directory exists before attempting the SCP upload.
-		if err := CreateDirectorySSH(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser, *s.SSHKey,
+		if err := ssh.CreateDirectorySSH(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser, *s.SSHCredential,
 			filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
 			slog.Error("Failed to create destination directory on HPC through SSH", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"destinationDirectory", filepath.Dir(*dataStagingTask.DestinationPath), "error", err)
 			return nil, err
 		}
 
-		err = UploadFileToSCP(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser,
-			*s.SSHKey, localTempDataPath, *dataStagingTask.DestinationPath)
+		err = ssh.UploadFileToSCP(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser,
+			*s.SSHCredential, localTempDataPath, *dataStagingTask.DestinationPath)
 		if err != nil {
 			slog.Error("Failed to upload file to HPC", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"sourcePath", localTempDataPath, "destinationPath", *dataStagingTask.DestinationPath, "error", err)

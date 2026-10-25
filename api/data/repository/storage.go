@@ -30,7 +30,7 @@ import (
 
 // SCPDataStorageRepository reads and writes SCP data storages.
 //
-// Reads preload the SSH key because the response DTO carries its public summary: the
+// Reads preload the SSH credential because the response DTO carries its public summary: the
 // host and the login user are columns on the storage itself, but the key it presents
 // is a reference, and a storage without it is not much use to a caller deciding
 // whether to put data there.
@@ -48,7 +48,7 @@ func (r *SCPDataStorageRepository) WithTx(tx *gorm.DB) *SCPDataStorageRepository
 
 // withReferences is the read scope every lookup that feeds a response DTO starts from.
 func (r *SCPDataStorageRepository) withReferences(ctx context.Context) *gorm.DB {
-	return r.db.WithContext(ctx).Preload("SSHKey")
+	return r.db.WithContext(ctx).Preload("SSHCredential")
 }
 
 // FindAll returns every storage.
@@ -91,13 +91,13 @@ func (r *SCPDataStorageRepository) FindByIDsExcludingOwner(ctx context.Context, 
 	return out, err
 }
 
-// CountByKeyID reports how many storages still present one SSH key, for the same
+// CountByKeyID reports how many storages still present one SSH credential, for the same
 // reason the cluster configs do: the key's foreign key is RESTRICT, and a 409 naming
 // what holds it beats a constraint violation.
 func (r *SCPDataStorageRepository) CountByKeyID(ctx context.Context, keyID string) (int64, error) {
 	var n int64
 	err := r.db.WithContext(ctx).Model(&model.SCPDataStorage{}).
-		Where("ssh_key_id = ?", keyID).Count(&n).Error
+		Where("ssh_credential_id = ?", keyID).Count(&n).Error
 	return n, err
 }
 

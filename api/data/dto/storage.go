@@ -45,7 +45,7 @@ type SCPDataStorageRequest struct {
 
 	LoginUser string `json:"loginUser"`
 
-	SSHKeyID string `json:"sshKeyId"`
+	SSHCredentialID string `json:"sshCredentialId"`
 }
 
 // Validate implements httpx.Validator.
@@ -54,7 +54,7 @@ func (r *SCPDataStorageRequest) Validate() []httpx.FieldError {
 	c.NotBlankPtr("dataName", "Data name cannot be blank", r.DataName)
 	c.NotBlank("hostName", "Host name cannot be blank", r.HostName)
 	c.NotBlank("loginUser", "Login user cannot be blank", r.LoginUser)
-	c.NotBlank("sshKeyId", "SSH key id cannot be blank", r.SSHKeyID)
+	c.NotBlank("sshCredentialId", "SSH credential id cannot be blank", r.SSHCredentialID)
 	if r.Port != nil && (*r.Port < 1 || *r.Port > 65535) {
 		c.Add("port", "Port must be between 1 and 65535")
 	}
@@ -89,25 +89,25 @@ type SCPDataStorageResponse struct {
 
 	LoginUser *string `json:"loginUser"`
 
-	SSHKeyID *string                 `json:"sshKeyId"`
-	SSHKey   *creddto.SSHKeyResponse `json:"sshKey"`
+	SSHCredentialID *string                        `json:"sshCredentialId"`
+	SSHCredential   *creddto.SSHCredentialResponse `json:"sshCredential"`
 
 	Permission *string `json:"permission,omitempty"`
 }
 
 func ToSCPDataStorageResponse(s *model.SCPDataStorage) SCPDataStorageResponse {
 	out := SCPDataStorageResponse{
-		DataID:    s.ID,
-		DataName:  s.Name,
-		OwnerID:   s.OwnerID,
-		HostName:  s.HostName,
-		Port:      s.Port,
-		LoginUser: s.LoginUser,
-		SSHKeyID:  s.SSHKeyID,
+		DataID:          s.ID,
+		DataName:        s.Name,
+		OwnerID:         s.OwnerID,
+		HostName:        s.HostName,
+		Port:            s.Port,
+		LoginUser:       s.LoginUser,
+		SSHCredentialID: s.SSHCredentialID,
 	}
-	if s.SSHKey != nil {
-		key := creddto.ToSSHKeyResponse(s.SSHKey)
-		out.SSHKey = &key
+	if s.SSHCredential != nil {
+		key := creddto.ToSSHCredentialResponse(s.SSHCredential)
+		out.SSHCredential = &key
 	}
 	return out
 }

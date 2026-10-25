@@ -42,15 +42,15 @@ info:
       Slurm clusters, partitions, application templates and batch deployments.
       Reads of the catalogue are open to anyone, including anonymous callers;
       writes require a role.
-    - **Ownership and sharing** guards the per-user resources — SSH keys, groups,
-      cluster configs, SCP data storages, data products and processes. Ownership
+    - **Ownership and sharing** guards the per-user resources — SSH credentials,
+      groups, cluster configs, SCP data storages, data products and processes. Ownership
       comes from the token and is never carried in a request body, so nothing can be
       created on someone else's behalf or handed over by editing it. None of these
       are readable anonymously.
 
-    SSH keys are the strictest case: platform admins are not treated as owners, and
-    there is no share that opens a key up. Private key material and passphrases are
-    write-only — no read endpoint has a field for them.
+    SSH credentials are the strictest case: platform admins are not treated as
+    owners, and there is no share that opens one up. Private key material and
+    passphrases are write-only — no read endpoint has a field for them.
 
     ## Errors
 
@@ -77,7 +77,7 @@ tags:
     description: User accounts.
   - name: Groups
     description: Groups and their membership; the subject of a group share.
-  - name: SSH Keys
+  - name: SSH Credentials
     description: Registered keypairs. Private material is write-only.
   - name: Slurm Clusters
     description: The machine catalogue and its partitions.
@@ -435,87 +435,87 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
-  # ------------------------------------------------------------- SSH keys
+  # ------------------------------------------------------------- SSH credentials
 
-  /api/v1/ssh-keys:
+  /api/v1/ssh-credentials:
     get:
-      tags: [SSH Keys]
-      summary: List the caller's SSH keys
-      description: Returns only the caller's own keys. Admins are not exempt.
-      operationId: listSSHKeys
+      tags: [SSH Credentials]
+      summary: List the caller's SSH credentials
+      description: Returns only the caller's own credentials. Admins are not exempt.
+      operationId: listSSHCredentials
       responses:
         "200":
-          description: The caller's keys.
+          description: The caller's credentials.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/SSHKeyResponse" }
+                items: { $ref: "#/components/schemas/SSHCredentialResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
     post:
-      tags: [SSH Keys]
-      summary: Register an SSH key
+      tags: [SSH Credentials]
+      summary: Register an SSH credential
       description: |
         Self-service for any authenticated caller with a `users` row. `privateKey` is
         required on create; `privateKey` and `passphrase` are write-only and are never
         returned by any read endpoint.
-      operationId: createSSHKey
+      operationId: createSSHCredential
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/SSHKeyRequest" }
+            schema: { $ref: "#/components/schemas/SSHCredentialRequest" }
       responses:
         "201":
-          description: The registered key, without its private material.
+          description: The registered credential, without its private material.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/SSHKeyResponse" }
+              schema: { $ref: "#/components/schemas/SSHCredentialResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
-  /api/v1/ssh-keys/{sshKeyId}:
+  /api/v1/ssh-credentials/{sshCredentialId}:
     parameters:
-      - $ref: "#/components/parameters/SSHKeyId"
+      - $ref: "#/components/parameters/SSHCredentialId"
     get:
-      tags: [SSH Keys]
-      summary: Read an SSH key
+      tags: [SSH Credentials]
+      summary: Read an SSH credential
       description: Owner only.
-      operationId: getSSHKey
+      operationId: getSSHCredential
       responses:
         "200":
-          description: The key, without its private material.
+          description: The credential, without its private material.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/SSHKeyResponse" }
+              schema: { $ref: "#/components/schemas/SSHCredentialResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
     put:
-      tags: [SSH Keys]
-      summary: Update an SSH key
+      tags: [SSH Credentials]
+      summary: Update an SSH credential
       description: |
         Owner only. An update that omits `privateKey` keeps the stored secret.
-      operationId: updateSSHKey
+      operationId: updateSSHCredential
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/SSHKeyRequest" }
+            schema: { $ref: "#/components/schemas/SSHCredentialRequest" }
       responses:
         "200":
-          description: The updated key.
+          description: The updated credential.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/SSHKeyResponse" }
+              schema: { $ref: "#/components/schemas/SSHCredentialResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
@@ -523,12 +523,12 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
     delete:
-      tags: [SSH Keys]
-      summary: Delete an SSH key
+      tags: [SSH Credentials]
+      summary: Delete an SSH credential
       description: |
-        Owner only. A key still referenced by a cluster config or a data storage
-        cannot be deleted: `409 Conflict`.
-      operationId: deleteSSHKey
+        Owner only. A credential still referenced by a cluster config or a data
+        storage cannot be deleted: `409 Conflict`.
+      operationId: deleteSSHCredential
       responses:
         "204": { $ref: "#/components/responses/NoContent" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -2443,8 +2443,8 @@ components:
       in: path
       required: true
       schema: { type: string }
-    SSHKeyId:
-      name: sshKeyId
+    SSHCredentialId:
+      name: sshCredentialId
       in: path
       required: true
       schema: { type: string, format: uuid }
@@ -2553,8 +2553,8 @@ components:
             message: "Slurm cluster not found: c1d2e3f4-5678-4abc-9def-0123456789ab"
     Conflict:
       description: |
-        The request collides with existing state — deleting an SSH key still in use,
-        or a template that still has deployments.
+        The request collides with existing state — deleting an SSH credential still
+        in use, or a template that still has deployments.
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -2839,13 +2839,13 @@ components:
 
     # ---------------------------------------------------- Credentials
 
-    SSHKeyRequest:
+    SSHCredentialRequest:
       type: object
       description: |
-        The create/update payload for a key. `privateKey` is required on create; an
+        The create/update payload for a credential. `privateKey` is required on create; an
         update that omits it keeps the stored secret. There is no owner field.
       properties:
-        sshKeyName: { type: string }
+        sshCredentialName: { type: string }
         publicKey: { type: string }
         privateKey:
           type: [string, "null"]
@@ -2853,20 +2853,20 @@ components:
         passphrase:
           type: [string, "null"]
           description: Write-only. Never returned by any read endpoint.
-      required: [sshKeyName, publicKey]
+      required: [sshCredentialName, publicKey]
 
-    SSHKeyResponse:
+    SSHCredentialResponse:
       type: object
       description: |
-        The read model for a key. It has no private key or passphrase field at all —
+        The read model for a credential. It has no private key or passphrase field at all —
         the secrets cannot leak through this endpoint because there is nowhere for
         them to go.
       properties:
-        sshKeyId: { type: string, format: uuid }
-        sshKeyName: { type: string }
+        sshCredentialId: { type: string, format: uuid }
+        sshCredentialName: { type: string }
         publicKey: { type: string }
         ownerId: { type: string }
-      required: [sshKeyId, sshKeyName, publicKey, ownerId]
+      required: [sshCredentialId, sshCredentialName, publicKey, ownerId]
 
     # -------------------------------------------------------- Compute
 
@@ -2967,11 +2967,11 @@ components:
         slurmClusterId: { type: string, format: uuid }
         loginUser: { type: string }
         workRoot: { type: string }
-        sshKeyId:
+        sshCredentialId:
           type: string
           format: uuid
-          description: Must be a key the caller owns.
-      required: [slurmClusterId, loginUser, workRoot, sshKeyId]
+          description: Must be a credential the caller owns.
+      required: [slurmClusterId, loginUser, workRoot, sshCredentialId]
 
     SlurmClusterConfigResponse:
       type: object
@@ -2990,10 +2990,10 @@ components:
             - { type: "null" }
         loginUser: { type: string }
         workRoot: { type: string }
-        sshKeyId: { type: [string, "null"], format: uuid }
-        sshKey:
+        sshCredentialId: { type: [string, "null"], format: uuid }
+        sshCredential:
           oneOf:
-            - { $ref: "#/components/schemas/SSHKeyResponse" }
+            - { $ref: "#/components/schemas/SSHCredentialResponse" }
             - { type: "null" }
         permission:
           type: string
@@ -3147,11 +3147,11 @@ components:
           maximum: 65535
           default: 22
         loginUser: { type: string }
-        sshKeyId:
+        sshCredentialId:
           type: string
           format: uuid
-          description: Must be a key the caller owns.
-      required: [dataName, hostName, loginUser, sshKeyId]
+          description: Must be a credential the caller owns.
+      required: [dataName, hostName, loginUser, sshCredentialId]
 
     SCPDataStorageResponse:
       type: object
@@ -3162,10 +3162,10 @@ components:
         hostName: { type: [string, "null"] }
         port: { type: [integer, "null"] }
         loginUser: { type: [string, "null"] }
-        sshKeyId: { type: [string, "null"], format: uuid }
-        sshKey:
+        sshCredentialId: { type: [string, "null"], format: uuid }
+        sshCredential:
           oneOf:
-            - { $ref: "#/components/schemas/SSHKeyResponse" }
+            - { $ref: "#/components/schemas/SSHCredentialResponse" }
             - { type: "null" }
         permission:
           type: string

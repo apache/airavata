@@ -41,7 +41,7 @@ type SlurmClusterConfigRequest struct {
 	LoginUser string `json:"loginUser"`
 	WorkRoot  string `json:"workRoot"`
 
-	SSHKeyID string `json:"sshKeyId"`
+	SSHCredentialID string `json:"sshCredentialId"`
 }
 
 // Validate implements httpx.Validator.
@@ -50,7 +50,7 @@ func (r *SlurmClusterConfigRequest) Validate() []httpx.FieldError {
 	c.NotBlank("slurmClusterId", "Slurm cluster id cannot be blank", r.SlurmClusterID)
 	c.NotBlank("loginUser", "Login user cannot be blank", r.LoginUser)
 	c.NotBlank("workRoot", "Work root cannot be blank", r.WorkRoot)
-	c.NotBlank("sshKeyId", "SSH key id cannot be blank", r.SSHKeyID)
+	c.NotBlank("sshCredentialId", "SSH credential id cannot be blank", r.SSHCredentialID)
 	return c.Fields()
 }
 
@@ -81,8 +81,8 @@ type SlurmClusterConfigResponse struct {
 	LoginUser string `json:"loginUser"`
 	WorkRoot  string `json:"workRoot"`
 
-	SSHKeyID *string                 `json:"sshKeyId"`
-	SSHKey   *creddto.SSHKeyResponse `json:"sshKey"`
+	SSHCredentialID *string                        `json:"sshCredentialId"`
+	SSHCredential   *creddto.SSHCredentialResponse `json:"sshCredential"`
 
 	Permission *string `json:"permission,omitempty"`
 }
@@ -96,15 +96,15 @@ func ToSlurmClusterConfigResponse(c *model.SlurmClusterConfig) SlurmClusterConfi
 		SlurmClusterID:       c.SlurmClusterID,
 		LoginUser:            c.LoginUser,
 		WorkRoot:             c.WorkRoot,
-		SSHKeyID:             c.SSHKeyID,
+		SSHCredentialID:      c.SSHCredentialID,
 	}
 	if c.SlurmCluster != nil {
 		cluster := ToSlurmClusterResponse(c.SlurmCluster)
 		out.SlurmCluster = &cluster
 	}
-	if c.SSHKey != nil {
-		key := creddto.ToSSHKeyResponse(c.SSHKey)
-		out.SSHKey = &key
+	if c.SSHCredential != nil {
+		key := creddto.ToSSHCredentialResponse(c.SSHCredential)
+		out.SSHCredential = &key
 	}
 	return out
 }

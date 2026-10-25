@@ -4,7 +4,7 @@ Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via
 
 This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.\n\nSharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH keys](#ssh-keys), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a key, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
 ## Error responses
 
@@ -41,66 +41,66 @@ The statuses in use:
 | `401 Unauthorized` | no token where one is required, or a token that is present but unusable — the caller can fix this by presenting credentials. An invalid token also carries `WWW-Authenticate: Bearer error="invalid_token"` |
 | `403 Forbidden` | authenticated, but lacking the authority for this call |
 | `404 Not Found` | no such record — or, for [groups](#groups), a record the caller has no standing to know exists |
-| `409 Conflict` | the request collides with existing state, e.g. deleting an SSH key still in use |
+| `409 Conflict` | the request collides with existing state, e.g. deleting an SSH credential still in use |
 | `413 Content Too Large` | the body ran past a size cap — only [data product content](#upload-and-download-data-product-content) has one |
 | `502 Bad Gateway` | an upstream could not be reached: the identity provider when validating a token, or the storage host when [transferring data product content](#upload-and-download-data-product-content). Not the caller's fault either way |
 
 Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
-## SSH Keys
+## SSH Credentials
 
-An SSH key is a registered keypair, and it belongs to whoever registered it. Registering one is self-service — any authenticated caller may — but nothing about it is reachable by anyone else: reading, updating and deleting a key are the owner's alone, and the listing returns only the caller's own keys.
+An SSH credential is a registered keypair, and it belongs to whoever registered it. Registering one is self-service — any authenticated caller may — but nothing about it is reachable by anyone else: reading, updating and deleting a credential are the owner's alone, and the listing returns only the caller's own.
 
-**Platform admins are not treated as owners here**, unlike everywhere else in this API. There is no share to open a key up either. A key is the credential itself rather than something reached with one, so lending it out is what sharing a [cluster config](#share-a-slurm-cluster-config) or a [data storage](#share-an-scp-data-storage) is for — the key stays with its owner while other people submit and stage under it.
+**Platform admins are not treated as owners here**, unlike everywhere else in this API. There is no share to open a credential up either. A credential *is* the secret material rather than something reached with it, so lending it out is what sharing a [cluster config](#share-a-slurm-cluster-config) or a [data storage](#share-an-scp-data-storage) is for — the credential stays with its owner while other people submit and stage under it.
 
-A key is what a [Slurm cluster config](#slurm-cluster-configs) presents when it logs in to a cluster, and what an [SCP data storage](#scp-data-storages) presents when data is staged through it. Each of those carries its own host and login user, so the key is the only thing they take from here — and the only reason a key cannot be deleted. **Putting a key on either one requires owning it**: assigning a key means presenting its private half under a name of your choosing, so a request naming somebody else's key is `403 Forbidden`. Re-presenting the key a record already holds is not an assignment, which is what lets a `WRITE` grantee edit a config or a storage without owning the key on it.
-
-```
-GET    /api/v1/ssh-keys                 # the caller's own keys
-POST   /api/v1/ssh-keys
-GET    /api/v1/ssh-keys/{sshKeyId}      (owner)
-PUT    /api/v1/ssh-keys/{sshKeyId}      (owner)
-DELETE /api/v1/ssh-keys/{sshKeyId}      (owner)
-```
-
-### Create SSH Key
+A credential is what a [Slurm cluster config](#slurm-cluster-configs) presents when it logs in to a cluster, and what an [SCP data storage](#scp-data-storages) presents when data is staged through it. Each of those carries its own host and login user, so the credential is the only thing they take from here — and the only reason a credential cannot be deleted. **Putting a credential on either one requires owning it**: assigning one means presenting its private half under a name of your choosing, so a request naming somebody else's credential is `403 Forbidden`. Re-presenting the credential a record already holds is not an assignment, which is what lets a `WRITE` grantee edit a config or a storage without owning the credential on it.
 
 ```
-POST /api/v1/ssh-keys
+GET    /api/v1/ssh-credentials                   # the caller's own credentials
+POST   /api/v1/ssh-credentials
+GET    /api/v1/ssh-credentials/{sshCredentialId}  (owner)
+PUT    /api/v1/ssh-credentials/{sshCredentialId}  (owner)
+DELETE /api/v1/ssh-credentials/{sshCredentialId}  (owner)
+```
+
+### Create SSH Credential
+
+```
+POST /api/v1/ssh-credentials
 ```
 
 Requires an authenticated principal with a `users` row (see INSTALL.md's "Owning resources requires a matching `users` row"). The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Stores the keypair used to authenticate to a host — a cluster head node through a [cluster config](#slurm-cluster-configs), or a data host through an [SCP data storage](#scp-data-storages); `privateKey` and `passphrase` are write-only — they are never returned by any read endpoint.
 
 **curl example**
 
-The example below captures `sshKeyId` from the response into `$SSH_KEY_ID` (requires `jq`), for use by the cluster config and the data storage below.
+The example below captures `sshCredentialId` from the response into `$SSH_CREDENTIAL_ID` (requires `jq`), for use by the cluster config and the data storage below.
 
 ```bash
-SSH_KEY_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-keys \
+SSH_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-credentials \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "sshKeyName": "expanse-key",
+    "sshCredentialName": "expanse-key",
     "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
     "privateKey": "-----BEGIN OPENSSH PRIVATE KEY-----\nExampleKeyDoNotUse\n-----END OPENSSH PRIVATE KEY-----",
     "passphrase": null
-  }' | jq -r '.sshKeyId')
+  }' | jq -r '.sshCredentialId')
 
-echo "$SSH_KEY_ID"
+echo "$SSH_CREDENTIAL_ID"
 ```
 
 **Request body**
 
 | Field | Type | Notes |
 |---|---|---|
-| `sshKeyName` | string | required, cannot be blank |
+| `sshCredentialName` | string | required, cannot be blank |
 | `publicKey` | string | required, cannot be blank |
 | `privateKey` | string \| null | required on create; omit on update to keep the stored secret |
 | `passphrase` | string \| null | optional |
 
 ```json
 {
-  "sshKeyName": "expanse-key",
+  "sshCredentialName": "expanse-key",
   "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
   "privateKey": "-----BEGIN OPENSSH PRIVATE KEY-----\nExampleKeyDoNotUse\n-----END OPENSSH PRIVATE KEY-----",
   "passphrase": null
@@ -109,12 +109,12 @@ echo "$SSH_KEY_ID"
 
 **Response — `201 Created`**
 
-`sshKeyId` is server-generated (UUID); `ownerId` is resolved from the caller's token, not a request field. Note `privateKey` and `passphrase` are absent from the response — they cannot leak through this endpoint.
+`sshCredentialId` is server-generated (UUID); `ownerId` is resolved from the caller's token, not a request field. Note `privateKey` and `passphrase` are absent from the response — they cannot leak through this endpoint.
 
 ```json
 {
-  "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-  "sshKeyName": "expanse-key",
+  "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+  "sshCredentialName": "expanse-key",
   "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
   "ownerId": "cilogon:12345"
 }
@@ -124,15 +124,15 @@ echo "$SSH_KEY_ID"
 
 | Status | Cause |
 |---|---|
-| `400 Bad Request` | `sshKeyName` or `publicKey` blank, or `privateKey` missing on create |
+| `400 Bad Request` | `sshCredentialName` or `publicKey` blank, or `privateKey` missing on create |
 | `401 Unauthorized` | no token — every route here needs one, reads included |
-| `403 Forbidden` | the key belongs to another user |
-| `404 Not Found` | no such key, or the caller has no `users` row |
-| `409 Conflict` | a cluster config or a data storage still presents the key |
+| `403 Forbidden` | the credential belongs to another user |
+| `404 Not Found` | no such credential, or the caller has no `users` row |
+| `409 Conflict` | a cluster config or a data storage still presents the credential |
 
 **Validation errors — `400 Bad Request`**
 
-Returned when `sshKeyName` or `publicKey` is blank.
+Returned when `sshCredentialName` or `publicKey` is blank.
 
 ```json
 {
@@ -140,7 +140,7 @@ Returned when `sshKeyName` or `publicKey` is blank.
   "error": "Bad Request",
   "message": "Validation failed",
   "fieldErrors": [
-    { "field": "sshKeyName", "message": "SSH key name cannot be blank" },
+    { "field": "sshCredentialName", "message": "SSH credential name cannot be blank" },
     { "field": "publicKey", "message": "Public key cannot be blank" }
   ]
 }
@@ -587,7 +587,7 @@ Every path is scoped by its cluster, so a `partitionId` belonging to one cluster
 
 ## Slurm Cluster Configs
 
-A Slurm cluster config is one way of logging in to a [Slurm cluster](#slurm-clusters): an account, an SSH key, and the directory work is done beneath. The cluster says *where* jobs run; the config says *as whom*.
+A Slurm cluster config is one way of logging in to a [Slurm cluster](#slurm-clusters): an account, an SSH credential, and the directory work is done beneath. The cluster says *where* jobs run; the config says *as whom*.
 
 Registering one is self-service — no admin authority — and it belongs to whoever registered it. Everyone else reaches it through its sharing rules, which is what lets a PI hand a team access to an allocation without handing over the key itself. Ownership is not transferable through the API: a run is launched against a config by id, so handing one over would silently hand over the identity every job on it submits as.
 
@@ -600,7 +600,7 @@ Registering one is self-service — no admin authority — and it belongs to who
 
 `WRITE` deliberately stops short of control. A grantee may correct a work root; retiring the identity everybody else reaches the cluster through, or deciding who else gets it, stays with the owner.
 
-The key is returned as its **public** summary only — name and public key. The private material has no field on any read model, so it cannot leak through these routes at all.
+The credential is returned as its **public** summary only — name and public key. The private material has no field on any read model, so it cannot leak through these routes at all.
 
 ### Create Slurm Cluster Config
 
@@ -608,7 +608,7 @@ The key is returned as its **public** summary only — name and public key. The 
 POST /api/v1/slurm-cluster-configs
 ```
 
-Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body. Uses `$CLUSTER_ID` from [Create Slurm Cluster](#create-slurm-cluster) and `$SSH_KEY_ID` from [Create SSH Key](#create-ssh-key) above, and captures `slurmClusterConfigId` into `$CLUSTER_CONFIG_ID` (requires `jq`).
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body. Uses `$CLUSTER_ID` from [Create Slurm Cluster](#create-slurm-cluster) and `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `slurmClusterConfigId` into `$CLUSTER_CONFIG_ID` (requires `jq`).
 
 ```bash
 CLUSTER_CONFIG_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs \
@@ -620,7 +620,7 @@ CLUSTER_CONFIG_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs 
     "slurmClusterId": "'"$CLUSTER_ID"'",
     "loginUser": "airavata",
     "workRoot": "/expanse/lustre/scratch/airavata/jobs",
-    "sshKeyId": "'"$SSH_KEY_ID"'"
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
   }' | jq -r '.slurmClusterConfigId')
 ```
 
@@ -633,9 +633,9 @@ CLUSTER_CONFIG_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs 
 | `slurmClusterId` | string | required, must reference an existing [Slurm cluster](#create-slurm-cluster) |
 | `loginUser` | string | required, cannot be blank. The account on the head node |
 | `workRoot` | string | required, cannot be blank. Runs work beneath this directory |
-| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) **the caller owns** — assigning someone else's key is `403` |
+| `sshCredentialId` | string | required, must reference an existing [SSH credential](#create-ssh-credential) **the caller owns** — assigning someone else's credential is `403` |
 
-A `slurmClusterId` or `sshKeyId` that does not resolve is `404 Not Found` rather than a dangling reference.
+A `slurmClusterId` or `sshCredentialId` that does not resolve is `404 Not Found` rather than a dangling reference.
 
 **Response — `201 Created`**
 
@@ -661,10 +661,10 @@ The cluster is inlined, since a config is only meaningful together with the mach
   },
   "loginUser": "airavata",
   "workRoot": "/expanse/lustre/scratch/airavata/jobs",
-  "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-  "sshKey": {
-    "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-    "sshKeyName": "expanse-key",
+  "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+  "sshCredential": {
+    "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+    "sshCredentialName": "expanse-key",
     "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
     "ownerId": "cilogon:12345"
   },
@@ -692,7 +692,7 @@ DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
 | Status | When |
 |---|---|
 | `403 Forbidden` | the config is not shared with the caller for what they asked to do; or a grantee tried to delete it or read its share list |
-| `404 Not Found` | no such config, cluster or key |
+| `404 Not Found` | no such config, cluster or credential |
 
 ### Share a Slurm Cluster Config
 
@@ -1037,7 +1037,7 @@ Returned when e.g. `templateId` or `slurmRunSection` is blank, `defaultBatchJobC
 
 ## SCP Data Storages
 
-An SCP data storage is a host and location that datasets are staged through. It names the host its data sits on, the account it is reached as, and the [SSH key](#create-ssh-key) presented for that account, and belongs to whoever registered it. A [data product](#data-products) names one as where its dataset lives, and a [data staging task](#create-data-staging-task) moves files between two of them.
+An SCP data storage is a host and location that datasets are staged through. It names the host its data sits on, the account it is reached as, and the [SSH credential](#create-ssh-credential) presented for that account, and belongs to whoever registered it. A [data product](#data-products) names one as where its dataset lives, and a [data staging task](#create-data-staging-task) moves files between two of them.
 
 Registering one is documented up front, under [SCP Data Storage Registration](#scp-data-storage-registration), because the walkthrough needs one before it can register a dataset. What follows here is the rest of the resource.
 
@@ -1069,7 +1069,7 @@ DELETE /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId} (owner)
 
 An SCP data storage is a host and location that datasets are staged through. Registering one is documented here, ahead of the resources that name it: [data products](#data-products) live on one, and a [data staging task](#create-data-staging-task) moves files between two. The rest of the resource — its routes, its sharing rules and how it is read back — is under [SCP Data Storages](#scp-data-storages) further down.
 
-A storage spells out its own host and login account, so the only thing it needs registered ahead of it is the key it presents: [Create SSH Key](#create-ssh-key) above is the one call that comes before the one below.
+A storage spells out its own host and login account, so the only thing it needs registered ahead of it is the key it presents: [Create SSH Credential](#create-ssh-credential) above is the one call that comes before the one below.
 
 ### Create SCP Data Storage
 
@@ -1077,7 +1077,7 @@ A storage spells out its own host and login account, so the only thing it needs 
 POST /api/v1/scp-data-storages
 ```
 
-Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_KEY_ID` from [Create SSH Key](#create-ssh-key) above, and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the data product and staging steps further down.
+Requires an authenticated principal with a `users` row. The owner is taken from the token — there is no owner field in the body — and is not transferable afterwards. Uses `$SSH_CREDENTIAL_ID` from [Create SSH Credential](#create-ssh-credential) above, and captures `dataId` into `$STORAGE_ID` (requires `jq`) for the data product and staging steps further down.
 
 A storage names both halves of where its data is: the **host** it sits on, as a host name and port, and the **account** it is reached as, as a login user and the key presented for it. Only the key is a reference, because its private half has to live somewhere it is never read back. Neither half is taken from an administrative catalogue: registering a storage is self-service, and having to ask an admin to enter the host first would defeat that.
 
@@ -1090,7 +1090,7 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
     "hostName": "login.expanse.sdsc.edu",
     "port": 22,
     "loginUser": "airavata",
-    "sshKeyId": "'"$SSH_KEY_ID"'"
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
   }' | jq -r '.dataId')
 ```
 
@@ -1102,11 +1102,11 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
 | `hostName` | string | required, cannot be blank |
 | `port` | integer | optional, 1-65535, defaults to `22` |
 | `loginUser` | string | required, cannot be blank |
-| `sshKeyId` | string | required, must reference an existing [SSH key](#create-ssh-key) **the caller owns** — assigning someone else's key is `403` |
+| `sshCredentialId` | string | required, must reference an existing [SSH credential](#create-ssh-credential) **the caller owns** — assigning someone else's credential is `403` |
 
 **Response — `201 Created`**
 
-The key is inlined as its safe (public-only) summary — the private material is never returned. `permission` is what the calling principal may do with the storage.
+The credential is inlined as its safe (public-only) summary — the private material is never returned. `permission` is what the calling principal may do with the storage.
 
 ```json
 {
@@ -1116,10 +1116,10 @@ The key is inlined as its safe (public-only) summary — the private material is
   "hostName": "login.expanse.sdsc.edu",
   "port": 22,
   "loginUser": "airavata",
-  "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-  "sshKey": {
-    "sshKeyId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-    "sshKeyName": "expanse-key",
+  "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+  "sshCredential": {
+    "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+    "sshCredentialName": "expanse-key",
     "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
     "ownerId": "cilogon:12345"
   },
@@ -1235,7 +1235,7 @@ The routes above register *where* a dataset lives; these two move the bytes. The
 | `GET .../content` | `READ` on the product |
 | `PUT .../content` | `WRITE` on the product |
 
-**The standing is on the product, and nothing else.** A product names a storage and that storage names an SSH key, but no standing on the storage is required and the key is never exposed: the platform reaches the host under the credential the storage owner registered, exactly as a staging task does. Requiring a storage share as well would make sharing a product useless on its own, and sharing the storage instead would hand over every dataset on that host rather than the one meant.
+**The standing is on the product, and nothing else.** A product names a storage and that storage names an SSH credential, but no standing on the storage is required and the key is never exposed: the platform reaches the host under the credential the storage owner registered, exactly as a staging task does. Requiring a storage share as well would make sharing a product useless on its own, and sharing the storage instead would hand over every dataset on that host rather than the one meant.
 
 Only a **file** product can be transferred — `isFile: false` is `400`, because a directory moves as a tree and single-file SCP does not do that.
 
@@ -1296,7 +1296,7 @@ A successful upload is what moves a product from `REGISTERD` to `PROVISIONED` �
 | `400` | the product is a directory, is not on SCP storage, or the body could not be read |
 | `403` | no `READ` (download) or `WRITE` (upload) standing on the product |
 | `404` | no such product |
-| `409` | the product names no path, or its storage is missing the host, login user or key |
+| `409` | the product names no path, or its storage is missing the host, login user or credential |
 | `413` | the body ran past the upload cap |
 | `502` | the storage host could not be reached, or refused the transfer |
 
@@ -1392,7 +1392,7 @@ are registered against a storage standing for the cluster's own filesystem.
 **The FASTA host.** A dataset on another host means a second storage, naming
 `data.lab.example.edu` rather than the cluster's login node. The account differs too:
 the group's login on the lab host is `labuser`, not the `airavata` the cluster is
-reached as. It presents the *same* `$SSH_KEY_ID` as the first storage — one key can be
+reached as. It presents the *same* `$SSH_CREDENTIAL_ID` as the first storage — one key can be
 authorised for as many accounts as its public half is installed on, and re-registering
 the key material would only give the same bytes a second id. `$FASTA_STORAGE_ID` is what
 the FASTA product names below, and it carries all three: the host, the account and the
@@ -1407,7 +1407,7 @@ FASTA_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
     "hostName": "data.lab.example.edu",
     "port": 22,
     "loginUser": "labuser",
-    "sshKeyId": "'"$SSH_KEY_ID"'"
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
   }' | jq -r '.dataId')
 ```
 

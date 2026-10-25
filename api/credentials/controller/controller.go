@@ -18,7 +18,7 @@
 * under the License.
  */
 
-// Package controller serves the SSH key routes.
+// Package controller serves the SSH credential routes.
 package controller
 
 import (
@@ -30,24 +30,24 @@ import (
 	"github.com/apache/airavata/api/credentials/service"
 )
 
-// SSHKeyController serves /api/v1/ssh-keys.
-type SSHKeyController struct{ svc *service.SSHKeyService }
+// SSHCredentialController serves /api/v1/ssh-credentials.
+type SSHCredentialController struct{ svc *service.SSHCredentialService }
 
-// NewSSHKeyController returns a handler delegating to svc.
-func NewSSHKeyController(svc *service.SSHKeyService) *SSHKeyController {
-	return &SSHKeyController{svc: svc}
+// NewSSHCredentialController returns a handler delegating to svc.
+func NewSSHCredentialController(svc *service.SSHCredentialService) *SSHCredentialController {
+	return &SSHCredentialController{svc: svc}
 }
 
-// Register mounts the SSH key routes.
-func (h *SSHKeyController) Register(mux *http.ServeMux) {
-	mux.HandleFunc("GET /api/v1/ssh-keys", h.list)
-	mux.HandleFunc("POST /api/v1/ssh-keys", h.create)
-	mux.HandleFunc("GET /api/v1/ssh-keys/{sshKeyId}", h.get)
-	mux.HandleFunc("PUT /api/v1/ssh-keys/{sshKeyId}", h.update)
-	mux.HandleFunc("DELETE /api/v1/ssh-keys/{sshKeyId}", h.delete)
+// Register mounts the SSH credential routes.
+func (h *SSHCredentialController) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v1/ssh-credentials", h.list)
+	mux.HandleFunc("POST /api/v1/ssh-credentials", h.create)
+	mux.HandleFunc("GET /api/v1/ssh-credentials/{sshCredentialId}", h.get)
+	mux.HandleFunc("PUT /api/v1/ssh-credentials/{sshCredentialId}", h.update)
+	mux.HandleFunc("DELETE /api/v1/ssh-credentials/{sshCredentialId}", h.delete)
 }
 
-func (h *SSHKeyController) list(w http.ResponseWriter, r *http.Request) {
+func (h *SSHCredentialController) list(w http.ResponseWriter, r *http.Request) {
 	keys, err := h.svc.List(r.Context())
 	if err != nil {
 		httpx.WriteError(w, r, err)
@@ -56,8 +56,8 @@ func (h *SSHKeyController) list(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, http.StatusOK, keys)
 }
 
-func (h *SSHKeyController) get(w http.ResponseWriter, r *http.Request) {
-	key, err := h.svc.Get(r.Context(), r.PathValue("sshKeyId"))
+func (h *SSHCredentialController) get(w http.ResponseWriter, r *http.Request) {
+	key, err := h.svc.Get(r.Context(), r.PathValue("sshCredentialId"))
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
@@ -65,8 +65,8 @@ func (h *SSHKeyController) get(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, http.StatusOK, key)
 }
 
-func (h *SSHKeyController) create(w http.ResponseWriter, r *http.Request) {
-	var req dto.SSHKeyRequest
+func (h *SSHCredentialController) create(w http.ResponseWriter, r *http.Request) {
+	var req dto.SSHCredentialRequest
 	if err := httpx.Bind(r, &req); err != nil {
 		httpx.WriteError(w, r, err)
 		return
@@ -79,13 +79,13 @@ func (h *SSHKeyController) create(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, http.StatusCreated, key)
 }
 
-func (h *SSHKeyController) update(w http.ResponseWriter, r *http.Request) {
-	var req dto.SSHKeyRequest
+func (h *SSHCredentialController) update(w http.ResponseWriter, r *http.Request) {
+	var req dto.SSHCredentialRequest
 	if err := httpx.Bind(r, &req); err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
-	key, err := h.svc.Update(r.Context(), r.PathValue("sshKeyId"), &req)
+	key, err := h.svc.Update(r.Context(), r.PathValue("sshCredentialId"), &req)
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
@@ -93,8 +93,8 @@ func (h *SSHKeyController) update(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, http.StatusOK, key)
 }
 
-func (h *SSHKeyController) delete(w http.ResponseWriter, r *http.Request) {
-	if err := h.svc.Delete(r.Context(), r.PathValue("sshKeyId")); err != nil {
+func (h *SSHCredentialController) delete(w http.ResponseWriter, r *http.Request) {
+	if err := h.svc.Delete(r.Context(), r.PathValue("sshCredentialId")); err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}

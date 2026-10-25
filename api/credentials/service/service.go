@@ -57,10 +57,12 @@ type KeyReferrer interface {
 // A cluster config and a data storage both name a key, and both ask this before
 // pointing at one. Exposing the question rather than the table is what keeps a single
 // definition of who may present a key — its owner, nobody else.
-type KeyAccess struct{ keys *repository.SSHKeyRepository }
+type KeyAccess struct {
+	keys *repository.SSHCredentialRepository
+}
 
 // NewKeyAccess returns a checker over the key table.
-func NewKeyAccess(keys *repository.SSHKeyRepository) *KeyAccess {
+func NewKeyAccess(keys *repository.SSHCredentialRepository) *KeyAccess {
 	return &KeyAccess{keys: keys}
 }
 
@@ -72,10 +74,10 @@ func (a *KeyAccess) WithTx(tx *gorm.DB) *KeyAccess {
 // Find loads a key without asking who owns it. It is for a record re-presenting the
 // key it already holds: keeping a key is not assigning one, so someone editing a
 // config shared with them does not need to own the key already on it.
-func (a *KeyAccess) Find(ctx context.Context, id string) (*model.SSHKey, error) {
+func (a *KeyAccess) Find(ctx context.Context, id string) (*model.SSHCredential, error) {
 	key, err := a.keys.FindByID(ctx, id)
 	if err != nil {
-		return nil, notFoundAs(err, "SSH key not found: %s", id)
+		return nil, notFoundAs(err, "SSH credential not found: %s", id)
 	}
 	return key, nil
 }
@@ -84,7 +86,7 @@ func (a *KeyAccess) Find(ctx context.Context, id string) (*model.SSHKey, error) 
 // when it belongs to somebody else. Assigning a key is presenting its private material
 // under a name of your choosing, which is the owner's to allow — and they allow it by
 // sharing what holds the key, never the key.
-func (a *KeyAccess) RequireOwned(ctx context.Context, id string) (*model.SSHKey, error) {
+func (a *KeyAccess) RequireOwned(ctx context.Context, id string) (*model.SSHCredential, error) {
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
 		return nil, err
@@ -94,35 +96,36 @@ func (a *KeyAccess) RequireOwned(ctx context.Context, id string) (*model.SSHKey,
 		return nil, err
 	}
 	if !key.OwnedBy(principal.Name) {
-		return nil, httpx.Forbidden("Access denied: SSH key %s belongs to another user", id)
+		return nil, httpx.Forbidden("Access denied: SSH credential %s belongs to another user", id)
 	}
 	return key, nil
 }
 
-// SSHKeyService manages registered SSH keypairs.
+// SSHCredentialService manages registered SSH credentials.
 //
-// Registering one is self-service — any authenticated caller may register a key, and it
+// Registering one is self-service — any authenticated caller may register one, and it
 // belongs to them — but nothing about it is reachable by anyone else. Reads, updates
-// and deletes are the owner's alone, and there is no share to open one up: a key is the
-// credential itself, so lending it out is what sharing a cluster config is for.
+// and deletes are the owner's alone, and there is no share to open one up: a credential
+// is the secret material itself, so lending it out is what sharing a cluster config is
+// for.
 //
 // Platform admins are deliberately not treated as owners here, unlike everywhere else
 // in this API. An admin has no business reading or repointing someone's key material.
-type SSHKeyService struct {
-	keys   *repository.SSHKeyRepository
+type SSHCredentialService struct {
+	keys   *repository.SSHCredentialRepository
 	users  *iamrepo.UserRepository
 	usedBy []KeyReferrer
 }
 
-// NewSSHKeyService returns an SSH key service. usedBy is every kind of record that can
-// hold a key; a key none of them names is free to delete.
-func NewSSHKeyService(keys *repository.SSHKeyRepository, users *iamrepo.UserRepository, usedBy ...KeyReferrer) *SSHKeyService {
-	return &SSHKeyService{keys: keys, users: users, usedBy: usedBy}
+// NewSSHCredentialService returns an SSH credential service. usedBy is every kind of
+// record that can hold a credential; one that none of them names is free to delete.
+func NewSSHCredentialService(keys *repository.SSHCredentialRepository, users *iamrepo.UserRepository, usedBy ...KeyReferrer) *SSHCredentialService {
+	return &SSHCredentialService{keys: keys, users: users, usedBy: usedBy}
 }
 
-// List returns the caller's own keys. There is no listing across owners: a key is
-// private to whoever registered it, and that holds for admins too.
-func (s *SSHKeyService) List(ctx context.Context) ([]dto.SSHKeyResponse, error) {
+// List returns the caller's own credentials. There is no listing across owners: a
+// credential is private to whoever registered it, and that holds for admins too.
+func (s *SSHCredentialService) List(ctx context.Context) ([]dto.SSHCredentialResponse, error) {
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
 		return nil, err
@@ -131,20 +134,20 @@ func (s *SSHKeyService) List(ctx context.Context) ([]dto.SSHKeyResponse, error) 
 	if err != nil {
 		return nil, err
 	}
-	out := make([]dto.SSHKeyResponse, 0, len(keys))
+	out := make([]dto.SSHCredentialResponse, 0, len(keys))
 	for i := range keys {
-		out = append(out, dto.ToSSHKeyResponse(&keys[i]))
+		out = append(out, dto.ToSSHCredentialResponse(&keys[i]))
 	}
 	return out, nil
 }
 
 // Get returns one key.
-func (s *SSHKeyService) Get(ctx context.Context, id string) (*dto.SSHKeyResponse, error) {
+func (s *SSHCredentialService) Get(ctx context.Context, id string) (*dto.SSHCredentialResponse, error) {
 	key, err := s.requireOwnedKey(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	out := dto.ToSSHKeyResponse(key)
+	out := dto.ToSSHCredentialResponse(key)
 	return &out, nil
 }
 
@@ -154,7 +157,7 @@ func (s *SSHKeyService) Get(ctx context.Context, id string) (*dto.SSHKeyResponse
 // else's behalf. The private key is required here even though the payload makes it
 // optional: the same payload is reused for updates, where omitting it means "keep what
 // is stored".
-func (s *SSHKeyService) Create(ctx context.Context, req *dto.SSHKeyRequest) (*dto.SSHKeyResponse, error) {
+func (s *SSHCredentialService) Create(ctx context.Context, req *dto.SSHCredentialRequest) (*dto.SSHCredentialResponse, error) {
 	owner, err := iamsvc.RequireCurrentUser(ctx, s.users)
 	if err != nil {
 		return nil, err
@@ -163,17 +166,17 @@ func (s *SSHKeyService) Create(ctx context.Context, req *dto.SSHKeyRequest) (*dt
 		return nil, httpx.BadRequest("Private key is required when creating a key")
 	}
 
-	key := &model.SSHKey{
-		SSHKeyName: req.SSHKeyName,
-		PublicKey:  req.PublicKey,
-		PrivateKey: *req.PrivateKey,
-		Passphrase: ptr.NonBlank(req.Passphrase),
-		OwnerID:    owner.ID,
+	key := &model.SSHCredential{
+		SSHCredentialName: req.SSHCredentialName,
+		PublicKey:         req.PublicKey,
+		PrivateKey:        *req.PrivateKey,
+		Passphrase:        ptr.NonBlank(req.Passphrase),
+		OwnerID:           owner.ID,
 	}
 	if err := s.keys.Save(ctx, key); err != nil {
 		return nil, err
 	}
-	out := dto.ToSSHKeyResponse(key)
+	out := dto.ToSSHCredentialResponse(key)
 	return &out, nil
 }
 
@@ -182,13 +185,13 @@ func (s *SSHKeyService) Create(ctx context.Context, req *dto.SSHKeyRequest) (*dt
 // A blank or absent private key or passphrase means "leave the stored secret alone",
 // not "erase it". Without that rule, a client round-tripping a response — which never
 // contains the secrets — would silently wipe them.
-func (s *SSHKeyService) Update(ctx context.Context, id string, req *dto.SSHKeyRequest) (*dto.SSHKeyResponse, error) {
+func (s *SSHCredentialService) Update(ctx context.Context, id string, req *dto.SSHCredentialRequest) (*dto.SSHCredentialResponse, error) {
 	key, err := s.requireOwnedKey(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	key.SSHKeyName = req.SSHKeyName
+	key.SSHCredentialName = req.SSHCredentialName
 	key.PublicKey = req.PublicKey
 	if v := ptr.NonBlank(req.PrivateKey); v != nil {
 		key.PrivateKey = *v
@@ -200,7 +203,7 @@ func (s *SSHKeyService) Update(ctx context.Context, id string, req *dto.SSHKeyRe
 	if err := s.keys.Save(ctx, key); err != nil {
 		return nil, err
 	}
-	out := dto.ToSSHKeyResponse(key)
+	out := dto.ToSSHCredentialResponse(key)
 	return &out, nil
 }
 
@@ -211,7 +214,7 @@ func (s *SSHKeyService) Update(ctx context.Context, id string, req *dto.SSHKeyRe
 // many records still hold the key. The count runs before the delete rather than in a
 // transaction with it — as the data storage service checks its products — and the
 // constraint remains the backstop for anything registered in between.
-func (s *SSHKeyService) Delete(ctx context.Context, id string) error {
+func (s *SSHCredentialService) Delete(ctx context.Context, id string) error {
 	key, err := s.requireOwnedKey(ctx, id)
 	if err != nil {
 		return err
@@ -226,22 +229,22 @@ func (s *SSHKeyService) Delete(ctx context.Context, id string) error {
 		held += n
 	}
 	if held > 0 {
-		return httpx.Conflict("SSH key %s is still presented by %d record(s) and cannot be deleted", id, held)
+		return httpx.Conflict("SSH credential %s is still presented by %d record(s) and cannot be deleted", id, held)
 	}
 	return s.keys.Delete(ctx, key)
 }
 
-func (s *SSHKeyService) requireOwnedKey(ctx context.Context, id string) (*model.SSHKey, error) {
+func (s *SSHCredentialService) requireOwnedKey(ctx context.Context, id string) (*model.SSHCredential, error) {
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
 		return nil, err
 	}
 	key, err := s.keys.FindByID(ctx, id)
 	if err != nil {
-		return nil, notFoundAs(err, "SSH key not found: %s", id)
+		return nil, notFoundAs(err, "SSH credential not found: %s", id)
 	}
 	if !key.OwnedBy(principal.Name) {
-		return nil, httpx.Forbidden("Access denied: SSH key %s belongs to another user", id)
+		return nil, httpx.Forbidden("Access denied: SSH credential %s belongs to another user", id)
 	}
 	return key, nil
 }

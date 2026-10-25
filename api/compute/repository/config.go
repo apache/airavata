@@ -50,7 +50,7 @@ func (r *SlurmClusterConfigRepository) withReferences(ctx context.Context) *gorm
 	return r.db.WithContext(ctx).
 		Preload("SlurmCluster").
 		Preload("SlurmCluster.Partitions").
-		Preload("SSHKey")
+		Preload("SSHCredential")
 }
 
 // FindAll returns every config.
@@ -102,14 +102,14 @@ func (r *SlurmClusterConfigRepository) FindByIDsExcludingOwner(ctx context.Conte
 	return out, err
 }
 
-// CountByKeyID reports how many configs still present one SSH key. The credentials
+// CountByKeyID reports how many configs still present one SSH credential. The credentials
 // vertical asks before deleting a key: the foreign key is RESTRICT, so without this the
 // delete would fail as an opaque constraint violation rather than a 409 naming what
 // still holds it.
 func (r *SlurmClusterConfigRepository) CountByKeyID(ctx context.Context, keyID string) (int64, error) {
 	var n int64
 	err := r.db.WithContext(ctx).Model(&model.SlurmClusterConfig{}).
-		Where("ssh_key_id = ?", keyID).Count(&n).Error
+		Where("ssh_credential_id = ?", keyID).Count(&n).Error
 	return n, err
 }
 
