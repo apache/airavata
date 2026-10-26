@@ -35,7 +35,7 @@ import (
 	"time"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
-	"golang.org/x/crypto/ssh"
+	gossh "golang.org/x/crypto/ssh"
 )
 
 // ========================== Utility section =====================================
@@ -57,8 +57,8 @@ type FileMetadata struct {
 }
 
 type scpTransfer struct {
-	client  *ssh.Client
-	session *ssh.Session
+	client  *gossh.Client
+	session *gossh.Session
 	stdin   io.WriteCloser
 	stdout  *bufio.Reader
 	stderr  *bytes.Buffer
@@ -67,16 +67,24 @@ type scpTransfer struct {
 	target  string
 }
 
-func dialSSH(ctx context.Context, host string, port int, username string, key credmodel.SSHCredential) (*ssh.Client, error) {
-	signer, err := signerFor(key)
+type SSHDialConfig struct {
+	Host     string
+	Port     int
+	Username string
+	Cred     credmodel.SSHCredential
+	Ch       Challenger
+}
+
+func dialSSH(ctx context.Context, dialConfig SSHDialConfig) (*gossh.Client, error) {
+	signer, err := signerFor(dialConfig.Cred)
 	if err != nil {
 		return nil, err
 	}
-	hostKeys := ssh.InsecureIgnoreHostKey()
-	if port == 0 {
-		port = 22
+	hostKeys := gossh.InsecureIgnoreHostKey()
+	if dialConfig.Port == 0 {
+		dialConfig.Port = 22
 	}
-	addr := net.JoinHostPort(host, strconv.Itoa(port))
+	addr := net.JoinHostPort(dialConfig.Host, strconv.Itoa(dialConfig.Port))
 
 	// DialContext rather than ssh.Dial: the activity's context has to be able to
 	// abandon a connect that is going nowhere.
@@ -88,9 +96,34 @@ func dialSSH(ctx context.Context, host string, port int, username string, key cr
 	if deadline, ok := ctx.Deadline(); ok {
 		_ = conn.SetDeadline(deadline)
 	}
-	sshConn, chans, reqs, err := ssh.NewClientConn(conn, addr, &ssh.ClientConfig{
-		User:            username,
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
+
+	authMethods := []gossh.AuthMethod{gossh.PublicKeys(signer)}
+	if dialConfig.Cred.FullInteractive {
+		ki := gossh.KeyboardInteractive(func(name, instruction string, questions []string, echos []bool) ([]string, error) {
+			// RFC 4256 allows an INFO_REQUEST with zero prompts (servers use it to
+			// display a banner-like instruction). It still requires a response.
+			prompts := make([]Prompt, len(questions))
+			for i, q := range questions {
+				prompts[i] = Prompt{Text: q, Echo: echos[i]}
+			}
+			if len(prompts) == 0 && instruction == "" && name == "" {
+				return []string{}, nil
+			}
+			answers, err := dialConfig.Ch.Challenge(ctx, name, instruction, prompts)
+			if err != nil {
+				return nil, err
+			}
+			if len(answers) != len(questions) {
+				return nil, fmt.Errorf("expected %d answers, got %d", len(questions), len(answers))
+			}
+			return answers, nil
+		})
+		authMethods = append(authMethods, ki)
+	}
+
+	sshConn, chans, reqs, err := gossh.NewClientConn(conn, addr, &gossh.ClientConfig{
+		User:            dialConfig.Username,
+		Auth:            authMethods,
 		HostKeyCallback: hostKeys,
 		Timeout:         scpDialTimeout,
 	})
@@ -101,15 +134,15 @@ func dialSSH(ctx context.Context, host string, port int, username string, key cr
 	// The handshake deadline must not outlive the handshake: a transfer reads for as
 	// long as the file takes.
 	_ = conn.SetDeadline(time.Time{})
-	return ssh.NewClient(sshConn, chans, reqs), nil
+	return gossh.NewClient(sshConn, chans, reqs), nil
 }
 
-func intializeScpSession(ctx context.Context, host string, port int, username string, key credmodel.SSHCredential, direction, remotePath, target string) (*scpTransfer, error) {
-	client, err := dialSSH(ctx, host, port, username, key)
+func intializeScpSession(ctx context.Context, dialConfig SSHDialConfig, direction, remotePath, target string) (*scpTransfer, error) {
+	client, err := dialSSH(ctx, dialConfig)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", target, err)
 	}
-	session, err := client.NewSession()
+	session, err := client.NewSession() // client is *gossh.Client, so this is fine
 	if err != nil {
 		client.Close()
 		return nil, fmt.Errorf("%s: opening session: %w", target, err)
@@ -156,8 +189,8 @@ func intializeScpSession(ctx context.Context, host string, port int, username st
 // to stderr is folded into the error as well, so a caller that only checks err is no
 // worse off than before. The streams are returned as the command wrote them, trailing
 // newline included; a caller parsing them should trim.
-func RunSSHCommand(ctx context.Context, host string, port int, username string, key credmodel.SSHCredential, command, target string) (string, string, error) {
-	client, err := dialSSH(ctx, host, port, username, key)
+func RunSSHCommand(ctx context.Context, dialConfig SSHDialConfig, command, target string) (string, string, error) {
+	client, err := dialSSH(ctx, dialConfig)
 	if err != nil {
 		return "", "", fmt.Errorf("%s: %w", target, err)
 	}
@@ -416,16 +449,16 @@ func scpAck(w io.Writer) error {
 	return nil
 }
 
-func signerFor(key credmodel.SSHCredential) (ssh.Signer, error) {
+func signerFor(key credmodel.SSHCredential) (gossh.Signer, error) {
 	pem := []byte(key.PrivateKey)
 	if key.Passphrase != nil && *key.Passphrase != "" {
-		signer, err := ssh.ParsePrivateKeyWithPassphrase(pem, []byte(*key.Passphrase))
+		signer, err := gossh.ParsePrivateKeyWithPassphrase(pem, []byte(*key.Passphrase))
 		if err != nil {
 			return nil, fmt.Errorf("ssh credential %s could not be decrypted with its registered passphrase", key.ID)
 		}
 		return signer, nil
 	}
-	signer, err := ssh.ParsePrivateKey(pem)
+	signer, err := gossh.ParsePrivateKey(pem)
 	if err != nil {
 		return nil, fmt.Errorf("ssh credential %s could not be parsed (is it passphrase protected without a registered passphrase?)", key.ID)
 	}

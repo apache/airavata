@@ -49,7 +49,14 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 			return nil, err
 		}
 
-		err = ssh.DownloadFileFromSCP(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHCredential,
+		dialConfig := ssh.SSHDialConfig{
+			Host:     *s.HostName,
+			Port:     *s.Port,
+			Username: *s.LoginUser,
+			Cred:     *s.SSHCredential,
+		}
+
+		err = ssh.DownloadFileFromSCP(ctx, dialConfig,
 			*dataStagingTask.SourcePath, localTempDataPath)
 		if err != nil {
 			slog.Error("Failed to download file through SCP", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
@@ -66,8 +73,14 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 			return nil, err
 		}
 
-		err = ssh.DownloadFileFromSCP(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser,
-			*s.SSHCredential, *dataStagingTask.SourcePath, localTempDataPath)
+		dialConfig := ssh.SSHDialConfig{
+			Host:     s.SlurmCluster.HeadnodeHost,
+			Port:     s.SlurmCluster.HeadnodePort,
+			Username: s.LoginUser,
+			Cred:     *s.SSHCredential,
+		}
+
+		err = ssh.DownloadFileFromSCP(ctx, dialConfig, *dataStagingTask.SourcePath, localTempDataPath)
 		if err != nil {
 			slog.Error("Failed to download file from HPC", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"sourcePath", *dataStagingTask.SourcePath, "destinationPath", localTempDataPath, "error", err)
@@ -83,14 +96,21 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 			return nil, err
 		}
 
+		dialConfig := ssh.SSHDialConfig{
+			Host:     *s.HostName,
+			Port:     *s.Port,
+			Username: *s.LoginUser,
+			Cred:     *s.SSHCredential,
+		}
+
 		// Ensure the destination directory exists before attempting the SCP upload.
-		if err := ssh.CreateDirectorySSH(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHCredential, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
+		if err := ssh.CreateDirectorySSH(ctx, dialConfig, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
 			slog.Error("Failed to create destination directory through SSH", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"destinationDirectory", filepath.Dir(*dataStagingTask.DestinationPath), "error", err)
 			return nil, err
 		}
 
-		err = ssh.UploadFileToSCP(ctx, *s.HostName, *s.Port, *s.LoginUser, *s.SSHCredential, localTempDataPath, *dataStagingTask.DestinationPath)
+		err = ssh.UploadFileToSCP(ctx, dialConfig, localTempDataPath, *dataStagingTask.DestinationPath)
 		if err != nil {
 			slog.Error("Failed to upload file through SCP", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"sourcePath", localTempDataPath, "destinationPath", *dataStagingTask.DestinationPath, "error", err)
@@ -108,15 +128,19 @@ func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *Execut
 		}
 
 		// Ensure the destination directory exists before attempting the SCP upload.
-		if err := ssh.CreateDirectorySSH(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser, *s.SSHCredential,
-			filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
+		dialConfig := ssh.SSHDialConfig{
+			Host:     s.SlurmCluster.HeadnodeHost,
+			Port:     s.SlurmCluster.HeadnodePort,
+			Username: s.LoginUser,
+			Cred:     *s.SSHCredential,
+		}
+		if err := ssh.CreateDirectorySSH(ctx, dialConfig, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
 			slog.Error("Failed to create destination directory on HPC through SSH", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"destinationDirectory", filepath.Dir(*dataStagingTask.DestinationPath), "error", err)
 			return nil, err
 		}
 
-		err = ssh.UploadFileToSCP(ctx, s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser,
-			*s.SSHCredential, localTempDataPath, *dataStagingTask.DestinationPath)
+		err = ssh.UploadFileToSCP(ctx, dialConfig, localTempDataPath, *dataStagingTask.DestinationPath)
 		if err != nil {
 			slog.Error("Failed to upload file to HPC", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"sourcePath", localTempDataPath, "destinationPath", *dataStagingTask.DestinationPath, "error", err)

@@ -55,9 +55,14 @@ func TestSCPDownload(t *testing.T) {
 
 	startTime := time.Now()
 
-	err = DownloadFileFromSCP(t.Context(), host, 22, username, credmodel.SSHCredential{
-		PrivateKey: privateKeyStr,
-		Passphrase: &passphrase,
+	err = DownloadFileFromSCP(t.Context(), SSHDialConfig{
+		Host:     host,
+		Port:     22,
+		Username: username,
+		Cred: credmodel.SSHCredential{
+			PrivateKey: privateKeyStr,
+			Passphrase: &passphrase,
+		},
 	}, "/home/"+username+"/random.bin", "/tmp/random.bin")
 	if err != nil {
 		t.Fatalf("SCP download failed: %v", err)
@@ -104,18 +109,28 @@ func TestSCPUpload(t *testing.T) {
 
 	startTime := time.Now()
 
-	err = UploadFileToSCP(t.Context(), host, 22, username, credmodel.SSHCredential{
-		PrivateKey: privateKeyStr,
-		Passphrase: &passphrase,
+	err = UploadFileToSCP(t.Context(), SSHDialConfig{
+		Host:     host,
+		Port:     22,
+		Username: username,
+		Cred: credmodel.SSHCredential{
+			PrivateKey: privateKeyStr,
+			Passphrase: &passphrase,
+		},
 	}, "/tmp/random.bin", "/home/"+username+"/randomupload.bin")
 	if err != nil {
 		t.Fatalf("SCP upload failed: %v", err)
 	}
 	t.Logf("SCP upload completed in %v", time.Since(startTime))
 
-	metadata, err := GetSCPFileMetadata(t.Context(), host, 22, username, credmodel.SSHCredential{
-		PrivateKey: privateKeyStr,
-		Passphrase: &passphrase,
+	metadata, err := GetSCPFileMetadata(t.Context(), SSHDialConfig{
+		Host:     host,
+		Port:     22,
+		Username: username,
+		Cred: credmodel.SSHCredential{
+			PrivateKey: privateKeyStr,
+			Passphrase: &passphrase,
+		},
 	}, "/home/"+username+"/randomupload.bin")
 
 	if err != nil {

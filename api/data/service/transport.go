@@ -32,13 +32,32 @@ type SCPTransport struct{}
 func NewSCPTransport() SCPTransport { return SCPTransport{} }
 
 func (SCPTransport) Download(ctx context.Context, ep Endpoint, remotePath, localPath string) error {
-	return ssh.DownloadFileFromSCP(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, remotePath, localPath)
+
+	dialConfig := ssh.SSHDialConfig{
+		Host:     ep.Host,
+		Port:     ep.Port,
+		Username: ep.LoginUser,
+		Cred:     ep.Key,
+	}
+	return ssh.DownloadFileFromSCP(ctx, dialConfig, remotePath, localPath)
 }
 
 func (SCPTransport) Upload(ctx context.Context, ep Endpoint, localPath, remotePath string) error {
-	return ssh.UploadFileToSCP(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, localPath, remotePath)
+	dialConfig := ssh.SSHDialConfig{
+		Host:     ep.Host,
+		Port:     ep.Port,
+		Username: ep.LoginUser,
+		Cred:     ep.Key,
+	}
+	return ssh.UploadFileToSCP(ctx, dialConfig, localPath, remotePath)
 }
 
 func (SCPTransport) MakeDirectory(ctx context.Context, ep Endpoint, remoteDir string) error {
-	return ssh.CreateDirectorySSH(ctx, ep.Host, ep.Port, ep.LoginUser, ep.Key, remoteDir)
+	dialConfig := ssh.SSHDialConfig{
+		Host:     ep.Host,
+		Port:     ep.Port,
+		Username: ep.LoginUser,
+		Cred:     ep.Key,
+	}
+	return ssh.CreateDirectorySSH(ctx, dialConfig, remoteDir)
 }
