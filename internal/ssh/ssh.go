@@ -26,14 +26,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"io"
+	"log/slog"
 	"net"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
 	gossh "golang.org/x/crypto/ssh"
@@ -87,10 +89,7 @@ func NewSSHDialConfig(host string, port int, sshUsername string, cred credmodel.
 }
 
 func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext) (*gossh.Client, error) {
-	signer, err := signerFor(dialConfig.cred)
-	if err != nil {
-		return nil, err
-	}
+	
 	hostKeys := gossh.InsecureIgnoreHostKey()
 	if dialConfig.port == 0 {
 		dialConfig.port = 22
@@ -108,11 +107,20 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 		_ = conn.SetDeadline(deadline)
 	}
 
-	authMethods := []gossh.AuthMethod{gossh.PublicKeys(signer)}
+	authMethods := []gossh.AuthMethod{}
+	if dialConfig.cred.PrivateKey != "" {
+		signer, err := signerFor(dialConfig.cred)
+		if err != nil {
+			return nil, err
+		}
+		authMethods = append(authMethods, gossh.PublicKeys(signer))
+	}
+	
 	if dialConfig.cred.FullInteractive {
 		ki := gossh.KeyboardInteractive(func(name, instruction string, questions []string, echos []bool) ([]string, error) {
 			// RFC 4256 allows an INFO_REQUEST with zero prompts (servers use it to
 			// display a banner-like instruction). It still requires a response.
+			slog.Info("Keyboard interactive challenge received", "name", name, "instruction", instruction, "questions", questions, "echos", echos)
 			prompts := make([]Prompt, len(questions))
 			for i, q := range questions {
 				prompts[i] = Prompt{Text: q, Echo: echos[i]}

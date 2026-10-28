@@ -97,6 +97,7 @@ echo "$SSH_CREDENTIAL_ID"
 | `publicKey` | string | required, cannot be blank |
 | `privateKey` | string \| null | required on create; omit on update to keep the stored secret |
 | `passphrase` | string \| null | optional |
+| `fullInteractive` | boolean | optional, default `false`; also answer keyboard-interactive prompts (OTP, Duo) after the key |
 
 ```json
 {
@@ -141,7 +142,6 @@ Returned when `sshCredentialName` or `publicKey` is blank.
   "message": "Validation failed",
   "fieldErrors": [
     { "field": "sshCredentialName", "message": "SSH credential name cannot be blank" },
-    { "field": "publicKey", "message": "Public key cannot be blank" }
   ]
 }
 ```

@@ -38,13 +38,13 @@ type SSHCredentialRequest struct {
 	PublicKey         string  `json:"publicKey"`
 	PrivateKey        *string `json:"privateKey"`
 	Passphrase        *string `json:"passphrase"`
+	FullInteractive   bool    `json:"fullInteractive"`
 }
 
 // Validate implements httpx.Validator.
 func (r *SSHCredentialRequest) Validate() []httpx.FieldError {
 	var c httpx.Constraints
 	c.NotBlank("sshCredentialName", "SSH credential name cannot be blank", r.SSHCredentialName)
-	c.NotBlank("publicKey", "Public key cannot be blank", r.PublicKey)
 	return c.Fields()
 }
 
@@ -62,6 +62,7 @@ type SSHCredentialResponse struct {
 	SSHCredentialID   string `json:"sshCredentialId"`
 	SSHCredentialName string `json:"sshCredentialName"`
 	PublicKey         string `json:"publicKey"`
+	FullInteractive   bool   `json:"fullInteractive"`
 	OwnerID           string `json:"ownerId"`
 }
 
@@ -70,6 +71,7 @@ func ToSSHCredentialResponse(k *model.SSHCredential) SSHCredentialResponse {
 		SSHCredentialID:   k.ID,
 		SSHCredentialName: k.SSHCredentialName,
 		PublicKey:         k.PublicKey,
+		FullInteractive:   k.FullInteractive,
 		OwnerID:           k.OwnerID,
 	}
 }

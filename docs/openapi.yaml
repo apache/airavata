@@ -2853,6 +2853,9 @@ components:
         passphrase:
           type: [string, "null"]
           description: Write-only. Never returned by any read endpoint.
+        fullInteractive:
+          type: boolean
+          description: Also answer keyboard-interactive prompts (OTP, Duo) after the key.
       required: [sshCredentialName, publicKey]
 
     SSHCredentialResponse:
@@ -2865,8 +2868,9 @@ components:
         sshCredentialId: { type: string, format: uuid }
         sshCredentialName: { type: string }
         publicKey: { type: string }
+        fullInteractive: { type: boolean }
         ownerId: { type: string }
-      required: [sshCredentialId, sshCredentialName, publicKey, ownerId]
+      required: [sshCredentialId, sshCredentialName, publicKey, fullInteractive, ownerId]
 
     # -------------------------------------------------------- Compute
 
