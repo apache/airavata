@@ -10,10 +10,10 @@ import (
 )
 
 // Copies a single remote file to localPath over SSH
-func DownloadFileFromSCP(ctx context.Context, dialConfig SSHDialConfig, remotePath string, localPath string) error {
-	target := fmt.Sprintf("scp download %s@%s:%s", dialConfig.Username, dialConfig.Host, remotePath)
+func DownloadFileFromSCP(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, remotePath string, localPath string) error {
+	target := fmt.Sprintf("scp download %s@%s:%s", dialConfig.sshUsername, dialConfig.host, remotePath)
 
-	t, err := intializeScpSession(ctx, dialConfig, "-f", remotePath, target)
+	t, err := intializeScpSession(ctx, dialConfig, sshContext, "-f", remotePath, target)
 	if err != nil {
 		return err
 	}
@@ -26,13 +26,13 @@ func DownloadFileFromSCP(ctx context.Context, dialConfig SSHDialConfig, remotePa
 		return err
 	}
 
-	slog.Info("Downloaded file over SCP", "host", dialConfig.Host, "remotePath", remotePath, "localPath", localPath)
+	slog.Info("Downloaded file over SCP", "host", dialConfig.host, "remotePath", remotePath, "localPath", localPath)
 	return nil
 }
 
 // Uploads a single local file to a remote endpoint
-func UploadFileToSCP(ctx context.Context, dialConfig SSHDialConfig, localPath string, remotePath string) error {
-	target := fmt.Sprintf("scp upload %s@%s:%s", dialConfig.Username, dialConfig.Host, remotePath)
+func UploadFileToSCP(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, localPath string, remotePath string) error {
+	target := fmt.Sprintf("scp upload %s@%s:%s", dialConfig.sshUsername, dialConfig.host, remotePath)
 
 	// Validate the local file before attempting the SCP upload.
 	file, err := os.Open(localPath)
@@ -51,7 +51,7 @@ func UploadFileToSCP(ctx context.Context, dialConfig SSHDialConfig, localPath st
 		return fmt.Errorf("%s: %s is not a regular file, so the size it would announce cannot be trusted", target, localPath)
 	}
 
-	t, err := intializeScpSession(ctx, dialConfig, "-t", remotePath, target)
+	t, err := intializeScpSession(ctx, dialConfig, sshContext, "-t", remotePath, target)
 	if err != nil {
 		return err
 	}
@@ -64,33 +64,33 @@ func UploadFileToSCP(ctx context.Context, dialConfig SSHDialConfig, localPath st
 		return err
 	}
 
-	slog.Info("Uploaded file over SCP", "host", dialConfig.Host, "localPath", localPath, "remotePath", remotePath)
+	slog.Info("Uploaded file over SCP", "host", dialConfig.host, "localPath", localPath, "remotePath", remotePath)
 	return nil
 }
 
 // Creates remotePath on the host, including any missing parent directories, and does
 // nothing if it is already there.
-func CreateDirectorySSH(ctx context.Context, dialConfig SSHDialConfig, remotePath string) error {
-	target := fmt.Sprintf("ssh mkdir %s@%s:%s", dialConfig.Username, dialConfig.Host, remotePath)
+func CreateDirectorySSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, remotePath string) error {
+	target := fmt.Sprintf("ssh mkdir %s@%s:%s", dialConfig.sshUsername, dialConfig.host, remotePath)
 
 	if strings.TrimSpace(remotePath) == "" {
 		return fmt.Errorf("%s: no remote directory was named", target)
 	}
 
-	if _, _, err := RunSSHCommand(ctx, dialConfig, "mkdir -p "+ShellQuote(remotePath), target); err != nil {
+	if _, _, err := RunSSHCommand(ctx, dialConfig, sshContext, "mkdir -p "+ShellQuote(remotePath), target); err != nil {
 		return err
 	}
 
-	slog.Info("Created directory over SSH", "host", dialConfig.Host, "remotePath", remotePath)
+	slog.Info("Created directory over SSH", "host", dialConfig.host, "remotePath", remotePath)
 	return nil
 }
 
 // Reads the mode, size and name a remote scp announces for a single remote file,
 // without transferring its contents.
-func GetSCPFileMetadata(ctx context.Context, dialConfig SSHDialConfig, remotePath string) (*FileMetadata, error) {
-	target := fmt.Sprintf("scp stat %s@%s:%s", dialConfig.Username, dialConfig.Host, remotePath)
+func GetSCPFileMetadata(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, remotePath string) (*FileMetadata, error) {
+	target := fmt.Sprintf("scp stat %s@%s:%s", dialConfig.sshUsername, dialConfig.host, remotePath)
 
-	t, err := intializeScpSession(ctx, dialConfig, "-f", remotePath, target)
+	t, err := intializeScpSession(ctx, dialConfig, sshContext, "-f", remotePath, target)
 	if err != nil {
 		return nil, err
 	}

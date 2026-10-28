@@ -26,6 +26,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"io"
 	"net"
 	"os"
@@ -68,23 +69,33 @@ type scpTransfer struct {
 }
 
 type SSHDialConfig struct {
-	Host     string
-	Port     int
-	Username string
-	Cred     credmodel.SSHCredential
-	Ch       Challenger
+	host        string
+	port        int
+	sshUsername string
+	cred        credmodel.SSHCredential
+	userId      string
 }
 
-func dialSSH(ctx context.Context, dialConfig SSHDialConfig) (*gossh.Client, error) {
-	signer, err := signerFor(dialConfig.Cred)
+func NewSSHDialConfig(host string, port int, sshUsername string, cred credmodel.SSHCredential, userId string) SSHDialConfig {
+	return SSHDialConfig{
+		host:        host,
+		port:        port,
+		sshUsername: sshUsername,
+		cred:        cred,
+		userId:      userId,
+	}
+}
+
+func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext) (*gossh.Client, error) {
+	signer, err := signerFor(dialConfig.cred)
 	if err != nil {
 		return nil, err
 	}
 	hostKeys := gossh.InsecureIgnoreHostKey()
-	if dialConfig.Port == 0 {
-		dialConfig.Port = 22
+	if dialConfig.port == 0 {
+		dialConfig.port = 22
 	}
-	addr := net.JoinHostPort(dialConfig.Host, strconv.Itoa(dialConfig.Port))
+	addr := net.JoinHostPort(dialConfig.host, strconv.Itoa(dialConfig.port))
 
 	// DialContext rather than ssh.Dial: the activity's context has to be able to
 	// abandon a connect that is going nowhere.
@@ -98,7 +109,7 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig) (*gossh.Client, erro
 	}
 
 	authMethods := []gossh.AuthMethod{gossh.PublicKeys(signer)}
-	if dialConfig.Cred.FullInteractive {
+	if dialConfig.cred.FullInteractive {
 		ki := gossh.KeyboardInteractive(func(name, instruction string, questions []string, echos []bool) ([]string, error) {
 			// RFC 4256 allows an INFO_REQUEST with zero prompts (servers use it to
 			// display a banner-like instruction). It still requires a response.
@@ -109,7 +120,11 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig) (*gossh.Client, erro
 			if len(prompts) == 0 && instruction == "" && name == "" {
 				return []string{}, nil
 			}
-			answers, err := dialConfig.Ch.Challenge(ctx, name, instruction, prompts)
+
+			sessionId := uuid.New().String()
+			interactiveSession := NewSSHInteractiveSession(sessionId, dialConfig)
+			sshContext.InteractiveSessionStore.AddSession(interactiveSession)
+			answers, err := interactiveSession.Challenge(ctx, name, instruction, prompts)
 			if err != nil {
 				return nil, err
 			}
@@ -122,7 +137,7 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig) (*gossh.Client, erro
 	}
 
 	sshConn, chans, reqs, err := gossh.NewClientConn(conn, addr, &gossh.ClientConfig{
-		User:            dialConfig.Username,
+		User:            dialConfig.sshUsername,
 		Auth:            authMethods,
 		HostKeyCallback: hostKeys,
 		Timeout:         scpDialTimeout,
@@ -137,8 +152,8 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig) (*gossh.Client, erro
 	return gossh.NewClient(sshConn, chans, reqs), nil
 }
 
-func intializeScpSession(ctx context.Context, dialConfig SSHDialConfig, direction, remotePath, target string) (*scpTransfer, error) {
-	client, err := dialSSH(ctx, dialConfig)
+func intializeScpSession(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, direction, remotePath, target string) (*scpTransfer, error) {
+	client, err := dialSSH(ctx, dialConfig, sshContext)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", target, err)
 	}
@@ -189,8 +204,8 @@ func intializeScpSession(ctx context.Context, dialConfig SSHDialConfig, directio
 // to stderr is folded into the error as well, so a caller that only checks err is no
 // worse off than before. The streams are returned as the command wrote them, trailing
 // newline included; a caller parsing them should trim.
-func RunSSHCommand(ctx context.Context, dialConfig SSHDialConfig, command, target string) (string, string, error) {
-	client, err := dialSSH(ctx, dialConfig)
+func RunSSHCommand(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, command, target string) (string, string, error) {
+	client, err := dialSSH(ctx, dialConfig, sshContext)
 	if err != nil {
 		return "", "", fmt.Errorf("%s: %w", target, err)
 	}

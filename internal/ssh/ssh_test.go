@@ -54,16 +54,17 @@ func TestSCPDownload(t *testing.T) {
 	}
 
 	startTime := time.Now()
+	sshContext := NewGlobalSSHContext()
 
 	err = DownloadFileFromSCP(t.Context(), SSHDialConfig{
-		Host:     host,
-		Port:     22,
-		Username: username,
-		Cred: credmodel.SSHCredential{
+		host:        host,
+		port:        22,
+		sshUsername: username,
+		cred: credmodel.SSHCredential{
 			PrivateKey: privateKeyStr,
 			Passphrase: &passphrase,
 		},
-	}, "/home/"+username+"/random.bin", "/tmp/random.bin")
+	}, sshContext, "/home/"+username+"/random.bin", "/tmp/random.bin")
 	if err != nil {
 		t.Fatalf("SCP download failed: %v", err)
 	}
@@ -107,31 +108,33 @@ func TestSCPUpload(t *testing.T) {
 		t.Fatalf("Failed to write to temporary file: %v", err)
 	}
 
+	sshContext := NewGlobalSSHContext()
+
 	startTime := time.Now()
 
 	err = UploadFileToSCP(t.Context(), SSHDialConfig{
-		Host:     host,
-		Port:     22,
-		Username: username,
-		Cred: credmodel.SSHCredential{
+		host:        host,
+		port:        22,
+		sshUsername: username,
+		cred: credmodel.SSHCredential{
 			PrivateKey: privateKeyStr,
 			Passphrase: &passphrase,
 		},
-	}, "/tmp/random.bin", "/home/"+username+"/randomupload.bin")
+	}, sshContext, "/tmp/random.bin", "/home/"+username+"/randomupload.bin")
 	if err != nil {
 		t.Fatalf("SCP upload failed: %v", err)
 	}
 	t.Logf("SCP upload completed in %v", time.Since(startTime))
 
 	metadata, err := GetSCPFileMetadata(t.Context(), SSHDialConfig{
-		Host:     host,
-		Port:     22,
-		Username: username,
-		Cred: credmodel.SSHCredential{
+		host:        host,
+		port:        22,
+		sshUsername: username,
+		cred: credmodel.SSHCredential{
 			PrivateKey: privateKeyStr,
 			Passphrase: &passphrase,
 		},
-	}, "/home/"+username+"/randomupload.bin")
+	}, sshContext, "/home/"+username+"/randomupload.bin")
 
 	if err != nil {
 		t.Fatalf("Failed to get SCP file metadata: %v", err)

@@ -41,6 +41,7 @@ import (
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
 	"github.com/apache/airavata/internal/config"
+	ssh "github.com/apache/airavata/internal/ssh"
 )
 
 type ExecutionEngine struct {
@@ -55,6 +56,7 @@ type ExecutionEngine struct {
 	orchestrator        *worker.WorkflowOrchestrator
 	batchStatus         *processrepo.BatchJobStatusRepository
 	processStatus       *processrepo.StatusRepository
+	sshContext          *ssh.GlobalSSHContext
 }
 
 type GlobalJobConfigs struct {
@@ -91,6 +93,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
 	processStatus *processrepo.StatusRepository,
 	workflowBackend backend.Backend,
+	sshContext *ssh.GlobalSSHContext,
 ) *ExecutionEngine {
 
 	// workflowBackend may be nil in tests to prevent sqlite driver collision. Only create
@@ -112,6 +115,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		orchestrator:        orchestrator,
 		batchStatus:         batchStatus,
 		processStatus:       processStatus,
+		sshContext:          sshContext,
 	}
 }
 
