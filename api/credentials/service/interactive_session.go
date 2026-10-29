@@ -22,9 +22,11 @@ package service
 
 import (
 	"context"
+	"errors"
 	"sort"
 
 	"github.com/apache/airavata/internal/auth"
+	"github.com/apache/airavata/internal/httpx"
 	"github.com/apache/airavata/internal/ssh"
 
 	dto "github.com/apache/airavata/api/credentials/dto"
@@ -58,4 +60,43 @@ func (s *InteractiveSessionService) List(ctx context.Context) ([]dto.Interactive
 		out = append(out, dto.ToInteractiveSessionResponse(session))
 	}
 	return out, nil
+}
+
+// Get returns one of the caller's pending sessions. Another user's session is a 404,
+// not a 403: the store is keyed by owner, so it is simply not there to find.
+func (s *InteractiveSessionService) Get(ctx context.Context, sessionID string) (*ssh.SSHInteractiveSession, error) {
+	p, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	session, ok := s.store.GetSession(p.Name, sessionID)
+	if !ok {
+		return nil, httpx.NotFound("No pending interactive session: %s", sessionID)
+	}
+	return session, nil
+}
+
+// errLoginCancelled is what the SSH handshake fails with when the user cancels.
+var errLoginCancelled = errors.New("interactive login cancelled by user")
+
+// Answer hands the caller's responses to the handshake waiting on session.
+//
+// The responses are never logged or kept beyond the session: they are passwords and
+// one-time codes.
+func (s *InteractiveSessionService) Answer(session *ssh.SSHInteractiveSession, answer *dto.InteractiveSessionAnswer) error {
+	if answer.Cancel {
+		return s.set(session, nil, errLoginCancelled)
+	}
+	prompts, _ := session.Read()
+	if len(answer.Responses) != len(prompts) {
+		return httpx.BadRequest("Expected %d responses, got %d", len(prompts), len(answer.Responses))
+	}
+	return s.set(session, answer.Responses, nil)
+}
+
+func (s *InteractiveSessionService) set(session *ssh.SSHInteractiveSession, responses []string, err error) error {
+	if errors.Is(session.SetResponse(responses, err), ssh.ErrSessionAnswered) {
+		return httpx.Conflict("Interactive session %s has already been answered", session.SessionId)
+	}
+	return nil
 }

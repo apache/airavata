@@ -179,6 +179,30 @@ curl -s localhost:9095/api/v1/ssh-interactive-sessions \
 ]
 ```
 
+### Answer an Interactive SSH Session
+
+`GET /api/v1/ssh-interactive-sessions/{sessionId}/ws` — a WebSocket.
+
+Authenticated like every other route, with `Authorization: Bearer $TOKEN` on the upgrade request. The session is looked up before the upgrade, so a missing token is a plain `401` and a session that is not the caller's (or no longer pending) is a plain `404`. A browser's `WebSocket` cannot set that header, so a browser client needs to go through a backend that can.
+
+1. The server sends the challenge:
+   ```json
+   { "type": "challenge", "session": { "sessionId": "…", "instruction": "", "prompts": [ { "text": "Password: ", "echo": false } ], … } }
+   ```
+2. The client answers with one response per prompt, in prompt order — or `{"cancel": true}` to fail the login instead of leaving it waiting:
+   ```json
+   { "responses": ["hunter2"] }
+   ```
+3. The server replies `{"type": "accepted"}` and closes the socket, or `{"type": "error", "message": "…"}`. A wrong number of responses can be corrected and resent on the same socket; a session already answered from another socket closes it.
+
+Answers are passed to the SSH handshake and are neither logged nor stored. If the client disconnects before answering, the session stays pending and can be answered from a new socket.
+
+```bash
+websocat -H="Authorization: Bearer $TOKEN" \
+  "ws://localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID/ws"
+# then type: {"responses": ["<password>", "<otp>"]}
+```
+
 ### Create Group
 
 ```

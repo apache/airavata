@@ -2,6 +2,8 @@ package ssh
 
 import (
 	"context"
+	"errors"
+	"log/slog"
 	"sync"
 	"time"
 )
@@ -95,6 +97,7 @@ type SSHInteractiveSession struct {
 	instruction string
 	response    []string
 	sessionErr  error
+	answered    bool
 
 	sessionWaitSignal chan struct{}
 
@@ -130,6 +133,7 @@ func (s *SSHInteractiveSession) Challenge(ctx context.Context, name, instruction
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	//slog.Info("Received interactive response for session ", "sessionId", s.SessionId, "response", s.response, "error", s.sessionErr)
 	return s.response, s.sessionErr
 }
 
@@ -139,13 +143,23 @@ func (s *SSHInteractiveSession) Done() {
 	close(s.subscriberWaitSignal)
 }
 
-// Should be set from the websocket server
-func (s *SSHInteractiveSession) SetResponse(response []string, err error) {
+// ErrSessionAnswered is returned when a session that already has a response is
+// answered again, say from a second browser tab.
+var ErrSessionAnswered = errors.New("interactive session has already been answered")
+
+// Should be set from the websocket server. Only the first call wins: closing
+// sessionWaitSignal twice would panic.
+func (s *SSHInteractiveSession) SetResponse(response []string, err error) error {
 	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.answered {
+		return ErrSessionAnswered
+	}
+	s.answered = true
 	s.response = response
 	s.sessionErr = err
-	s.mu.Unlock()
 	close(s.sessionWaitSignal)
+	return nil
 }
 
 func (s *SSHInteractiveSession) Read() ([]Prompt, string) {

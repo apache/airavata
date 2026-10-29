@@ -61,3 +61,22 @@ func ToInteractiveSessionResponse(s *ssh.SSHInteractiveSession) InteractiveSessi
 		CreatedAt:       s.CreatedAt,
 	}
 }
+
+// InteractiveSessionMessage is what the server sends on an interactive session's
+// websocket. Type is one of:
+//
+//   - "challenge": the first message, carrying the session and its prompts
+//   - "accepted":  the answer was handed to the SSH handshake; the socket then closes
+//   - "error":     Message says what was wrong; a bad answer can be resent
+type InteractiveSessionMessage struct {
+	Type    string                      `json:"type"`
+	Session *InteractiveSessionResponse `json:"session,omitempty"`
+	Message string                      `json:"message,omitempty"`
+}
+
+// InteractiveSessionAnswer is what the client sends back: one response per prompt, in
+// prompt order, or Cancel to fail the login rather than leave it waiting.
+type InteractiveSessionAnswer struct {
+	Responses []string `json:"responses"`
+	Cancel    bool     `json:"cancel"`
+}

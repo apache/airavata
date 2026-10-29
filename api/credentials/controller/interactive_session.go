@@ -21,10 +21,17 @@
 package controller
 
 import (
+	"context"
+	"errors"
+	"log/slog"
 	"net/http"
+
+	"github.com/coder/websocket"
+	"github.com/coder/websocket/wsjson"
 
 	"github.com/apache/airavata/internal/httpx"
 
+	dto "github.com/apache/airavata/api/credentials/dto"
 	"github.com/apache/airavata/api/credentials/service"
 )
 
@@ -41,6 +48,7 @@ func NewInteractiveSessionController(svc *service.InteractiveSessionService) *In
 // Register mounts the interactive session routes.
 func (h *InteractiveSessionController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions", h.list)
+	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions/{sessionId}/ws", h.answer)
 }
 
 func (h *InteractiveSessionController) list(w http.ResponseWriter, r *http.Request) {
@@ -50,4 +58,67 @@ func (h *InteractiveSessionController) list(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	httpx.WriteJSON(w, http.StatusOK, sessions)
+}
+
+// answer serves one session over a websocket: it sends the challenge, then reads
+// answers until one is accepted.
+//
+// The session is resolved before the upgrade, so a missing token or an unknown
+// session is an ordinary JSON 401 or 404 rather than a socket that opens and dies.
+func (h *InteractiveSessionController) answer(w http.ResponseWriter, r *http.Request) {
+	session, err := h.svc.Get(r.Context(), r.PathValue("sessionId"))
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+
+	// Accept writes its own response when the handshake is bad.
+	conn, err := websocket.Accept(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.CloseNow()
+	ctx := r.Context()
+
+	challenge := dto.ToInteractiveSessionResponse(session)
+	if err := wsjson.Write(ctx, conn, dto.InteractiveSessionMessage{Type: "challenge", Session: &challenge}); err != nil {
+		return
+	}
+
+	for {
+		var answer dto.InteractiveSessionAnswer
+		if err := wsjson.Read(ctx, conn, &answer); err != nil {
+			// The client went away or sent something that is not JSON. The session
+			// stays pending, so it can be answered from a new socket.
+			return
+		}
+
+		err := h.svc.Answer(session, &answer)
+		if err == nil {
+			_ = wsjson.Write(ctx, conn, dto.InteractiveSessionMessage{Type: "accepted"})
+			conn.Close(websocket.StatusNormalClosure, "")
+			return
+		}
+
+		if writeErr := writeSocketError(ctx, conn, err); writeErr != nil {
+			return
+		}
+		var he *httpx.Error
+		if errors.As(err, &he) && he.Status == http.StatusConflict {
+			// Answered elsewhere: nothing this socket sends can matter any more.
+			conn.Close(websocket.StatusPolicyViolation, "session already answered")
+			return
+		}
+	}
+}
+
+func writeSocketError(ctx context.Context, conn *websocket.Conn, err error) error {
+	msg := "Internal server error"
+	var he *httpx.Error
+	if errors.As(err, &he) {
+		msg = he.Message
+	} else {
+		slog.Error("answering interactive session", "error", err)
+	}
+	return wsjson.Write(ctx, conn, dto.InteractiveSessionMessage{Type: "error", Message: msg})
 }

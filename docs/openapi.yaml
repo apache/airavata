@@ -559,6 +559,29 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/ssh-interactive-sessions/{sessionId}/ws:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [SSH Credentials]
+      summary: Answer an interactive SSH session over a WebSocket
+      description: |
+        Upgrades to a WebSocket. The server sends `{"type":"challenge","session":{...}}`;
+        the client sends `{"responses":[...]}` (one per prompt) or `{"cancel":true}`;
+        the server replies `{"type":"accepted"}` and closes, or
+        `{"type":"error","message":"..."}`. Bearer auth on the upgrade request, as
+        everywhere else. Owner only.
+      operationId: answerInteractiveSession
+      responses:
+        "101":
+          description: Switching to the WebSocket protocol.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   # ------------------------------------------------------- Slurm clusters
 
   /api/v1/slurm-clusters:

@@ -3,6 +3,7 @@ module github.com/apache/airavata
 go 1.25.0
 
 require (
+	github.com/coder/websocket v1.8.13
 	github.com/cschleiden/go-workflows v1.4.2
 	github.com/emersion/go-imap/v2 v2.0.0-beta.8
 	github.com/emersion/go-message v0.18.2
