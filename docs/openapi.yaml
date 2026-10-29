@@ -538,6 +538,27 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/ssh-interactive-sessions:
+    get:
+      tags: [SSH Credentials]
+      summary: List the caller's pending interactive SSH sessions
+      description: |
+        Keyboard-interactive challenges (a password, an OTP, a Duo prompt) that a
+        connection made with a `fullInteractive` credential is waiting on, oldest
+        first. Only the caller's own sessions are returned; admins are not exempt. A
+        session disappears once it is answered or the connection gives up.
+      operationId: listInteractiveSessions
+      responses:
+        "200":
+          description: The caller's pending sessions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/InteractiveSessionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   # ------------------------------------------------------- Slurm clusters
 
   /api/v1/slurm-clusters:
@@ -2871,6 +2892,32 @@ components:
         fullInteractive: { type: boolean }
         ownerId: { type: string }
       required: [sshCredentialId, sshCredentialName, publicKey, fullInteractive, ownerId]
+
+    InteractivePrompt:
+      type: object
+      properties:
+        text: { type: string }
+        echo:
+          type: boolean
+          description: false means the answer is secret and should be masked.
+      required: [text, echo]
+
+    InteractiveSessionResponse:
+      type: object
+      description: A keyboard-interactive challenge waiting for its owner to answer.
+      properties:
+        sessionId: { type: string, format: uuid }
+        hostName: { type: string }
+        port: { type: integer }
+        loginUser: { type: string }
+        sshCredentialId: { type: string, format: uuid }
+        name: { type: string }
+        instruction: { type: string }
+        prompts:
+          type: array
+          items: { $ref: "#/components/schemas/InteractivePrompt" }
+        createdAt: { type: string, format: date-time }
+      required: [sessionId, hostName, port, loginUser, sshCredentialId, name, instruction, prompts, createdAt]
 
     # -------------------------------------------------------- Compute
 

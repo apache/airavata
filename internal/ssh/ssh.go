@@ -132,6 +132,8 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 			sessionId := uuid.New().String()
 			interactiveSession := NewSSHInteractiveSession(sessionId, dialConfig)
 			sshContext.InteractiveSessionStore.AddSession(interactiveSession)
+			// Answered or abandoned, the challenge is no longer waiting on anyone.
+			defer sshContext.InteractiveSessionStore.RemoveSession(dialConfig.userId, sessionId)
 			answers, err := interactiveSession.Challenge(ctx, name, instruction, prompts)
 			if err != nil {
 				return nil, err

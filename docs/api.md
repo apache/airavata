@@ -146,6 +146,39 @@ Returned when `sshCredentialName` or `publicKey` is blank.
 }
 ```
 
+### List Interactive SSH Sessions
+
+`GET /api/v1/ssh-interactive-sessions`
+
+A connection made with a `fullInteractive` credential stops at the host's keyboard-interactive prompts (a password, an OTP, a Duo push) and waits for its owner to answer. This lists the caller's waiting sessions, oldest first. Only the caller's own sessions are returned — admins are not exempt. A session disappears once it is answered or the connection gives up.
+
+```bash
+curl -s localhost:9095/api/v1/ssh-interactive-sessions \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+`echo: false` marks a secret answer that a client should mask.
+
+```json
+[
+  {
+    "sessionId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
+    "hostName": "login1.nexus.gatech.edu",
+    "port": 22,
+    "loginUser": "dimuthu",
+    "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+    "name": "",
+    "instruction": "",
+    "prompts": [
+      { "text": "Password: ", "echo": false }
+    ],
+    "createdAt": "2026-10-28T14:02:11.482Z"
+  }
+]
+```
+
 ### Create Group
 
 ```
@@ -286,6 +319,7 @@ curl -s -X PUT localhost:9095/api/v1/groups/"$GROUP_ID"/members/cilogon:67890 \
 ```
 
 `DELETE` returns `204 No Content`, or `409 Conflict` when the named user owns the group.
+
 
 
 ## Slurm Clusters

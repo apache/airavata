@@ -3,6 +3,7 @@ package ssh
 import (
 	"context"
 	"sync"
+	"time"
 )
 
 type Prompt struct {
@@ -82,8 +83,14 @@ func (store *SSHInteractiveSessionStore) ListSessionsForUser(userId string) []*S
 type SSHInteractiveSession struct {
 	SessionId string
 
+	CreatedAt time.Time
+
 	dialConfig SSHDialConfig
 
+	// mu guards the challenge fields: Challenge writes them on the dialing goroutine
+	// while an HTTP handler reads them to list the session.
+	mu          sync.Mutex
+	name        string
 	prompts     []Prompt
 	instruction string
 	response    []string
@@ -98,6 +105,7 @@ type SSHInteractiveSession struct {
 func NewSSHInteractiveSession(sessionId string, dialConfig SSHDialConfig) *SSHInteractiveSession {
 	return &SSHInteractiveSession{
 		SessionId:            sessionId,
+		CreatedAt:            time.Now(),
 		dialConfig:           dialConfig,
 		subscriberWaitSignal: make(chan struct{}),
 		sessionWaitSignal:    make(chan struct{}),
@@ -105,12 +113,23 @@ func NewSSHInteractiveSession(sessionId string, dialConfig SSHDialConfig) *SSHIn
 }
 
 func (s *SSHInteractiveSession) Challenge(ctx context.Context, name, instruction string, prompts []Prompt) ([]string, error) {
+	s.mu.Lock()
+	s.name = name
 	s.instruction = instruction
 	s.prompts = prompts
-
 	s.sessionErr = nil
-	<-s.sessionWaitSignal
+	s.mu.Unlock()
 
+	// Give up when the dial is abandoned, or the goroutine waits forever for an
+	// answer nobody is going to send.
+	select {
+	case <-s.sessionWaitSignal:
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.response, s.sessionErr
 }
 
@@ -122,13 +141,28 @@ func (s *SSHInteractiveSession) Done() {
 
 // Should be set from the websocket server
 func (s *SSHInteractiveSession) SetResponse(response []string, err error) {
+	s.mu.Lock()
 	s.response = response
 	s.sessionErr = err
+	s.mu.Unlock()
 	close(s.sessionWaitSignal)
 }
 
 func (s *SSHInteractiveSession) Read() ([]Prompt, string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	return s.prompts, s.instruction
+}
+
+func (s *SSHInteractiveSession) Name() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.name
+}
+
+func (s *SSHInteractiveSession) Target() (host string, port int, loginUser, credentialID string) {
+	c := s.dialConfig
+	return c.host, c.port, c.sshUsername, c.cred.ID
 }
 
 func (s *SSHInteractiveSession) BlockUntilDone() {

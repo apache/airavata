@@ -69,7 +69,8 @@ type Services struct {
 	GroupMember *iamsvc.GroupMemberService
 
 	// Credentials.
-	SSHCredential *credentialssvc.SSHCredentialService
+	SSHCredential      *credentialssvc.SSHCredentialService
+	InteractiveSession *credentialssvc.InteractiveSessionService
 
 	// Compute.
 	SlurmCluster              *computesvc.SlurmClusterService
@@ -199,8 +200,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, shares, groups, users, groupMembers)
 	dataProductSvc := datasvc.NewDataProductService(db, products, shares, storages, users, groupMembers)
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, shares, groups, users, groupMembers)
-	// One context for every dialler: the transport and the engine must see the same
-	// interactive sessions.
+
 	sshContext := ssh.NewGlobalSSHContext()
 
 	dataTransferSvc := datasvc.NewDataTransferService(db, products, shares, storages, groupMembers, datasvc.NewSCPTransport(sshContext))
@@ -223,7 +223,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.
-		SSHCredential: sshCredentialSvc,
+		SSHCredential:      sshCredentialSvc,
+		InteractiveSession: credentialssvc.NewInteractiveSessionService(sshContext),
 
 		SlurmCluster:              slurmClusterSvc,
 		ClusterPartition:          clusterPartitionSvc,
