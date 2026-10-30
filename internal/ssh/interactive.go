@@ -9,15 +9,15 @@ import (
 	"github.com/google/uuid"
 )
 
-// askUser publishes prompts as a pending session for the dialing user and waits for
-// their answers. The session leaves the store once answered or abandoned. banner is
+// askUser publishes prompts as a pending auth for the dialing user and waits for
+// their answers. The auth leaves the store once answered or abandoned. banner is
 // the server's pre-login banner, if it sent one, so the user sees what a terminal would.
 func askUser(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, banner, name, instruction string, prompts []Prompt) ([]string, error) {
-	session := NewSSHInteractiveSession(uuid.New().String(), dialConfig)
-	session.banner = banner
-	sshContext.InteractiveSessionStore.AddSession(session)
-	defer sshContext.InteractiveSessionStore.RemoveSession(dialConfig.userId, session.SessionId)
-	return session.Challenge(ctx, name, instruction, prompts)
+	auth := NewSSHInteractiveAuth(uuid.New().String(), dialConfig)
+	auth.banner = banner
+	sshContext.InteractiveAuthStore.AddAuth(auth)
+	defer sshContext.InteractiveAuthStore.RemoveAuth(dialConfig.userId, auth.AuthId)
+	return auth.Challenge(ctx, name, instruction, prompts)
 }
 
 type Prompt struct {
@@ -29,189 +29,189 @@ type Challenger interface {
 	Challenge(ctx context.Context, name, instruction string, prompts []Prompt) ([]string, error)
 }
 
-type SSHInteractiveSessionStore struct {
-	// List of interactive SSH sessions keyed by user ID, then by session ID
-	Sessions map[string]map[string]*SSHInteractiveSession
-	lock     sync.Mutex
+type SSHInteractiveAuthStore struct {
+	// List of interactive SSH auths keyed by user ID, then by auth ID
+	Auths map[string]map[string]*SSHInteractiveAuth
+	lock  sync.Mutex
 }
 
-func newSSHInteractiveSessionStore() *SSHInteractiveSessionStore {
-	return &SSHInteractiveSessionStore{
-		Sessions: make(map[string]map[string]*SSHInteractiveSession),
+func newSSHInteractiveAuthStore() *SSHInteractiveAuthStore {
+	return &SSHInteractiveAuthStore{
+		Auths: make(map[string]map[string]*SSHInteractiveAuth),
 	}
 }
 
-func (store *SSHInteractiveSessionStore) GetSession(userId, sessionId string) (*SSHInteractiveSession, bool) {
+func (store *SSHInteractiveAuthStore) GetAuth(userId, authId string) (*SSHInteractiveAuth, bool) {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
-	userSessions, ok := store.Sessions[userId]
+	userAuths, ok := store.Auths[userId]
 	if !ok {
 		return nil, false
 	}
-	session, ok := userSessions[sessionId]
-	return session, ok
+	auth, ok := userAuths[authId]
+	return auth, ok
 }
 
-func (store *SSHInteractiveSessionStore) AddSession(session *SSHInteractiveSession) {
+func (store *SSHInteractiveAuthStore) AddAuth(auth *SSHInteractiveAuth) {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
-	userSessions, ok := store.Sessions[session.dialConfig.userId]
+	userAuths, ok := store.Auths[auth.dialConfig.userId]
 	if !ok {
-		userSessions = make(map[string]*SSHInteractiveSession)
-		store.Sessions[session.dialConfig.userId] = userSessions
+		userAuths = make(map[string]*SSHInteractiveAuth)
+		store.Auths[auth.dialConfig.userId] = userAuths
 	}
-	userSessions[session.SessionId] = session
+	userAuths[auth.AuthId] = auth
 }
 
-func (store *SSHInteractiveSessionStore) RemoveSession(userId, sessionId string) {
+func (store *SSHInteractiveAuthStore) RemoveAuth(userId, authId string) {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
-	userSessions, ok := store.Sessions[userId]
+	userAuths, ok := store.Auths[userId]
 	if !ok {
 		return
 	}
-	delete(userSessions, sessionId)
-	if len(userSessions) == 0 {
-		delete(store.Sessions, userId)
+	delete(userAuths, authId)
+	if len(userAuths) == 0 {
+		delete(store.Auths, userId)
 	}
 }
 
-func (store *SSHInteractiveSessionStore) ListSessionsForUser(userId string) []*SSHInteractiveSession {
+func (store *SSHInteractiveAuthStore) ListAuthsForUser(userId string) []*SSHInteractiveAuth {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
-	userSessions, ok := store.Sessions[userId]
+	userAuths, ok := store.Auths[userId]
 	if !ok {
 		return nil
 	}
-	sessions := make([]*SSHInteractiveSession, 0, len(userSessions))
-	for _, session := range userSessions {
-		sessions = append(sessions, session)
+	auths := make([]*SSHInteractiveAuth, 0, len(userAuths))
+	for _, auth := range userAuths {
+		auths = append(auths, auth)
 	}
-	return sessions
+	return auths
 }
 
-type SSHInteractiveSession struct {
-	SessionId string
+type SSHInteractiveAuth struct {
+	AuthId string
 
 	CreatedAt time.Time
 
 	dialConfig SSHDialConfig
 
-	// banner is set before the session is published and never changes, so it needs
+	// banner is set before the auth is published and never changes, so it needs
 	// no lock.
 	banner string
 
 	// mu guards the challenge fields: Challenge writes them on the dialing goroutine
-	// while an HTTP handler reads them to list the session.
+	// while an HTTP handler reads them to list the auth.
 	mu          sync.Mutex
 	name        string
 	prompts     []Prompt
 	instruction string
 	response    []string
-	sessionErr  error
+	authErr     error
 	answered    bool
 
-	sessionWaitSignal chan struct{}
+	authWaitSignal chan struct{}
 
 	subscriberWaitGroup  sync.WaitGroup
 	subscriberWaitSignal chan struct{}
 }
 
-func NewSSHInteractiveSession(sessionId string, dialConfig SSHDialConfig) *SSHInteractiveSession {
-	return &SSHInteractiveSession{
-		SessionId:            sessionId,
+func NewSSHInteractiveAuth(authId string, dialConfig SSHDialConfig) *SSHInteractiveAuth {
+	return &SSHInteractiveAuth{
+		AuthId:               authId,
 		CreatedAt:            time.Now(),
 		dialConfig:           dialConfig,
 		subscriberWaitSignal: make(chan struct{}),
-		sessionWaitSignal:    make(chan struct{}),
+		authWaitSignal:       make(chan struct{}),
 	}
 }
 
-func (s *SSHInteractiveSession) Challenge(ctx context.Context, name, instruction string, prompts []Prompt) ([]string, error) {
+func (s *SSHInteractiveAuth) Challenge(ctx context.Context, name, instruction string, prompts []Prompt) ([]string, error) {
 	s.mu.Lock()
 	s.name = name
 	s.instruction = instruction
 	s.prompts = prompts
-	s.sessionErr = nil
+	s.authErr = nil
 	s.mu.Unlock()
 
 	// Give up when the dial is abandoned, or the goroutine waits forever for an
 	// answer nobody is going to send.
 	select {
-	case <-s.sessionWaitSignal:
+	case <-s.authWaitSignal:
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	//slog.Info("Received interactive response for session ", "sessionId", s.SessionId, "response", s.response, "error", s.sessionErr)
-	return s.response, s.sessionErr
+	//slog.Info("Received interactive response for auth ", "authId", s.AuthId, "response", s.response, "error", s.authErr)
+	return s.response, s.authErr
 }
 
-func (s *SSHInteractiveSession) Done() {
+func (s *SSHInteractiveAuth) Done() {
 	// Only call done when the ssh client created and pushed to the pool.
-	// This will release all the pending client requests waiting on this session.
+	// This will release all the pending client requests waiting on this auth.
 	close(s.subscriberWaitSignal)
 }
 
-// ErrSessionAnswered is returned when a session that already has a response is
+// ErrAuthAnswered is returned when an auth that already has a response is
 // answered again, say from a second browser tab.
-var ErrSessionAnswered = errors.New("interactive session has already been answered")
+var ErrAuthAnswered = errors.New("interactive auth has already been answered")
 
 // Should be set from the websocket server. Only the first call wins: closing
-// sessionWaitSignal twice would panic.
-func (s *SSHInteractiveSession) SetResponse(response []string, err error) error {
+// authWaitSignal twice would panic.
+func (s *SSHInteractiveAuth) SetResponse(response []string, err error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.answered {
-		return ErrSessionAnswered
+		return ErrAuthAnswered
 	}
 	s.answered = true
 	s.response = response
-	s.sessionErr = err
-	close(s.sessionWaitSignal)
+	s.authErr = err
+	close(s.authWaitSignal)
 	return nil
 }
 
-func (s *SSHInteractiveSession) Read() ([]Prompt, string) {
+func (s *SSHInteractiveAuth) Read() ([]Prompt, string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.prompts, s.instruction
 }
 
-func (s *SSHInteractiveSession) Name() string {
+func (s *SSHInteractiveAuth) Name() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.name
 }
 
 // Banner is the text the server sent before login ("NCSA Delta System ..."), if any.
-func (s *SSHInteractiveSession) Banner() string {
+func (s *SSHInteractiveAuth) Banner() string {
 	return s.banner
 }
 
-func (s *SSHInteractiveSession) Target() (host string, port int, loginUser, credentialID string) {
+func (s *SSHInteractiveAuth) Target() (host string, port int, loginUser, credentialID string) {
 	c := s.dialConfig
 	return c.host, c.port, c.sshUsername, c.cred.ID
 }
 
-func (s *SSHInteractiveSession) BlockUntilDone() {
+func (s *SSHInteractiveAuth) BlockUntilDone() {
 	s.subscriberWaitGroup.Add(1)
 	defer s.subscriberWaitGroup.Done()
 	<-s.subscriberWaitSignal
 }
 
 type GlobalSSHContext struct {
-	InteractiveSessionStore *SSHInteractiveSessionStore
+	InteractiveAuthStore *SSHInteractiveAuthStore
 }
 
 func NewGlobalSSHContext() *GlobalSSHContext {
 	return &GlobalSSHContext{
-		InteractiveSessionStore: newSSHInteractiveSessionStore(),
+		InteractiveAuthStore: newSSHInteractiveAuthStore(),
 	}
 }

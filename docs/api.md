@@ -146,14 +146,14 @@ Returned when `sshCredentialName` or `publicKey` is blank.
 }
 ```
 
-### List Interactive SSH Sessions
+### List Interactive SSH Auths
 
-`GET /api/v1/ssh-interactive-sessions`
+`GET /api/v1/ssh-interactive-auths`
 
-A connection made with a `fullInteractive` credential stops at the host's keyboard-interactive prompts (a password, an OTP, a Duo push) and waits for its owner to answer. This lists the caller's waiting sessions, oldest first. Only the caller's own sessions are returned — admins are not exempt. A session disappears once it is answered or the connection gives up.
+A connection made with a `fullInteractive` credential stops at the host's keyboard-interactive prompts (a password, an OTP, a Duo push) and waits for its owner to answer. This lists the caller's waiting auths, oldest first. Only the caller's own auths are returned — admins are not exempt. An auth disappears once it is answered or the connection gives up.
 
 ```bash
-curl -s localhost:9095/api/v1/ssh-interactive-sessions \
+curl -s localhost:9095/api/v1/ssh-interactive-auths \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -164,7 +164,7 @@ curl -s localhost:9095/api/v1/ssh-interactive-sessions \
 ```json
 [
   {
-    "sessionId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
+    "authId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
     "hostName": "login1.nexus.gatech.edu",
     "port": 22,
     "loginUser": "dimuthu",
@@ -180,17 +180,17 @@ curl -s localhost:9095/api/v1/ssh-interactive-sessions \
 ]
 ```
 
-### Get an Interactive SSH Session
+### Get an Interactive SSH Auth
 
-`GET /api/v1/ssh-interactive-sessions/{sessionId}`
+`GET /api/v1/ssh-interactive-auths/{authId}`
 
-Returns one of the caller's pending sessions — the banner, prompts and target host to show the user before answering. Same shape as an item of the [list](#list-interactive-ssh-sessions). Get the id from the list, or from the `sessionId` of a WebSocket challenge.
+Returns one of the caller's pending auths — the banner, prompts and target host to show the user before answering. Same shape as an item of the [list](#list-interactive-ssh-auths). Get the id from the list, or from the `authId` of a WebSocket challenge.
 
 ```bash
-SESSION_ID=$(curl -s localhost:9095/api/v1/ssh-interactive-sessions \
-  -H "Authorization: Bearer $TOKEN" | jq -r '.[0].sessionId // empty')
+AUTH_ID=$(curl -s localhost:9095/api/v1/ssh-interactive-auths \
+  -H "Authorization: Bearer $TOKEN" | jq -r '.[0].authId // empty')
 
-curl -s "localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID" \
+curl -s "localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -198,7 +198,7 @@ curl -s "localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID" \
 
 ```json
 {
-  "sessionId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
+  "authId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
   "hostName": "login.delta.ncsa.illinois.edu",
   "port": 22,
   "loginUser": "dwannipu",
@@ -218,44 +218,44 @@ curl -s "localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID" \
 | Status | Cause |
 |---|---|
 | `401 Unauthorized` | no token |
-| `404 Not Found` | no such session, it belongs to another user, or it is no longer pending (answered and the login moved on, or the connection gave up) |
+| `404 Not Found` | no such auth, it belongs to another user, or it is no longer pending (answered and the login moved on, or the connection gave up) |
 
-A session lives only as long as the login waiting on it. If the host asks again — a Duo prompt after the password — that is a new session with a new id, so list again rather than re-reading the old one.
+An auth lives only as long as the login waiting on it. If the host asks again — a Duo prompt after the password — that is a new auth with a new id, so list again rather than re-reading the old one.
 
-### Answer an Interactive SSH Session
+### Answer an Interactive SSH Auth
 
-`GET /api/v1/ssh-interactive-sessions/{sessionId}/ws` — a WebSocket.
+`GET /api/v1/ssh-interactive-auths/{authId}/ws` — a WebSocket.
 
-Authenticated like every other route, with `Authorization: Bearer $TOKEN` on the upgrade request. The session is looked up before the upgrade, so a missing token is a plain `401` and a session that is not the caller's (or no longer pending) is a plain `404`. A browser's `WebSocket` cannot set that header, so a browser client needs to go through a backend that can.
+Authenticated like every other route, with `Authorization: Bearer $TOKEN` on the upgrade request. The auth is looked up before the upgrade, so a missing token is a plain `401` and an auth that is not the caller's (or no longer pending) is a plain `404`. A browser's `WebSocket` cannot set that header, so a browser client needs to go through a backend that can.
 
 1. The server sends the challenge:
    ```json
-   { "type": "challenge", "session": { "sessionId": "…", "instruction": "", "prompts": [ { "text": "Password: ", "echo": false } ], … } }
+   { "type": "challenge", "auth": { "authId": "…", "instruction": "", "prompts": [ { "text": "Password: ", "echo": false } ], … } }
    ```
 2. The client answers with one response per prompt, in prompt order — or `{"cancel": true}` to fail the login instead of leaving it waiting:
    ```json
    { "responses": ["hunter2"] }
    ```
-3. The server replies `{"type": "accepted"}` and closes the socket, or `{"type": "error", "message": "…"}`. A wrong number of responses can be corrected and resent on the same socket; a session already answered from another socket closes it.
+3. The server replies `{"type": "accepted"}` and closes the socket, or `{"type": "error", "message": "…"}`. A wrong number of responses can be corrected and resent on the same socket; an auth already answered from another socket closes it.
 
-Answers are passed to the SSH handshake and are neither logged nor stored. If the client disconnects before answering, the session stays pending and can be answered from a new socket.
+Answers are passed to the SSH handshake and are neither logged nor stored. If the client disconnects before answering, the auth stays pending and can be answered from a new socket.
 
 ```bash
 websocat -H="Authorization: Bearer $TOKEN" \
-  "ws://localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID/ws"
+  "ws://localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID/ws"
 # then type: {"responses": ["<password>", "<otp>"]}
 ```
 
-### Answer an Interactive SSH Session over REST
+### Answer an Interactive SSH Auth over REST
 
 The same exchange as the WebSocket, as plain requests, for clients that cannot hold a socket open (or set a header on one).
 
-Read the session with [Get an Interactive SSH Session](#get-an-interactive-ssh-session), then answer it:
+Read the auth with [Get an Interactive SSH Auth](#get-an-interactive-ssh-auth), then answer it:
 
-`POST /api/v1/ssh-interactive-sessions/{sessionId}/response` takes the same body the WebSocket does: one response per prompt, in prompt order, or `{"cancel": true}`.
+`POST /api/v1/ssh-interactive-auths/{authId}/response` takes the same body the WebSocket does: one response per prompt, in prompt order, or `{"cancel": true}`.
 
 ```bash
-curl -s -X POST "localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID/response" \
+curl -s -X POST "localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID/response" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"responses": ["<password>"]}'
@@ -264,12 +264,12 @@ curl -s -X POST "localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID/resp
 | Status | Meaning |
 |---|---|
 | `204 No Content` | the answer was handed to the SSH handshake |
-| `400 Bad Request` | wrong number of responses; the session is still pending, so resend |
+| `400 Bad Request` | wrong number of responses; the auth is still pending, so resend |
 | `401 Unauthorized` | no token |
-| `404 Not Found` | not the caller's session, or no longer pending (answered and finished, or the connection gave up) |
+| `404 Not Found` | not the caller's auth, or no longer pending (answered and finished, or the connection gave up) |
 | `409 Conflict` | already answered, from here or a WebSocket, and the handshake has not moved on yet |
 
-`204` means the server accepted the answer, not that the host did: a wrong password shows up as the transfer failing, or as a new session if the host asks again.
+`204` means the server accepted the answer, not that the host did: a wrong password shows up as the transfer failing, or as a new auth if the host asks again.
 
 ### Create Group
 

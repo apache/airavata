@@ -35,70 +35,70 @@ import (
 	"github.com/apache/airavata/api/credentials/service"
 )
 
-// InteractiveSessionController serves /api/v1/ssh-interactive-sessions.
-type InteractiveSessionController struct {
-	svc *service.InteractiveSessionService
+// InteractiveAuthController serves /api/v1/ssh-interactive-auths.
+type InteractiveAuthController struct {
+	svc *service.InteractiveAuthService
 }
 
-// NewInteractiveSessionController returns a handler delegating to svc.
-func NewInteractiveSessionController(svc *service.InteractiveSessionService) *InteractiveSessionController {
-	return &InteractiveSessionController{svc: svc}
+// NewInteractiveAuthController returns a handler delegating to svc.
+func NewInteractiveAuthController(svc *service.InteractiveAuthService) *InteractiveAuthController {
+	return &InteractiveAuthController{svc: svc}
 }
 
-// Register mounts the interactive session routes.
-func (h *InteractiveSessionController) Register(mux *http.ServeMux) {
-	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions", h.list)
-	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions/{sessionId}", h.get)
-	mux.HandleFunc("POST /api/v1/ssh-interactive-sessions/{sessionId}/response", h.respond)
-	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions/{sessionId}/ws", h.answer)
+// Register mounts the interactive auth routes.
+func (h *InteractiveAuthController) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v1/ssh-interactive-auths", h.list)
+	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/{authId}", h.get)
+	mux.HandleFunc("POST /api/v1/ssh-interactive-auths/{authId}/response", h.respond)
+	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/{authId}/ws", h.answer)
 }
 
-func (h *InteractiveSessionController) list(w http.ResponseWriter, r *http.Request) {
-	sessions, err := h.svc.List(r.Context())
+func (h *InteractiveAuthController) list(w http.ResponseWriter, r *http.Request) {
+	auths, err := h.svc.List(r.Context())
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
-	httpx.WriteJSON(w, http.StatusOK, sessions)
+	httpx.WriteJSON(w, http.StatusOK, auths)
 }
 
-func (h *InteractiveSessionController) get(w http.ResponseWriter, r *http.Request) {
-	session, err := h.svc.Get(r.Context(), r.PathValue("sessionId"))
+func (h *InteractiveAuthController) get(w http.ResponseWriter, r *http.Request) {
+	auth, err := h.svc.Get(r.Context(), r.PathValue("authId"))
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
-	httpx.WriteJSON(w, http.StatusOK, dto.ToInteractiveSessionResponse(session))
+	httpx.WriteJSON(w, http.StatusOK, dto.ToInteractiveAuthResponse(auth))
 }
 
 // respond is the websocket's answer step as one request: 204 once the answer is
 // handed to the SSH handshake, 400 for the wrong number of responses, 409 when the
-// session was already answered.
-func (h *InteractiveSessionController) respond(w http.ResponseWriter, r *http.Request) {
-	session, err := h.svc.Get(r.Context(), r.PathValue("sessionId"))
+// auth was already answered.
+func (h *InteractiveAuthController) respond(w http.ResponseWriter, r *http.Request) {
+	auth, err := h.svc.Get(r.Context(), r.PathValue("authId"))
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
-	var answer dto.InteractiveSessionAnswer
+	var answer dto.InteractiveAuthAnswer
 	if err := httpx.Bind(r, &answer); err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
-	if err := h.svc.Answer(session, &answer); err != nil {
+	if err := h.svc.Answer(auth, &answer); err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
 	httpx.WriteJSON(w, http.StatusNoContent, nil)
 }
 
-// answer serves one session over a websocket: it sends the challenge, then reads
+// answer serves one auth over a websocket: it sends the challenge, then reads
 // answers until one is accepted.
 //
-// The session is resolved before the upgrade, so a missing token or an unknown
-// session is an ordinary JSON 401 or 404 rather than a socket that opens and dies.
-func (h *InteractiveSessionController) answer(w http.ResponseWriter, r *http.Request) {
-	session, err := h.svc.Get(r.Context(), r.PathValue("sessionId"))
+// The auth is resolved before the upgrade, so a missing token or an unknown
+// auth is an ordinary JSON 401 or 404 rather than a socket that opens and dies.
+func (h *InteractiveAuthController) answer(w http.ResponseWriter, r *http.Request) {
+	auth, err := h.svc.Get(r.Context(), r.PathValue("authId"))
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
@@ -112,22 +112,22 @@ func (h *InteractiveSessionController) answer(w http.ResponseWriter, r *http.Req
 	defer conn.CloseNow()
 	ctx := r.Context()
 
-	challenge := dto.ToInteractiveSessionResponse(session)
-	if err := wsjson.Write(ctx, conn, dto.InteractiveSessionMessage{Type: "challenge", Session: &challenge}); err != nil {
+	challenge := dto.ToInteractiveAuthResponse(auth)
+	if err := wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "challenge", Auth: &challenge}); err != nil {
 		return
 	}
 
 	for {
-		var answer dto.InteractiveSessionAnswer
+		var answer dto.InteractiveAuthAnswer
 		if err := wsjson.Read(ctx, conn, &answer); err != nil {
-			// The client went away or sent something that is not JSON. The session
+			// The client went away or sent something that is not JSON. The auth
 			// stays pending, so it can be answered from a new socket.
 			return
 		}
 
-		err := h.svc.Answer(session, &answer)
+		err := h.svc.Answer(auth, &answer)
 		if err == nil {
-			_ = wsjson.Write(ctx, conn, dto.InteractiveSessionMessage{Type: "accepted"})
+			_ = wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "accepted"})
 			conn.Close(websocket.StatusNormalClosure, "")
 			return
 		}
@@ -138,7 +138,7 @@ func (h *InteractiveSessionController) answer(w http.ResponseWriter, r *http.Req
 		var he *httpx.Error
 		if errors.As(err, &he) && he.Status == http.StatusConflict {
 			// Answered elsewhere: nothing this socket sends can matter any more.
-			conn.Close(websocket.StatusPolicyViolation, "session already answered")
+			conn.Close(websocket.StatusPolicyViolation, "auth already answered")
 			return
 		}
 	}
@@ -150,7 +150,7 @@ func writeSocketError(ctx context.Context, conn *websocket.Conn, err error) erro
 	if errors.As(err, &he) {
 		msg = he.Message
 	} else {
-		slog.Error("answering interactive session", "error", err)
+		slog.Error("answering interactive auth", "error", err)
 	}
-	return wsjson.Write(ctx, conn, dto.InteractiveSessionMessage{Type: "error", Message: msg})
+	return wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "error", Message: msg})
 }

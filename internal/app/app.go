@@ -69,8 +69,8 @@ type Services struct {
 	GroupMember *iamsvc.GroupMemberService
 
 	// Credentials.
-	SSHCredential      *credentialssvc.SSHCredentialService
-	InteractiveSession *credentialssvc.InteractiveSessionService
+	SSHCredential   *credentialssvc.SSHCredentialService
+	InteractiveAuth *credentialssvc.InteractiveAuthService
 
 	// Compute.
 	SlurmCluster              *computesvc.SlurmClusterService
@@ -223,8 +223,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.
-		SSHCredential:      sshCredentialSvc,
-		InteractiveSession: credentialssvc.NewInteractiveSessionService(sshContext),
+		SSHCredential:   sshCredentialSvc,
+		InteractiveAuth: credentialssvc.NewInteractiveAuthService(sshContext),
 
 		SlurmCluster:              slurmClusterSvc,
 		ClusterPartition:          clusterPartitionSvc,
