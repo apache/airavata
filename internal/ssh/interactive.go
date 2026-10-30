@@ -3,10 +3,22 @@ package ssh
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"sync"
 	"time"
+
+	"github.com/google/uuid"
 )
+
+// askUser publishes prompts as a pending session for the dialing user and waits for
+// their answers. The session leaves the store once answered or abandoned. banner is
+// the server's pre-login banner, if it sent one, so the user sees what a terminal would.
+func askUser(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, banner, name, instruction string, prompts []Prompt) ([]string, error) {
+	session := NewSSHInteractiveSession(uuid.New().String(), dialConfig)
+	session.banner = banner
+	sshContext.InteractiveSessionStore.AddSession(session)
+	defer sshContext.InteractiveSessionStore.RemoveSession(dialConfig.userId, session.SessionId)
+	return session.Challenge(ctx, name, instruction, prompts)
+}
 
 type Prompt struct {
 	Text string `json:"text"`
@@ -88,6 +100,10 @@ type SSHInteractiveSession struct {
 	CreatedAt time.Time
 
 	dialConfig SSHDialConfig
+
+	// banner is set before the session is published and never changes, so it needs
+	// no lock.
+	banner string
 
 	// mu guards the challenge fields: Challenge writes them on the dialing goroutine
 	// while an HTTP handler reads them to list the session.
@@ -172,6 +188,11 @@ func (s *SSHInteractiveSession) Name() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.name
+}
+
+// Banner is the text the server sent before login ("NCSA Delta System ..."), if any.
+func (s *SSHInteractiveSession) Banner() string {
+	return s.banner
 }
 
 func (s *SSHInteractiveSession) Target() (host string, port int, loginUser, credentialID string) {

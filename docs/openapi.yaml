@@ -2934,13 +2934,16 @@ components:
         port: { type: integer }
         loginUser: { type: string }
         sshCredentialId: { type: string, format: uuid }
+        banner:
+          type: string
+          description: Text the server sent before login, as a terminal would print it.
         name: { type: string }
         instruction: { type: string }
         prompts:
           type: array
           items: { $ref: "#/components/schemas/InteractivePrompt" }
         createdAt: { type: string, format: date-time }
-      required: [sessionId, hostName, port, loginUser, sshCredentialId, name, instruction, prompts, createdAt]
+      required: [sessionId, hostName, port, loginUser, sshCredentialId, banner, name, instruction, prompts, createdAt]
 
     # -------------------------------------------------------- Compute
 

@@ -37,6 +37,7 @@ type InteractiveSessionResponse struct {
 	Port            int          `json:"port"`
 	LoginUser       string       `json:"loginUser"`
 	SSHCredentialID string       `json:"sshCredentialId"`
+	Banner          string       `json:"banner"`
 	Name            string       `json:"name"`
 	Instruction     string       `json:"instruction"`
 	Prompts         []ssh.Prompt `json:"prompts"`
@@ -55,6 +56,7 @@ func ToInteractiveSessionResponse(s *ssh.SSHInteractiveSession) InteractiveSessi
 		Port:            port,
 		LoginUser:       loginUser,
 		SSHCredentialID: credentialID,
+		Banner:          s.Banner(),
 		Name:            s.Name(),
 		Instruction:     instruction,
 		Prompts:         prompts,

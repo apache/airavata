@@ -35,8 +35,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-
 	credmodel "github.com/apache/airavata/api/credentials/model"
 	gossh "golang.org/x/crypto/ssh"
 )
@@ -89,7 +87,7 @@ func NewSSHDialConfig(host string, port int, sshUsername string, cred credmodel.
 }
 
 func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext) (*gossh.Client, error) {
-	
+
 	hostKeys := gossh.InsecureIgnoreHostKey()
 	if dialConfig.port == 0 {
 		dialConfig.port = 22
@@ -107,6 +105,10 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 		_ = conn.SetDeadline(deadline)
 	}
 
+	// banner collects the server's pre-login text for the prompts that follow. The
+	// banner and auth callbacks both run on the handshake goroutine, so no lock.
+	var banner string
+
 	authMethods := []gossh.AuthMethod{}
 	if dialConfig.cred.PrivateKey != "" {
 		signer, err := signerFor(dialConfig.cred)
@@ -115,7 +117,7 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 		}
 		authMethods = append(authMethods, gossh.PublicKeys(signer))
 	}
-	
+
 	if dialConfig.cred.FullInteractive {
 		ki := gossh.KeyboardInteractive(func(name, instruction string, questions []string, echos []bool) ([]string, error) {
 			// RFC 4256 allows an INFO_REQUEST with zero prompts (servers use it to
@@ -129,12 +131,7 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 				return []string{}, nil
 			}
 
-			sessionId := uuid.New().String()
-			interactiveSession := NewSSHInteractiveSession(sessionId, dialConfig)
-			sshContext.InteractiveSessionStore.AddSession(interactiveSession)
-			// Answered or abandoned, the challenge is no longer waiting on anyone.
-			defer sshContext.InteractiveSessionStore.RemoveSession(dialConfig.userId, sessionId)
-			answers, err := interactiveSession.Challenge(ctx, name, instruction, prompts)
+			answers, err := askUser(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
 			if err != nil {
 				return nil, err
 			}
@@ -143,7 +140,21 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 			}
 			return answers, nil
 		})
-		authMethods = append(authMethods, ki)
+
+		// keyboard-interactive, so the password is asked for as a one-prompt challenge.
+		// The server only tries it if it advertises the method.
+		password := gossh.PasswordCallback(func() (string, error) {
+			prompt := fmt.Sprintf("%s@%s's password: ", dialConfig.sshUsername, dialConfig.host)
+			answers, err := askUser(ctx, dialConfig, sshContext, banner, "", "", []Prompt{{Text: prompt, Echo: false}})
+			if err != nil {
+				return "", err
+			}
+			if len(answers) != 1 {
+				return "", fmt.Errorf("expected 1 answer, got %d", len(answers))
+			}
+			return answers[0], nil
+		})
+		authMethods = append(authMethods, ki, password)
 	}
 
 	sshConn, chans, reqs, err := gossh.NewClientConn(conn, addr, &gossh.ClientConfig{
@@ -151,6 +162,10 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 		Auth:            authMethods,
 		HostKeyCallback: hostKeys,
 		Timeout:         scpDialTimeout,
+		BannerCallback: func(message string) error {
+			banner += message
+			return nil
+		},
 	})
 	if err != nil {
 		conn.Close()

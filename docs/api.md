@@ -159,7 +159,7 @@ curl -s localhost:9095/api/v1/ssh-interactive-sessions \
 
 **Response — `200 OK`**
 
-`echo: false` marks a secret answer that a client should mask.
+`banner` is the text the server sent before login, which a terminal would print above the prompt. `echo: false` marks a secret answer that a client should mask.
 
 ```json
 [
@@ -169,6 +169,7 @@ curl -s localhost:9095/api/v1/ssh-interactive-sessions \
     "port": 22,
     "loginUser": "dimuthu",
     "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+    "banner": "\nNCSA Delta System\n\nLogin with NCSA Kerberos + NCSA Duo multi-factor.\n",
     "name": "",
     "instruction": "",
     "prompts": [
