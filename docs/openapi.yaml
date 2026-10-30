@@ -538,6 +538,97 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/ssh-interactive-auths:
+    get:
+      tags: [SSH Credentials]
+      summary: List the caller's pending interactive SSH auths
+      description: |
+        Keyboard-interactive challenges (a password, an OTP, a Duo prompt) that a
+        connection made with a `fullInteractive` credential is waiting on, oldest
+        first. Only the caller's own auths are returned; admins are not exempt. A
+        auth disappears once it is answered or the connection gives up.
+      operationId: listInteractiveAuths
+      responses:
+        "200":
+          description: The caller's pending auths.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/InteractiveAuthResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/ssh-interactive-auths/{authId}:
+    parameters:
+      - name: authId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [SSH Credentials]
+      summary: Read one of the caller's pending interactive SSH auths
+      description: Owner only. An auth that is not the caller's, or no longer pending, is a 404.
+      operationId: getInteractiveAuth
+      responses:
+        "200":
+          description: The auth and its prompts.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InteractiveAuthResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/ssh-interactive-auths/{authId}/response:
+    parameters:
+      - name: authId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    post:
+      tags: [SSH Credentials]
+      summary: Answer an interactive SSH auth
+      description: |
+        The REST form of the WebSocket's answer step. 204 means the answer was handed
+        to the SSH handshake, not that the host accepted it. Owner only.
+      operationId: answerInteractiveAuthRest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InteractiveAuthAnswer" }
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/ssh-interactive-auths/{authId}/ws:
+    parameters:
+      - name: authId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [SSH Credentials]
+      summary: Answer an interactive SSH auth over a WebSocket
+      description: |
+        Upgrades to a WebSocket. The server sends `{"type":"challenge","auth":{...}}`;
+        the client sends `{"responses":[...]}` (one per prompt) or `{"cancel":true}`;
+        the server replies `{"type":"accepted"}` and closes, or
+        `{"type":"error","message":"..."}`. Bearer auth on the upgrade request, as
+        everywhere else. Owner only.
+      operationId: answerInteractiveAuth
+      responses:
+        "101":
+          description: Switching to the WebSocket protocol.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   # ------------------------------------------------------- Slurm clusters
 
   /api/v1/slurm-clusters:
@@ -2853,6 +2944,9 @@ components:
         passphrase:
           type: [string, "null"]
           description: Write-only. Never returned by any read endpoint.
+        fullInteractive:
+          type: boolean
+          description: Also answer keyboard-interactive prompts (OTP, Duo) after the key.
       required: [sshCredentialName, publicKey]
 
     SSHCredentialResponse:
@@ -2865,8 +2959,47 @@ components:
         sshCredentialId: { type: string, format: uuid }
         sshCredentialName: { type: string }
         publicKey: { type: string }
+        fullInteractive: { type: boolean }
         ownerId: { type: string }
-      required: [sshCredentialId, sshCredentialName, publicKey, ownerId]
+      required: [sshCredentialId, sshCredentialName, publicKey, fullInteractive, ownerId]
+
+    InteractivePrompt:
+      type: object
+      properties:
+        text: { type: string }
+        echo:
+          type: boolean
+          description: false means the answer is secret and should be masked.
+      required: [text, echo]
+
+    InteractiveAuthResponse:
+      type: object
+      description: A keyboard-interactive challenge waiting for its owner to answer.
+      properties:
+        authId: { type: string, format: uuid }
+        hostName: { type: string }
+        port: { type: integer }
+        loginUser: { type: string }
+        sshCredentialId: { type: string, format: uuid }
+        banner:
+          type: string
+          description: Text the server sent before login, as a terminal would print it.
+        name: { type: string }
+        instruction: { type: string }
+        prompts:
+          type: array
+          items: { $ref: "#/components/schemas/InteractivePrompt" }
+        createdAt: { type: string, format: date-time }
+      required: [authId, hostName, port, loginUser, sshCredentialId, banner, name, instruction, prompts, createdAt]
+
+    InteractiveAuthAnswer:
+      type: object
+      description: One response per prompt, in prompt order, or `cancel` to fail the login.
+      properties:
+        responses:
+          type: array
+          items: { type: string }
+        cancel: { type: boolean }
 
     # -------------------------------------------------------- Compute
 

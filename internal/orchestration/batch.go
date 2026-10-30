@@ -88,9 +88,16 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 		return nil, err
 	}
 
+	dialConfig := ssh.NewSSHDialConfig(
+		clusterConfig.SlurmCluster.HeadnodeHost,
+		clusterConfig.SlurmCluster.HeadnodePort,
+		clusterConfig.LoginUser,
+		*clusterConfig.SSHCredential,
+		*process.OwnerID,
+	)
+
 	slog.Info("Creating job working directory through SSH", "taskId", taskID, "processId", processID, "destinationDirectory", *jst.WorkingDir)
-	if err := ssh.CreateDirectorySSH(ctx, clusterConfig.SlurmCluster.HeadnodeHost, clusterConfig.SlurmCluster.HeadnodePort,
-		clusterConfig.LoginUser, *clusterConfig.SSHCredential, *jst.WorkingDir); err != nil {
+	if err := ssh.CreateDirectorySSH(ctx, dialConfig, a.sshContext, *jst.WorkingDir); err != nil {
 		slog.Error("Failed to create destination directory through SSH", "taskId", taskID, "processId", processID,
 			"destinationDirectory", *jst.WorkingDir, "error", err)
 		return nil, err
@@ -98,9 +105,7 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 
 	scriptUploadPath := path.Join(*jst.WorkingDir, "script.slurm")
 	slog.Info("Uploading slurm script to cluster", "taskId", taskID, "processId", processID, "scriptPath", scriptPath, "remotePath", scriptUploadPath)
-	if err := ssh.UploadFileToSCP(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
-		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
-		*clusterConfig.SSHCredential, scriptPath, scriptUploadPath); err != nil {
+	if err := ssh.UploadFileToSCP(ctx, dialConfig, a.sshContext, scriptPath, scriptUploadPath); err != nil {
 		slog.Error("Failed to upload slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "error", err)
 		return nil, err
 	}
@@ -119,9 +124,7 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 	// than in the login user's home.
 	submitCommand := "cd " + ssh.ShellQuote(*jst.WorkingDir) + " && " + ssh.ShellQuote(sbatchPath) + " " + ssh.ShellQuote(scriptUploadPath)
 
-	stdout, stderr, err := ssh.RunSSHCommand(ctx, clusterConfig.SlurmCluster.HeadnodeHost,
-		clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser,
-		*clusterConfig.SSHCredential, submitCommand,
+	stdout, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, submitCommand,
 		fmt.Sprintf("ssh sbatch %s@%s:%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost, scriptUploadPath))
 	if err != nil {
 		slog.Error("Failed to submit slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "stdout", stdout, "stderr", stderr, "error", err)

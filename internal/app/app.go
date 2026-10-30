@@ -48,6 +48,7 @@ import (
 	sharingrepo "github.com/apache/airavata/api/sharing/repository"
 	sharingsvc "github.com/apache/airavata/api/sharing/service"
 	orchestration "github.com/apache/airavata/internal/orchestration"
+	"github.com/apache/airavata/internal/ssh"
 	"github.com/cschleiden/go-workflows/backend"
 )
 
@@ -68,7 +69,8 @@ type Services struct {
 	GroupMember *iamsvc.GroupMemberService
 
 	// Credentials.
-	SSHCredential *credentialssvc.SSHCredentialService
+	SSHCredential   *credentialssvc.SSHCredentialService
+	InteractiveAuth *credentialssvc.InteractiveAuthService
 
 	// Compute.
 	SlurmCluster              *computesvc.SlurmClusterService
@@ -198,14 +200,17 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, shares, groups, users, groupMembers)
 	dataProductSvc := datasvc.NewDataProductService(db, products, shares, storages, users, groupMembers)
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, shares, groups, users, groupMembers)
-	dataTransferSvc := datasvc.NewDataTransferService(db, products, shares, storages, groupMembers, datasvc.NewSCPTransport())
+
+	sshContext := ssh.NewGlobalSSHContext()
+
+	dataTransferSvc := datasvc.NewDataTransferService(db, products, shares, storages, groupMembers, datasvc.NewSCPTransport(sshContext))
 	virtualDataDirectorySvc := datasvc.NewVirtualDataDirectoryService(db, virtualDirs, virtualFiles, shares, products, users, groupMembers)
 	virtualDataFileSvc := datasvc.NewVirtualDataFileService(db, virtualDirs, virtualFiles, shares, products, groupMembers)
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend, sshContext)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -218,7 +223,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.
-		SSHCredential: sshCredentialSvc,
+		SSHCredential:   sshCredentialSvc,
+		InteractiveAuth: credentialssvc.NewInteractiveAuthService(sshContext),
 
 		SlurmCluster:              slurmClusterSvc,
 		ClusterPartition:          clusterPartitionSvc,

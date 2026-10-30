@@ -54,11 +54,17 @@ func TestSCPDownload(t *testing.T) {
 	}
 
 	startTime := time.Now()
+	sshContext := NewGlobalSSHContext()
 
-	err = DownloadFileFromSCP(t.Context(), host, 22, username, credmodel.SSHCredential{
-		PrivateKey: privateKeyStr,
-		Passphrase: &passphrase,
-	}, "/home/"+username+"/random.bin", "/tmp/random.bin")
+	err = DownloadFileFromSCP(t.Context(), SSHDialConfig{
+		host:        host,
+		port:        22,
+		sshUsername: username,
+		cred: credmodel.SSHCredential{
+			PrivateKey: privateKeyStr,
+			Passphrase: &passphrase,
+		},
+	}, sshContext, "/home/"+username+"/random.bin", "/tmp/random.bin")
 	if err != nil {
 		t.Fatalf("SCP download failed: %v", err)
 	}
@@ -102,21 +108,33 @@ func TestSCPUpload(t *testing.T) {
 		t.Fatalf("Failed to write to temporary file: %v", err)
 	}
 
+	sshContext := NewGlobalSSHContext()
+
 	startTime := time.Now()
 
-	err = UploadFileToSCP(t.Context(), host, 22, username, credmodel.SSHCredential{
-		PrivateKey: privateKeyStr,
-		Passphrase: &passphrase,
-	}, "/tmp/random.bin", "/home/"+username+"/randomupload.bin")
+	err = UploadFileToSCP(t.Context(), SSHDialConfig{
+		host:        host,
+		port:        22,
+		sshUsername: username,
+		cred: credmodel.SSHCredential{
+			PrivateKey: privateKeyStr,
+			Passphrase: &passphrase,
+		},
+	}, sshContext, "/tmp/random.bin", "/home/"+username+"/randomupload.bin")
 	if err != nil {
 		t.Fatalf("SCP upload failed: %v", err)
 	}
 	t.Logf("SCP upload completed in %v", time.Since(startTime))
 
-	metadata, err := GetSCPFileMetadata(t.Context(), host, 22, username, credmodel.SSHCredential{
-		PrivateKey: privateKeyStr,
-		Passphrase: &passphrase,
-	}, "/home/"+username+"/randomupload.bin")
+	metadata, err := GetSCPFileMetadata(t.Context(), SSHDialConfig{
+		host:        host,
+		port:        22,
+		sshUsername: username,
+		cred: credmodel.SSHCredential{
+			PrivateKey: privateKeyStr,
+			Passphrase: &passphrase,
+		},
+	}, sshContext, "/home/"+username+"/randomupload.bin")
 
 	if err != nil {
 		t.Fatalf("Failed to get SCP file metadata: %v", err)

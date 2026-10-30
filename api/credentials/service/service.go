@@ -162,15 +162,16 @@ func (s *SSHCredentialService) Create(ctx context.Context, req *dto.SSHCredentia
 	if err != nil {
 		return nil, err
 	}
-	if req.PrivateKey == nil || strings.TrimSpace(*req.PrivateKey) == "" {
-		return nil, httpx.BadRequest("Private key is required when creating a key")
+	if (req.PrivateKey == nil || strings.TrimSpace(*req.PrivateKey) == "") && !req.FullInteractive {
+		return nil, httpx.BadRequest("Private key is required when creating a key unless full interactive mode is enabled")
 	}
 
 	key := &model.SSHCredential{
 		SSHCredentialName: req.SSHCredentialName,
 		PublicKey:         req.PublicKey,
-		PrivateKey:        *req.PrivateKey,
+		PrivateKey:        ptr.From(req.PrivateKey),
 		Passphrase:        ptr.NonBlank(req.Passphrase),
+		FullInteractive:   req.FullInteractive,
 		OwnerID:           owner.ID,
 	}
 	if err := s.keys.Save(ctx, key); err != nil {
@@ -193,6 +194,7 @@ func (s *SSHCredentialService) Update(ctx context.Context, id string, req *dto.S
 
 	key.SSHCredentialName = req.SSHCredentialName
 	key.PublicKey = req.PublicKey
+	key.FullInteractive = req.FullInteractive
 	if v := ptr.NonBlank(req.PrivateKey); v != nil {
 		key.PrivateKey = *v
 	}

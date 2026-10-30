@@ -97,6 +97,7 @@ echo "$SSH_CREDENTIAL_ID"
 | `publicKey` | string | required, cannot be blank |
 | `privateKey` | string \| null | required on create; omit on update to keep the stored secret |
 | `passphrase` | string \| null | optional |
+| `fullInteractive` | boolean | optional, default `false`; also answer keyboard-interactive prompts (OTP, Duo) after the key |
 
 ```json
 {
@@ -141,10 +142,134 @@ Returned when `sshCredentialName` or `publicKey` is blank.
   "message": "Validation failed",
   "fieldErrors": [
     { "field": "sshCredentialName", "message": "SSH credential name cannot be blank" },
-    { "field": "publicKey", "message": "Public key cannot be blank" }
   ]
 }
 ```
+
+### List Interactive SSH Auths
+
+`GET /api/v1/ssh-interactive-auths`
+
+A connection made with a `fullInteractive` credential stops at the host's keyboard-interactive prompts (a password, an OTP, a Duo push) and waits for its owner to answer. This lists the caller's waiting auths, oldest first. Only the caller's own auths are returned — admins are not exempt. An auth disappears once it is answered or the connection gives up.
+
+```bash
+curl -s localhost:9095/api/v1/ssh-interactive-auths \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+`banner` is the text the server sent before login, which a terminal would print above the prompt. `echo: false` marks a secret answer that a client should mask.
+
+```json
+[
+  {
+    "authId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
+    "hostName": "login1.nexus.gatech.edu",
+    "port": 22,
+    "loginUser": "dimuthu",
+    "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+    "banner": "\nNCSA Delta System\n\nLogin with NCSA Kerberos + NCSA Duo multi-factor.\n",
+    "name": "",
+    "instruction": "",
+    "prompts": [
+      { "text": "Password: ", "echo": false }
+    ],
+    "createdAt": "2026-10-28T14:02:11.482Z"
+  }
+]
+```
+
+### Get an Interactive SSH Auth
+
+`GET /api/v1/ssh-interactive-auths/{authId}`
+
+Returns one of the caller's pending auths — the banner, prompts and target host to show the user before answering. Same shape as an item of the [list](#list-interactive-ssh-auths). Get the id from the list, or from the `authId` of a WebSocket challenge.
+
+```bash
+AUTH_ID=$(curl -s localhost:9095/api/v1/ssh-interactive-auths \
+  -H "Authorization: Bearer $TOKEN" | jq -r '.[0].authId // empty')
+
+curl -s "localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "authId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
+  "hostName": "login.delta.ncsa.illinois.edu",
+  "port": 22,
+  "loginUser": "dwannipu",
+  "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+  "banner": "\nNCSA Delta System\n\nLogin with NCSA Kerberos + NCSA Duo multi-factor.\n",
+  "name": "",
+  "instruction": "",
+  "prompts": [
+    { "text": "dwannipu@login.delta.ncsa.illinois.edu's password: ", "echo": false }
+  ],
+  "createdAt": "2026-10-30T14:02:11.482Z"
+}
+```
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | no token |
+| `404 Not Found` | no such auth, it belongs to another user, or it is no longer pending (answered and the login moved on, or the connection gave up) |
+
+An auth lives only as long as the login waiting on it. If the host asks again — a Duo prompt after the password — that is a new auth with a new id, so list again rather than re-reading the old one.
+
+### Answer an Interactive SSH Auth
+
+`GET /api/v1/ssh-interactive-auths/{authId}/ws` — a WebSocket.
+
+Authenticated like every other route, with `Authorization: Bearer $TOKEN` on the upgrade request. The auth is looked up before the upgrade, so a missing token is a plain `401` and an auth that is not the caller's (or no longer pending) is a plain `404`. A browser's `WebSocket` cannot set that header, so a browser client needs to go through a backend that can.
+
+1. The server sends the challenge:
+   ```json
+   { "type": "challenge", "auth": { "authId": "…", "instruction": "", "prompts": [ { "text": "Password: ", "echo": false } ], … } }
+   ```
+2. The client answers with one response per prompt, in prompt order — or `{"cancel": true}` to fail the login instead of leaving it waiting:
+   ```json
+   { "responses": ["hunter2"] }
+   ```
+3. The server replies `{"type": "accepted"}` and closes the socket, or `{"type": "error", "message": "…"}`. A wrong number of responses can be corrected and resent on the same socket; an auth already answered from another socket closes it.
+
+Answers are passed to the SSH handshake and are neither logged nor stored. If the client disconnects before answering, the auth stays pending and can be answered from a new socket.
+
+```bash
+websocat -H="Authorization: Bearer $TOKEN" \
+  "ws://localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID/ws"
+# then type: {"responses": ["<password>", "<otp>"]}
+```
+
+### Answer an Interactive SSH Auth over REST
+
+The same exchange as the WebSocket, as plain requests, for clients that cannot hold a socket open (or set a header on one).
+
+Read the auth with [Get an Interactive SSH Auth](#get-an-interactive-ssh-auth), then answer it:
+
+`POST /api/v1/ssh-interactive-auths/{authId}/response` takes the same body the WebSocket does: one response per prompt, in prompt order, or `{"cancel": true}`.
+
+```bash
+curl -s -X POST "localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID/response" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"responses": ["<password>"]}'
+```
+
+| Status | Meaning |
+|---|---|
+| `204 No Content` | the answer was handed to the SSH handshake |
+| `400 Bad Request` | wrong number of responses; the auth is still pending, so resend |
+| `401 Unauthorized` | no token |
+| `404 Not Found` | not the caller's auth, or no longer pending (answered and finished, or the connection gave up) |
+| `409 Conflict` | already answered, from here or a WebSocket, and the handshake has not moved on yet |
+
+`204` means the server accepted the answer, not that the host did: a wrong password shows up as the transfer failing, or as a new auth if the host asks again.
 
 ### Create Group
 
@@ -286,6 +411,7 @@ curl -s -X PUT localhost:9095/api/v1/groups/"$GROUP_ID"/members/cilogon:67890 \
 ```
 
 `DELETE` returns `204 No Content`, or `409 Conflict` when the named user owns the group.
+
 
 
 ## Slurm Clusters
