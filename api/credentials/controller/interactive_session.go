@@ -48,6 +48,8 @@ func NewInteractiveSessionController(svc *service.InteractiveSessionService) *In
 // Register mounts the interactive session routes.
 func (h *InteractiveSessionController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions", h.list)
+	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions/{sessionId}", h.get)
+	mux.HandleFunc("POST /api/v1/ssh-interactive-sessions/{sessionId}/response", h.respond)
 	mux.HandleFunc("GET /api/v1/ssh-interactive-sessions/{sessionId}/ws", h.answer)
 }
 
@@ -58,6 +60,36 @@ func (h *InteractiveSessionController) list(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	httpx.WriteJSON(w, http.StatusOK, sessions)
+}
+
+func (h *InteractiveSessionController) get(w http.ResponseWriter, r *http.Request) {
+	session, err := h.svc.Get(r.Context(), r.PathValue("sessionId"))
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, dto.ToInteractiveSessionResponse(session))
+}
+
+// respond is the websocket's answer step as one request: 204 once the answer is
+// handed to the SSH handshake, 400 for the wrong number of responses, 409 when the
+// session was already answered.
+func (h *InteractiveSessionController) respond(w http.ResponseWriter, r *http.Request) {
+	session, err := h.svc.Get(r.Context(), r.PathValue("sessionId"))
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	var answer dto.InteractiveSessionAnswer
+	if err := httpx.Bind(r, &answer); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	if err := h.svc.Answer(session, &answer); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusNoContent, nil)
 }
 
 // answer serves one session over a websocket: it sends the challenge, then reads

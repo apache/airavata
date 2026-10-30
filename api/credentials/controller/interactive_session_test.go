@@ -22,6 +22,7 @@ package controller_test
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"slices"
@@ -172,5 +173,71 @@ func TestSetResponseOnlyOnce(t *testing.T) {
 	}
 	if err := session.SetResponse([]string{"b"}, nil); err != ssh.ErrSessionAnswered {
 		t.Fatalf("second answer: want ErrSessionAnswered, got %v", err)
+	}
+}
+
+// restURL turns newServer's socket URL into the session's REST URL.
+func restURL(wsURL string) string {
+	return "http" + strings.TrimSuffix(strings.TrimPrefix(wsURL, "ws"), "/ws")
+}
+
+func post(t *testing.T, url, user, body string) *http.Response {
+	t.Helper()
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if user != "" {
+		req.Header.Set("X-Test-User", user)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	return resp
+}
+
+func TestInteractiveSessionRestAnswersChallenge(t *testing.T) {
+	sshCtx := ssh.NewGlobalSSHContext()
+	_, answers := pendingSession(t, sshCtx, "cilogon:alice", []ssh.Prompt{{Text: "Password: "}, {Text: "OTP: "}})
+	url := restURL(newServer(t, sshCtx))
+
+	req, _ := http.NewRequest(http.MethodGet, url, nil)
+	req.Header.Set("X-Test-User", "cilogon:alice")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var session dto.InteractiveSessionResponse
+	err = json.NewDecoder(resp.Body).Decode(&session)
+	resp.Body.Close()
+	if err != nil || resp.StatusCode != http.StatusOK || len(session.Prompts) != 2 {
+		t.Fatalf("GET session: %d %+v (%v)", resp.StatusCode, session, err)
+	}
+
+	for _, tc := range []struct {
+		user, body string
+		status     int
+	}{
+		{"", `{"responses":["a","b"]}`, http.StatusUnauthorized},
+		{"cilogon:mallory", `{"responses":["a","b"]}`, http.StatusNotFound},
+		{"cilogon:alice", `{"responses":["only-one"]}`, http.StatusBadRequest},
+		{"cilogon:alice", `{"responses":["hunter2","123456"]}`, http.StatusNoContent},
+		{"cilogon:alice", `{"responses":["again","again"]}`, http.StatusConflict},
+	} {
+		if got := post(t, url+"/response", tc.user, tc.body).StatusCode; got != tc.status {
+			t.Fatalf("user %q body %s: want %d, got %d", tc.user, tc.body, tc.status, got)
+		}
+	}
+
+	select {
+	case got := <-answers:
+		if !slices.Equal(got, []string{"hunter2", "123456"}) {
+			t.Fatalf("handshake got %q", got)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("handshake was never released")
 	}
 }

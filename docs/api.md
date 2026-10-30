@@ -180,6 +180,48 @@ curl -s localhost:9095/api/v1/ssh-interactive-sessions \
 ]
 ```
 
+### Get an Interactive SSH Session
+
+`GET /api/v1/ssh-interactive-sessions/{sessionId}`
+
+Returns one of the caller's pending sessions — the banner, prompts and target host to show the user before answering. Same shape as an item of the [list](#list-interactive-ssh-sessions). Get the id from the list, or from the `sessionId` of a WebSocket challenge.
+
+```bash
+SESSION_ID=$(curl -s localhost:9095/api/v1/ssh-interactive-sessions \
+  -H "Authorization: Bearer $TOKEN" | jq -r '.[0].sessionId // empty')
+
+curl -s "localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "sessionId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
+  "hostName": "login.delta.ncsa.illinois.edu",
+  "port": 22,
+  "loginUser": "dwannipu",
+  "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
+  "banner": "\nNCSA Delta System\n\nLogin with NCSA Kerberos + NCSA Duo multi-factor.\n",
+  "name": "",
+  "instruction": "",
+  "prompts": [
+    { "text": "dwannipu@login.delta.ncsa.illinois.edu's password: ", "echo": false }
+  ],
+  "createdAt": "2026-10-30T14:02:11.482Z"
+}
+```
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | no token |
+| `404 Not Found` | no such session, it belongs to another user, or it is no longer pending (answered and the login moved on, or the connection gave up) |
+
+A session lives only as long as the login waiting on it. If the host asks again — a Duo prompt after the password — that is a new session with a new id, so list again rather than re-reading the old one.
+
 ### Answer an Interactive SSH Session
 
 `GET /api/v1/ssh-interactive-sessions/{sessionId}/ws` — a WebSocket.
@@ -203,6 +245,31 @@ websocat -H="Authorization: Bearer $TOKEN" \
   "ws://localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID/ws"
 # then type: {"responses": ["<password>", "<otp>"]}
 ```
+
+### Answer an Interactive SSH Session over REST
+
+The same exchange as the WebSocket, as plain requests, for clients that cannot hold a socket open (or set a header on one).
+
+Read the session with [Get an Interactive SSH Session](#get-an-interactive-ssh-session), then answer it:
+
+`POST /api/v1/ssh-interactive-sessions/{sessionId}/response` takes the same body the WebSocket does: one response per prompt, in prompt order, or `{"cancel": true}`.
+
+```bash
+curl -s -X POST "localhost:9095/api/v1/ssh-interactive-sessions/$SESSION_ID/response" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"responses": ["<password>"]}'
+```
+
+| Status | Meaning |
+|---|---|
+| `204 No Content` | the answer was handed to the SSH handshake |
+| `400 Bad Request` | wrong number of responses; the session is still pending, so resend |
+| `401 Unauthorized` | no token |
+| `404 Not Found` | not the caller's session, or no longer pending (answered and finished, or the connection gave up) |
+| `409 Conflict` | already answered, from here or a WebSocket, and the handshake has not moved on yet |
+
+`204` means the server accepted the answer, not that the host did: a wrong password shows up as the transfer failing, or as a new session if the host asks again.
 
 ### Create Group
 

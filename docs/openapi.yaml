@@ -559,6 +559,53 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/ssh-interactive-sessions/{sessionId}:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [SSH Credentials]
+      summary: Read one of the caller's pending interactive SSH sessions
+      description: Owner only. A session that is not the caller's, or no longer pending, is a 404.
+      operationId: getInteractiveSession
+      responses:
+        "200":
+          description: The session and its prompts.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InteractiveSessionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/ssh-interactive-sessions/{sessionId}/response:
+    parameters:
+      - name: sessionId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    post:
+      tags: [SSH Credentials]
+      summary: Answer an interactive SSH session
+      description: |
+        The REST form of the WebSocket's answer step. 204 means the answer was handed
+        to the SSH handshake, not that the host accepted it. Owner only.
+      operationId: answerInteractiveSessionRest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InteractiveSessionAnswer" }
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/ssh-interactive-sessions/{sessionId}/ws:
     parameters:
       - name: sessionId
@@ -2944,6 +2991,15 @@ components:
           items: { $ref: "#/components/schemas/InteractivePrompt" }
         createdAt: { type: string, format: date-time }
       required: [sessionId, hostName, port, loginUser, sshCredentialId, banner, name, instruction, prompts, createdAt]
+
+    InteractiveSessionAnswer:
+      type: object
+      description: One response per prompt, in prompt order, or `cancel` to fail the login.
+      properties:
+        responses:
+          type: array
+          items: { type: string }
+        cancel: { type: boolean }
 
     # -------------------------------------------------------- Compute
 
