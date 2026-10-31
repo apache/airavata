@@ -70,15 +70,26 @@ func ToInteractiveAuthResponse(s *ssh.SSHInteractiveAuth) InteractiveAuthRespons
 //   - "challenge": the first message, carrying the auth and its prompts
 //   - "accepted":  the answer was handed to the SSH handshake; the socket then closes
 //   - "error":     Message says what was wrong; a bad answer can be resent
+//
+// The caller-wide socket also sends:
+//
+//   - "idle":      nothing is waiting for an answer; the next challenge follows when one arrives
+//
+// and keeps the socket open after "accepted", whose AuthID names the auth answered.
 type InteractiveAuthMessage struct {
 	Type    string                   `json:"type"`
 	Auth    *InteractiveAuthResponse `json:"auth,omitempty"`
+	AuthID  string                   `json:"authId,omitempty"`
 	Message string                   `json:"message,omitempty"`
 }
 
 // InteractiveAuthAnswer is what the client sends back: one response per prompt, in
 // prompt order, or Cancel to fail the login rather than leave it waiting.
+//
+// AuthID is optional. On the caller-wide socket, setting it guards against answering
+// a challenge that was replaced while the answer was being typed.
 type InteractiveAuthAnswer struct {
+	AuthID    string   `json:"authId,omitempty"`
 	Responses []string `json:"responses"`
 	Cancel    bool     `json:"cancel"`
 }

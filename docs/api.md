@@ -246,6 +246,24 @@ websocat -H="Authorization: Bearer $TOKEN" \
 # then type: {"responses": ["<password>", "<otp>"]}
 ```
 
+### Answer All Interactive SSH Auths
+
+`GET /api/v1/ssh-interactive-auths/ws` — a WebSocket that serves every one of the caller's auths in turn, so a client can hold one socket open instead of listing and opening one per auth.
+
+Authenticated the same way as the per-auth socket; a missing token is a plain `401`.
+
+1. The server sends the caller's oldest pending auth as a `challenge` (same shape as above), or `{"type": "idle"}` when nothing is waiting.
+2. The client answers it exactly as on the per-auth socket. It may add the `authId` it is answering — `{"authId": "…", "responses": ["hunter2"]}` — and an answer for any other auth is refused with an `error`, so an answer typed against a challenge that has since been replaced never reaches the wrong login.
+3. The server replies `{"type": "accepted", "authId": "…"}` and the socket **stays open**: the next pending auth follows as a new `challenge`, or `idle` if there is none. When a new auth arrives while idle, its `challenge` is sent then.
+
+Only one challenge is shown at a time; later auths wait behind it. If the current auth is answered elsewhere (another socket, REST) or the connection gives up on it, the server moves on to the next one without any message from the client. Errors (`error` messages) never close the socket.
+
+```bash
+websocat -H="Authorization: Bearer $TOKEN" \
+  "ws://localhost:9095/api/v1/ssh-interactive-auths/ws"
+# for each challenge, type: {"authId": "<authId>", "responses": ["<otp>"]}
+```
+
 ### Answer an Interactive SSH Auth over REST
 
 The same exchange as the WebSocket, as plain requests, for clients that cannot hold a socket open (or set a header on one).

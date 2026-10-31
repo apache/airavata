@@ -559,6 +559,27 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/ssh-interactive-auths/ws:
+    get:
+      tags: [SSH Credentials]
+      summary: Answer all of the caller's interactive SSH auths over one WebSocket
+      description: |
+        Upgrades to a WebSocket that serves the caller's pending auths one at a time,
+        oldest first. The server sends `{"type":"challenge","auth":{...}}`, or
+        `{"type":"idle"}` when nothing is pending. The client sends
+        `{"authId":"...","responses":[...]}` (authId optional; when set it must match
+        the current challenge) or `{"cancel":true}`. The server replies
+        `{"type":"accepted","authId":"..."}` and then sends the next challenge (or
+        `idle`) on the same socket; errors are `{"type":"error","message":"..."}`.
+        An auth answered elsewhere or abandoned is skipped automatically. Bearer
+        auth on the upgrade request.
+      operationId: answerAllInteractiveAuths
+      responses:
+        "101":
+          description: Switching to the WebSocket protocol.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/ssh-interactive-auths/{authId}:
     parameters:
       - name: authId
@@ -2996,6 +3017,9 @@ components:
       type: object
       description: One response per prompt, in prompt order, or `cancel` to fail the login.
       properties:
+        authId:
+          type: string
+          description: Optional. On the caller-wide socket, the auth being answered; it must be the current challenge.
         responses:
           type: array
           items: { type: string }
