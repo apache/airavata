@@ -76,17 +76,6 @@ func (s *InteractiveAuthService) Get(ctx context.Context, authID string) (*ssh.S
 	return pending, nil
 }
 
-// Next returns the caller's oldest auth still waiting for an answer (nil if none),
-// and a channel closed the next time the caller's auths change.
-func (s *InteractiveAuthService) Next(ctx context.Context) (*ssh.SSHInteractiveAuth, <-chan struct{}, error) {
-	p, err := auth.RequireAuthenticated(ctx)
-	if err != nil {
-		return nil, nil, err
-	}
-	next, changed := s.store.NextForUser(p.Name)
-	return next, changed, nil
-}
-
 // errLoginCancelled is what the SSH handshake fails with when the user cancels.
 var errLoginCancelled = errors.New("interactive login cancelled by user")
 

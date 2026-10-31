@@ -15,9 +15,6 @@ import (
 func askUser(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, banner, name, instruction string, prompts []Prompt) ([]string, error) {
 	auth := NewSSHInteractiveAuth(uuid.New().String(), dialConfig)
 	auth.banner = banner
-	// Record the challenge before publishing, so nobody reading the store sees an
-	// auth with no prompts yet.
-	auth.name, auth.instruction, auth.prompts = name, instruction, prompts
 	sshContext.InteractiveAuthStore.AddAuth(auth)
 	defer sshContext.InteractiveAuthStore.RemoveAuth(dialConfig.userId, auth.AuthId)
 	return auth.Challenge(ctx, name, instruction, prompts)
@@ -35,49 +32,13 @@ type Challenger interface {
 type SSHInteractiveAuthStore struct {
 	// List of interactive SSH auths keyed by user ID, then by auth ID
 	Auths map[string]map[string]*SSHInteractiveAuth
-	// changed holds, per user, a channel closed the next time that user's auths are
-	// added or removed. A closed channel is replaced by a fresh one on demand.
-	changed map[string]chan struct{}
-	lock    sync.Mutex
+	lock  sync.Mutex
 }
 
 func newSSHInteractiveAuthStore() *SSHInteractiveAuthStore {
 	return &SSHInteractiveAuthStore{
-		Auths:   make(map[string]map[string]*SSHInteractiveAuth),
-		changed: make(map[string]chan struct{}),
+		Auths: make(map[string]map[string]*SSHInteractiveAuth),
 	}
-}
-
-// notify wakes everyone watching userId. Callers hold store.lock.
-func (store *SSHInteractiveAuthStore) notify(userId string) {
-	if ch, ok := store.changed[userId]; ok {
-		close(ch)
-		delete(store.changed, userId)
-	}
-}
-
-// NextForUser returns the user's oldest auth that still waits for an answer (nil if
-// there is none), and a channel closed the next time the user's auths change. Both
-// are taken under one lock, so a change made right after the call is never missed.
-func (store *SSHInteractiveAuthStore) NextForUser(userId string) (*SSHInteractiveAuth, <-chan struct{}) {
-	store.lock.Lock()
-	defer store.lock.Unlock()
-
-	var next *SSHInteractiveAuth
-	for _, auth := range store.Auths[userId] {
-		if auth.Answered() {
-			continue
-		}
-		if next == nil || auth.CreatedAt.Before(next.CreatedAt) {
-			next = auth
-		}
-	}
-	ch, ok := store.changed[userId]
-	if !ok {
-		ch = make(chan struct{})
-		store.changed[userId] = ch
-	}
-	return next, ch
 }
 
 func (store *SSHInteractiveAuthStore) GetAuth(userId, authId string) (*SSHInteractiveAuth, bool) {
@@ -102,7 +63,6 @@ func (store *SSHInteractiveAuthStore) AddAuth(auth *SSHInteractiveAuth) {
 		store.Auths[auth.dialConfig.userId] = userAuths
 	}
 	userAuths[auth.AuthId] = auth
-	store.notify(auth.dialConfig.userId)
 }
 
 func (store *SSHInteractiveAuthStore) RemoveAuth(userId, authId string) {
@@ -111,18 +71,12 @@ func (store *SSHInteractiveAuthStore) RemoveAuth(userId, authId string) {
 
 	userAuths, ok := store.Auths[userId]
 	if !ok {
-		// User has no auths, nothing to remove.
-		return
-	}
-	if _, ok := userAuths[authId]; !ok {
-		// Auth not found, nothing to remove.
 		return
 	}
 	delete(userAuths, authId)
 	if len(userAuths) == 0 {
 		delete(store.Auths, userId)
 	}
-	store.notify(userId)
 }
 
 func (store *SSHInteractiveAuthStore) ListAuthsForUser(userId string) []*SSHInteractiveAuth {
@@ -222,13 +176,6 @@ func (s *SSHInteractiveAuth) SetResponse(response []string, err error) error {
 	s.authErr = err
 	close(s.authWaitSignal)
 	return nil
-}
-
-// Answered reports whether a response, or a cancellation, has been set.
-func (s *SSHInteractiveAuth) Answered() bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.answered
 }
 
 func (s *SSHInteractiveAuth) Read() ([]Prompt, string) {
