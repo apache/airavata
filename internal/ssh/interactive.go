@@ -116,9 +116,6 @@ type SSHInteractiveAuth struct {
 	answered    bool
 
 	authWaitSignal chan struct{}
-
-	subscriberWaitGroup  sync.WaitGroup
-	subscriberWaitSignal chan struct{}
 }
 
 func NewSSHInteractiveAuth(authId string, dialConfig SSHDialConfig) *SSHInteractiveAuth {
@@ -126,7 +123,6 @@ func NewSSHInteractiveAuth(authId string, dialConfig SSHDialConfig) *SSHInteract
 		AuthId:               authId,
 		CreatedAt:            time.Now(),
 		dialConfig:           dialConfig,
-		subscriberWaitSignal: make(chan struct{}),
 		authWaitSignal:       make(chan struct{}),
 	}
 }
@@ -151,12 +147,6 @@ func (s *SSHInteractiveAuth) Challenge(ctx context.Context, name, instruction st
 	defer s.mu.Unlock()
 	//slog.Info("Received interactive response for auth ", "authId", s.AuthId, "response", s.response, "error", s.authErr)
 	return s.response, s.authErr
-}
-
-func (s *SSHInteractiveAuth) Done() {
-	// Only call done when the ssh client created and pushed to the pool.
-	// This will release all the pending client requests waiting on this auth.
-	close(s.subscriberWaitSignal)
 }
 
 // ErrAuthAnswered is returned when an auth that already has a response is
@@ -198,12 +188,6 @@ func (s *SSHInteractiveAuth) Banner() string {
 func (s *SSHInteractiveAuth) Target() (host string, port int, loginUser, credentialID string) {
 	c := s.dialConfig
 	return c.host, c.port, c.sshUsername, c.cred.ID
-}
-
-func (s *SSHInteractiveAuth) BlockUntilDone() {
-	s.subscriberWaitGroup.Add(1)
-	defer s.subscriberWaitGroup.Done()
-	<-s.subscriberWaitSignal
 }
 
 type GlobalSSHContext struct {
