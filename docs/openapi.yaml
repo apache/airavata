@@ -3153,6 +3153,11 @@ components:
           type: boolean
           description: |
             Spelled `required` on the wire, not `isRequired`.
+        defaultValue:
+          type: [string, "null"]
+          description: |
+            A JSON document, either `{"value": "..."}` for a single value or
+            `{"values": [...]}` for a list. Used when a run maps no value to this input.
       required: [inputName, inputType]
 
     TemplateOutput:
