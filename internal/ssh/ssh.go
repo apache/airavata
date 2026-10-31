@@ -58,7 +58,7 @@ type FileMetadata struct {
 }
 
 type scpTransfer struct {
-	client  *gossh.Client
+	client  *pooledClient
 	session *gossh.Session
 	stdin   io.WriteCloser
 	stdout  *bufio.Reader
@@ -86,12 +86,20 @@ func NewSSHDialConfig(host string, port int, sshUsername string, cred credmodel.
 	}
 }
 
-func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext) (*gossh.Client, error) {
-
-	hostKeys := gossh.InsecureIgnoreHostKey()
+// dialSSH borrows a connection for dialConfig from the shared pool, dialing one only
+// if none is open. Close on the result returns it to the pool.
+func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext) (*pooledClient, error) {
 	if dialConfig.port == 0 {
 		dialConfig.port = 22
 	}
+	return sshContext.ConnectionPool.acquire(ctx, dialConfig, func(ctx context.Context) (*gossh.Client, error) {
+		return newSSHClient(ctx, dialConfig, sshContext)
+	})
+}
+
+// newSSHClient opens and authenticates a fresh connection for dialConfig.
+func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext) (*gossh.Client, error) {
+	hostKeys := gossh.InsecureIgnoreHostKey()
 	addr := net.JoinHostPort(dialConfig.host, strconv.Itoa(dialConfig.port))
 
 	// DialContext rather than ssh.Dial: the activity's context has to be able to

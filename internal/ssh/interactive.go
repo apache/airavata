@@ -208,10 +208,12 @@ func (s *SSHInteractiveAuth) BlockUntilDone() {
 
 type GlobalSSHContext struct {
 	InteractiveAuthStore *SSHInteractiveAuthStore
+	ConnectionPool       *SSHConnectionPool
 }
 
 func NewGlobalSSHContext() *GlobalSSHContext {
 	return &GlobalSSHContext{
 		InteractiveAuthStore: newSSHInteractiveAuthStore(),
+		ConnectionPool:       newSSHConnectionPool(),
 	}
 }
