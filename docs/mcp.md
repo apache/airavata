@@ -110,4 +110,5 @@ It shows each pending login and reads secret answers without echo.
 
 These need changes to `airavata-server` (Part B of the plan): registering applications as a non-admin, listing
 your earlier runs, cancelling a run, reading job logs, choosing a partition per run, keeping sbatch options the
-API has no field for, job arrays and dependency chains, searching data by metadata, and browsing a storage.
+API has no field for, workflows (predefined recipes such as sweeps and chains, which job arrays and dependency
+chains will map to, and Nextflow pipelines), searching data by metadata, and browsing a storage.

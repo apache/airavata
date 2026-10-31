@@ -28,14 +28,13 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"github.com/apache/airavata/internal/cwl"
 	"github.com/apache/airavata/internal/mcp/client"
 	"github.com/apache/airavata/internal/mcp/estimate"
 	tk "github.com/apache/airavata/internal/mcp/tools/toolkit"
 	"github.com/apache/airavata/internal/slurmconv"
 )
 
-// MaxScriptBytes caps the size of an sbatch script or CWL document a tool accepts.
+// MaxScriptBytes caps the size of an sbatch script a tool accepts.
 const MaxScriptBytes = 256 * 1024
 
 // Register adds the applications toolset.
@@ -56,12 +55,12 @@ func Register(s *mcp.Server, d *tk.Deps) {
 			return res, out, err
 		})
 	tk.Read(s, d, tk.Def{Name: "convert_sbatch_script", Title: "Convert an sbatch script",
-		Description: "Parse an sbatch script into a proposed Airavata application: default resources, partition and run section, a CWL v1.2 preview, a round-trip diff against the original, and the options the API cannot hold. Creates nothing. Suggest inputs to turn hard-coded values into template inputs (each literal must appear in the script). With cluster_id, a registrable script also returns a proposal_handle for register_application (admins), which expires after 24 hours."},
+		Description: "Parse an sbatch script into a proposed Airavata application: default resources, partition and run section, the modules and containers it uses, a round-trip diff against the original, and the options the API cannot hold. Creates nothing. Suggest inputs to turn hard-coded values into template inputs (each literal must appear in the script). With cluster_id, a registrable script also returns a proposal_handle for register_application (admins), which expires after 24 hours."},
 		func(ctx context.Context, _ *mcp.CallToolRequest, in convertIn) (*mcp.CallToolResult, convertOut, error) {
 			return convert(ctx, d, in)
 		})
 	tk.Read(s, d, tk.Def{Name: "draft_application", Title: "Draft an application",
-		Description: "Build an application proposal from a description (explicit inputs, outputs and run section), a CWL v1.2 CommandLineTool, or a container image and command, and check it against Airavata's input types and each target partition's limits. Creates nothing. A valid draft returns a proposal_handle for register_application (admins), which expires after 24 hours; others can hand the draft to an admin."},
+		Description: "Build an application proposal from a description (explicit inputs, outputs and run section) or a container image and command, and check it against Airavata's input types and each target partition's limits. Creates nothing. A valid draft returns a proposal_handle for register_application (admins), which expires after 24 hours; others can hand the draft to an admin."},
 		func(ctx context.Context, _ *mcp.CallToolRequest, in draftIn) (*mcp.CallToolResult, draftOut, error) {
 			return draft(ctx, d, in)
 		})
@@ -207,7 +206,6 @@ type convertOut struct {
 	Inputs         []slurmconv.AppliedInput        `json:"inputs"`
 	Software       []slurmconv.SoftwareRequirement `json:"software,omitempty"`
 	Containers     []slurmconv.Container           `json:"containers,omitempty"`
-	CWL            string                          `json:"cwl_preview"`
 	Diff           string                          `json:"round_trip_diff"`
 	Registrable    bool                            `json:"registrable"`
 	Problems       []string                        `json:"problems,omitempty"`
@@ -252,20 +250,12 @@ func convert(ctx context.Context, d *tk.Deps, in convertIn) (*mcp.CallToolResult
 	if name == "" {
 		name = "converted_script"
 	}
-	doc, err := cwl.FromConversion(conv, applied, name)
-	if err != nil {
-		return nil, convertOut{}, err
-	}
-	cwlText, err := cwl.Marshal(doc)
-	if err != nil {
-		return nil, convertOut{}, err
-	}
 	out := convertOut{Mapped: options(conv.Mapped), Replaced: options(conv.Replaced), Unsupported: options(conv.Unsupported),
 		Partition: conv.Partition, Resources: FromJobConfig(conv.JobConfig), RunSection: conv.RunSection, Inputs: applied,
-		Software: conv.Software, Containers: conv.Containers, CWL: cwlText, Diff: slurmconv.Diff(in.Script, slurmconv.Render(conv)),
+		Software: conv.Software, Containers: conv.Containers, Diff: slurmconv.Diff(in.Script, slurmconv.Render(conv)),
 		Registrable: conv.Registrable, Problems: conv.Problems, Notes: conv.Notes}
 	if conv.Array != nil || len(conv.Dependencies) > 0 {
-		out.Notes = append(out.Notes, "Job arrays and dependency chains are shown as CWL in the preview, but Airavata cannot register or run them yet.")
+		out.Notes = append(out.Notes, "Job arrays and dependency chains cannot be registered yet; they will map to Airavata's sweep and chain workflow recipes.")
 	}
 	if !conv.Registrable {
 		out.Next = "Not registrable as-is: show the problems and unsupported options to the user. They may edit the script, or keep the preview to hand to an admin."
@@ -320,7 +310,6 @@ type draftIn struct {
 	Description    string            `json:"description,omitempty"`
 	Inputs         []InputDraft      `json:"inputs,omitempty"`
 	Outputs        []OutputDraft     `json:"outputs,omitempty"`
-	CWL            string            `json:"cwl,omitempty" jsonschema:"a CWL v1.2 CommandLineTool (YAML or JSON) to take inputs, outputs and resources from"`
 	ContainerImage string            `json:"container_image,omitempty" jsonschema:"a docker image reference, run with apptainer"`
 	Command        string            `json:"command,omitempty" jsonschema:"the command to run inside container_image"`
 	Deployments    []draftDeployment `json:"deployments" jsonschema:"one per cluster to deploy on"`
@@ -333,31 +322,7 @@ type draftOut struct {
 }
 
 func draft(ctx context.Context, d *tk.Deps, in draftIn) (*mcp.CallToolResult, draftOut, error) {
-	if len(in.CWL) > MaxScriptBytes {
-		return nil, draftOut{}, fmt.Errorf("the CWL document is larger than %d bytes", MaxScriptBytes)
-	}
 	p := &AppProposal{Name: in.Name, Description: in.Description, Source: "description", Inputs: in.Inputs, Outputs: in.Outputs}
-	var cwlJob *estimate.Request
-	if in.CWL != "" {
-		if len(in.Inputs) > 0 || len(in.Outputs) > 0 {
-			return nil, draftOut{}, errors.New("give either cwl or inputs/outputs, not both")
-		}
-		tool, err := cwl.ParseCommandLineTool(in.CWL)
-		if err != nil {
-			return nil, draftOut{}, fmt.Errorf("the CWL document is not a valid CommandLineTool: %w", err)
-		}
-		ins, outs, job, problems := cwl.ToAiravata(tool)
-		p.Source = "cwl"
-		for _, i := range ins {
-			p.Inputs = append(p.Inputs, InputDraft{Name: i.Name, Type: i.Type, Description: i.Description, Required: i.Required, Default: tk.Str(i.Default)})
-		}
-		for _, o := range outs {
-			p.Outputs = append(p.Outputs, OutputDraft{Name: o.Name, Type: o.Type, Description: o.Description})
-		}
-		r := FromJobConfig(job)
-		cwlJob = &r
-		p.Notes = append(p.Notes, problems...)
-	}
 	if p.Inputs == nil {
 		p.Inputs = []InputDraft{}
 	}
@@ -378,9 +343,6 @@ func draft(ctx context.Context, d *tk.Deps, in draftIn) (*mcp.CallToolResult, dr
 	}
 	for _, dd := range in.Deployments {
 		job := dd.Resources
-		if cwlJob != nil {
-			job = cwlJob.Overlay(dd.Resources)
-		}
 		run := dd.RunSection
 		if run == "" {
 			run = containerRun

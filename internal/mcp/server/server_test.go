@@ -444,8 +444,8 @@ func TestConvertScriptPreview(t *testing.T) {
 	if out["registrable"] != false || out["proposal_handle"] != nil {
 		t.Errorf("a script with --qos was offered for registration: %v", out["problems"])
 	}
-	if !strings.Contains(out["cwl_preview"].(string), "cwlVersion: v1.2") {
-		t.Error("no CWL preview")
+	if out["round_trip_diff"] == "" {
+		t.Error("no round-trip diff")
 	}
 
 	clean := strings.Replace(script, "#SBATCH --qos=high\n", "", 1)
