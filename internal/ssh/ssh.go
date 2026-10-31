@@ -36,6 +36,7 @@ import (
 	"time"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
+	"github.com/google/uuid"
 	gossh "golang.org/x/crypto/ssh"
 )
 
@@ -139,7 +140,7 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 				return []string{}, nil
 			}
 
-			answers, err := askUser(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
+			answers, err := askUserInteractive(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
 			if err != nil {
 				return nil, err
 			}
@@ -153,7 +154,7 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 		// The server only tries it if it advertises the method.
 		password := gossh.PasswordCallback(func() (string, error) {
 			prompt := fmt.Sprintf("%s@%s's password: ", dialConfig.sshUsername, dialConfig.host)
-			answers, err := askUser(ctx, dialConfig, sshContext, banner, "", "", []Prompt{{Text: prompt, Echo: false}})
+			answers, err := askUserInteractive(ctx, dialConfig, sshContext, banner, "", "", []Prompt{{Text: prompt, Echo: false}})
 			if err != nil {
 				return "", err
 			}
@@ -517,4 +518,15 @@ func signerFor(key credmodel.SSHCredential) (gossh.Signer, error) {
 // line. A path is user supplied, so it cannot be interpolated bare.
 func ShellQuote(s string) string {
 	return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'"
+}
+
+// askUser publishes prompts as a pending auth for the dialing user and waits for
+// their answers. The auth leaves the store once answered or abandoned. banner is
+// the server's pre-login banner, if it sent one, so the user sees what a terminal would.
+func askUserInteractive(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, banner, name, instruction string, prompts []Prompt) ([]string, error) {
+	auth := NewSSHInteractiveAuth(uuid.New().String(), dialConfig)
+	auth.banner = banner
+	sshContext.InteractiveAuthStore.AddAuth(auth)
+	defer sshContext.InteractiveAuthStore.RemoveAuth(dialConfig.userId, auth.AuthId)
+	return auth.Challenge(ctx, name, instruction, prompts)
 }

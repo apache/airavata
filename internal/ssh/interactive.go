@@ -5,20 +5,7 @@ import (
 	"errors"
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
 )
-
-// askUser publishes prompts as a pending auth for the dialing user and waits for
-// their answers. The auth leaves the store once answered or abandoned. banner is
-// the server's pre-login banner, if it sent one, so the user sees what a terminal would.
-func askUser(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, banner, name, instruction string, prompts []Prompt) ([]string, error) {
-	auth := NewSSHInteractiveAuth(uuid.New().String(), dialConfig)
-	auth.banner = banner
-	sshContext.InteractiveAuthStore.AddAuth(auth)
-	defer sshContext.InteractiveAuthStore.RemoveAuth(dialConfig.userId, auth.AuthId)
-	return auth.Challenge(ctx, name, instruction, prompts)
-}
 
 type Prompt struct {
 	Text string `json:"text"`
@@ -29,76 +16,9 @@ type Challenger interface {
 	Challenge(ctx context.Context, name, instruction string, prompts []Prompt) ([]string, error)
 }
 
-type SSHInteractiveAuthStore struct {
-	// List of interactive SSH auths keyed by user ID, then by auth ID
-	Auths map[string]map[string]*SSHInteractiveAuth
-	lock  sync.Mutex
-}
-
-func newSSHInteractiveAuthStore() *SSHInteractiveAuthStore {
-	return &SSHInteractiveAuthStore{
-		Auths: make(map[string]map[string]*SSHInteractiveAuth),
-	}
-}
-
-func (store *SSHInteractiveAuthStore) GetAuth(userId, authId string) (*SSHInteractiveAuth, bool) {
-	store.lock.Lock()
-	defer store.lock.Unlock()
-
-	userAuths, ok := store.Auths[userId]
-	if !ok {
-		return nil, false
-	}
-	auth, ok := userAuths[authId]
-	return auth, ok
-}
-
-func (store *SSHInteractiveAuthStore) AddAuth(auth *SSHInteractiveAuth) {
-	store.lock.Lock()
-	defer store.lock.Unlock()
-
-	userAuths, ok := store.Auths[auth.dialConfig.userId]
-	if !ok {
-		userAuths = make(map[string]*SSHInteractiveAuth)
-		store.Auths[auth.dialConfig.userId] = userAuths
-	}
-	userAuths[auth.AuthId] = auth
-}
-
-func (store *SSHInteractiveAuthStore) RemoveAuth(userId, authId string) {
-	store.lock.Lock()
-	defer store.lock.Unlock()
-
-	userAuths, ok := store.Auths[userId]
-	if !ok {
-		return
-	}
-	delete(userAuths, authId)
-	if len(userAuths) == 0 {
-		delete(store.Auths, userId)
-	}
-}
-
-func (store *SSHInteractiveAuthStore) ListAuthsForUser(userId string) []*SSHInteractiveAuth {
-	store.lock.Lock()
-	defer store.lock.Unlock()
-
-	userAuths, ok := store.Auths[userId]
-	if !ok {
-		return nil
-	}
-	auths := make([]*SSHInteractiveAuth, 0, len(userAuths))
-	for _, auth := range userAuths {
-		auths = append(auths, auth)
-	}
-	return auths
-}
-
 type SSHInteractiveAuth struct {
-	AuthId string
-
-	CreatedAt time.Time
-
+	AuthId     string
+	CreatedAt  time.Time
 	dialConfig SSHDialConfig
 
 	// banner is set before the auth is published and never changes, so it needs
@@ -115,15 +35,16 @@ type SSHInteractiveAuth struct {
 	authErr     error
 	answered    bool
 
+	// Holds challenge until a response is set. Closed when SetResponse is called.
 	authWaitSignal chan struct{}
 }
 
 func NewSSHInteractiveAuth(authId string, dialConfig SSHDialConfig) *SSHInteractiveAuth {
 	return &SSHInteractiveAuth{
-		AuthId:               authId,
-		CreatedAt:            time.Now(),
-		dialConfig:           dialConfig,
-		authWaitSignal:       make(chan struct{}),
+		AuthId:         authId,
+		CreatedAt:      time.Now(),
+		dialConfig:     dialConfig,
+		authWaitSignal: make(chan struct{}),
 	}
 }
 
@@ -188,16 +109,4 @@ func (s *SSHInteractiveAuth) Banner() string {
 func (s *SSHInteractiveAuth) Target() (host string, port int, loginUser, credentialID string) {
 	c := s.dialConfig
 	return c.host, c.port, c.sshUsername, c.cred.ID
-}
-
-type GlobalSSHContext struct {
-	InteractiveAuthStore *SSHInteractiveAuthStore
-	ConnectionPool       *SSHConnectionPool
-}
-
-func NewGlobalSSHContext() *GlobalSSHContext {
-	return &GlobalSSHContext{
-		InteractiveAuthStore: newSSHInteractiveAuthStore(),
-		ConnectionPool:       newSSHConnectionPool(),
-	}
 }
