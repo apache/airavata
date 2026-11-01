@@ -343,9 +343,9 @@ func TestLaunchCancelledIsNotDecline(t *testing.T) {
 	}
 }
 
-func TestHostConfirmLaunchesWithoutElicitation(t *testing.T) {
+func TestSkipConfirmationLaunchesWithoutElicitation(t *testing.T) {
 	pol := writePolicy()
-	pol.ConfirmVia = policy.ConfirmHost
+	pol.SkipConfirmation = true
 	h := newHarness(t, pol, nil)
 	handle := plan(t, h)
 	h.mustCall("launch_process", map[string]any{"proposal_handle": handle})
@@ -360,13 +360,13 @@ func TestHostConfirmLaunchesWithoutElicitation(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !res.IsError || h.api.launches != 1 {
-		t.Errorf("a host-confirmed handle ran twice: %s", text(res))
+		t.Errorf("a handle ran twice without confirmation: %s", text(res))
 	}
 }
 
-func TestHostConfirmKeepsLocalCaps(t *testing.T) {
+func TestSkipConfirmationKeepsLocalCaps(t *testing.T) {
 	pol := writePolicy()
-	pol.ConfirmVia = policy.ConfirmHost
+	pol.SkipConfirmation = true
 	pol.File.Limits.MaxWalltimeMinutes = 30
 	h := newHarness(t, pol, nil)
 	res, err := h.call("plan_run", map[string]any{"application_id": templateID, "inputs": map[string]any{"steps": "5000"}})

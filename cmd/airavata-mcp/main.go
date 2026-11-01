@@ -170,7 +170,7 @@ func serve(ctx context.Context, args []string) error {
 	policyPath := fs.String("policy", env("AIRAVATA_MCP_POLICY", ""), "policy file with deny/confirm lists and local caps (AIRAVATA_MCP_POLICY; default "+policy.DefaultPath()+")")
 	transport := fs.String("transport", env("AIRAVATA_MCP_TRANSPORT", "stdio"), "stdio, or http for a localhost-only Streamable HTTP endpoint used in testing (AIRAVATA_MCP_TRANSPORT)")
 	httpAddr := fs.String("http-addr", env("AIRAVATA_MCP_HTTP_ADDR", "127.0.0.1:8095"), "listen address for --transport http; must be a loopback address (AIRAVATA_MCP_HTTP_ADDR)")
-	confirmVia := fs.String("confirm", env("AIRAVATA_MCP_CONFIRM", policy.ConfirmElicitation), "how writes are confirmed: elicitation, or host to rely on the client's tool-approval prompt for clients that cannot show elicitation forms (AIRAVATA_MCP_CONFIRM)")
+	skipConfirm := fs.Bool("unsafe-skip-confirmation", envBool("AIRAVATA_MCP_UNSAFE_SKIP_CONFIRMATION", false), "run writes without the confirmation form, leaving approval to the client's tool-approval prompt; only for clients that cannot show elicitation forms (AIRAVATA_MCP_UNSAFE_SKIP_CONFIRMATION)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -185,14 +185,14 @@ func serve(ctx context.Context, args []string) error {
 		return err
 	}
 	pol := &policy.Policy{AllowWrite: *allowWrite && !*readOnly, Admin: *admin, Lockdown: *lockdown,
-		Toolsets: policy.ParseList(*toolsets), ConfirmVia: *confirmVia, File: file}
+		Toolsets: policy.ParseList(*toolsets), SkipConfirmation: *skipConfirm, File: file}
 	if err := pol.Validate(*transport); err != nil {
 		return err
 	}
 
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelWarn}))
-	if pol.HostConfirms() && pol.AllowWrite {
-		logger.Warn("--confirm=host: writes are confirmed only by the client's tool-approval prompt; a tool set to always allow runs unconfirmed")
+	if pol.SkipConfirmation && pol.AllowWrite {
+		logger.Warn("--unsafe-skip-confirmation: writes run without a confirmation form; only the client's tool-approval prompt stands in the way, and a tool set to always allow runs unconfirmed")
 	}
 	sess := &lazySession{cfg: a.config()}
 	s, watcher, err := server.New(server.Options{Version: version, APIURL: a.apiURL, Token: sess.Token, Principal: sess.Principal,

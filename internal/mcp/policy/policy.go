@@ -63,25 +63,16 @@ type File struct {
 	Limits  Limits   `yaml:"limits"`
 }
 
-const (
-	// ConfirmElicitation confirms writes with an MCP elicitation form (the default).
-	ConfirmElicitation = "elicitation"
-	// ConfirmHost leaves confirmation to the client's own tool-approval prompt.
-	ConfirmHost = "host"
-)
-
 // Policy is the effective set of restrictions for one server.
 type Policy struct {
 	AllowWrite bool
 	Admin      bool
 	Lockdown   bool
 	Toolsets   []string
-	ConfirmVia string
-	File       File
+	// SkipConfirmation runs writes without an elicitation form, leaving approval to the client.
+	SkipConfirmation bool
+	File             File
 }
-
-// HostConfirms reports whether writes rely on the client's tool approval instead of elicitation.
-func (p *Policy) HostConfirms() bool { return p.ConfirmVia == ConfirmHost }
 
 // Toolset reports whether the named toolset is enabled.
 func (p *Policy) Toolset(name string) bool {
@@ -117,14 +108,8 @@ func (p *Policy) Validate(transport string) error {
 	if p.Admin && transport != "stdio" {
 		return errors.New("--admin is only available on the stdio transport")
 	}
-	switch p.ConfirmVia {
-	case "", ConfirmElicitation:
-	case ConfirmHost:
-		if len(p.File.Confirm) > 0 {
-			return errors.New("the policy file's confirm list needs elicitation; it cannot be used with --confirm=host")
-		}
-	default:
-		return fmt.Errorf("unknown --confirm %q (elicitation or host)", p.ConfirmVia)
+	if p.SkipConfirmation && len(p.File.Confirm) > 0 {
+		return errors.New("the policy file's confirm list needs elicitation; it cannot be used with --unsafe-skip-confirmation")
 	}
 	l := p.File.Limits
 	if l.MaxWalltimeMinutes < 0 || l.MaxCoreHoursPerLaunch < 0 || l.MaxGPUHoursPerLaunch < 0 {

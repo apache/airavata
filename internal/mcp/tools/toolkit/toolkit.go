@@ -125,7 +125,7 @@ type Proposal[Out any] struct {
 // Prepare validates a write without side effects and describes it for confirmation.
 type Prepare[In, Out any] func(ctx context.Context, principal string, in In) (*Proposal[Out], error)
 
-// Write registers a write tool that is confirmed (by elicitation, or by the client under --confirm=host) and audited.
+// Write registers a write tool that is confirmed through elicitation (unless --unsafe-skip-confirmation) and audited.
 func Write[In, Out any](s *mcp.Server, d *Deps, def Def, prepare Prepare[In, Out]) {
 	def.ReadOnly = false
 	if !d.Policy.Exposed(def.Name, false) {
@@ -143,8 +143,8 @@ func Write[In, Out any](s *mcp.Server, d *Deps, def Def, prepare Prepare[In, Out
 		if err != nil {
 			return nil, zero, err
 		}
-		if d.Policy.HostConfirms() {
-			ev.Confirmation = "host"
+		if d.Policy.SkipConfirmation {
+			ev.Confirmation = "skipped"
 			return finish(ctx, d, ev, p, confirm.Values{})
 		}
 		values, pending, err := d.Ask.Confirm(req, principal, p.Message, p.Fields)

@@ -43,7 +43,7 @@ type Event struct {
 	Principal    string
 	Tool         string
 	Arguments    json.RawMessage
-	Confirmation string // "accepted", "declined", "cancelled", "host", "requested", "not_required"
+	Confirmation string // "accepted", "declined", "cancelled", "skipped", "requested", "not_required"
 	Result       string // "ok" or "error"
 	ResourceIDs  []string
 	Err          error
