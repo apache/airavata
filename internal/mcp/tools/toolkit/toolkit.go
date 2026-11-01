@@ -149,6 +149,10 @@ func Write[In, Out any](s *mcp.Server, d *Deps, def Def, prepare Prepare[In, Out
 			ev.Confirmation, ev.Result = "declined", "error"
 			d.Audit.Record(ctx, ev)
 			return nil, zero, err
+		case errors.Is(err, confirm.ErrCancelled):
+			ev.Confirmation, ev.Result = "cancelled", "error"
+			d.Audit.Record(ctx, ev)
+			return nil, zero, err
 		case err != nil:
 			var wire *jsonrpc.Error
 			if !errors.As(err, &wire) {

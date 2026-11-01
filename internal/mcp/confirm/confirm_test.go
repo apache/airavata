@@ -103,7 +103,8 @@ func TestConfirmRefusals(t *testing.T) {
 		want      string
 	}{
 		{"declined", answer(req, pending, "decline", nil), "cilogon:alice", "declined"},
-		{"cancelled", answer(req, pending, "cancel", nil), "cilogon:alice", "declined"},
+		{"cancelled", answer(req, pending, "cancel", nil), "cilogon:alice", "did not decline"},
+		{"unknown action", answer(req, pending, "maybe", yes), "cilogon:alice", "declined"},
 		{"box unchecked", answer(req, pending, "accept", map[string]any{"confirm": false}), "cilogon:alice", "declined"},
 		{"other user", answer(req, pending, "accept", yes), "cilogon:mallory", "different user"},
 		{"changed arguments", answer(request(`{"proposal_handle":"run_y"}`, elicitCaps), pending, "accept", yes), "cilogon:alice", "arguments changed"},

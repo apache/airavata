@@ -115,8 +115,12 @@ type sealed struct {
 	Confirm   bool   `json:"c"`
 }
 
-// ErrDeclined is returned when the user declines or cancels.
+// ErrDeclined is returned when the user explicitly declines.
 var ErrDeclined = errors.New("the user declined. Do not retry this action with different arguments to get around the decision; ask the user what they want instead")
+
+// ErrCancelled is returned when the form was dismissed or could not be shown, without an explicit choice.
+var ErrCancelled = errors.New("the confirmation was dismissed or could not be shown, so nothing was done; the user did not decline. " +
+	"Ask the user whether to try again; if they saw no form, their client may not be able to show confirmations")
 
 // Confirm asks the user to confirm a write; a non-nil result means the answer is pending.
 func (a *Asker) Confirm(req *mcp.CallToolRequest, principal, message string, fields []Field) (Values, *mcp.CallToolResult, error) {
@@ -175,7 +179,11 @@ func (a *Asker) ask(req *mcp.CallToolRequest, principal, message string, fields 
 	if !ok || res == nil {
 		return nil, nil, errors.New("the client did not return the user's answer")
 	}
-	if res.Action != "accept" {
+	switch res.Action {
+	case "accept":
+	case "cancel":
+		return nil, nil, ErrCancelled
+	default:
 		return nil, nil, ErrDeclined
 	}
 	values := Values(res.Content)

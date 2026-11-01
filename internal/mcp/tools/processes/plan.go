@@ -198,7 +198,7 @@ func resolveTargets(ctx context.Context, d *tk.Deps, req *mcp.CallToolRequest, p
 		"Several deployments or login configs fit this run. Which cluster, partition and login should it use?",
 		[]confirm.Field{{Name: "target", Title: "Where to run", Type: "string", Enum: labels}})
 	if err != nil {
-		if errors.Is(err, confirm.ErrDeclined) {
+		if errors.Is(err, confirm.ErrDeclined) || errors.Is(err, confirm.ErrCancelled) {
 			return nil, nil, nil, err
 		}
 		return nil, nil, nil, fmt.Errorf("%w. Candidates: %s. Pass deployment_id and cluster_config_id to choose", err, strings.Join(labels, "; "))

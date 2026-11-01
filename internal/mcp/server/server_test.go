@@ -322,6 +322,27 @@ func TestLaunchDeclined(t *testing.T) {
 	}
 }
 
+func TestLaunchCancelledIsNotDecline(t *testing.T) {
+	action := "cancel"
+	h := newHarness(t, writePolicy(), func(context.Context, *mcp.ElicitRequest) (*mcp.ElicitResult, error) {
+		return &mcp.ElicitResult{Action: action, Content: map[string]any{"confirm": true}}, nil
+	})
+	handle := plan(t, h)
+	res, err := h.call("launch_process", map[string]any{"proposal_handle": handle})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !res.IsError || !strings.Contains(text(res), "did not decline") || h.api.creates != 0 {
+		t.Errorf("cancelled launch returned %s with %d creates", text(res), h.api.creates)
+	}
+
+	action = "accept"
+	h.mustCall("launch_process", map[string]any{"proposal_handle": handle})
+	if h.api.launches != 1 {
+		t.Errorf("retry after cancel launched %d times", h.api.launches)
+	}
+}
+
 func TestLaunchUncheckedBoxIsDecline(t *testing.T) {
 	h := newHarness(t, writePolicy(), func(context.Context, *mcp.ElicitRequest) (*mcp.ElicitResult, error) {
 		return &mcp.ElicitResult{Action: "accept", Content: map[string]any{"confirm": false}}, nil

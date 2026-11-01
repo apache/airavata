@@ -76,6 +76,11 @@ value is checked again. If your client does not support elicitation, write tools
 unconfirmed. Plans (`plan_run`, `draft_application`, `convert_sbatch_script`) return single-use handles that
 expire after 24 hours and are bound to your account, so a confirmed launch can never run twice.
 
+Declining a form and dismissing it are reported differently, as the MCP spec distinguishes them. A decline
+tells the assistant not to work around your decision. A dismissal (`cancel`, also what some clients send when
+they cannot show the form, such as Claude Desktop in some modes) does nothing and leaves the handle usable, so
+you can be asked again.
+
 Every write is logged to stderr as one JSON line (principal, tool, a hash of the arguments, the confirmation
 result and the ids created). Arguments themselves are never logged.
 
