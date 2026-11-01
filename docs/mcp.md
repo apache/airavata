@@ -50,6 +50,7 @@ Every flag has an environment variable; a flag wins over its variable.
 | `--policy` | `AIRAVATA_MCP_POLICY` | `<user config dir>/airavata-mcp/policy.yaml` | See below |
 | `--transport` | `AIRAVATA_MCP_TRANSPORT` | `stdio` | `http` serves stateless Streamable HTTP on a loopback address, for testing |
 | `--http-addr` | `AIRAVATA_MCP_HTTP_ADDR` | `127.0.0.1:8095` | Must be a loopback address |
+| `--confirm` | `AIRAVATA_MCP_CONFIRM` | `elicitation` | `host` relies on the client's tool-approval prompt instead; see [Clients that cannot show confirmations](#clients-that-cannot-show-confirmations) |
 
 ### Policy file
 
@@ -77,9 +78,27 @@ unconfirmed. Plans (`plan_run`, `draft_application`, `convert_sbatch_script`) re
 expire after 24 hours and are bound to your account, so a confirmed launch can never run twice.
 
 Declining a form and dismissing it are reported differently, as the MCP spec distinguishes them. A decline
-tells the assistant not to work around your decision. A dismissal (`cancel`, also what some clients send when
-they cannot show the form, such as Claude Desktop in some modes) does nothing and leaves the handle usable, so
-you can be asked again.
+tells the assistant not to work around your decision. A dismissal (`cancel`) does nothing and leaves the handle
+usable, so you can be asked again.
+
+### Clients that cannot show confirmations
+
+Some clients declare elicitation support but answer every form with `decline` without showing it. As of
+Claude Code 2.1.309 this includes the Code tab of the Claude desktop app and the VS Code extension
+([anthropics/claude-code#98256](https://github.com/anthropics/claude-code/issues/98256),
+[#105334](https://github.com/anthropics/claude-code/issues/105334)); Claude Code in a terminal shows the form.
+The server cannot tell such an answer from your own decline, so every write fails as "declined".
+
+Use a client that shows the form, or start the server with `--confirm=host`. Writes then skip the form and rely
+on the client's own prompt to allow each tool call. The deny list, local caps, single-use handles and audit log
+still apply, and the audit line records `"confirmation":"host"`. What you lose:
+
+- The client's prompt shows the tool name and arguments, not the form's description; for `launch_process` that
+  is only a handle, so read the plan the assistant shows you before allowing it.
+- You cannot edit the walltime at launch; plan again with different resources instead.
+- A tool you set to "always allow", or any tool in a mode that skips prompts, runs with no confirmation at all.
+
+`--confirm=host` cannot be combined with a policy file `confirm` list, which needs elicitation.
 
 Every write is logged to stderr as one JSON line (principal, tool, a hash of the arguments, the confirmation
 result and the ids created). Arguments themselves are never logged.

@@ -343,6 +343,41 @@ func TestLaunchCancelledIsNotDecline(t *testing.T) {
 	}
 }
 
+func TestHostConfirmLaunchesWithoutElicitation(t *testing.T) {
+	pol := writePolicy()
+	pol.ConfirmVia = policy.ConfirmHost
+	h := newHarness(t, pol, nil)
+	handle := plan(t, h)
+	h.mustCall("launch_process", map[string]any{"proposal_handle": handle})
+	if h.api.creates != 1 || h.api.launches != 1 {
+		t.Fatalf("creates=%d launches=%d", h.api.creates, h.api.launches)
+	}
+	if wt := h.api.lastProcess["batchProcess"].(map[string]any)["batchJobConfig"].(map[string]any)["wallTimeMinutes"]; wt != 60.0 {
+		t.Errorf("walltime %v, want the deployment default", wt)
+	}
+	res, err := h.call("launch_process", map[string]any{"proposal_handle": handle})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !res.IsError || h.api.launches != 1 {
+		t.Errorf("a host-confirmed handle ran twice: %s", text(res))
+	}
+}
+
+func TestHostConfirmKeepsLocalCaps(t *testing.T) {
+	pol := writePolicy()
+	pol.ConfirmVia = policy.ConfirmHost
+	pol.File.Limits.MaxWalltimeMinutes = 30
+	h := newHarness(t, pol, nil)
+	res, err := h.call("plan_run", map[string]any{"application_id": templateID, "inputs": map[string]any{"steps": "5000"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !res.IsError || !strings.Contains(text(res), "local cap") {
+		t.Errorf("plan over the cap was accepted: %s", text(res))
+	}
+}
+
 func TestLaunchUncheckedBoxIsDecline(t *testing.T) {
 	h := newHarness(t, writePolicy(), func(context.Context, *mcp.ElicitRequest) (*mcp.ElicitResult, error) {
 		return &mcp.ElicitResult{Action: "accept", Content: map[string]any{"confirm": false}}, nil

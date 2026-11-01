@@ -125,7 +125,7 @@ type Proposal[Out any] struct {
 // Prepare validates a write without side effects and describes it for confirmation.
 type Prepare[In, Out any] func(ctx context.Context, principal string, in In) (*Proposal[Out], error)
 
-// Write registers a write tool that is always confirmed through elicitation and audited.
+// Write registers a write tool that is confirmed (by elicitation, or by the client under --confirm=host) and audited.
 func Write[In, Out any](s *mcp.Server, d *Deps, def Def, prepare Prepare[In, Out]) {
 	def.ReadOnly = false
 	if !d.Policy.Exposed(def.Name, false) {
@@ -142,6 +142,10 @@ func Write[In, Out any](s *mcp.Server, d *Deps, def Def, prepare Prepare[In, Out
 		p, err := prepare(ctx, principal, in)
 		if err != nil {
 			return nil, zero, err
+		}
+		if d.Policy.HostConfirms() {
+			ev.Confirmation = "host"
+			return finish(ctx, d, ev, p, confirm.Values{})
 		}
 		values, pending, err := d.Ask.Confirm(req, principal, p.Message, p.Fields)
 		switch {
@@ -164,17 +168,23 @@ func Write[In, Out any](s *mcp.Server, d *Deps, def Def, prepare Prepare[In, Out
 			return pending, zero, nil
 		}
 		ev.Confirmation = "accepted"
-		out, ids, err := p.Run(ctx, values)
-		ev.ResourceIDs = ids
-		if err != nil {
-			ev.Result, ev.Err = "error", err
-			d.Audit.Record(ctx, ev)
-			return nil, zero, err
-		}
-		ev.Result = "ok"
-		d.Audit.Record(ctx, ev)
-		return nil, out, nil
+		return finish(ctx, d, ev, p, values)
 	})
+}
+
+// finish runs a confirmed proposal and audits the outcome.
+func finish[Out any](ctx context.Context, d *Deps, ev audit.Event, p *Proposal[Out], values confirm.Values) (*mcp.CallToolResult, Out, error) {
+	var zero Out
+	out, ids, err := p.Run(ctx, values)
+	ev.ResourceIDs = ids
+	if err != nil {
+		ev.Result, ev.Err = "error", err
+		d.Audit.Record(ctx, ev)
+		return nil, zero, err
+	}
+	ev.Result = "ok"
+	d.Audit.Record(ctx, ev)
+	return nil, out, nil
 }
 
 // Links returns a result carrying out as JSON text plus resource links to what it mentions.

@@ -88,6 +88,8 @@ func TestValidate(t *testing.T) {
 		{Policy{Toolsets: []string{"bogus"}}, "stdio", "unknown toolset"},
 		{Policy{Toolsets: []string{Admin}}, "stdio", "--admin"},
 		{Policy{Admin: true}, "http", "stdio"},
+		{Policy{ConfirmVia: "auto"}, "stdio", "unknown --confirm"},
+		{Policy{ConfirmVia: ConfirmHost, File: File{Confirm: []string{"list_data_products"}}}, "stdio", "confirm list"},
 	} {
 		if err := tc.p.Validate(tc.transport); err == nil || !strings.Contains(err.Error(), tc.want) {
 			t.Errorf("%+v on %s: err = %v, want %q", tc.p, tc.transport, err, tc.want)
