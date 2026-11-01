@@ -40,10 +40,7 @@ import (
 // StateTTL bounds how long a confirmation request may be answered.
 const StateTTL = 10 * time.Minute
 
-const (
-	inputKey   = "airavata_input"
-	confirmKey = "confirm"
-)
+const inputKey = "airavata_input"
 
 // Field is one value shown in the form that the user may edit before confirming.
 type Field struct {
@@ -155,7 +152,7 @@ func (a *Asker) ask(req *mcp.CallToolRequest, principal, message string, fields 
 			InputRequests: mcp.InputRequestMap{inputKey: &mcp.ElicitParams{
 				Mode:            "form",
 				Message:         message,
-				RequestedSchema: schema(fields, needConfirm),
+				RequestedSchema: schema(fields),
 			}},
 			RequestState: state,
 		}, nil
@@ -190,11 +187,6 @@ func (a *Asker) ask(req *mcp.CallToolRequest, principal, message string, fields 
 	if values == nil {
 		values = Values{}
 	}
-	if needConfirm {
-		if ok, _ := values[confirmKey].(bool); !ok {
-			return nil, nil, ErrDeclined
-		}
-	}
 	return values, nil, nil
 }
 
@@ -215,7 +207,7 @@ func requireElicitation(req *mcp.CallToolRequest) error {
 	return errors.New(msg + ": use a client that supports elicitation, or an airavata-mcp policy that does not require confirmation for this tool")
 }
 
-func schema(fields []Field, needConfirm bool) *jsonschema.Schema {
+func schema(fields []Field) *jsonschema.Schema {
 	s := &jsonschema.Schema{Type: "object", Properties: map[string]*jsonschema.Schema{}}
 	for _, f := range fields {
 		p := &jsonschema.Schema{Type: f.Type, Title: f.Title, Description: f.Description, Minimum: f.Minimum, Maximum: f.Maximum}
@@ -228,11 +220,6 @@ func schema(fields []Field, needConfirm bool) *jsonschema.Schema {
 			p.Enum = append(p.Enum, e)
 		}
 		s.Properties[f.Name] = p
-	}
-	if needConfirm {
-		s.Properties[confirmKey] = &jsonschema.Schema{Type: "boolean", Title: "Confirm",
-			Description: "Carry out the action described above", Default: json.RawMessage("false")}
-		s.Required = append(s.Required, confirmKey)
 	}
 	return s
 }

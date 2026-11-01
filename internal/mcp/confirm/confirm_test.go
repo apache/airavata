@@ -27,6 +27,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -70,11 +71,19 @@ func ask(t *testing.T, a *Asker, req *mcp.CallToolRequest) *mcp.CallToolResult {
 	return pending
 }
 
+func TestConfirmFormHasNoCheckbox(t *testing.T) {
+	pending := ask(t, newAsker(t), request(`{}`, elicitCaps))
+	s := pending.InputRequests[inputKey].(*mcp.ElicitParams).RequestedSchema.(*jsonschema.Schema)
+	if len(s.Properties) != 0 || len(s.Required) != 0 {
+		t.Errorf("a plain confirmation asks for fields: %v required %v", s.Properties, s.Required)
+	}
+}
+
 func TestConfirmAcceptedOnce(t *testing.T) {
 	a := newAsker(t)
 	req := request(`{"proposal_handle":"run_x"}`, elicitCaps)
 	pending := ask(t, a, req)
-	values, again, err := a.Confirm(answer(req, pending, "accept", map[string]any{"confirm": true}), "cilogon:alice", "Launch?", nil)
+	values, again, err := a.Confirm(answer(req, pending, "accept", nil), "cilogon:alice", "Launch?", nil)
 	if err != nil || again != nil || values == nil {
 		t.Fatalf("accepted answer: values=%v pending=%v err=%v", values, again, err)
 	}
@@ -85,7 +94,7 @@ func TestConfirmArgumentKeyOrderDoesNotMatter(t *testing.T) {
 	req := request(`{"a":1,"b":2}`, elicitCaps)
 	pending := ask(t, a, req)
 	reordered := request(`{"b":2,"a":1}`, elicitCaps)
-	if _, _, err := a.Confirm(answer(reordered, pending, "accept", map[string]any{"confirm": true}), "cilogon:alice", "", nil); err != nil {
+	if _, _, err := a.Confirm(answer(reordered, pending, "accept", nil), "cilogon:alice", "", nil); err != nil {
 		t.Errorf("reordered keys were rejected: %v", err)
 	}
 }
@@ -94,7 +103,7 @@ func TestConfirmRefusals(t *testing.T) {
 	a := newAsker(t)
 	req := request(`{"proposal_handle":"run_x"}`, elicitCaps)
 	pending := ask(t, a, req)
-	yes := map[string]any{"confirm": true}
+	var yes map[string]any
 
 	cases := []struct {
 		name      string
@@ -105,7 +114,6 @@ func TestConfirmRefusals(t *testing.T) {
 		{"declined", answer(req, pending, "decline", nil), "cilogon:alice", "declined"},
 		{"cancelled", answer(req, pending, "cancel", nil), "cilogon:alice", "did not decline"},
 		{"unknown action", answer(req, pending, "maybe", yes), "cilogon:alice", "declined"},
-		{"box unchecked", answer(req, pending, "accept", map[string]any{"confirm": false}), "cilogon:alice", "declined"},
 		{"other user", answer(req, pending, "accept", yes), "cilogon:mallory", "different user"},
 		{"changed arguments", answer(request(`{"proposal_handle":"run_y"}`, elicitCaps), pending, "accept", yes), "cilogon:alice", "arguments changed"},
 	}
@@ -131,7 +139,7 @@ func TestConfirmExpires(t *testing.T) {
 	req := request(`{}`, elicitCaps)
 	pending := ask(t, a, req)
 	a.now = func() time.Time { return time.Now().Add(StateTTL + time.Minute) }
-	if _, _, err := a.Confirm(answer(req, pending, "accept", map[string]any{"confirm": true}), "cilogon:alice", "", nil); err == nil || !strings.Contains(err.Error(), "expired") {
+	if _, _, err := a.Confirm(answer(req, pending, "accept", nil), "cilogon:alice", "", nil); err == nil || !strings.Contains(err.Error(), "expired") {
 		t.Errorf("expired confirmation: %v", err)
 	}
 }
@@ -143,7 +151,7 @@ func TestChooseAnswerCannotConfirm(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err := a.Confirm(answer(req, pending, "accept", map[string]any{"confirm": true}), "cilogon:alice", "", nil); err == nil {
+	if _, _, err := a.Confirm(answer(req, pending, "accept", nil), "cilogon:alice", "", nil); err == nil {
 		t.Error("an answer to a choice was accepted as a confirmation")
 	}
 }

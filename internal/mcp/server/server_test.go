@@ -125,7 +125,7 @@ type elicitFunc func(context.Context, *mcp.ElicitRequest) (*mcp.ElicitResult, er
 
 func accept(extra map[string]any) elicitFunc {
 	return func(_ context.Context, req *mcp.ElicitRequest) (*mcp.ElicitResult, error) {
-		content := map[string]any{"confirm": true}
+		content := map[string]any{}
 		for k, v := range extra {
 			content[k] = v
 		}
@@ -325,7 +325,7 @@ func TestLaunchDeclined(t *testing.T) {
 func TestLaunchCancelledIsNotDecline(t *testing.T) {
 	action := "cancel"
 	h := newHarness(t, writePolicy(), func(context.Context, *mcp.ElicitRequest) (*mcp.ElicitResult, error) {
-		return &mcp.ElicitResult{Action: action, Content: map[string]any{"confirm": true}}, nil
+		return &mcp.ElicitResult{Action: action}, nil
 	})
 	handle := plan(t, h)
 	res, err := h.call("launch_process", map[string]any{"proposal_handle": handle})
@@ -378,16 +378,13 @@ func TestSkipConfirmationKeepsLocalCaps(t *testing.T) {
 	}
 }
 
-func TestLaunchUncheckedBoxIsDecline(t *testing.T) {
+func TestLaunchAcceptIsConfirmation(t *testing.T) {
 	h := newHarness(t, writePolicy(), func(context.Context, *mcp.ElicitRequest) (*mcp.ElicitResult, error) {
-		return &mcp.ElicitResult{Action: "accept", Content: map[string]any{"confirm": false}}, nil
+		return &mcp.ElicitResult{Action: "accept"}, nil
 	})
-	res, err := h.call("launch_process", map[string]any{"proposal_handle": plan(t, h)})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !res.IsError || h.api.creates != 0 {
-		t.Errorf("accept without confirm=true launched: %s", text(res))
+	h.mustCall("launch_process", map[string]any{"proposal_handle": plan(t, h)})
+	if h.api.creates != 1 || h.api.launches != 1 {
+		t.Errorf("accept without content: creates=%d launches=%d", h.api.creates, h.api.launches)
 	}
 }
 
