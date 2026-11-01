@@ -33,7 +33,7 @@ type SSHInteractiveAuth struct {
 	instruction string
 	response    []string
 	authErr     error
-	answered    bool
+	answered    bool // Whether the auth has been answered
 
 	// Holds challenge until a response is set. Closed when SetResponse is called.
 	authWaitSignal chan struct{}
@@ -109,4 +109,10 @@ func (s *SSHInteractiveAuth) Banner() string {
 func (s *SSHInteractiveAuth) Target() (host string, port int, loginUser, credentialID string) {
 	c := s.dialConfig
 	return c.host, c.port, c.sshUsername, c.cred.ID
+}
+
+func (s *SSHInteractiveAuth) Answered() bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.answered
 }

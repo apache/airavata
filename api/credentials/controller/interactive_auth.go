@@ -51,6 +51,7 @@ func (h *InteractiveAuthController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/{authId}", h.get)
 	mux.HandleFunc("POST /api/v1/ssh-interactive-auths/{authId}/response", h.respond)
 	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/{authId}/ws", h.answer)
+	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/ws", h.subscribe)
 }
 
 func (h *InteractiveAuthController) list(w http.ResponseWriter, r *http.Request) {
@@ -90,6 +91,79 @@ func (h *InteractiveAuthController) respond(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	httpx.WriteJSON(w, http.StatusNoContent, nil)
+}
+
+func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Request) {
+	auth, err := h.svc.Next(r.Context())
+	if err != nil {
+		slog.Error("Error retrieving next auth", "error", err)
+		httpx.WriteError(w, r, err)
+		return
+	}
+	conn, err := websocket.Accept(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.CloseNow()
+	ctx := r.Context()
+
+	for {
+		slog.Info("Current auth", "auth", auth)
+		if auth != nil && auth.Answered() == false {
+			// Fresh auth, not yet answered
+			slog.Info("Sending challenge for interactive auth")
+			challenge := dto.ToInteractiveAuthResponse(auth)
+			if err := wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "challenge", Auth: &challenge}); err != nil {
+				return
+			}
+		} else if auth != nil && auth.Answered() == true {
+			// If the current auth is already done, fetch the next one.
+			slog.Info("Auth already done, fetching next one")
+			auth, err = h.svc.Next(r.Context())
+			if err != nil {
+				slog.Error("Error retrieving next auth", "error", err)
+				_ = wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "no_auth"})
+				return
+			}
+			continue
+		} else {
+			// If there is no available auth, send an idle message and wait for the next one.
+			wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "idle"})
+			auth, err = h.svc.WaitForNext(r.Context())
+			if err != nil {
+				slog.Error("Error waiting for next auth", "error", err)
+				_ = wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "no_auth"})
+				return
+			}
+			continue
+		}
+
+		var answer dto.InteractiveAuthAnswer
+		if err := wsjson.Read(ctx, conn, &answer); err != nil {
+			// The client went away or sent something that is not JSON. The auth
+			// stays pending, so it can be answered from a new socket.
+			return
+		}
+		err := h.svc.Answer(auth, &answer)
+		if err == nil {
+			slog.Info("Answer accepted for interactive auth")
+			_ = wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "accepted"})
+			continue
+		}
+
+		// Error handling starts here: log the error and write it to the socket.
+		slog.Error("Error answering interactive auth", "error", err)
+
+		if writeErr := writeSocketError(ctx, conn, err); writeErr != nil {
+			return
+		}
+		var he *httpx.Error
+		if errors.As(err, &he) && he.Status == http.StatusConflict {
+			// Answered elsewhere: nothing this socket sends can matter any more.
+			conn.Close(websocket.StatusPolicyViolation, "auth already answered")
+			return
+		}
+	}
 }
 
 // answer serves one auth over a websocket: it sends the challenge, then reads
