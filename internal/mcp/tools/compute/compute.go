@@ -280,7 +280,7 @@ type candidate struct {
 	Partition    string `json:"partition"`
 	DeploymentID string `json:"deployment_id,omitempty"`
 	estimate.Fit
-	tk.PartitionSummary `json:"limits"`
+	Limits tk.PartitionSummary `json:"limits"`
 }
 
 type recommendOut struct {
@@ -304,7 +304,7 @@ func recommend(ctx context.Context, d *tk.Deps, in recommendIn) (*mcp.CallToolRe
 		for i := range c.Partitions {
 			p := &c.Partitions[i]
 			cands = append(cands, candidate{ClusterID: in.ClusterID, ClusterName: c.ClusterName, Partition: p.Name,
-				Fit: estimate.Check(in.Request, p), PartitionSummary: tk.SummarizePartition(*p)})
+				Fit: estimate.Check(in.Request, p), Limits: tk.SummarizePartition(*p)})
 		}
 	} else {
 		deps, err := d.Deployments(ctx, in.TemplateID)
@@ -331,7 +331,7 @@ func recommend(ctx context.Context, d *tk.Deps, in recommendIn) (*mcp.CallToolRe
 			name := tk.Str(dep.DefaultPartition)
 			cand := candidate{ClusterID: cid, ClusterName: c.ClusterName, Partition: name, DeploymentID: dep.DeploymentId.String()}
 			if p := tk.Partition(c, name); p != nil {
-				cand.Fit, cand.PartitionSummary = estimate.Check(in.Request, p), tk.SummarizePartition(*p)
+				cand.Fit, cand.Limits = estimate.Check(in.Request, p), tk.SummarizePartition(*p)
 			} else {
 				cand.Fit = estimate.Fit{Warnings: []string{fmt.Sprintf("deployment names partition %q, which the cluster does not record; its limits are unknown", name)}, Fits: true}
 			}

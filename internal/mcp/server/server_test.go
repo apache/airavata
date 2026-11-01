@@ -459,6 +459,23 @@ func TestConvertScriptPreview(t *testing.T) {
 	}
 }
 
+func TestRecommendPartitionMatchesOutputSchema(t *testing.T) {
+	h := newHarness(t, writePolicy(), nil)
+	for _, args := range []map[string]any{
+		{"cluster_id": clusterID, "wall_time_minutes": 30, "nodes": 1},
+		{"template_id": templateID, "wall_time_minutes": 30, "nodes": 1},
+	} {
+		out := h.mustCall("recommend_partition", args)
+		ranked, _ := out["ranked"].([]any)
+		if len(ranked) != 1 {
+			t.Fatalf("%v: ranked %v", args, out["ranked"])
+		}
+		if limits, _ := ranked[0].(map[string]any)["limits"].(map[string]any); limits["name"] != "gpu" {
+			t.Errorf("%v: limits %v", args, ranked[0])
+		}
+	}
+}
+
 func TestResourcesAndPrompts(t *testing.T) {
 	h := newHarness(t, writePolicy(), nil)
 	ctx := context.Background()
