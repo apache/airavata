@@ -63,6 +63,14 @@ jobs:
             exit 1
           fi
 
+      - name: Check generated code
+        run: |
+          go generate ./internal/mcp/client/
+          if ! git diff --exit-code -- internal/mcp/client/; then
+            echo "internal/mcp/client is out of date with docs/openapi.yaml; run 'go generate ./internal/mcp/client/' and commit the result."
+            exit 1
+          fi
+
       - name: Vet
         run: go vet ./...
 

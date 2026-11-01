@@ -20,4 +20,4 @@
 
 package client
 
-//go:generate go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.8.1 -config oapi-codegen.yaml ../../../docs/openapi.yaml
+//go:generate go tool oapi-codegen -config oapi-codegen.yaml ../../../docs/openapi.yaml
