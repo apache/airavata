@@ -40,6 +40,7 @@ import (
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/role"
 	"github.com/apache/airavata/internal/server"
+	"github.com/apache/airavata/internal/ssh"
 
 	iammodel "github.com/apache/airavata/api/iam/model"
 	sharingmodel "github.com/apache/airavata/api/sharing/model"
@@ -2433,4 +2434,60 @@ func TestNormalizeUsernameCollapsesCILogonURIs(t *testing.T) {
 			t.Errorf("NormalizeUsername(%q) = %q, want %q", in, got, want)
 		}
 	}
+}
+
+// Partition discovery opens an SSH session to a host the caller names, so it is for
+// admins, under a key they own. The SSH runner is stubbed: what is under test is who
+// may ask, and what comes back.
+func TestDiscoverPartitions(t *testing.T) {
+	h := newHarness(t)
+	var ran []string
+	h.svcs.PartitionDiscovery = h.svcs.PartitionDiscovery.WithRunner(
+		func(_ context.Context, _ ssh.SSHDialConfig, command, _ string) (string, string, error) {
+			ran = append(ran, command)
+			if strings.Contains(command, "scontrol") {
+				return "PartitionName=gpu Default=YES MaxTime=1-00:00:00 MaxNodes=2 TotalCPUs=128 TotalNodes=2\n", "", nil
+			}
+			return "gpu|64|256000|gpu:4\n", "", nil
+		})
+	h.rebuild()
+
+	adminKey := h.seedSSHCredential("admin-key", tokenAdmin)
+	aliceKey := h.seedSSHCredential("alice-key", tokenAlice)
+	body := func(key string) map[string]any {
+		return map[string]any{"headnodeHost": "login.example.org", "headnodePort": 22, "loginUser": "me",
+			"sshCredentialId": key, "slurmHome": "/opt/slurm/bin"}
+	}
+
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAlice, body(aliceKey)); rec.Code != http.StatusForbidden {
+		t.Errorf("non-admin discovery = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAdmin, body(aliceKey)); rec.Code != http.StatusForbidden {
+		t.Errorf("discovery under another user's key = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAdmin, map[string]any{}); rec.Code != http.StatusBadRequest {
+		t.Errorf("empty discovery request = %d, want 400", rec.Code)
+	}
+	if len(ran) != 0 {
+		t.Fatalf("refused requests still ran %q", ran)
+	}
+
+	got := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAdmin, body(adminKey), http.StatusOK)
+	parts := got["partitions"].([]any)
+	if len(parts) != 1 {
+		t.Fatalf("partitions = %v, want one", parts)
+	}
+	gpu := parts[0].(map[string]any)
+	if gpu["name"] != "gpu" || gpu["isDefaultQueue"] != true || gpu["maxRunTime"].(float64) != 1440 ||
+		gpu["cpuPerNode"].(float64) != 64 || gpu["gres"] != "gpu:4" {
+		t.Errorf("gpu partition = %v", gpu)
+	}
+	if !strings.HasPrefix(ran[0], "'/opt/slurm/bin/scontrol'") {
+		t.Errorf("scontrol ran as %q, want it under the Slurm home", ran[0])
+	}
+
+	// What comes back is accepted as-is by cluster registration.
+	h.mustDo(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, map[string]any{
+		"clusterName": "discovered", "headnodeHost": "login.example.org", "headnodePort": 22, "partitions": parts,
+	}, http.StatusCreated)
 }

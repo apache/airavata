@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function PageHead({ title, sub, children }: { title: string; sub?: React.ReactNode; children?: React.ReactNode }) {
   return (
@@ -44,6 +44,9 @@ export function Alert({ kind = "error", children }: { kind?: "error" | "info" | 
   return <div className={`alert ${kind}`}>{children}</div>;
 }
 
+// openModals is the stack of open dialogs, newest last.
+const openModals: (() => void)[] = [];
+
 export function Modal({
   title,
   onClose,
@@ -57,11 +60,22 @@ export function Modal({
   footer?: React.ReactNode;
   wide?: boolean;
 }) {
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    // Only the topmost dialog answers Escape, so dismissing a prompt raised over a
+    // form does not throw the form away with it.
+    const entry = () => closeRef.current();
+    openModals.push(entry);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && openModals[openModals.length - 1] === entry) entry();
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      openModals.splice(openModals.indexOf(entry), 1);
+    };
+  }, []);
 
   return (
     <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>

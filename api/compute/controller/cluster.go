@@ -174,3 +174,33 @@ func (h *ClusterPartitionController) delete(w http.ResponseWriter, r *http.Reque
 	}
 	httpx.WriteJSON(w, http.StatusNoContent, nil)
 }
+
+// PartitionDiscoveryController serves POST /api/v1/slurm-clusters/discover-partitions.
+type PartitionDiscoveryController struct {
+	svc *service.PartitionDiscoveryService
+}
+
+// NewPartitionDiscoveryController returns a handler delegating to svc.
+func NewPartitionDiscoveryController(svc *service.PartitionDiscoveryService) *PartitionDiscoveryController {
+	return &PartitionDiscoveryController{svc: svc}
+}
+
+// Register mounts the discovery route. It sits beside the cluster routes rather than
+// under one cluster, because it runs before the cluster is registered.
+func (h *PartitionDiscoveryController) Register(mux *http.ServeMux) {
+	mux.HandleFunc("POST /api/v1/slurm-clusters/discover-partitions", h.discover)
+}
+
+func (h *PartitionDiscoveryController) discover(w http.ResponseWriter, r *http.Request) {
+	var req dto.PartitionDiscoveryRequest
+	if err := httpx.Bind(r, &req); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	found, err := h.svc.Discover(r.Context(), &req)
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, found)
+}

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Alert, Card, ConfirmButton, Field, Id, Modal, PageHead, Table } from "@/components/ui";
+import { CreateCredential } from "@/components/CreateCredential";
+import { Alert, Card, ConfirmButton, Id, PageHead, Table } from "@/components/ui";
 import { api, errorText } from "@/lib/api";
-import { useAction, useResource } from "@/lib/hooks";
-import type { SSHCredential, SSHCredentialRequest } from "@/lib/types";
+import { useResource } from "@/lib/hooks";
+import type { SSHCredential } from "@/lib/types";
 
 export default function CredentialsPage() {
   const creds = useResource(() => api.get<SSHCredential[]>("/api/v1/ssh-credentials"));
@@ -75,73 +76,5 @@ export default function CredentialsPage() {
         />
       )}
     </div>
-  );
-}
-
-function CreateCredential({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
-  const [form, setForm] = useState<SSHCredentialRequest>({
-    sshCredentialName: "",
-    publicKey: "",
-    privateKey: "",
-    passphrase: null,
-    fullInteractive: false,
-  });
-  const save = useAction(async () => {
-    await api.post("/api/v1/ssh-credentials", { ...form, passphrase: form.passphrase || null });
-    onCreated();
-  });
-  const set = (patch: Partial<SSHCredentialRequest>) => setForm((f) => ({ ...f, ...patch }));
-
-  return (
-    <Modal
-      title="Register SSH credential"
-      onClose={onClose}
-      footer={
-        <>
-          <button onClick={onClose}>Cancel</button>
-          <button className="primary" disabled={save.busy} onClick={() => void save.run()}>
-            {save.busy ? "Saving…" : "Register"}
-          </button>
-        </>
-      }
-    >
-      <div className="form">
-        <Field label="Name">
-          <input value={form.sshCredentialName} onChange={(e) => set({ sshCredentialName: e.target.value })} />
-        </Field>
-        <Field label="Public key">
-          <textarea
-            style={{ minHeight: 60 }}
-            value={form.publicKey}
-            onChange={(e) => set({ publicKey: e.target.value })}
-            placeholder="ssh-ed25519 AAAA… user@host"
-          />
-        </Field>
-        <Field label="Private key">
-          <textarea
-            value={form.privateKey ?? ""}
-            onChange={(e) => set({ privateKey: e.target.value })}
-            placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
-          />
-        </Field>
-        <Field label="Passphrase" hint="optional">
-          <input
-            type="password"
-            autoComplete="new-password"
-            value={form.passphrase ?? ""}
-            onChange={(e) => set({ passphrase: e.target.value })}
-          />
-        </Field>
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={form.fullInteractive}
-            onChange={(e) => set({ fullInteractive: e.target.checked })}
-          />
-          Host also asks keyboard-interactive questions (password, OTP, Duo) — answer them from this dashboard
-        </label>
-        <Alert>{save.error}</Alert>
-      </div>
-    </Modal>
   );
 }

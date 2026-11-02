@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Alert,
   Card,
@@ -15,6 +15,7 @@ import {
   Tabs,
 } from "@/components/ui";
 import { api, errorText } from "@/lib/api";
+import { CreateCredential } from "@/components/CreateCredential";
 import { useAction, useResource } from "@/lib/hooks";
 import { useSession } from "@/lib/session";
 import type { ClusterPartition, SlurmCluster, SlurmClusterConfig, SSHCredential } from "@/lib/types";
@@ -160,14 +161,18 @@ function ClusterDetail({ cluster, onClose }: { cluster: SlurmCluster; onClose: (
   );
 }
 
+// The partition editor keeps every field as text so an empty box means "not set".
 interface PartitionDraft {
   name: string;
   description: string;
   maxRunTime: string;
+  defaultWalltime: string;
   maxNodes: string;
+  maxProcessors: string;
   cpuPerNode: string;
   maxMemory: string;
   gres: string;
+  nodes: string;
   isDefaultQueue: boolean;
 }
 
@@ -175,14 +180,68 @@ const emptyPartition = (): PartitionDraft => ({
   name: "",
   description: "",
   maxRunTime: "",
+  defaultWalltime: "",
   maxNodes: "",
+  maxProcessors: "",
   cpuPerNode: "",
   maxMemory: "",
   gres: "",
+  nodes: "",
   isDefaultQueue: false,
 });
 
+const text = (v: string | number | null | undefined) => (v === null || v === undefined ? "" : String(v));
+
+function draftFromPartition(p: ClusterPartition): PartitionDraft {
+  return {
+    name: p.name,
+    description: text(p.description),
+    maxRunTime: text(p.maxRunTime),
+    defaultWalltime: text(p.defaultWalltime),
+    maxNodes: text(p.maxNodes),
+    maxProcessors: text(p.maxProcessors),
+    cpuPerNode: text(p.cpuPerNode),
+    maxMemory: text(p.maxMemory),
+    gres: text(p.gres),
+    nodes: text(p.nodes),
+    isDefaultQueue: !!p.isDefaultQueue,
+  };
+}
+
+function partitionFromDraft(p: PartitionDraft): ClusterPartition {
+  return {
+    name: p.name,
+    description: strOrNull(p.description),
+    maxRunTime: numOrNull(p.maxRunTime),
+    defaultWalltime: numOrNull(p.defaultWalltime),
+    maxNodes: numOrNull(p.maxNodes),
+    maxProcessors: numOrNull(p.maxProcessors),
+    cpuPerNode: numOrNull(p.cpuPerNode),
+    maxMemory: numOrNull(p.maxMemory),
+    gres: strOrNull(p.gres),
+    nodes: strOrNull(p.nodes),
+    isDefaultQueue: p.isDefaultQueue,
+  };
+}
+
+const PARTITION_FIELDS: { key: Exclude<keyof PartitionDraft, "isDefaultQueue">; label: string; numeric?: boolean; placeholder?: string }[] = [
+  { key: "name", label: "Name" },
+  { key: "maxRunTime", label: "Max run time (min)", numeric: true },
+  { key: "defaultWalltime", label: "Default wall time (min)", numeric: true },
+  { key: "maxNodes", label: "Max nodes", numeric: true },
+  { key: "maxProcessors", label: "Max processors", numeric: true },
+  { key: "cpuPerNode", label: "CPUs per node", numeric: true },
+  { key: "maxMemory", label: "Max memory (MB)", numeric: true },
+  { key: "gres", label: "GRES", placeholder: "gpu:a100:4" },
+  { key: "nodes", label: "Nodes", placeholder: "cn[001-128]" },
+];
+
+// CreateCluster registers a cluster. Once the head node is filled in, a login on it —
+// a user and an SSH credential — lets the server read the partitions off the cluster
+// with scontrol rather than having them typed in, and can be kept as the admin's own
+// cluster config.
 function CreateCluster({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const creds = useResource(() => api.get<SSHCredential[]>("/api/v1/ssh-credentials"));
   const [f, setF] = useState({
     clusterName: "",
     clusterDescription: "",
@@ -192,13 +251,39 @@ function CreateCluster({ onClose, onCreated }: { onClose: () => void; onCreated:
     dataHost: "",
     dataPort: "",
   });
+  const [login, setLogin] = useState({ loginUser: "", sshCredentialId: "", saveConfig: true, workRoot: "" });
   const [partitions, setPartitions] = useState<PartitionDraft[]>([]);
+  const [registeringKey, setRegisteringKey] = useState(false);
+  const [found, setFound] = useState<string | null>(null);
   const set = (patch: Partial<typeof f>) => setF((x) => ({ ...x, ...patch }));
+  const setLoginField = (patch: Partial<typeof login>) => setLogin((x) => ({ ...x, ...patch }));
   const setPart = (i: number, patch: Partial<PartitionDraft>) =>
     setPartitions((ps) => ps.map((p, j) => (j === i ? { ...p, ...patch } : p)));
 
+  const hostReady = f.clusterName.trim() !== "" && f.headnodeHost.trim() !== "";
+  const loginReady = login.loginUser.trim() !== "" && login.sshCredentialId !== "";
+  const credential = creds.data?.find((c) => c.sshCredentialId === login.sshCredentialId);
+
+  const discover = useAction(async () => {
+    setFound(null);
+    const res = await api.post<{ partitions: ClusterPartition[] }>("/api/v1/slurm-clusters/discover-partitions", {
+      headnodeHost: f.headnodeHost,
+      headnodePort: numOrNull(f.headnodePort) ?? 22,
+      slurmHome: strOrNull(f.slurmHome),
+      loginUser: login.loginUser,
+      sshCredentialId: login.sshCredentialId,
+    });
+    setPartitions(res.partitions.map(draftFromPartition));
+    setFound(
+      `Found ${res.partitions.length} partition${res.partitions.length === 1 ? "" : "s"} on ${f.headnodeHost}. Review them below before adding the cluster.`,
+    );
+  });
+
+  // Kept across attempts: when the cluster saves but the config does not, a retry
+  // saves only the config rather than registering the cluster twice.
+  const savedCluster = useRef<SlurmCluster | null>(null);
   const save = useAction(async () => {
-    const body = {
+    const cluster = (savedCluster.current ??= await api.post<SlurmCluster>("/api/v1/slurm-clusters", {
       clusterName: f.clusterName,
       clusterDescription: strOrNull(f.clusterDescription),
       headnodeHost: f.headnodeHost,
@@ -206,89 +291,168 @@ function CreateCluster({ onClose, onCreated }: { onClose: () => void; onCreated:
       slurmHome: strOrNull(f.slurmHome),
       dataHost: strOrNull(f.dataHost),
       dataPort: numOrNull(f.dataPort),
-      partitions: partitions.map(
-        (p): ClusterPartition => ({
-          name: p.name,
-          description: strOrNull(p.description),
-          maxRunTime: numOrNull(p.maxRunTime),
-          maxNodes: numOrNull(p.maxNodes),
-          cpuPerNode: numOrNull(p.cpuPerNode),
-          maxMemory: numOrNull(p.maxMemory),
-          gres: strOrNull(p.gres),
-          isDefaultQueue: p.isDefaultQueue,
-        }),
-      ),
-    };
-    await api.post("/api/v1/slurm-clusters", body);
+      partitions: partitions.map(partitionFromDraft),
+    }));
+    if (loginReady && login.saveConfig) {
+      try {
+        await api.post("/api/v1/slurm-cluster-configs", {
+          name: `${f.clusterName} (${login.loginUser})`,
+          slurmClusterId: cluster.slurmClusterId,
+          loginUser: login.loginUser,
+          workRoot: login.workRoot,
+          sshCredentialId: login.sshCredentialId,
+        });
+      } catch (e) {
+        throw new Error(`The cluster was added, but saving your cluster config failed: ${errorText(e)}`);
+      }
+    }
     onCreated();
   });
+
+  // Once the cluster exists, closing still refreshes the list it now belongs in.
+  const close = () => (savedCluster.current ? onCreated() : onClose());
 
   return (
     <Modal
       title="Add Slurm cluster"
       wide
-      onClose={onClose}
+      onClose={close}
       footer={
         <>
-          <button onClick={onClose}>Cancel</button>
-          <button className="primary" disabled={save.busy} onClick={() => void save.run()}>
-            {save.busy ? "Saving…" : "Add cluster"}
+          <button onClick={close}>{savedCluster.current ? "Close" : "Cancel"}</button>
+          <button
+            className="primary"
+            disabled={save.busy || discover.busy || !hostReady || (loginReady && login.saveConfig && !login.workRoot.trim())}
+            onClick={() => void save.run()}
+          >
+            {save.busy ? "Saving…" : savedCluster.current ? "Retry saving cluster config" : "Add cluster"}
           </button>
         </>
       }
     >
       <div className="form">
-        <div className="form-grid">
-          <Field label="Cluster name">
-            <input value={f.clusterName} onChange={(e) => set({ clusterName: e.target.value })} />
-          </Field>
-          <Field label="Head node host">
-            <input
-              value={f.headnodeHost}
-              onChange={(e) => set({ headnodeHost: e.target.value })}
-              placeholder="login.cluster.edu"
-            />
-          </Field>
-          <Field label="Head node port">
-            <input type="number" value={f.headnodePort} onChange={(e) => set({ headnodePort: e.target.value })} />
-          </Field>
-          <Field label="Slurm home" hint="optional">
-            <input value={f.slurmHome} onChange={(e) => set({ slurmHome: e.target.value })} placeholder="/usr/bin" />
-          </Field>
-          <Field label="Data host" hint="optional">
-            <input value={f.dataHost} onChange={(e) => set({ dataHost: e.target.value })} />
-          </Field>
-          <Field label="Data port" hint="optional">
-            <input type="number" value={f.dataPort} onChange={(e) => set({ dataPort: e.target.value })} />
-          </Field>
-        </div>
-        <Field label="Description" hint="optional">
-          <input value={f.clusterDescription} onChange={(e) => set({ clusterDescription: e.target.value })} />
-        </Field>
+        <fieldset>
+          <legend>1. Cluster</legend>
+          <div className="form-grid">
+            <Field label="Cluster name">
+              <input value={f.clusterName} onChange={(e) => set({ clusterName: e.target.value })} />
+            </Field>
+            <Field label="Head node host">
+              <input
+                value={f.headnodeHost}
+                onChange={(e) => set({ headnodeHost: e.target.value })}
+                placeholder="login.cluster.edu"
+              />
+            </Field>
+            <Field label="Head node port">
+              <input type="number" value={f.headnodePort} onChange={(e) => set({ headnodePort: e.target.value })} />
+            </Field>
+            <Field label="Slurm home" hint="optional">
+              <input value={f.slurmHome} onChange={(e) => set({ slurmHome: e.target.value })} placeholder="/usr/bin" />
+            </Field>
+            <Field label="Data host" hint="optional">
+              <input value={f.dataHost} onChange={(e) => set({ dataHost: e.target.value })} />
+            </Field>
+            <Field label="Data port" hint="optional">
+              <input type="number" value={f.dataPort} onChange={(e) => set({ dataPort: e.target.value })} />
+            </Field>
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <Field label="Description" hint="optional">
+              <input value={f.clusterDescription} onChange={(e) => set({ clusterDescription: e.target.value })} />
+            </Field>
+          </div>
+        </fieldset>
+
+        <fieldset disabled={!hostReady}>
+          <legend>2. Cluster login</legend>
+          {!hostReady ? (
+            <span className="small muted">Enter the cluster name and head node host first.</span>
+          ) : (
+            <div className="form">
+              <span className="small muted">
+                Log in to {f.headnodeHost} to read its partitions with <code>scontrol</code>. Optional — you can also
+                enter partitions by hand.
+              </span>
+              <div className="form-grid">
+                <Field label="Login user">
+                  <input value={login.loginUser} onChange={(e) => setLoginField({ loginUser: e.target.value })} />
+                </Field>
+                <Field label="SSH credential">
+                  <div className="row" style={{ flexWrap: "nowrap" }}>
+                    <select
+                      value={login.sshCredentialId}
+                      onChange={(e) => setLoginField({ sshCredentialId: e.target.value })}
+                    >
+                      <option value="">Select a credential…</option>
+                      {creds.data?.map((c) => (
+                        <option key={c.sshCredentialId} value={c.sshCredentialId}>
+                          {c.sshCredentialName}
+                          {c.fullInteractive ? " (interactive)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <button type="button" className="small" onClick={() => setRegisteringKey(true)}>
+                      New…
+                    </button>
+                  </div>
+                </Field>
+              </div>
+              <div className="row">
+                <button
+                  type="button"
+                  className="primary"
+                  disabled={!loginReady || discover.busy}
+                  onClick={() => void discover.run()}
+                >
+                  {discover.busy ? "Reading partitions…" : "Discover partitions"}
+                </button>
+                {discover.busy && credential?.fullInteractive && (
+                  <span className="small muted">Answer the login prompt when it appears.</span>
+                )}
+              </div>
+              <Alert kind="info">{found}</Alert>
+              <Alert>{discover.error}</Alert>
+              {loginReady && (
+                <div className="form-grid" style={{ alignItems: "end" }}>
+                  <label className="check">
+                    <input
+                      type="checkbox"
+                      checked={login.saveConfig}
+                      onChange={(e) => setLoginField({ saveConfig: e.target.checked })}
+                    />
+                    Also save this login as my cluster config
+                  </label>
+                  {login.saveConfig && (
+                    <Field label="Work root">
+                      <input
+                        value={login.workRoot}
+                        onChange={(e) => setLoginField({ workRoot: e.target.value })}
+                        placeholder={`/scratch/${login.loginUser || "me"}/airavata`}
+                      />
+                    </Field>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </fieldset>
 
         <fieldset>
-          <legend>Partitions</legend>
+          <legend>3. Partitions</legend>
           <div className="stack">
             {partitions.map((p, i) => (
-              <div key={i} className="form-grid" style={{ alignItems: "end" }}>
-                <Field label="Name">
-                  <input value={p.name} onChange={(e) => setPart(i, { name: e.target.value })} />
-                </Field>
-                <Field label="Max run time (min)">
-                  <input type="number" value={p.maxRunTime} onChange={(e) => setPart(i, { maxRunTime: e.target.value })} />
-                </Field>
-                <Field label="Max nodes">
-                  <input type="number" value={p.maxNodes} onChange={(e) => setPart(i, { maxNodes: e.target.value })} />
-                </Field>
-                <Field label="CPU per node">
-                  <input type="number" value={p.cpuPerNode} onChange={(e) => setPart(i, { cpuPerNode: e.target.value })} />
-                </Field>
-                <Field label="Max memory">
-                  <input type="number" value={p.maxMemory} onChange={(e) => setPart(i, { maxMemory: e.target.value })} />
-                </Field>
-                <Field label="GRES">
-                  <input value={p.gres} onChange={(e) => setPart(i, { gres: e.target.value })} placeholder="gpu:4" />
-                </Field>
+              <div key={i} className="form-grid" style={{ alignItems: "end", paddingBottom: 12, borderBottom: "1px solid var(--border)" }}>
+                {PARTITION_FIELDS.map((pf) => (
+                  <Field key={pf.key} label={pf.label}>
+                    <input
+                      type={pf.numeric ? "number" : "text"}
+                      value={p[pf.key]}
+                      placeholder={pf.placeholder}
+                      onChange={(e) => setPart(i, { [pf.key]: e.target.value })}
+                    />
+                  </Field>
+                ))}
                 <label className="check">
                   <input
                     type="checkbox"
@@ -309,8 +473,17 @@ function CreateCluster({ onClose, onCreated }: { onClose: () => void; onCreated:
             </div>
           </div>
         </fieldset>
-        <Alert>{save.error}</Alert>
+        <Alert>{save.error || creds.error}</Alert>
       </div>
+      {registeringKey && (
+        <CreateCredential
+          onClose={() => setRegisteringKey(false)}
+          onCreated={(c) => {
+            setRegisteringKey(false);
+            void creds.reload().then(() => setLoginField({ sshCredentialId: c.sshCredentialId }));
+          }}
+        />
+      )}
     </Modal>
   );
 }

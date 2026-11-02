@@ -679,6 +679,46 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/slurm-clusters/discover-partitions:
+    post:
+      tags: [Slurm Clusters]
+      summary: Discover a head node's partitions
+      description: |
+        Logs in to the head node under a credential the caller owns and reads its
+        partitions with scontrol (and sinfo, for per-node details). Admin only. The
+        result is in the shape a cluster registration's `partitions` takes.
+      operationId: discoverPartitions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [headnodeHost, loginUser, sshCredentialId]
+              properties:
+                headnodeHost: { type: string }
+                headnodePort: { type: integer, default: 22 }
+                slurmHome: { type: [string, "null"] }
+                loginUser: { type: string }
+                sshCredentialId: { type: string }
+      responses:
+        "200":
+          description: The partitions found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  partitions:
+                    type: array
+                    items: { $ref: "#/components/schemas/ClusterPartitionRequest" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /api/v1/slurm-clusters/{slurmClusterId}:
     parameters:
       - $ref: "#/components/parameters/SlurmClusterId"

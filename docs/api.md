@@ -554,6 +554,71 @@ Returned when `clusterName` or `headnodeHost` is blank, when `headnodePort` or a
 }
 ```
 
+### Discover a Cluster's Partitions
+
+```
+POST /api/v1/slurm-clusters/discover-partitions
+```
+
+Logs in to a head node and reads its partitions, so a cluster can be registered without typing them in. Run it before [creating the cluster](#create-slurm-cluster): the response's `partitions` is in the shape that request's `partitions` takes.
+
+Requires `ADMIN` or `SUPER_ADMIN` — the same as registering a cluster — and an [SSH credential](#ssh-credentials) **the caller owns**: discovery has the server open an SSH session to a host the caller names, and nobody else's key may be lent to that. A `fullInteractive` credential raises an [interactive auth](#list-interactive-ssh-auths) for its owner, and the request waits (up to five minutes) for it to be answered.
+
+The server runs `scontrol show partition -o`, then `sinfo -h -a -o '%R|%c|%m|%G'` for the per-node CPU count, memory and GRES that scontrol reports only as partition totals. Both run under `slurmHome` when it is set, as `sbatch` does at submission, so a discovery that works also shows that submission will find its binaries. If `sinfo` fails, those fields are left out rather than failing the request.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/slurm-clusters/discover-partitions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "headnodeHost": "login.expanse.sdsc.edu",
+    "headnodePort": 22,
+    "slurmHome": null,
+    "loginUser": "airavata",
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
+  }'
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "partitions": [
+    {
+      "name": "gpu",
+      "maxRunTime": 2880,
+      "defaultWalltime": 60,
+      "maxNodes": 4,
+      "maxProcessors": 512,
+      "cpuPerNode": 64,
+      "maxMemory": 512000,
+      "gres": "gpu:a100:4",
+      "nodes": "gpu[01-08]",
+      "isDefaultQueue": false
+    }
+  ]
+}
+```
+
+| Field | From |
+|---|---|
+| `maxRunTime`, `defaultWalltime` | `MaxTime`, `DefaultTime`, in minutes; absent when `UNLIMITED` or `NONE` |
+| `maxNodes` | `MaxNodes`, or the partition's `TotalNodes` when unlimited |
+| `maxProcessors` | `TotalCPUs` |
+| `cpuPerNode`, `maxMemory` | the largest node sinfo reports; `maxMemory` is `MaxMemPerNode` (MB) when the partition sets one |
+| `gres` | every GRES sinfo reports on the partition's nodes, socket bindings removed |
+| `nodes`, `isDefaultQueue` | `Nodes`, `Default=YES` |
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `headnodeHost`, `loginUser` or `sshCredentialId` blank |
+| `403 Forbidden` | not an admin, or the credential belongs to another user |
+| `404 Not Found` | no such credential |
+| `409 Conflict` | scontrol reported no partitions |
+| `502 Bad Gateway` | the login or `scontrol` failed; the message says why — a refused key, an unreachable host, or Slurm not found (set `slurmHome`) |
+
 ### Read, Update and Delete Slurm Clusters
 
 ```
