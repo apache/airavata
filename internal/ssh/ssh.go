@@ -526,6 +526,9 @@ func ShellQuote(s string) string {
 func askUserInteractive(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, banner, name, instruction string, prompts []Prompt) ([]string, error) {
 	auth := NewSSHInteractiveAuth(uuid.New().String(), dialConfig)
 	auth.banner = banner
+	// Record the challenge before publishing, so a subscriber never sees an auth
+	// with no prompts yet.
+	auth.name, auth.instruction, auth.prompts = name, instruction, prompts
 	sshContext.InteractiveAuthStore.AddAuth(auth)
 	defer sshContext.InteractiveAuthStore.RemoveAuth(dialConfig.userId, auth.AuthId)
 	return auth.Challenge(ctx, name, instruction, prompts)

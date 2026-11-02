@@ -1,6 +1,9 @@
 package ssh
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
 type GlobalSSHContext struct {
 	InteractiveAuthStore *SSHInteractiveAuthStore
@@ -65,7 +68,7 @@ func (store *SSHInteractiveAuthStore) RemoveAuth(userId, authId string) {
 
 	if auth, ok := userAuths[authId]; ok {
 		if !auth.Answered() {
-			_ = auth.SetResponse(nil, nil) // Mark as answered (true) to unblock subscribers waiting for this auth
+			_ = auth.SetResponse(nil, errAuthWithdrawn) // Mark as answered (true) to unblock subscribers waiting for this auth
 		}
 		delete(userAuths, authId)
 	}
@@ -100,40 +103,28 @@ func (store *SSHInteractiveAuthStore) ListAuthsForUser(userId string) []*SSHInte
 	return auths
 }
 
+// errAuthWithdrawn is what an auth removed before it was answered resolves with.
+var errAuthWithdrawn = errors.New("interactive auth withdrawn")
+
 // This is for retrieving the earliest created interactive auth for a user.
-// It only returns auths that have not been answered yet.
-func (store *SSHInteractiveAuthStore) NextAuthForUser(userId string) *SSHInteractiveAuth {
+// It only returns auths that have not been answered yet, or nil if there are none.
+// The returned channel closes the next time the user's auths are added or removed.
+// Both are taken under one lock, so a change right after the call is never missed.
+func (store *SSHInteractiveAuthStore) NextAuthForUser(userId string) (*SSHInteractiveAuth, <-chan struct{}) {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
-	userAuths, ok := store.Auths[userId]
-	if !ok || len(userAuths) == 0 {
-		return nil
-	}
-
-	earliest := (*SSHInteractiveAuth)(nil)
-
-	for _, auth := range userAuths {
-		if (earliest == nil || auth.CreatedAt.Before(earliest.CreatedAt)) && auth.Answered() == false {
-			earliest = auth
-		}
-	}
-
-	if earliest != nil {
-		return earliest
-	}
-	return nil
-}
-
-func (store *SSHInteractiveAuthStore) WaitForNextAuth(userId string) {
-	store.lock.Lock()
 	ch, ok := store.SubscriberQueue[userId]
 	if !ok {
 		ch = make(chan struct{})
 		store.SubscriberQueue[userId] = ch
 	}
-	store.lock.Unlock()
 
-	// Wait for a signal that a new auth is available for this user.
-	<-ch
+	earliest := (*SSHInteractiveAuth)(nil)
+	for _, auth := range store.Auths[userId] {
+		if (earliest == nil || auth.CreatedAt.Before(earliest.CreatedAt)) && auth.Answered() == false {
+			earliest = auth
+		}
+	}
+	return earliest, ch
 }

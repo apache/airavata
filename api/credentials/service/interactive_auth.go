@@ -62,31 +62,15 @@ func (s *InteractiveAuthService) List(ctx context.Context) ([]dto.InteractiveAut
 	return out, nil
 }
 
-// Next blocks until the caller has a new interactive auth, then returns it.
-func (s *InteractiveAuthService) Next(ctx context.Context) (*ssh.SSHInteractiveAuth, error) {
+// Next returns the caller's oldest unanswered interactive auth (nil if none) without
+// blocking, and a channel closed the next time the caller's auths change.
+func (s *InteractiveAuthService) Next(ctx context.Context) (*ssh.SSHInteractiveAuth, <-chan struct{}, error) {
 	p, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	auth := s.store.NextAuthForUser(p.Name)
-
-	if auth != nil {
-		return auth, nil
-	}
-	return nil, nil
-}
-
-func (s *InteractiveAuthService) WaitForNext(ctx context.Context) (*ssh.SSHInteractiveAuth, error) {
-	p, err := auth.RequireAuthenticated(ctx)
-	if err != nil {
-		return nil, err
-	}
-	s.store.WaitForNextAuth(p.Name)
-	auth := s.store.NextAuthForUser(p.Name)
-	if auth != nil {
-		return auth, nil
-	}
-	return nil, nil
+	auth, changed := s.store.NextAuthForUser(p.Name)
+	return auth, changed, nil
 }
 
 // Get returns one of the caller's pending interactive auths. Another user's is a 404,
