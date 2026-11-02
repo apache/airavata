@@ -46,8 +46,13 @@ import (
 // it, returning the channel the handshake's answers arrive on.
 func pendingAuth(t *testing.T, sshCtx *ssh.GlobalSSHContext, owner string, prompts []ssh.Prompt) (*ssh.SSHInteractiveAuth, <-chan []string) {
 	t.Helper()
+	return pendingAuthWithID(t, sshCtx, "auth-1", owner, prompts)
+}
+
+func pendingAuthWithID(t *testing.T, sshCtx *ssh.GlobalSSHContext, authID, owner string, prompts []ssh.Prompt) (*ssh.SSHInteractiveAuth, <-chan []string) {
+	t.Helper()
 	dial := ssh.NewSSHDialConfig("login.example.org", 22, "alice", credmodel.SSHCredential{ID: "cred-1"}, owner)
-	pending := ssh.NewSSHInteractiveAuth("auth-1", dial)
+	pending := ssh.NewSSHInteractiveAuth(authID, dial)
 	sshCtx.InteractiveAuthStore.AddAuth(pending)
 
 	answers := make(chan []string, 1)
@@ -239,5 +244,98 @@ func TestInteractiveAuthRestAnswersChallenge(t *testing.T) {
 		}
 	case <-time.After(time.Second):
 		t.Fatal("handshake was never released")
+	}
+}
+
+// subscribeURL turns newServer's socket URL into the subscribe socket's URL.
+func subscribeURL(wsURL string) string {
+	return strings.TrimSuffix(wsURL, "/auth-1/ws") + "/ws"
+}
+
+func readMessage(t *testing.T, conn *websocket.Conn) dto.InteractiveAuthMessage {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	var msg dto.InteractiveAuthMessage
+	if err := wsjson.Read(ctx, conn, &msg); err != nil {
+		t.Fatalf("reading message: %v", err)
+	}
+	return msg
+}
+
+func wantMessage(t *testing.T, conn *websocket.Conn, typ, authID string) {
+	t.Helper()
+	msg := readMessage(t, conn)
+	got := msg.AuthID
+	if msg.Auth != nil {
+		got = msg.Auth.AuthID
+	}
+	if msg.Type != typ || got != authID {
+		t.Fatalf("want %s %q, got %+v", typ, authID, msg)
+	}
+}
+
+func TestSubscribeSocketServesAuthsInTurn(t *testing.T) {
+	sshCtx := ssh.NewGlobalSSHContext()
+	prompt := []ssh.Prompt{{Text: "OTP: "}}
+	_, firstAnswers := pendingAuthWithID(t, sshCtx, "first", "cilogon:alice", prompt)
+	time.Sleep(2 * time.Millisecond) // distinct CreatedAt, so the order is fixed
+	_, secondAnswers := pendingAuthWithID(t, sshCtx, "second", "cilogon:alice", prompt)
+	other, _ := pendingAuthWithID(t, sshCtx, "mallorys", "cilogon:mallory", prompt)
+	t.Cleanup(func() { _ = other.SetResponse(nil, context.Canceled) })
+
+	conn, _, err := dial(t, subscribeURL(newServer(t, sshCtx)), "cilogon:alice")
+	if err != nil {
+		t.Fatalf("dial: %v", err)
+	}
+	defer conn.CloseNow()
+	ctx := context.Background()
+
+	// Only the oldest is shown until it is answered.
+	wantMessage(t, conn, "challenge", "first")
+
+	// An answer aimed at an auth that is not the current challenge is refused.
+	if err := wsjson.Write(ctx, conn, dto.InteractiveAuthAnswer{AuthID: "second", Responses: []string{"1"}}); err != nil {
+		t.Fatal(err)
+	}
+	wantMessage(t, conn, "error", "")
+
+	if err := wsjson.Write(ctx, conn, dto.InteractiveAuthAnswer{AuthID: "first", Responses: []string{"111"}}); err != nil {
+		t.Fatal(err)
+	}
+	wantMessage(t, conn, "accepted", "first")
+	if got := <-firstAnswers; !slices.Equal(got, []string{"111"}) {
+		t.Fatalf("first handshake got %q", got)
+	}
+
+	wantMessage(t, conn, "challenge", "second")
+	if err := wsjson.Write(ctx, conn, dto.InteractiveAuthAnswer{Responses: []string{"222"}}); err != nil {
+		t.Fatal(err)
+	}
+	wantMessage(t, conn, "accepted", "second")
+	if got := <-secondAnswers; !slices.Equal(got, []string{"222"}) {
+		t.Fatalf("second handshake got %q", got)
+	}
+
+	// Nothing left: the socket says so, and wakes when the next auth arrives.
+	wantMessage(t, conn, "idle", "")
+	third, _ := pendingAuthWithID(t, sshCtx, "third", "cilogon:alice", prompt)
+	wantMessage(t, conn, "challenge", "third")
+
+	// Answered elsewhere and removed: the socket moves on without being asked.
+	if err := third.SetResponse([]string{"333"}, nil); err != nil {
+		t.Fatal(err)
+	}
+	sshCtx.InteractiveAuthStore.RemoveAuth("cilogon:alice", "third")
+	wantMessage(t, conn, "idle", "")
+}
+
+func TestSubscribeSocketNeedsCaller(t *testing.T) {
+	_, resp, err := dial(t, subscribeURL(newServer(t, ssh.NewGlobalSSHContext())), "")
+	if err == nil {
+		t.Fatal("dial succeeded without a caller")
+	}
+	if resp == nil || resp.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("want 401, got %v", resp)
 	}
 }

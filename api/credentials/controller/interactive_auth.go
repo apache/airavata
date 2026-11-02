@@ -30,6 +30,7 @@ import (
 	"github.com/coder/websocket/wsjson"
 
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/ssh"
 
 	dto "github.com/apache/airavata/api/credentials/dto"
 	"github.com/apache/airavata/api/credentials/service"
@@ -51,6 +52,7 @@ func (h *InteractiveAuthController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/{authId}", h.get)
 	mux.HandleFunc("POST /api/v1/ssh-interactive-auths/{authId}/response", h.respond)
 	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/{authId}/ws", h.answer)
+	mux.HandleFunc("GET /api/v1/ssh-interactive-auths/ws", h.subscribe)
 }
 
 func (h *InteractiveAuthController) list(w http.ResponseWriter, r *http.Request) {
@@ -90,6 +92,89 @@ func (h *InteractiveAuthController) respond(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	httpx.WriteJSON(w, http.StatusNoContent, nil)
+}
+
+// subscribe serves all of the caller's auths over one websocket, oldest first and
+// one at a time. The next challenge (or "idle") is sent once the current auth is
+// answered here, answered elsewhere, or abandoned.
+func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Request) {
+	// Resolve the caller before the upgrade, so a missing token is a plain 401.
+	if _, _, err := h.svc.Next(r.Context()); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	conn, err := websocket.Accept(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.CloseNow()
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	// Read on a separate goroutine so the loop below can also wake on store changes.
+	// The read failing (client gone, or not JSON) cancels ctx and ends the loop.
+	answers := make(chan dto.InteractiveAuthAnswer)
+	go func() {
+		defer cancel()
+		for {
+			var answer dto.InteractiveAuthAnswer
+			if err := wsjson.Read(ctx, conn, &answer); err != nil {
+				return
+			}
+			select {
+			case answers <- answer:
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
+	var current *ssh.SSHInteractiveAuth
+	idleSent := false
+	for {
+		next, changed, err := h.svc.Next(ctx)
+		if err != nil {
+			return
+		}
+		if next != current || (next == nil && !idleSent) {
+			current = next
+			msg := dto.InteractiveAuthMessage{Type: "idle"}
+			if current != nil {
+				challenge := dto.ToInteractiveAuthResponse(current)
+				msg = dto.InteractiveAuthMessage{Type: "challenge", Auth: &challenge}
+			}
+			if err := wsjson.Write(ctx, conn, msg); err != nil {
+				return
+			}
+			idleSent = current == nil
+		}
+
+		select {
+		case <-ctx.Done():
+			return
+		case <-changed:
+			// An auth was added, or one was answered elsewhere or abandoned: look again.
+		case answer := <-answers:
+			switch {
+			case current == nil:
+				err = httpx.BadRequest("No pending interactive auth to answer")
+			case answer.AuthID != "" && answer.AuthID != current.AuthId:
+				err = httpx.Conflict("Interactive auth %s is not the current challenge", answer.AuthID)
+			default:
+				err = h.svc.Answer(current, &answer)
+			}
+			if err == nil {
+				// Answered auths are skipped by Next, so the loop moves on. A 409 below
+				// (answered elsewhere) moves on the same way.
+				err = wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "accepted", AuthID: current.AuthId})
+			} else {
+				err = writeSocketError(ctx, conn, err)
+			}
+			if err != nil {
+				return
+			}
+		}
+	}
 }
 
 // answer serves one auth over a websocket: it sends the challenge, then reads
