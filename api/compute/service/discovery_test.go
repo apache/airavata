@@ -95,3 +95,39 @@ func TestSlurmMinutes(t *testing.T) {
 		}
 	}
 }
+
+func TestParsesAssociations(t *testing.T) {
+	got := parseAssociations(`tg-bio210001|gpu|normal,gpu-shared
+tg-bio210001|gpu-debug|normal
+tg-che220002||normal
+tg-che220002|compute|high
+|||
+`)
+	if len(got) != 2 {
+		t.Fatalf("got %d allocations, want 2: %+v", len(got), got)
+	}
+	bio, che := got[0], got[1]
+	if bio.Account != "tg-bio210001" || len(bio.Partitions) != 2 || bio.Partitions[1] != "gpu-debug" ||
+		len(bio.QOS) != 2 || bio.QOS[1] != "gpu-shared" {
+		t.Errorf("bio = %+v", bio)
+	}
+	// An association with no partition opens every partition.
+	if che.Account != "tg-che220002" || len(che.Partitions) != 0 || len(che.QOS) != 2 {
+		t.Errorf("che = %+v, want no partition limit", che)
+	}
+
+	applyDescriptions(got, "TG-BIO210001|Protein folding\ntg-che220002|tg-che220002\n")
+	if got[0].Description == nil || *got[0].Description != "Protein folding" {
+		t.Errorf("bio description = %v", got[0].Description)
+	}
+	if got[1].Description != nil {
+		t.Errorf("a description repeating the name should be dropped, got %q", *got[1].Description)
+	}
+}
+
+func TestParsesShareAccounts(t *testing.T) {
+	got := parseShareAccounts("abc123\nabc123\nxyz789\n\n")
+	if len(got) != 2 || got[0].Account != "abc123" || got[1].Account != "xyz789" {
+		t.Errorf("got %+v", got)
+	}
+}

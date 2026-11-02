@@ -906,6 +906,53 @@ DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
 | `403 Forbidden` | the config is not shared with the caller for what they asked to do; or a grantee tried to delete it or read its share list |
 | `404 Not Found` | no such config, cluster or credential |
 
+### Discover a Config's Allocations
+
+```
+POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations
+```
+
+Logs in under the config and asks Slurm which accounts its login may charge — what a [deployment](#create-batch-deployment)'s `defaultBatchJobConfig.allocation`, or a [process](#create-process)'s `batchJobConfig.allocation`, names.
+
+Anyone who may submit under the config may ask: the owner, an admin, or anyone it is shared with at `READ`. A config with a `fullInteractive` credential raises an [interactive auth](#list-interactive-ssh-auths) for the caller, as submitting under it would, and the request waits (up to five minutes) for it to be answered. There is no body.
+
+The server runs `sacctmgr -nP show associations where user=<loginUser> format=Account,Partition,QOS`. Where sacctmgr is closed to ordinary users it falls back to `sshare -h -P -U -u <loginUser> -o Account`, which lists the same accounts without their limits. Account descriptions come from `sacctmgr show account`, and are left out if that fails. Slurm binaries run under the cluster's `slurmHome` when it sets one.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/discover-allocations \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+`partitions` lists the partitions an account is limited to, empty when it may use any.
+
+```json
+{
+  "allocations": [
+    {
+      "account": "tg-bio210001",
+      "description": "Protein folding",
+      "partitions": ["gpu", "gpu-debug"],
+      "qos": ["normal", "gpu-shared"]
+    },
+    { "account": "tg-che220002", "description": null, "partitions": [], "qos": ["normal"] }
+  ]
+}
+```
+
+An empty `allocations` means Slurm answered and listed none for the login.
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | no token |
+| `403 Forbidden` | the config is neither the caller's nor shared with them |
+| `404 Not Found` | no such config |
+| `409 Conflict` | the config names no cluster or no credential |
+| `502 Bad Gateway` | the login failed, or neither sacctmgr nor sshare could be run; the message says why |
+
 ### Share a Slurm Cluster Config
 
 ```

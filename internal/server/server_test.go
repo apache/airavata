@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"slices"
@@ -2442,7 +2443,7 @@ func TestNormalizeUsernameCollapsesCILogonURIs(t *testing.T) {
 func TestDiscoverPartitions(t *testing.T) {
 	h := newHarness(t)
 	var ran []string
-	h.svcs.PartitionDiscovery = h.svcs.PartitionDiscovery.WithRunner(
+	h.svcs.ClusterDiscovery = h.svcs.ClusterDiscovery.WithRunner(
 		func(_ context.Context, _ ssh.SSHDialConfig, command, _ string) (string, string, error) {
 			ran = append(ran, command)
 			if strings.Contains(command, "scontrol") {
@@ -2490,4 +2491,53 @@ func TestDiscoverPartitions(t *testing.T) {
 	h.mustDo(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, map[string]any{
 		"clusterName": "discovered", "headnodeHost": "login.example.org", "headnodePort": 22, "partitions": parts,
 	}, http.StatusCreated)
+}
+
+// Allocation discovery runs under a cluster config, so it is open to whoever may submit
+// under that config. sacctmgr is tried first; sshare is the fallback when it fails.
+func TestDiscoverAllocations(t *testing.T) {
+	h := newHarness(t)
+	sacctmgrWorks := true
+	h.svcs.ClusterDiscovery = h.svcs.ClusterDiscovery.WithRunner(
+		func(_ context.Context, _ ssh.SSHDialConfig, command, _ string) (string, string, error) {
+			switch {
+			case strings.Contains(command, "show associations"):
+				if !sacctmgrWorks {
+					return "", "access denied", errors.New("exit status 1")
+				}
+				return "proj1|gpu|normal\nproj2||normal\n", "", nil
+			case strings.Contains(command, "sshare"):
+				return "proj3\n", "", nil
+			case strings.Contains(command, "show account"):
+				return "proj1|GPU project\n", "", nil
+			}
+			return "", "", errors.New("unexpected command: " + command)
+		})
+	h.rebuild()
+
+	configID, _ := h.seedClusterConfig(tokenAlice, "alloc")
+	path := "/api/v1/slurm-cluster-configs/" + configID + "/discover-allocations"
+
+	if rec := h.do(http.MethodPost, path, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("discovery under a config not shared with the caller = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, path, "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous discovery = %d, want 401", rec.Code)
+	}
+
+	got := h.mustDo(http.MethodPost, path, tokenAlice, nil, http.StatusOK)
+	allocs := got["allocations"].([]any)
+	if len(allocs) != 2 {
+		t.Fatalf("allocations = %v, want proj1 and proj2", allocs)
+	}
+	first := allocs[0].(map[string]any)
+	if first["account"] != "proj1" || first["description"] != "GPU project" || len(first["partitions"].([]any)) != 1 {
+		t.Errorf("proj1 = %v", first)
+	}
+
+	sacctmgrWorks = false
+	got = h.mustDo(http.MethodPost, path, tokenAlice, nil, http.StatusOK)
+	if allocs := got["allocations"].([]any); len(allocs) != 1 || allocs[0].(map[string]any)["account"] != "proj3" {
+		t.Errorf("fallback allocations = %v, want proj3 from sshare", allocs)
+	}
 }

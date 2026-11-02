@@ -18,6 +18,7 @@ import {
   type InputType,
   type OutputType,
   type SlurmCluster,
+  type SlurmClusterConfig,
   type Template,
   type TemplateInput,
   type TemplateOutput,
@@ -461,6 +462,20 @@ function CreateDeployment({
   const partitions = clusters.find((c) => c.slurmClusterId === clusterId)?.partitions ?? [];
   const template = templates.find((t) => t.templateId === templateId);
 
+  // Allocations are discovered under one of the caller's logins on the chosen cluster;
+  // with exactly one, it is used without asking.
+  const logins = useResource(async () => {
+    const [mine, shared] = await Promise.all([
+      api.get<SlurmClusterConfig[]>("/api/v1/slurm-cluster-configs/me"),
+      api.get<SlurmClusterConfig[]>("/api/v1/slurm-cluster-configs/shared-with-me"),
+    ]);
+    return [...mine, ...shared];
+  });
+  const clusterLogins = (logins.data ?? []).filter((c) => c.slurmClusterId === clusterId);
+  const [loginId, setLoginId] = useState("");
+  const discoverWith = clusterLogins.find((c) => c.slurmClusterConfigId === loginId)?.slurmClusterConfigId ??
+    (clusterLogins.length === 1 ? clusterLogins[0].slurmClusterConfigId : null);
+
   const save = useAction(async () => {
     await api.post("/api/v1/slurm-deployments", {
       templateId,
@@ -540,7 +555,33 @@ function CreateDeployment({
         </Field>
         <fieldset>
           <legend>Default resources</legend>
-          <BatchJobConfigFields value={config} onChange={setConfig} />
+          <div className="form">
+            {clusterLogins.length > 1 && (
+              <Field label="Discover allocations as" hint="which of your logins on this cluster to ask">
+                <select value={discoverWith ?? ""} onChange={(e) => setLoginId(e.target.value)}>
+                  <option value="">Select a cluster config…</option>
+                  {clusterLogins.map((c) => (
+                    <option key={c.slurmClusterConfigId} value={c.slurmClusterConfigId}>
+                      {c.name || c.loginUser} — {c.loginUser}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            )}
+            <BatchJobConfigFields
+              value={config}
+              onChange={setConfig}
+              discover={{
+                configId: discoverWith,
+                partition: strOrNull(partition),
+                hint: !clusterId
+                  ? "Choose a cluster to discover its allocations."
+                  : clusterLogins.length === 0
+                    ? "Add a cluster config (your login) on this cluster to discover allocations."
+                    : "Choose which login to discover allocations as.",
+              }}
+            />
+          </div>
         </fieldset>
         <Alert>{save.error}</Alert>
       </div>

@@ -105,6 +105,14 @@ export interface SlurmClusterConfig {
   permission?: Permission;
 }
 
+export interface Allocation {
+  account: string;
+  description: string | null;
+  // Partitions the account is limited to; empty means any.
+  partitions: string[];
+  qos: string[];
+}
+
 // Applications
 
 export const INPUT_TYPES = ["STRING", "INTEGER", "FLOAT", "BOOLEAN", "FILE", "FILE_LIST", "DIRECTORY"] as const;

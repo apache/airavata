@@ -262,7 +262,15 @@ export default function NewProcessPage() {
             )}
           </Card>
           <Card title="4. Resources">
-            <BatchJobConfigFields value={jobConfig} onChange={setJobConfig} />
+            <BatchJobConfigFields
+              value={jobConfig}
+              onChange={setJobConfig}
+              discover={{
+                configId: configId || null,
+                partition: deployment?.defaultPartition,
+                hint: "Choose a cluster config above to discover the allocations it may charge.",
+              }}
+            />
           </Card>
         </>
       )}

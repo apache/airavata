@@ -973,6 +973,48 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations:
+    post:
+      tags: [Slurm Cluster Configs]
+      summary: Discover the allocations a config's login may charge
+      description: |
+        Logs in under the config and lists the Slurm accounts its login may charge,
+        from sacctmgr (falling back to sshare). Open to anyone who may submit under the
+        config.
+      operationId: discoverAllocations
+      parameters:
+        - name: slurmClusterConfigId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The allocations found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allocations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        account: { type: string }
+                        description: { type: [string, "null"] }
+                        partitions:
+                          type: array
+                          items: { type: string }
+                          description: Partitions the account is limited to; empty means any.
+                        qos:
+                          type: array
+                          items: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}:
     parameters:
       - $ref: "#/components/parameters/SlurmClusterConfigId"

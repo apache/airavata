@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { api, errorText } from "@/lib/api";
+import type { Allocation, BatchJobConfig } from "@/lib/types";
 import { Field, numOrNull, strOrNull } from "./ui";
-import type { BatchJobConfig } from "@/lib/types";
 
 // The form keeps every field as text so an empty box means "not set"; toBatchJobConfig
 // turns that into the request, leaving unset fields out.
@@ -47,16 +49,34 @@ export function toBatchJobConfig(d: BatchJobConfigDraft): BatchJobConfig {
   return out as unknown as BatchJobConfig;
 }
 
+// AllocationDiscovery says which login to discover allocations under: a cluster config
+// id, or null while none is chosen (the button is then disabled, with hint saying why).
+export interface AllocationDiscovery {
+  configId: string | null;
+  hint?: string;
+  // The partition the job will run in, to flag accounts limited to other partitions.
+  partition?: string | null;
+}
+
 export function BatchJobConfigFields({
   value,
   onChange,
+  discover,
 }: {
   value: BatchJobConfigDraft;
   onChange: (v: BatchJobConfigDraft) => void;
+  discover?: AllocationDiscovery;
 }) {
   return (
     <div className="form-grid">
-      {FIELDS.map((f) => (
+      {discover && (
+        <AllocationField
+          value={value.allocation}
+          onChange={(allocation) => onChange({ ...value, allocation })}
+          discover={discover}
+        />
+      )}
+      {FIELDS.filter((f) => !(discover && f.key === "allocation")).map((f) => (
         <Field key={f.key} label={f.label} hint={f.key === "allocation" || f.key === "wallTimeMinutes" ? "required" : undefined}>
           <input
             type={NUMERIC.has(f.key) ? "number" : "text"}
@@ -66,6 +86,103 @@ export function BatchJobConfigFields({
           />
         </Field>
       ))}
+    </div>
+  );
+}
+
+// AllocationField is the allocation box with a "Discover" button that asks the cluster
+// which accounts the chosen login may charge, offering each as a one-click choice.
+function AllocationField({
+  value,
+  onChange,
+  discover,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  discover: AllocationDiscovery;
+}) {
+  const [found, setFound] = useState<Allocation[] | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // What was found belongs to one login; another login may charge other accounts.
+  useEffect(() => {
+    setFound(null);
+    setError(null);
+  }, [discover.configId]);
+
+  const run = async () => {
+    if (!discover.configId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.post<{ allocations: Allocation[] }>(
+        `/api/v1/slurm-cluster-configs/${discover.configId}/discover-allocations`,
+      );
+      setFound(res.allocations);
+      if (res.allocations.length === 1 && !value.trim()) onChange(res.allocations[0].account);
+    } catch (e) {
+      setError(errorText(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const outside = (a: Allocation) =>
+    !!discover.partition && a.partitions.length > 0 && !a.partitions.includes(discover.partition);
+  const chosen = found?.find((a) => a.account === value);
+
+  return (
+    <div style={{ gridColumn: "1 / -1" }} className="form">
+      <Field label="Allocation (account)" hint="required">
+        <div className="row" style={{ flexWrap: "nowrap" }}>
+          <input value={value} onChange={(e) => onChange(e.target.value)} placeholder="e.g. TG-ABC123456" />
+          <button
+            type="button"
+            className="small"
+            disabled={!discover.configId || busy}
+            title={discover.configId ? "Ask the cluster which accounts this login may charge" : discover.hint}
+            onClick={(e) => {
+              e.preventDefault();
+              void run();
+            }}
+          >
+            {busy ? "Discovering…" : "Discover"}
+          </button>
+        </div>
+      </Field>
+      {!discover.configId && discover.hint && <span className="small muted">{discover.hint}</span>}
+      {busy && <span className="small muted">Logging in to the cluster… answer the login prompt if one appears.</span>}
+      {error && <span className="small" style={{ color: "var(--danger)" }}>{error}</span>}
+      {found && found.length === 0 && <span className="small muted">The cluster reported no accounts for this login.</span>}
+      {found && found.length > 0 && (
+        <div className="row">
+          {found.map((a) => (
+            <button
+              key={a.account}
+              type="button"
+              className={`small${a.account === value ? " primary" : ""}`}
+              title={[
+                a.description,
+                a.partitions.length ? `Partitions: ${a.partitions.join(", ")}` : "Any partition",
+                a.qos.length ? `QOS: ${a.qos.join(", ")}` : "",
+              ]
+                .filter(Boolean)
+                .join("\n")}
+              onClick={() => onChange(a.account)}
+            >
+              {a.account}
+              {a.description && <span className="muted"> · {a.description}</span>}
+              {outside(a) && <span className="badge warn">other partitions</span>}
+            </button>
+          ))}
+        </div>
+      )}
+      {chosen && outside(chosen) && (
+        <span className="small" style={{ color: "var(--warn)" }}>
+          {chosen.account} is limited to {chosen.partitions.join(", ")}, not {discover.partition}.
+        </span>
+      )}
     </div>
   );
 }
