@@ -1368,6 +1368,54 @@ func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 	}
 }
 
+// /me lists the caller's own runs without the admin role the unfiltered listing needs.
+func TestProcessesMeListsOnlyTheCallersRuns(t *testing.T) {
+	h := newHarness(t)
+	configID, _ := h.seedClusterConfig(tokenAlice, "mine")
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "mine"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+	}, http.StatusCreated)
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":         deployment["deploymentId"],
+			"slurmClusterConfigId": configID,
+			"batchJobConfig":       map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+		},
+	}, http.StatusCreated)
+
+	for _, tc := range []struct {
+		token string
+		want  []any
+	}{
+		{tokenAlice, []any{created["processId"]}},
+		{tokenBob, []any{}},
+	} {
+		rec := h.do(http.MethodGet, "/api/v1/processes/me", tc.token, nil)
+		if rec.Code != http.StatusOK {
+			t.Fatalf("GET /processes/me as %s = %d: %s", tc.token, rec.Code, rec.Body)
+		}
+		var got []map[string]any
+		if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+			t.Fatal(err)
+		}
+		ids := []any{}
+		for _, p := range got {
+			ids = append(ids, p["processId"])
+		}
+		if !slices.Equal(ids, tc.want) {
+			t.Errorf("GET /processes/me as %s = %v, want %v", tc.token, ids, tc.want)
+		}
+	}
+
+	if rec := h.do(http.MethodGet, "/api/v1/processes/me", "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous GET /processes/me = %d, want 401", rec.Code)
+	}
+}
+
 // Which cluster config a run submits under is the one place a self-service
 // submission names an identity to act under, so it is authorised against the caller.
 // A deployment names the machine but nobody's identity on it, so naming one is

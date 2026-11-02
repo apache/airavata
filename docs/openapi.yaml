@@ -1658,6 +1658,25 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/processes/me:
+    get:
+      tags: [Processes]
+      summary: List the caller's processes
+      description: |
+        Every process the caller owns. Unlike the unfiltered listing it needs no
+        platform role.
+      operationId: listMyProcesses
+      responses:
+        "200":
+          description: The caller's processes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProcessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /api/v1/processes/{processId}:
     parameters:
       - $ref: "#/components/parameters/ProcessId"

@@ -46,6 +46,7 @@ func NewProcessController(svc *service.ProcessService) *ProcessController {
 // Register mounts the process routes.
 func (h *ProcessController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/processes", h.list)
+	mux.HandleFunc("GET /api/v1/processes/me", h.listMine)
 	mux.HandleFunc("POST /api/v1/processes", h.create)
 	mux.HandleFunc("GET /api/v1/processes/{processId}", h.get)
 	mux.HandleFunc("PUT /api/v1/processes/{processId}", h.update)
@@ -79,6 +80,15 @@ func (h *ProcessController) get(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpx.WriteJSON(w, http.StatusOK, proc)
+}
+
+func (h *ProcessController) listMine(w http.ResponseWriter, r *http.Request) {
+	found, err := h.svc.ListMine(r.Context())
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, found)
 }
 
 func (h *ProcessController) create(w http.ResponseWriter, r *http.Request) {

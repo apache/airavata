@@ -29,12 +29,17 @@ import (
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
 
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 	"github.com/apache/airavata/internal/ssh"
 
 	dto "github.com/apache/airavata/api/credentials/dto"
 	"github.com/apache/airavata/api/credentials/service"
 )
+
+// acceptOptions selects the dashboard's subprotocol when a browser offers it alongside
+// its token; clients that send an Authorization header offer none and need none.
+var acceptOptions = &websocket.AcceptOptions{Subprotocols: []string{auth.WebSocketProtocol}}
 
 // InteractiveAuthController serves /api/v1/ssh-interactive-auths.
 type InteractiveAuthController struct {
@@ -103,7 +108,7 @@ func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Req
 		httpx.WriteError(w, r, err)
 		return
 	}
-	conn, err := websocket.Accept(w, r, nil)
+	conn, err := websocket.Accept(w, r, acceptOptions)
 	if err != nil {
 		return
 	}
@@ -190,7 +195,7 @@ func (h *InteractiveAuthController) answer(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Accept writes its own response when the handshake is bad.
-	conn, err := websocket.Accept(w, r, nil)
+	conn, err := websocket.Accept(w, r, acceptOptions)
 	if err != nil {
 		return
 	}

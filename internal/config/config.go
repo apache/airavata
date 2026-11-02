@@ -61,6 +61,10 @@ type Config struct {
 
 	WorkflowBackendType       string
 	WorkflowBackendSqlitePath string
+
+	// DashboardDir is the dashboard's static export (dashboard/out after "npm run
+	// build"), served under /dashboard/ alongside the API. Empty disables it.
+	DashboardDir string
 }
 
 // Load reads configuration from the environment, applying the same defaults the Java
@@ -84,6 +88,7 @@ func load() (Config, error) {
 		EmailMonitorAppPassword:   env("AIRAVATA_EMAIL_MONITOR_APP_PASSWORD", ""),
 		WorkflowBackendType:       env("AIRAVATA_WORKFLOW_BACKEND_TYPE", "sqlite"),
 		WorkflowBackendSqlitePath: env("AIRAVATA_WORKFLOW_BACKEND_SQLITE_PATH", "/tmp/airavataorchestrator.sqlite"),
+		DashboardDir:              dashboardDir(),
 	}
 
 	// Without a root account and without CILogon credentials there is no way to
@@ -125,6 +130,16 @@ func defaultDSN() string {
 		env("AIRAVATA_DB_NAME", "airavata"),
 		env("AIRAVATA_DB_SSLMODE", "disable"),
 	)
+}
+
+// dashboardDir is AIRAVATA_DASHBOARD_DIR, defaulting to dashboard/out relative to the
+// working directory — where the build leaves it when the server is run from the
+// repository root. AIRAVATA_DASHBOARD_ENABLED=false turns it off.
+func dashboardDir() string {
+	if !envBool("AIRAVATA_DASHBOARD_ENABLED", true) {
+		return ""
+	}
+	return env("AIRAVATA_DASHBOARD_DIR", "dashboard/out")
 }
 
 func env(key, fallback string) string {
