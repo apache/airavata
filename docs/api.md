@@ -226,7 +226,14 @@ An auth lives only as long as the login waiting on it. If the host asks again �
 
 `GET /api/v1/ssh-interactive-auths/{authId}/ws` — a WebSocket.
 
-Authenticated like every other route, with `Authorization: Bearer $TOKEN` on the upgrade request. The auth is looked up before the upgrade, so a missing token is a plain `401` and an auth that is not the caller's (or no longer pending) is a plain `404`. A browser's `WebSocket` cannot set that header, so a browser client needs to go through a backend that can.
+Authenticated like every other route, with `Authorization: Bearer $TOKEN` on the upgrade request. The auth is looked up before the upgrade, so a missing token is a plain `401` and an auth that is not the caller's (or no longer pending) is a plain `404`.
+
+A browser's `WebSocket` cannot set that header, so a browser instead offers the token as a subprotocol — `base64url.bearer.<token, base64url-encoded without padding>` — beside `airavata.v1`, which the server selects. This applies to every WebSocket route here, including the [subscribe socket](#subscribe-to-interactive-ssh-auths):
+
+```js
+const encoded = btoa(token).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+new WebSocket("ws://localhost:9095/api/v1/ssh-interactive-auths/ws", ["airavata.v1", `base64url.bearer.${encoded}`]);
+```
 
 1. The server sends the challenge:
    ```json
@@ -245,6 +252,20 @@ websocat -H="Authorization: Bearer $TOKEN" \
   "ws://localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID/ws"
 # then type: {"responses": ["<password>", "<otp>"]}
 ```
+
+### Subscribe to Interactive SSH Auths
+
+`GET /api/v1/ssh-interactive-auths/ws` — a WebSocket serving all of the caller's auths, one at a time, for as long as it stays open.
+
+The server sends the oldest pending auth as a `challenge` (same shape as above), or `{"type": "idle"}` when nothing is waiting. The next challenge — or `idle` — follows once the current auth is answered on this socket, answered elsewhere (another socket or [REST](#answer-an-interactive-ssh-auth-over-rest)), or abandoned. Answers take the same body as the single-auth socket, optionally naming the auth they are for; one naming any other auth than the current challenge is an `error`. An accepted answer is acknowledged with `{"type": "accepted", "authId": "…"}` and the socket stays open.
+
+```bash
+websocat -H="Authorization: Bearer $TOKEN" "ws://localhost:9095/api/v1/ssh-interactive-auths/ws"
+# {"type":"challenge","auth":{"authId":"3f2c…", …}}
+# then type: {"authId": "3f2c…", "responses": ["<password>"]}
+```
+
+The [dashboard](../INSTALL.md#dashboard) holds this socket open to pop each waiting login up on whichever page is open.
 
 ### Answer an Interactive SSH Auth over REST
 
@@ -533,6 +554,71 @@ Returned when `clusterName` or `headnodeHost` is blank, when `headnodePort` or a
 }
 ```
 
+### Discover a Cluster's Partitions
+
+```
+POST /api/v1/slurm-clusters/discover-partitions
+```
+
+Logs in to a head node and reads its partitions, so a cluster can be registered without typing them in. Run it before [creating the cluster](#create-slurm-cluster): the response's `partitions` is in the shape that request's `partitions` takes.
+
+Requires `ADMIN` or `SUPER_ADMIN` — the same as registering a cluster — and an [SSH credential](#ssh-credentials) **the caller owns**: discovery has the server open an SSH session to a host the caller names, and nobody else's key may be lent to that. A `fullInteractive` credential raises an [interactive auth](#list-interactive-ssh-auths) for its owner, and the request waits (up to five minutes) for it to be answered.
+
+The server runs `scontrol show partition -o`, then `sinfo -h -a -o '%R|%c|%m|%G'` for the per-node CPU count, memory and GRES that scontrol reports only as partition totals. Both run under `slurmHome` when it is set, as `sbatch` does at submission, so a discovery that works also shows that submission will find its binaries. If `sinfo` fails, those fields are left out rather than failing the request.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/slurm-clusters/discover-partitions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "headnodeHost": "login.expanse.sdsc.edu",
+    "headnodePort": 22,
+    "slurmHome": null,
+    "loginUser": "airavata",
+    "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
+  }'
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "partitions": [
+    {
+      "name": "gpu",
+      "maxRunTime": 2880,
+      "defaultWalltime": 60,
+      "maxNodes": 4,
+      "maxProcessors": 512,
+      "cpuPerNode": 64,
+      "maxMemory": 512000,
+      "gres": "gpu:a100:4",
+      "nodes": "gpu[01-08]",
+      "isDefaultQueue": false
+    }
+  ]
+}
+```
+
+| Field | From |
+|---|---|
+| `maxRunTime`, `defaultWalltime` | `MaxTime`, `DefaultTime`, in minutes; absent when `UNLIMITED` or `NONE` |
+| `maxNodes` | `MaxNodes`, or the partition's `TotalNodes` when unlimited |
+| `maxProcessors` | `TotalCPUs` |
+| `cpuPerNode`, `maxMemory` | the largest node sinfo reports; `maxMemory` is `MaxMemPerNode` (MB) when the partition sets one |
+| `gres` | every GRES sinfo reports on the partition's nodes, socket bindings removed |
+| `nodes`, `isDefaultQueue` | `Nodes`, `Default=YES` |
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `headnodeHost`, `loginUser` or `sshCredentialId` blank |
+| `403 Forbidden` | not an admin, or the credential belongs to another user |
+| `404 Not Found` | no such credential |
+| `409 Conflict` | scontrol reported no partitions |
+| `502 Bad Gateway` | the login or `scontrol` failed; the message says why — a refused key, an unreachable host, or Slurm not found (set `slurmHome`) |
+
 ### Read, Update and Delete Slurm Clusters
 
 ```
@@ -819,6 +905,53 @@ DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
 |---|---|
 | `403 Forbidden` | the config is not shared with the caller for what they asked to do; or a grantee tried to delete it or read its share list |
 | `404 Not Found` | no such config, cluster or credential |
+
+### Discover a Config's Allocations
+
+```
+POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations
+```
+
+Logs in under the config and asks Slurm which accounts its login may charge — what a [deployment](#create-batch-deployment)'s `defaultBatchJobConfig.allocation`, or a [process](#create-process)'s `batchJobConfig.allocation`, names.
+
+Anyone who may submit under the config may ask: the owner, an admin, or anyone it is shared with at `READ`. A config with a `fullInteractive` credential raises an [interactive auth](#list-interactive-ssh-auths) for the caller, as submitting under it would, and the request waits (up to five minutes) for it to be answered. There is no body.
+
+The server runs `sacctmgr -nP show associations where user=<loginUser> format=Account,Partition,QOS`. Where sacctmgr is closed to ordinary users it falls back to `sshare -h -P -U -u <loginUser> -o Account`, which lists the same accounts without their limits. Account descriptions come from `sacctmgr show account`, and are left out if that fails. Slurm binaries run under the cluster's `slurmHome` when it sets one.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/discover-allocations \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+`partitions` lists the partitions an account is limited to, empty when it may use any.
+
+```json
+{
+  "allocations": [
+    {
+      "account": "tg-bio210001",
+      "description": "Protein folding",
+      "partitions": ["gpu", "gpu-debug"],
+      "qos": ["normal", "gpu-shared"]
+    },
+    { "account": "tg-che220002", "description": null, "partitions": [], "qos": ["normal"] }
+  ]
+}
+```
+
+An empty `allocations` means Slurm answered and listed none for the login.
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | no token |
+| `403 Forbidden` | the config is neither the caller's nor shared with them |
+| `404 Not Found` | no such config |
+| `409 Conflict` | the config names no cluster or no credential |
+| `502 Bad Gateway` | the login failed, or neither sacctmgr nor sshare could be run; the message says why |
 
 ### Share a Slurm Cluster Config
 
@@ -1483,6 +1616,7 @@ updating the process, and deleted when the process is deleted.
 
 ```
 GET    /api/v1/processes                 # every process — admin only
+GET    /api/v1/processes/me              # the caller's own processes
 GET    /api/v1/processes?deploymentId=…  # the runs of one deployment
 POST   /api/v1/processes
 GET    /api/v1/processes/{processId}
@@ -1493,7 +1627,8 @@ POST   /api/v1/processes/{processId}/launch    (owner)
 
 **Authorization.** Submitting is self-service: any authenticated caller may create a
 process, and the owner is taken from the token rather than the body. The unfiltered
-listing, `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Reading one process, and
+listing, `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`; `/me` lists the caller's
+own runs and needs only a token. Reading one process, and
 listing the runs of a deployment, carry no authorization at all — carried over from the
 Java service, which did the same. [Launching](#launch-a-process) is the exception among
 the writes: it is owner-scoped rather than administrative, because it acts under the

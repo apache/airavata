@@ -235,3 +235,32 @@ func ToClusterPartitionResponse(p *model.ClusterPartition) ClusterPartitionRespo
 		IsCheckpointable: p.IsCheckpointable,
 	}
 }
+
+// PartitionDiscoveryRequest names a head node and the login to read its partitions
+// under. It is the cluster's connection details plus a login, before the cluster is
+// registered: discovery is what fills in the partitions of the registration.
+type PartitionDiscoveryRequest struct {
+	HeadnodeHost    string  `json:"headnodeHost"`
+	HeadnodePort    int     `json:"headnodePort"`
+	SlurmHome       *string `json:"slurmHome"`
+	LoginUser       string  `json:"loginUser"`
+	SSHCredentialID string  `json:"sshCredentialId"`
+}
+
+// Validate checks the request is complete enough to log in with.
+func (r *PartitionDiscoveryRequest) Validate() []httpx.FieldError {
+	var c httpx.Constraints
+	c.NotBlank("headnodeHost", "Headnode host cannot be blank", r.HeadnodeHost)
+	if r.HeadnodePort < 0 || r.HeadnodePort > 65535 {
+		c.Add("headnodePort", "Headnode port must be between 1 and 65535")
+	}
+	c.NotBlank("loginUser", "Login user cannot be blank", r.LoginUser)
+	c.NotBlank("sshCredentialId", "SSH credential id cannot be blank", r.SSHCredentialID)
+	return c.Fields()
+}
+
+// PartitionDiscoveryResponse is the partitions found, ready to send back as the
+// partitions of a SlurmClusterRequest.
+type PartitionDiscoveryResponse struct {
+	Partitions []ClusterPartitionRequest `json:"partitions"`
+}

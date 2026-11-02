@@ -174,3 +174,45 @@ func (h *ClusterPartitionController) delete(w http.ResponseWriter, r *http.Reque
 	}
 	httpx.WriteJSON(w, http.StatusNoContent, nil)
 }
+
+// DiscoveryController serves the routes that read a cluster's partitions and a login's
+// allocations off the cluster itself.
+type DiscoveryController struct {
+	svc *service.ClusterDiscoveryService
+}
+
+// NewDiscoveryController returns a handler delegating to svc.
+func NewDiscoveryController(svc *service.ClusterDiscoveryService) *DiscoveryController {
+	return &DiscoveryController{svc: svc}
+}
+
+// Register mounts the discovery routes. Partition discovery sits beside the cluster
+// routes rather than under one cluster, because it runs before the cluster is
+// registered; allocation discovery sits under the config whose login it reads.
+func (h *DiscoveryController) Register(mux *http.ServeMux) {
+	mux.HandleFunc("POST /api/v1/slurm-clusters/discover-partitions", h.discoverPartitions)
+	mux.HandleFunc("POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations", h.discoverAllocations)
+}
+
+func (h *DiscoveryController) discoverAllocations(w http.ResponseWriter, r *http.Request) {
+	found, err := h.svc.DiscoverAllocations(r.Context(), r.PathValue("slurmClusterConfigId"))
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, found)
+}
+
+func (h *DiscoveryController) discoverPartitions(w http.ResponseWriter, r *http.Request) {
+	var req dto.PartitionDiscoveryRequest
+	if err := httpx.Bind(r, &req); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	found, err := h.svc.DiscoverPartitions(r.Context(), &req)
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, found)
+}

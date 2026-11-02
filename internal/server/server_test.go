@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"slices"
@@ -40,6 +41,7 @@ import (
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/role"
 	"github.com/apache/airavata/internal/server"
+	"github.com/apache/airavata/internal/ssh"
 
 	iammodel "github.com/apache/airavata/api/iam/model"
 	sharingmodel "github.com/apache/airavata/api/sharing/model"
@@ -1368,6 +1370,54 @@ func TestProcessSubmissionIsSelfServiceWithRequestedResources(t *testing.T) {
 	}
 }
 
+// /me lists the caller's own runs without the admin role the unfiltered listing needs.
+func TestProcessesMeListsOnlyTheCallersRuns(t *testing.T) {
+	h := newHarness(t)
+	configID, _ := h.seedClusterConfig(tokenAlice, "mine")
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "mine"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+	}, http.StatusCreated)
+	created := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":         deployment["deploymentId"],
+			"slurmClusterConfigId": configID,
+			"batchJobConfig":       map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+		},
+	}, http.StatusCreated)
+
+	for _, tc := range []struct {
+		token string
+		want  []any
+	}{
+		{tokenAlice, []any{created["processId"]}},
+		{tokenBob, []any{}},
+	} {
+		rec := h.do(http.MethodGet, "/api/v1/processes/me", tc.token, nil)
+		if rec.Code != http.StatusOK {
+			t.Fatalf("GET /processes/me as %s = %d: %s", tc.token, rec.Code, rec.Body)
+		}
+		var got []map[string]any
+		if err := json.Unmarshal(rec.Body.Bytes(), &got); err != nil {
+			t.Fatal(err)
+		}
+		ids := []any{}
+		for _, p := range got {
+			ids = append(ids, p["processId"])
+		}
+		if !slices.Equal(ids, tc.want) {
+			t.Errorf("GET /processes/me as %s = %v, want %v", tc.token, ids, tc.want)
+		}
+	}
+
+	if rec := h.do(http.MethodGet, "/api/v1/processes/me", "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous GET /processes/me = %d, want 401", rec.Code)
+	}
+}
+
 // Which cluster config a run submits under is the one place a self-service
 // submission names an identity to act under, so it is authorised against the caller.
 // A deployment names the machine but nobody's identity on it, so naming one is
@@ -2384,5 +2434,110 @@ func TestNormalizeUsernameCollapsesCILogonURIs(t *testing.T) {
 		if got := auth.NormalizeUsername(in); got != want {
 			t.Errorf("NormalizeUsername(%q) = %q, want %q", in, got, want)
 		}
+	}
+}
+
+// Partition discovery opens an SSH session to a host the caller names, so it is for
+// admins, under a key they own. The SSH runner is stubbed: what is under test is who
+// may ask, and what comes back.
+func TestDiscoverPartitions(t *testing.T) {
+	h := newHarness(t)
+	var ran []string
+	h.svcs.ClusterDiscovery = h.svcs.ClusterDiscovery.WithRunner(
+		func(_ context.Context, _ ssh.SSHDialConfig, command, _ string) (string, string, error) {
+			ran = append(ran, command)
+			if strings.Contains(command, "scontrol") {
+				return "PartitionName=gpu Default=YES MaxTime=1-00:00:00 MaxNodes=2 TotalCPUs=128 TotalNodes=2\n", "", nil
+			}
+			return "gpu|64|256000|gpu:4\n", "", nil
+		})
+	h.rebuild()
+
+	adminKey := h.seedSSHCredential("admin-key", tokenAdmin)
+	aliceKey := h.seedSSHCredential("alice-key", tokenAlice)
+	body := func(key string) map[string]any {
+		return map[string]any{"headnodeHost": "login.example.org", "headnodePort": 22, "loginUser": "me",
+			"sshCredentialId": key, "slurmHome": "/opt/slurm/bin"}
+	}
+
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAlice, body(aliceKey)); rec.Code != http.StatusForbidden {
+		t.Errorf("non-admin discovery = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAdmin, body(aliceKey)); rec.Code != http.StatusForbidden {
+		t.Errorf("discovery under another user's key = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAdmin, map[string]any{}); rec.Code != http.StatusBadRequest {
+		t.Errorf("empty discovery request = %d, want 400", rec.Code)
+	}
+	if len(ran) != 0 {
+		t.Fatalf("refused requests still ran %q", ran)
+	}
+
+	got := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters/discover-partitions", tokenAdmin, body(adminKey), http.StatusOK)
+	parts := got["partitions"].([]any)
+	if len(parts) != 1 {
+		t.Fatalf("partitions = %v, want one", parts)
+	}
+	gpu := parts[0].(map[string]any)
+	if gpu["name"] != "gpu" || gpu["isDefaultQueue"] != true || gpu["maxRunTime"].(float64) != 1440 ||
+		gpu["cpuPerNode"].(float64) != 64 || gpu["gres"] != "gpu:4" {
+		t.Errorf("gpu partition = %v", gpu)
+	}
+	if !strings.HasPrefix(ran[0], "'/opt/slurm/bin/scontrol'") {
+		t.Errorf("scontrol ran as %q, want it under the Slurm home", ran[0])
+	}
+
+	// What comes back is accepted as-is by cluster registration.
+	h.mustDo(http.MethodPost, "/api/v1/slurm-clusters", tokenAdmin, map[string]any{
+		"clusterName": "discovered", "headnodeHost": "login.example.org", "headnodePort": 22, "partitions": parts,
+	}, http.StatusCreated)
+}
+
+// Allocation discovery runs under a cluster config, so it is open to whoever may submit
+// under that config. sacctmgr is tried first; sshare is the fallback when it fails.
+func TestDiscoverAllocations(t *testing.T) {
+	h := newHarness(t)
+	sacctmgrWorks := true
+	h.svcs.ClusterDiscovery = h.svcs.ClusterDiscovery.WithRunner(
+		func(_ context.Context, _ ssh.SSHDialConfig, command, _ string) (string, string, error) {
+			switch {
+			case strings.Contains(command, "show associations"):
+				if !sacctmgrWorks {
+					return "", "access denied", errors.New("exit status 1")
+				}
+				return "proj1|gpu|normal\nproj2||normal\n", "", nil
+			case strings.Contains(command, "sshare"):
+				return "proj3\n", "", nil
+			case strings.Contains(command, "show account"):
+				return "proj1|GPU project\n", "", nil
+			}
+			return "", "", errors.New("unexpected command: " + command)
+		})
+	h.rebuild()
+
+	configID, _ := h.seedClusterConfig(tokenAlice, "alloc")
+	path := "/api/v1/slurm-cluster-configs/" + configID + "/discover-allocations"
+
+	if rec := h.do(http.MethodPost, path, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("discovery under a config not shared with the caller = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, path, "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous discovery = %d, want 401", rec.Code)
+	}
+
+	got := h.mustDo(http.MethodPost, path, tokenAlice, nil, http.StatusOK)
+	allocs := got["allocations"].([]any)
+	if len(allocs) != 2 {
+		t.Fatalf("allocations = %v, want proj1 and proj2", allocs)
+	}
+	first := allocs[0].(map[string]any)
+	if first["account"] != "proj1" || first["description"] != "GPU project" || len(first["partitions"].([]any)) != 1 {
+		t.Errorf("proj1 = %v", first)
+	}
+
+	sacctmgrWorks = false
+	got = h.mustDo(http.MethodPost, path, tokenAlice, nil, http.StatusOK)
+	if allocs := got["allocations"].([]any); len(allocs) != 1 || allocs[0].(map[string]any)["account"] != "proj3" {
+		t.Errorf("fallback allocations = %v, want proj3 from sshare", allocs)
 	}
 }

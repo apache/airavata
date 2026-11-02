@@ -679,6 +679,46 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/slurm-clusters/discover-partitions:
+    post:
+      tags: [Slurm Clusters]
+      summary: Discover a head node's partitions
+      description: |
+        Logs in to the head node under a credential the caller owns and reads its
+        partitions with scontrol (and sinfo, for per-node details). Admin only. The
+        result is in the shape a cluster registration's `partitions` takes.
+      operationId: discoverPartitions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [headnodeHost, loginUser, sshCredentialId]
+              properties:
+                headnodeHost: { type: string }
+                headnodePort: { type: integer, default: 22 }
+                slurmHome: { type: [string, "null"] }
+                loginUser: { type: string }
+                sshCredentialId: { type: string }
+      responses:
+        "200":
+          description: The partitions found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  partitions:
+                    type: array
+                    items: { $ref: "#/components/schemas/ClusterPartitionRequest" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /api/v1/slurm-clusters/{slurmClusterId}:
     parameters:
       - $ref: "#/components/parameters/SlurmClusterId"
@@ -933,6 +973,48 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations:
+    post:
+      tags: [Slurm Cluster Configs]
+      summary: Discover the allocations a config's login may charge
+      description: |
+        Logs in under the config and lists the Slurm accounts its login may charge,
+        from sacctmgr (falling back to sshare). Open to anyone who may submit under the
+        config.
+      operationId: discoverAllocations
+      parameters:
+        - name: slurmClusterConfigId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The allocations found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allocations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        account: { type: string }
+                        description: { type: [string, "null"] }
+                        partitions:
+                          type: array
+                          items: { type: string }
+                          description: Partitions the account is limited to; empty means any.
+                        qos:
+                          type: array
+                          items: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}:
     parameters:
       - $ref: "#/components/parameters/SlurmClusterConfigId"
@@ -1658,6 +1740,25 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/processes/me:
+    get:
+      tags: [Processes]
+      summary: List the caller's processes
+      description: |
+        Every process the caller owns. Unlike the unfiltered listing it needs no
+        platform role.
+      operationId: listMyProcesses
+      responses:
+        "200":
+          description: The caller's processes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ProcessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /api/v1/processes/{processId}:
     parameters:
       - $ref: "#/components/parameters/ProcessId"

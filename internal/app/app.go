@@ -77,6 +77,7 @@ type Services struct {
 	ClusterPartition          *computesvc.ClusterPartitionService
 	SlurmClusterConfig        *computesvc.SlurmClusterConfigService
 	SlurmClusterConfigSharing *sharingsvc.Service
+	ClusterDiscovery          *computesvc.ClusterDiscoveryService
 
 	// Application catalogue.
 	Template        *applicationsvc.TemplateService
@@ -230,6 +231,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		ClusterPartition:          clusterPartitionSvc,
 		SlurmClusterConfig:        slurmClusterConfigSvc,
 		SlurmClusterConfigSharing: slurmClusterConfigSharingSvc,
+		ClusterDiscovery:          computesvc.NewClusterDiscoveryService(keyAccess, configAccess, sshContext),
 
 		Template:        templateSvc,
 		BatchDeployment: batchDeploymentSvc,

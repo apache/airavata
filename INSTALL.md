@@ -13,6 +13,7 @@ Airavata API (`cmd/airavata-server`).
 | **PostgreSQL** | 14+ | `psql --version` |
 | **Docker Engine** | 20.10+ *(optional — only to run PostgreSQL locally)* | `docker -v` |
 | **Docker Compose** | 2.0+ *(optional)* | `docker compose version` |
+| **Node.js** | 20.9+ *(optional — only to build the [dashboard](#dashboard))* | `node -v` |
 
 No other tooling is needed. All Go dependencies are declared in `go.mod` and fetched
 by the build.
@@ -31,7 +32,10 @@ docker compose -f dev-tools/compose/compose.yml up -d postgres
 gofmt -w .
 go build -o bin/airavata-server ./cmd/airavata-server
 
-# 3. Run
+# 3. Build the dashboard (optional; needs Node.js)
+npm --prefix dashboard ci && npm --prefix dashboard run build
+
+# 4. Run
 ./bin/airavata-server
 ```
 
@@ -56,6 +60,8 @@ Confirm the server is up:
 curl -s localhost:9095/health
 # {"status":"UP"}
 ```
+
+Then open <http://localhost:9095/dashboard/> and sign in with that token.
 
 ---
 
@@ -89,6 +95,8 @@ compose database.
 | Variable | Default | Description |
 |---|---|---|
 | `SERVER_PORT` | `9095` | Port the HTTP API listens on. |
+| `AIRAVATA_DASHBOARD_ENABLED` | `true` | Serve the [dashboard](#dashboard) under `/dashboard/`. |
+| `AIRAVATA_DASHBOARD_DIR` | `dashboard/out` | The dashboard's built static export, relative to the working directory. |
 | `AIRAVATA_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origins. The server echoes the caller's origin rather than sending `*`, because every authenticated call carries an `Authorization` header and browsers reject the wildcard for credentialed requests. |
 
 ### Database
@@ -317,6 +325,37 @@ caller lacking the required role returns `403`.
 
 ---
 
+## Dashboard
+
+`dashboard/` is a Next.js web UI over this API: register SSH credentials, clusters,
+cluster configs and storages; manage application templates and deployments; create,
+launch and monitor processes; register, upload and download data products; and answer
+interactive SSH logins (password, OTP, Duo) as they happen.
+
+It is built as a static export and served by the API server itself under
+`/dashboard/`, so it starts and stops with the server, on the same origin — there is no
+Node process to run in production, and `/` redirects to it.
+
+```bash
+npm --prefix dashboard ci
+npm --prefix dashboard run build     # writes dashboard/out
+./bin/airavata-server                # serves it at http://localhost:9095/dashboard/
+```
+
+If the export is missing the server still starts, and `/dashboard/` answers `503` with
+the command above. Run the server from the repository root, or point
+`AIRAVATA_DASHBOARD_DIR` at the `out` directory.
+
+Sign in with a bearer token — the root token printed at startup, or a CILogon access
+token. To work on the dashboard with hot reload, run the API as usual and:
+
+```bash
+cd dashboard
+NEXT_PUBLIC_AIRAVATA_API_URL=http://localhost:9095 npm run dev   # http://localhost:3000/dashboard/
+```
+
+---
+
 ## Production notes
 
 - **Disable the root account** (`AIRAVATA_ROOT_ACCOUNT_ENABLED=false`) once CILogon is
@@ -354,6 +393,7 @@ api/<domain>/          controller.go, service.go, repository.go
 api/<domain>/model/    persistent entities
 api/<domain>/dto/      request/response payloads and mappers
 cmd/airavata-server/   entrypoint
+dashboard/             Next.js web UI, served under /dashboard/
 internal/auth/         bearer token introspection and authority guards
 internal/config/       environment configuration
 internal/db/           connection and schema migration

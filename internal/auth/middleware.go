@@ -21,6 +21,7 @@
 package auth
 
 import (
+	"encoding/base64"
 	"errors"
 	"net/http"
 	"strings"
@@ -67,14 +68,47 @@ func Middleware(introspector Introspector) func(http.Handler) http.Handler {
 	}
 }
 
+// WebSocketProtocol is the subprotocol a browser offers alongside its token, and the one
+// a websocket handler must accept: a browser fails the upgrade when it offered
+// subprotocols and the server selected none.
+const WebSocketProtocol = "airavata.v1"
+
+// webSocketTokenPrefix marks the subprotocol carrying the bearer token, base64url
+// encoded without padding since a subprotocol may not contain the ":" and "/" a CILogon
+// token does.
+const webSocketTokenPrefix = "base64url.bearer."
+
 func bearerToken(r *http.Request) string {
 	header := r.Header.Get("Authorization")
 	if header == "" {
-		return ""
+		return webSocketToken(r)
 	}
 	scheme, token, found := strings.Cut(header, " ")
 	if !found || !strings.EqualFold(scheme, "Bearer") {
 		return ""
 	}
 	return strings.TrimSpace(token)
+}
+
+// webSocketToken reads the token a browser sends on a websocket upgrade. The browser
+// WebSocket API cannot set an Authorization header, so the dashboard offers the token as
+// a subprotocol instead — the one header it does control.
+func webSocketToken(r *http.Request) string {
+	if !strings.EqualFold(r.Header.Get("Upgrade"), "websocket") {
+		return ""
+	}
+	for _, offered := range r.Header.Values("Sec-WebSocket-Protocol") {
+		for _, p := range strings.Split(offered, ",") {
+			encoded, ok := strings.CutPrefix(strings.TrimSpace(p), webSocketTokenPrefix)
+			if !ok {
+				continue
+			}
+			token, err := base64.RawURLEncoding.DecodeString(encoded)
+			if err != nil {
+				return ""
+			}
+			return strings.TrimSpace(string(token))
+		}
+	}
+	return ""
 }

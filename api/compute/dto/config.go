@@ -124,3 +124,17 @@ func ToSlurmClusterConfigResponses(in []model.SlurmClusterConfig) []SlurmCluster
 	}
 	return out
 }
+
+// Allocation is one Slurm account a login may charge jobs to.
+type Allocation struct {
+	Account     string  `json:"account"`
+	Description *string `json:"description"`
+	// Partitions the account is limited to; empty means any.
+	Partitions []string `json:"partitions"`
+	QOS        []string `json:"qos"`
+}
+
+// AllocationDiscoveryResponse is what a cluster config's login may charge.
+type AllocationDiscoveryResponse struct {
+	Allocations []Allocation `json:"allocations"`
+}

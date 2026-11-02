@@ -100,6 +100,20 @@ func (s *ProcessService) List(ctx context.Context) ([]dto.Response, error) {
 	return dto.ToResponses(found), nil
 }
 
+// ListMine returns the caller's own processes. Unlike the unfiltered listing it needs
+// no platform role: it is what a user monitoring their own runs reads.
+func (s *ProcessService) ListMine(ctx context.Context) ([]dto.Response, error) {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	found, err := s.processes.FindByOwnerID(ctx, principal.Name)
+	if err != nil {
+		return nil, err
+	}
+	return dto.ToResponses(found), nil
+}
+
 // ListByDeployment returns every process run against one deployment.
 func (s *ProcessService) ListByDeployment(ctx context.Context, deploymentID string) ([]dto.Response, error) {
 	found, err := s.processes.FindByDeploymentID(ctx, deploymentID)

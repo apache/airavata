@@ -339,3 +339,24 @@ func TestSubscribeSocketNeedsCaller(t *testing.T) {
 		t.Fatalf("want 401, got %v", resp)
 	}
 }
+
+// A browser offers the dashboard's subprotocol (beside its token), and fails the
+// upgrade unless the server selects one, so the subscribe socket must agree to it.
+func TestSubscribeSelectsDashboardSubprotocol(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	t.Cleanup(cancel)
+	header := http.Header{}
+	header.Set("X-Test-User", "cilogon:alice")
+	conn, _, err := websocket.Dial(ctx, subscribeURL(newServer(t, ssh.NewGlobalSSHContext())), &websocket.DialOptions{
+		HTTPHeader:   header,
+		Subprotocols: []string{auth.WebSocketProtocol, "base64url.bearer.dG9rZW4"},
+	})
+	if err != nil {
+		t.Fatalf("dial: %v", err)
+	}
+	defer conn.CloseNow()
+	if got := conn.Subprotocol(); got != auth.WebSocketProtocol {
+		t.Fatalf("selected subprotocol %q, want %q", got, auth.WebSocketProtocol)
+	}
+	wantMessage(t, conn, "idle", "")
+}

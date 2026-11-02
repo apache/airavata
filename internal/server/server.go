@@ -54,6 +54,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	computectl.NewSlurmClusterController(svcs.SlurmCluster).Register(mux)
 	computectl.NewClusterPartitionController(svcs.ClusterPartition).Register(mux)
 	computectl.NewSlurmClusterConfigController(svcs.SlurmClusterConfig).Register(mux)
+	computectl.NewDiscoveryController(svcs.ClusterDiscovery).Register(mux)
 	applicationctl.NewTemplateController(svcs.Template).Register(mux)
 	applicationctl.NewBatchDeploymentController(svcs.BatchDeployment).Register(mux)
 	datactl.NewSCPDataStorageController(svcs.SCPDataStorage).Register(mux)
@@ -79,6 +80,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})
 	})
+	registerDashboard(mux, cfg.DashboardDir)
 
 	// Outermost first: CORS answers preflights before authentication runs, since a
 	// preflight carries no credentials by definition.

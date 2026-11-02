@@ -46,6 +46,7 @@ func isolate(t *testing.T) {
 		"CILOGON_CLIENT_ID", "CILOGON_CLIENT_SECRET",
 		"CILOGON_INTROSPECTION_URI", "CILOGON_USERINFO_URI",
 		"AIRAVATA_ROOT_ACCOUNT_ENABLED", "AIRAVATA_ROOT_ACCOUNT_TOKEN",
+		"AIRAVATA_DASHBOARD_ENABLED", "AIRAVATA_DASHBOARD_DIR",
 	} {
 		t.Setenv(key, "")
 	}
@@ -167,5 +168,22 @@ func TestUnparseableBooleanFallsBackToDefault(t *testing.T) {
 	}
 	if !cfg.RootAccountEnabled {
 		t.Error("RootAccountEnabled = false, want the default to survive an unparseable value")
+	}
+}
+
+func TestDashboardDir(t *testing.T) {
+	isolate(t)
+	if cfg, _ := load(); cfg.DashboardDir != "dashboard/out" {
+		t.Errorf("DashboardDir = %q, want dashboard/out by default", cfg.DashboardDir)
+	}
+
+	t.Setenv("AIRAVATA_DASHBOARD_DIR", "/srv/airavata/dashboard")
+	if cfg, _ := load(); cfg.DashboardDir != "/srv/airavata/dashboard" {
+		t.Errorf("DashboardDir = %q, want the override", cfg.DashboardDir)
+	}
+
+	t.Setenv("AIRAVATA_DASHBOARD_ENABLED", "false")
+	if cfg, _ := load(); cfg.DashboardDir != "" {
+		t.Errorf("DashboardDir = %q, want empty when disabled", cfg.DashboardDir)
 	}
 }
