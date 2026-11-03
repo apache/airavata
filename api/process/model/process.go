@@ -184,6 +184,9 @@ const (
 	ProcessStatusTypeCreated   ProcessStatusType = "CREATED"
 	ProcessStatusTypeSubmitted ProcessStatusType = "SUBMITTED"
 	ProcessStatusTypeRunning   ProcessStatusType = "RUNNING"
+	// A task is waiting for the owner to complete an interactive SSH login and then
+	// continue the process (see TaskPause).
+	ProcessStatusTypePaused    ProcessStatusType = "PAUSED"
 	ProcessStatusTypeCompleted ProcessStatusType = "COMPLETED"
 	ProcessStatusTypeFailed    ProcessStatusType = "FAILED"
 )

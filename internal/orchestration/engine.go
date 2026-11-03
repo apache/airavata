@@ -56,6 +56,7 @@ type ExecutionEngine struct {
 	orchestrator        *worker.WorkflowOrchestrator
 	batchStatus         *processrepo.BatchJobStatusRepository
 	processStatus       *processrepo.StatusRepository
+	taskPauses          *processrepo.TaskPauseRepository
 	sshContext          *ssh.GlobalSSHContext
 }
 
@@ -92,6 +93,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	templates *applicationrepo.TemplateRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
 	processStatus *processrepo.StatusRepository,
+	taskPauses *processrepo.TaskPauseRepository,
 	workflowBackend backend.Backend,
 	sshContext *ssh.GlobalSSHContext,
 ) *ExecutionEngine {
@@ -115,6 +117,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		orchestrator:        orchestrator,
 		batchStatus:         batchStatus,
 		processStatus:       processStatus,
+		taskPauses:          taskPauses,
 		sshContext:          sshContext,
 	}
 }
@@ -133,6 +136,7 @@ func (w *ExecutionEngine) StartEngine() {
 	w.orchestrator.RegisterActivity(w.submitBatchJob)
 	w.orchestrator.RegisterActivity(w.monitorBatchJob)
 	w.orchestrator.RegisterActivity(w.completeProcess)
+	w.orchestrator.RegisterActivity(w.pauseTask)
 
 	if err := w.orchestrator.Start(ctx); err != nil {
 		slog.Error("Failed to start execution engine", "error", err)
@@ -307,9 +311,9 @@ func (w *ExecutionEngine) handleBatchJobCompletion(ctx workflow.Context, process
 
 	for _, dst := range dsts { // Attach output staging tasks
 		if dst.TaskOrder != nil && *dst.TaskOrder > *jmt.TaskOrder {
-			executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
+			executionContext, err = w.runTask(
 				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, *dst.RetryCount)},
-				w.copyData, executionContext, processID, dst.ID).Get(ctx)
+				w.copyData, model.PausedTaskTypeDataStaging, executionContext, processID, dst.ID)
 			if err != nil {
 				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
 				return err
@@ -373,9 +377,9 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 
 	for _, dst := range dsts { // tasks are already sorted by their task order. Attach input staging tasks
 		if dst.TaskOrder != nil && *dst.TaskOrder < *jst.TaskOrder {
-			executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
+			executionContext, err = w.runTask(
 				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, *dst.RetryCount)},
-				w.copyData, executionContext, processID, dst.ID).Get(ctx)
+				w.copyData, model.PausedTaskTypeDataStaging, executionContext, processID, dst.ID)
 			if err != nil {
 				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
 				return err
@@ -383,9 +387,9 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 		}
 	}
 
-	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
+	executionContext, err = w.runTask(
 		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jst.OnFailure, *jst.RetryCount)},
-		w.submitBatchJob, executionContext, processID, jst.ID).Get(ctx)
+		w.submitBatchJob, model.PausedTaskTypeJobSubmission, executionContext, processID, jst.ID)
 	if err != nil {
 		slog.Error("Failed processing job submission task", "processId", processID, "taskId", jst.ID, "error", err)
 		return err

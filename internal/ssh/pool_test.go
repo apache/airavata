@@ -206,3 +206,57 @@ func TestPoolDoesNotCacheFailedDials(t *testing.T) {
 		t.Fatal("failed dial was cached")
 	}
 }
+
+func TestPoolDefersInteractiveLogin(t *testing.T) {
+	pool := newSSHConnectionPool()
+	defer pool.Close()
+	var dials atomic.Int32
+	connect := pipeDialer(t, &dials)
+
+	// Stands in for a login that asks its owner for an OTP: it waits for an answer
+	// that only arrives once the deferring caller has already returned.
+	answer := make(chan struct{})
+	dial := func(ctx context.Context) (*gossh.Client, error) {
+		notifyAuthPrompt(ctx, "auth-1")
+		select {
+		case <-answer:
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		}
+		return connect(ctx)
+	}
+
+	ctx, cancel := context.WithCancel(WithDeferredInteractiveAuth(t.Context()))
+	_, err := pool.acquire(ctx, testDialConfig(), dial)
+	var authErr *InteractiveAuthRequiredError
+	if !errors.As(err, &authErr) || authErr.AuthID != "auth-1" {
+		t.Fatalf("got %v, want an InteractiveAuthRequiredError for auth-1", err)
+	}
+	// The caller's context ending must not take the login with it.
+	cancel()
+
+	// A second deferring caller joins the pending login rather than starting another.
+	if _, err := pool.acquire(WithDeferredInteractiveAuth(t.Context()), testDialConfig(), dial); !errors.As(err, &authErr) {
+		t.Fatalf("got %v, want an InteractiveAuthRequiredError", err)
+	}
+
+	close(answer)
+	for range 100 {
+		pool.lock.Lock()
+		entry := pool.entries[poolKeyFor(testDialConfig())]
+		settled := entry != nil && entry.client != nil
+		pool.lock.Unlock()
+		if settled {
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+
+	c, err := pool.acquire(WithDeferredInteractiveAuth(t.Context()), testDialConfig(), dial)
+	if err == nil {
+		defer c.Close()
+	}
+	if err != nil || dials.Load() != 1 {
+		t.Fatalf("answered login was not reused: err %v, dials %d", err, dials.Load())
+	}
+}

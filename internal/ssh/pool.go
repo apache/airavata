@@ -49,6 +49,12 @@ type poolEntry struct {
 	err    error
 	refs   int
 	idle   *time.Timer
+
+	// prompted is closed the first time the dial asks its owner for an interactive
+	// login, and authID names the auth asked most recently. authID is guarded by the
+	// pool lock.
+	prompted chan struct{}
+	authID   string
 }
 
 // SSHConnectionPool shares one authenticated connection between every caller dialing
@@ -81,13 +87,19 @@ func (c *pooledClient) Close() error {
 // acquire returns a live connection for dialConfig, dialing one if there is none.
 // Callers that arrive while a dial is in flight wait for it rather than starting their
 // own, so concurrent work against one host shares a single login.
+//
+// Under WithDeferredInteractiveAuth a caller stops waiting once the dial asks for an
+// interactive login and gets InteractiveAuthRequiredError instead. A dial such a caller
+// starts runs detached from its context, so the login can still be answered after it
+// has returned.
 func (p *SSHConnectionPool) acquire(ctx context.Context, dialConfig SSHDialConfig, dial func(context.Context) (*gossh.Client, error)) (*pooledClient, error) {
 	key := poolKeyFor(dialConfig)
+	deferred := defersInteractiveAuth(ctx)
 	for {
 		p.lock.Lock()
 		entry, ok := p.entries[key]
 		if !ok {
-			entry = &poolEntry{ready: make(chan struct{})}
+			entry = &poolEntry{ready: make(chan struct{}), prompted: make(chan struct{})}
 			p.entries[key] = entry
 		}
 		entry.refs++
@@ -98,12 +110,44 @@ func (p *SSHConnectionPool) acquire(ctx context.Context, dialConfig SSHDialConfi
 		p.lock.Unlock()
 
 		if !ok {
-			client, err := dial(ctx)
-			p.settle(key, entry, client, err)
+			hook := func(authID string) { p.markPrompted(entry, authID) }
+			if deferred {
+				dialCtx, cancel := context.WithTimeout(withAuthPromptHook(context.WithoutCancel(ctx), hook), deferredDialTimeout)
+				go func() {
+					defer cancel()
+					client, err := dial(dialCtx)
+					p.settle(key, entry, client, err)
+				}()
+			} else {
+				client, err := dial(withAuthPromptHook(ctx, hook))
+				p.settle(key, entry, client, err)
+			}
+		}
+
+		// A nil channel never fires, so only a deferring caller hears the prompt.
+		var prompted <-chan struct{}
+		if deferred {
+			prompted = entry.prompted
 		}
 
 		select {
 		case <-entry.ready:
+		case <-prompted:
+			// A login answered by now has nothing left to wait for, so ready wins a tie.
+			select {
+			case <-entry.ready:
+			default:
+				p.lock.Lock()
+				authID := entry.authID
+				p.lock.Unlock()
+				p.release(key, entry)
+				return nil, &InteractiveAuthRequiredError{
+					Host:      dialConfig.host,
+					Port:      dialConfig.port,
+					LoginUser: dialConfig.sshUsername,
+					AuthID:    authID,
+				}
+			}
 		case <-ctx.Done():
 			p.release(key, entry)
 			return nil, ctx.Err()
@@ -129,12 +173,30 @@ func (p *SSHConnectionPool) settle(key poolKey, entry *poolEntry, client *gossh.
 	if entry.err != nil {
 		// A failed dial is not cached: the next caller should try again.
 		p.evictLocked(key, entry)
+	} else if entry.refs == 0 {
+		// Everyone who wanted it stopped waiting during an interactive login. It is
+		// kept for whoever asks next, on the same clock as a connection handed back.
+		p.idleLocked(key, entry)
 	}
 	p.lock.Unlock()
 	close(entry.ready)
 
 	if entry.client != nil {
 		go p.watch(key, entry)
+	}
+}
+
+// markPrompted records that entry's dial is waiting on its owner to answer authID, and
+// wakes the callers deferring that wait. Only the first prompt wakes anyone; a later one
+// in the same login, an OTP after a password say, just updates the id.
+func (p *SSHConnectionPool) markPrompted(entry *poolEntry, authID string) {
+	p.lock.Lock()
+	defer p.lock.Unlock()
+	entry.authID = authID
+	select {
+	case <-entry.prompted:
+	default:
+		close(entry.prompted)
 	}
 }
 
@@ -196,6 +258,12 @@ func (p *SSHConnectionPool) release(key poolKey, entry *poolEntry) {
 	if entry.refs > 0 || entry.client == nil {
 		return
 	}
+	p.idleLocked(key, entry)
+}
+
+// idleLocked closes entry's connection after poolIdleTimeout unless a caller takes it
+// first. The caller holds the pool lock.
+func (p *SSHConnectionPool) idleLocked(key poolKey, entry *poolEntry) {
 	var timer *time.Timer
 	timer = time.AfterFunc(poolIdleTimeout, func() {
 		p.lock.Lock()

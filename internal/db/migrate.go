@@ -98,6 +98,9 @@ func Entities() []any {
 		&processmodel.JobSubmissionTask{},
 		&processmodel.JobMonitoringTask{},
 		&processmodel.InteractiveCommandTask{},
+
+		// A workflow parked on one of the tasks above until its owner logs in.
+		&processmodel.TaskPause{},
 	}
 }
 

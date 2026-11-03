@@ -142,16 +142,22 @@ func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*d
 	return proc, nil
 }
 
-// requireOwnership allows the run's owner and platform admins. A process with no owner
-// belongs to nobody, so it must not match the empty principal name.
+// requireOwnership allows the run's owner and platform admins.
 func (s *LaunchService) requireOwnership(ctx context.Context, proc *dto.Response) error {
+	return requireOwner(ctx, proc, "Access denied: you may only launch your own processes")
+}
+
+// requireOwner allows the run's owner and platform admins, refusing anyone else with
+// denied. A process with no owner belongs to nobody, so it must not match the empty
+// principal name.
+func requireOwner(ctx context.Context, proc *dto.Response, denied string) error {
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
 		return err
 	}
 	owned := proc.UserID != nil && *proc.UserID == principal.Name
 	if !owned && !principal.IsAdmin() {
-		return httpx.Forbidden("Access denied: you may only launch your own processes")
+		return httpx.Forbidden("%s", denied)
 	}
 	return nil
 }

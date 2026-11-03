@@ -32,7 +32,11 @@ import (
 	ssh "github.com/apache/airavata/internal/ssh"
 )
 
-func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *ExecutionContext, processId string, dataStagingTaskId string) (*ExecutionContext, error) {
+func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *ExecutionContext, processId string, dataStagingTaskId string) (_ *ExecutionContext, err error) {
+	// A host waiting for an interactive login parks the workflow rather than this
+	// activity: see runTask.
+	ctx = ssh.WithDeferredInteractiveAuth(ctx)
+	defer deferInteractiveAuth(&err)
 
 	process, err := a.process(ctx, processId)
 	if err != nil {

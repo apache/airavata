@@ -531,5 +531,6 @@ func askUserInteractive(ctx context.Context, dialConfig SSHDialConfig, sshContex
 	auth.name, auth.instruction, auth.prompts = name, instruction, prompts
 	sshContext.InteractiveAuthStore.AddAuth(auth)
 	defer sshContext.InteractiveAuthStore.RemoveAuth(dialConfig.userId, auth.AuthId)
+	notifyAuthPrompt(ctx, auth.AuthId)
 	return auth.Challenge(ctx, name, instruction, prompts)
 }

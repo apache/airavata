@@ -42,7 +42,11 @@ type SubmitBatchJobParameters struct {
 	Environment    map[string]string
 }
 
-func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
+func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (_ *ExecutionContext, err error) {
+	// A host waiting for an interactive login parks the workflow rather than this
+	// activity: see runTask.
+	ctx = ssh.WithDeferredInteractiveAuth(ctx)
+	defer deferInteractiveAuth(&err)
 	slog.Info("Starting to submit batch job", "taskId", taskID, "processId", processID)
 
 	process, err := a.process(ctx, processID)

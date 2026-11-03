@@ -105,6 +105,8 @@ type Services struct {
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
 	Launch *processsvc.LaunchService
+	// Pause continues a process whose workflow is waiting on an interactive login.
+	Pause *processsvc.PauseService
 
 	ExecutionEngine *orchestration.ExecutionEngine
 }
@@ -131,6 +133,7 @@ type Repositories struct {
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
 	JobMonitoringTasks      *processrepo.JobMonitoringTaskRepository
 	InteractiveCommandTasks *processrepo.InteractiveCommandTaskRepository
+	TaskPauses              *processrepo.TaskPauseRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -156,6 +159,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
 		JobMonitoringTasks:      processrepo.NewJobMonitoringTaskRepository(db),
 		InteractiveCommandTasks: processrepo.NewInteractiveCommandTaskRepository(db),
+		TaskPauses:              processrepo.NewTaskPauseRepository(db),
 	}
 }
 
@@ -186,6 +190,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	monitoringTasks := repos.JobMonitoringTasks
 	commandTasks := repos.InteractiveCommandTasks
 	batchStatus := repos.BatchJobStatuses
+	taskPauses := repos.TaskPauses
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, shares, groupMembers)
@@ -211,7 +216,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend, sshContext)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, taskPauses, workflowBackend, sshContext)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -257,6 +262,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
 			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, executionEngine),
+		Pause: processsvc.NewPauseService(db, taskPauses, statuses, processSvs, statusSvc, executionEngine),
 
 		ExecutionEngine: executionEngine,
 	}
