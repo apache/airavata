@@ -119,7 +119,7 @@ Release Notes - Airavata - Version 0.17
     * [AIRAVATA-1957] - When experiments are cloned there are two data directories getting created in the Storage
     * [AIRAVATA-1961] - Creating a project name including '&' gives attached error
     * [AIRAVATA-1971] - 'Launch Selected' and 'Delete Selected' buttons are not working in SEAGrid desktop client
-    * [AIRAVATA-1990] - Adding seperate reservations in slurm script for multiple resources
+    * [AIRAVATA-1990] - Adding separate reservations in slurm script for multiple resources
     * [AIRAVATA-1997] - Gateway ID saved as project name. Default Project not existing for new users.
     * [AIRAVATA-1999] - Exception thrown when updated the Default Project name and description
     * [AIRAVATA-2003] - When SciGaP admin click 'APPROVE' for a new gateway page crashes.
