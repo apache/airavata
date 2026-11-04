@@ -18,7 +18,7 @@
 * under the License.
  */
 
-package orchestration
+package monitoring
 
 import (
 	"errors"
@@ -124,7 +124,7 @@ func TestParseBatchJobSubject(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseBatchJobSubject(tt.subject)
+			got, err := ParseBatchJobSubject(tt.subject)
 			if err != nil {
 				t.Fatalf("parse: %v", err)
 			}
@@ -164,7 +164,7 @@ func TestParseBatchJobSubjectRejects(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parseBatchJobSubject(tt.subject)
+			got, err := ParseBatchJobSubject(tt.subject)
 			if err == nil {
 				t.Fatalf("parsed %q as %+v, want an error", tt.subject, got)
 			}

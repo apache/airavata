@@ -18,7 +18,7 @@
 * under the License.
  */
 
-package orchestration
+package batch
 
 import (
 	"bytes"
@@ -32,6 +32,7 @@ import (
 	appmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
 
@@ -104,7 +105,7 @@ func buildSlurmScript(
 	deployment *appmodel.BatchDeployment,
 	template *appmodel.Template,
 	clusterConfig *computemodel.SlurmClusterConfig,
-	globalJobConfigs *GlobalJobConfigs,
+	globalJobConfigs *execution.GlobalJobConfigs,
 ) (string, error) {
 	batchProcess := process.BatchProcess
 

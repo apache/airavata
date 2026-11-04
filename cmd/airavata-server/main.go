@@ -38,7 +38,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
-	"github.com/apache/airavata/internal/orchestration"
+	"github.com/apache/airavata/internal/orchestration/tasks/monitoring"
 	"github.com/apache/airavata/internal/server"
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/backend/sqlite"
@@ -188,7 +188,7 @@ func runServer() error {
 		}
 	}()
 
-	emailMonitor := orchestration.NewEmailMonitor(cfg.EmailMonitorAddress, cfg.EmailMonitorAppPassword, 20, svcs.ExecutionEngine.HandleBatchJobEmailResponse)
+	emailMonitor := monitoring.NewEmailMonitor(cfg.EmailMonitorAddress, cfg.EmailMonitorAppPassword, 20, svcs.ExecutionEngine.HandleBatchJobEmailResponse)
 	go emailMonitor.MonitorBatchJobEmails(ctx)
 
 	select {
