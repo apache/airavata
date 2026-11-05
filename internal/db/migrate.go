@@ -98,6 +98,10 @@ func Entities() []any {
 		&processmodel.JobSubmissionTask{},
 		&processmodel.JobMonitoringTask{},
 		&processmodel.InteractiveCommandTask{},
+
+		// The status history of those steps. It references the process rather than a
+		// task, since a task id may name a row in any of the four tables above.
+		&processmodel.TaskStatus{},
 	}
 }
 

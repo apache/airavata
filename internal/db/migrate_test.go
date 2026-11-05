@@ -73,7 +73,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 		"processes", "batch_processes", "batch_process_statuses", "process_statuses",
 		"process_template_input_mappings", "process_template_output_mappings",
 		"data_staging_tasks", "job_submission_tasks", "job_monitoring_tasks",
-		"interactive_command_tasks",
+		"interactive_command_tasks", "task_statuses",
 	}
 	for _, table := range want {
 		if !gdb.Migrator().HasTable(table) {
