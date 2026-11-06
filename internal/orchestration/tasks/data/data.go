@@ -33,6 +33,7 @@ import (
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	datamodel "github.com/apache/airavata/api/data/model"
 	datastorerepo "github.com/apache/airavata/api/data/repository"
+	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
@@ -46,6 +47,7 @@ type Tasks struct {
 	scpStorages         *datastorerepo.SCPDataStorageRepository
 	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository
 	sshContext          *ssh.GlobalSSHContext
+	tracker             *execution.TaskTracker
 }
 
 // New returns the data staging tasks over the given repositories.
@@ -54,6 +56,7 @@ func New(processes *processrepo.ProcessRepository,
 	scpStorages *datastorerepo.SCPDataStorageRepository,
 	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository,
 	sshContext *ssh.GlobalSSHContext,
+	tracker *execution.TaskTracker,
 ) *Tasks {
 	return &Tasks{
 		processes:           processes,
@@ -61,10 +64,19 @@ func New(processes *processrepo.ProcessRepository,
 		scpStorages:         scpStorages,
 		slurmClusterConfigs: slurmClusterConfigs,
 		sshContext:          sshContext,
+		tracker:             tracker,
 	}
 }
 
+// CopyData stages one file between the task's two storages, recording the task's status
+// as it goes.
 func (a *Tasks) CopyData(ctx context.Context, executionContext *execution.Context, processId string, dataStagingTaskId string) (*execution.Context, error) {
+	return a.tracker.Track(ctx, processId, dataStagingTaskId, model.TaskTypeDataStaging, func() (*execution.Context, error) {
+		return a.copyData(ctx, executionContext, processId, dataStagingTaskId)
+	})
+}
+
+func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Context, processId string, dataStagingTaskId string) (*execution.Context, error) {
 
 	process, err := execution.FindBatchProcess(ctx, a.processes, processId)
 	if err != nil {

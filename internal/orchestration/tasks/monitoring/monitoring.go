@@ -26,6 +26,7 @@ import (
 	"context"
 	"log/slog"
 
+	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
 	"github.com/apache/airavata/internal/orchestration/execution"
 )
@@ -35,14 +36,24 @@ import (
 type Tasks struct {
 	processes          *processrepo.ProcessRepository
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository
+	tracker            *execution.TaskTracker
 }
 
 // New returns the monitoring tasks over the given repositories.
-func New(processes *processrepo.ProcessRepository, jobMonitoringTasks *processrepo.JobMonitoringTaskRepository) *Tasks {
-	return &Tasks{processes: processes, jobMonitoringTasks: jobMonitoringTasks}
+func New(processes *processrepo.ProcessRepository, jobMonitoringTasks *processrepo.JobMonitoringTaskRepository,
+	tracker *execution.TaskTracker) *Tasks {
+	return &Tasks{processes: processes, jobMonitoringTasks: jobMonitoringTasks, tracker: tracker}
 }
 
+// MonitorBatchJob checks the outcome of a finished batch job, recording the task's
+// status as it goes.
 func (a *Tasks) MonitorBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
+	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobMonitoring, func() (*execution.Context, error) {
+		return a.monitorBatchJob(ctx, executionContext, processID, taskID)
+	})
+}
+
+func (a *Tasks) monitorBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
 	slog.Info("Starting to monitor batch job ", "taskId", taskID, "processId", processID)
 	process, err := execution.FindBatchProcess(ctx, a.processes, processID)
 	if err != nil {

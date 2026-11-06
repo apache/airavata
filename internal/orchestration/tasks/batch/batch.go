@@ -50,6 +50,7 @@ type Tasks struct {
 	templates           *applicationrepo.TemplateRepository
 	batchStatus         *processrepo.BatchJobStatusRepository
 	sshContext          *ssh.GlobalSSHContext
+	tracker             *execution.TaskTracker
 }
 
 // New returns the batch tasks over the given repositories.
@@ -60,6 +61,7 @@ func New(processes *processrepo.ProcessRepository,
 	templates *applicationrepo.TemplateRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
 	sshContext *ssh.GlobalSSHContext,
+	tracker *execution.TaskTracker,
 ) *Tasks {
 	return &Tasks{
 		processes:           processes,
@@ -69,6 +71,7 @@ func New(processes *processrepo.ProcessRepository,
 		templates:           templates,
 		batchStatus:         batchStatus,
 		sshContext:          sshContext,
+		tracker:             tracker,
 	}
 }
 
@@ -79,7 +82,15 @@ type SubmitBatchJobParameters struct {
 	Environment    map[string]string
 }
 
+// SubmitBatchJob builds the process's submission script, uploads it and submits it,
+// recording the task's status as it goes.
 func (a *Tasks) SubmitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
+	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, func() (*execution.Context, error) {
+		return a.submitBatchJob(ctx, executionContext, processID, taskID)
+	})
+}
+
+func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
 	slog.Info("Starting to submit batch job", "taskId", taskID, "processId", processID)
 
 	process, err := execution.FindBatchProcess(ctx, a.processes, processID)

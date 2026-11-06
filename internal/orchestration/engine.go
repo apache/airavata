@@ -39,6 +39,7 @@ import (
 	datastorerepo "github.com/apache/airavata/api/data/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
+	"github.com/apache/airavata/internal/orchestration/execution"
 	"github.com/apache/airavata/internal/orchestration/tasks/batch"
 	"github.com/apache/airavata/internal/orchestration/tasks/data"
 	"github.com/apache/airavata/internal/orchestration/tasks/monitoring"
@@ -68,6 +69,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	templates *applicationrepo.TemplateRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
 	processStatus *processrepo.StatusRepository,
+	taskStatus *processrepo.TaskStatusRepository,
 	workflowBackend backend.Backend,
 	sshContext *ssh.GlobalSSHContext,
 ) *ExecutionEngine {
@@ -79,11 +81,13 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		orchestrator = worker.NewWorkflowOrchestrator(workflowBackend, nil)
 	}
 
+	tracker := execution.NewTaskTracker(taskStatus)
+
 	return &ExecutionEngine{
 		workflows: workflows.New(
-			data.New(processes, dataStagingTasks, scpStorages, slurmClusterConfigs, sshContext),
-			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext),
-			monitoring.New(processes, jobMonitoringTasks),
+			data.New(processes, dataStagingTasks, scpStorages, slurmClusterConfigs, sshContext, tracker),
+			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker),
+			monitoring.New(processes, jobMonitoringTasks, tracker),
 			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,
 		),
 		orchestrator:  orchestrator,

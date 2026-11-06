@@ -126,6 +126,7 @@ type Repositories struct {
 	Shares                  *sharingrepo.Repository
 	Processes               *processrepo.ProcessRepository
 	Statuses                *processrepo.StatusRepository
+	TaskStatuses            *processrepo.TaskStatusRepository
 	BatchJobStatuses        *processrepo.BatchJobStatusRepository
 	DataStagingTasks        *processrepo.DataStagingTaskRepository
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
@@ -151,6 +152,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Shares:                  sharingrepo.NewRepository(db),
 		Processes:               processrepo.NewProcessRepository(db),
 		Statuses:                processrepo.NewStatusRepository(db),
+		TaskStatuses:            processrepo.NewTaskStatusRepository(db),
 		BatchJobStatuses:        processrepo.NewBatchJobStatusRepository(db),
 		DataStagingTasks:        processrepo.NewDataStagingTaskRepository(db),
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
@@ -211,7 +213,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend, sshContext)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, workflowBackend, sshContext)
 	executionEngine.StartEngine()
 
 	return &Services{
