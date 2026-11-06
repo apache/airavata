@@ -97,6 +97,7 @@ type Services struct {
 	// the process that owns it, written and read through ProcessService.
 	Process                *processsvc.ProcessService
 	ProcessStatus          *processsvc.StatusService
+	TaskStatus             *processsvc.TaskStatusService
 	DataStagingTask        *processsvc.DataStagingTaskService
 	JobSubmissionTask      *processsvc.JobSubmissionTaskService
 	JobMonitoringTask      *processsvc.JobMonitoringTaskService
@@ -250,6 +251,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		Process:                processSvs,
 		ProcessStatus:          statusSvc,
+		TaskStatus:             processsvc.NewTaskStatusService(repos.TaskStatuses, processes),
 		DataStagingTask:        processsvc.NewDataStagingTaskService(db, stagingTasks, processes),
 		JobSubmissionTask:      processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes),
 		JobMonitoringTask:      processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes),

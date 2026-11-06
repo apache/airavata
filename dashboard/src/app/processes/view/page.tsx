@@ -7,17 +7,17 @@ import { Alert, Card, formatTime, Id, PageHead, StatusBadge, Table } from "@/com
 import { api, errorText, tryGet } from "@/lib/api";
 import { useDeploymentNames } from "@/lib/catalog";
 import { useResource } from "@/lib/hooks";
-import { isFileType, type DataProduct, type Process, type ProcessStatus, type Task } from "@/lib/types";
+import { isFileType, type DataProduct, type Process, type ProcessStatus, type Task, type TaskStatus, type TaskType } from "@/lib/types";
 
 const TERMINAL = new Set(["COMPLETED", "FAILED"]);
 const POLL_MS = 5000;
 
-const TASK_KINDS = [
-  { path: "data-staging-tasks", label: "Data staging" },
-  { path: "job-submission-tasks", label: "Job submission" },
-  { path: "job-monitoring-tasks", label: "Job monitoring" },
-  { path: "interactive-command-tasks", label: "Interactive commands" },
-] as const;
+const TASK_KINDS: readonly { path: string; label: string; type: TaskType }[] = [
+  { path: "data-staging-tasks", label: "Data staging", type: "DATA_STAGING" },
+  { path: "job-submission-tasks", label: "Job submission", type: "JOB_SUBMISSION" },
+  { path: "job-monitoring-tasks", label: "Job monitoring", type: "JOB_MONITORING" },
+  { path: "interactive-command-tasks", label: "Interactive commands", type: "INTERACTIVE_COMMAND" },
+];
 
 // Fields every task carries; the rest are kind-specific and shown as they come.
 const COMMON_TASK_FIELDS = new Set(["taskId", "processId", "onFailure", "retryCount", "taskOrder"]);
@@ -41,10 +41,13 @@ function ProcessView() {
         api.get<ProcessStatus[]>(`/api/v1/processes/${id}/statuses`),
       ]);
       // Tasks are owner-scoped: a viewer who is neither owner nor admin sees none.
-      const tasks = await Promise.all(TASK_KINDS.map((k) => tryGet<Task[]>(`/api/v1/processes/${id}/${k.path}`)));
+      const [tasks, taskStatuses] = await Promise.all([
+        Promise.all(TASK_KINDS.map((k) => tryGet<Task[]>(`/api/v1/processes/${id}/${k.path}`))),
+        tryGet<TaskStatus[]>(`/api/v1/processes/${id}/task-statuses`),
+      ]);
       const done = TERMINAL.has(statuses[statuses.length - 1]?.status ?? "");
       if (done) setLive(false);
-      return { process, statuses, tasks };
+      return { process, statuses, tasks, taskStatuses: taskStatuses ?? [] };
     },
     [id],
     live ? POLL_MS : undefined,
@@ -57,6 +60,11 @@ function ProcessView() {
   const bp = d?.process.batchProcess;
   const latest = d?.statuses[d.statuses.length - 1];
   const template = names.template(names.deployment(bp?.deploymentId)?.templateId);
+  // Statuses arrive oldest first, so the last one seen for a task is its current one.
+  const latestTaskStatus = new Map<string, TaskStatus>();
+  for (const s of d?.taskStatuses ?? []) latestTaskStatus.set(s.taskId, s);
+  const taskOrder = new Map<string, number | null>();
+  d?.tasks.forEach((list) => list?.forEach((t) => taskOrder.set(t.taskId, t.taskOrder)));
 
   const launch = async () => {
     setBusy(true);
@@ -166,6 +174,32 @@ function ProcessView() {
             )}
           </Card>
 
+          {d.taskStatuses.length > 0 && (
+            <Card title="Task history">
+              <ul className="timeline">
+                {d.taskStatuses.map((s) => {
+                  const order = taskOrder.get(s.taskId);
+                  return (
+                    <li key={s.taskStatusId}>
+                      <span>
+                        <StatusBadge status={s.status} />
+                      </span>
+                      <span className="small muted">{formatTime(s.timestamp)}</span>
+                      <span>
+                        <span className="row">
+                          <strong>{TASK_KINDS.find((k) => k.type === s.taskType)?.label ?? s.taskType}</strong>
+                          {order !== undefined && order !== null && <span className="small muted">step {order}</span>}
+                          <Id value={s.taskId} />
+                        </span>
+                        {s.log && <pre className="block">{s.log}</pre>}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
+          )}
+
           {bp && (
             <Card title="Run">
               <dl className="kv">
@@ -223,6 +257,11 @@ function ProcessView() {
                   empty=""
                   columns={[
                     { header: "Order", cell: (t) => t.taskOrder ?? "—" },
+                    { header: "Status", cell: (t) => <StatusBadge status={latestTaskStatus.get(t.taskId)?.status} /> },
+                    {
+                      header: "Updated",
+                      cell: (t) => <span className="small">{formatTime(latestTaskStatus.get(t.taskId)?.timestamp)}</span>,
+                    },
                     ...extra.map((f) => ({
                       header: f,
                       cell: (t: Task) => {

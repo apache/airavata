@@ -261,6 +261,20 @@ export interface ProcessStatus {
   timestamp: number | null;
 }
 
+export type TaskType = "DATA_STAGING" | "JOB_SUBMISSION" | "JOB_MONITORING" | "INTERACTIVE_COMMAND";
+
+export type TaskStatusType = "CREATED" | "EXECUTING" | "PAUSED" | "COMPLETED" | "FAILED" | "CANCELED";
+
+export interface TaskStatus {
+  taskStatusId: string;
+  taskId: string;
+  taskType: TaskType;
+  processId: string | null;
+  status: TaskStatusType | null;
+  log: string | null;
+  timestamp: number | null;
+}
+
 export interface Task {
   taskId: string;
   processId: string | null;

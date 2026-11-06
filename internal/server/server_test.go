@@ -2541,3 +2541,60 @@ func TestDiscoverAllocations(t *testing.T) {
 		t.Errorf("fallback allocations = %v, want proj3 from sshare", allocs)
 	}
 }
+
+// Task statuses are written by the engine, read through the process they belong to, and
+// owner-scoped like the tasks themselves.
+func TestTaskStatusesAreReadThroughTheirProcess(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("task-statuses", tokenAlice)
+	other := h.seedProcess("other-task-statuses", tokenAlice)
+
+	task := h.mustDo(http.MethodPost, "/api/v1/processes/"+processID+"/data-staging-tasks", tokenAlice,
+		map[string]any{"sourcePath": "/in", "destinationPath": "/out", "taskOrder": 1}, http.StatusCreated)
+	taskID := task["taskId"].(string)
+
+	for i, status := range []string{"EXECUTING", "FAILED"} {
+		if err := h.db.Exec(`INSERT INTO task_statuses (task_status_id, task_id, task_type, process_id, status, log, timestamp)
+			VALUES (?, ?, 'DATA_STAGING', ?, ?, ?, ?)`,
+			status+"-"+taskID, taskID, processID, status, "attempt", 1_700_000_000_000+int64(i)).Error; err != nil {
+			t.Fatalf("seed task status: %v", err)
+		}
+	}
+
+	all := h.list("/api/v1/processes/"+processID+"/task-statuses", tokenAlice)
+	if len(all) != 2 || all[0]["status"] != "EXECUTING" || all[1]["status"] != "FAILED" {
+		t.Fatalf("task statuses = %v, want EXECUTING then FAILED", all)
+	}
+	if all[1]["taskId"] != taskID || all[1]["taskType"] != "DATA_STAGING" {
+		t.Errorf("status = %v, want it to name the task and its kind", all[1])
+	}
+
+	if one := h.list("/api/v1/processes/"+processID+"/tasks/"+taskID+"/statuses", tokenAlice); len(one) != 2 {
+		t.Errorf("per-task statuses = %d, want 2", len(one))
+	}
+
+	// A task id from one process reads nothing through another's path.
+	if leaked := h.list("/api/v1/processes/"+other+"/tasks/"+taskID+"/statuses", tokenAlice); len(leaked) != 0 {
+		t.Errorf("cross-process statuses = %d, want 0", len(leaked))
+	}
+
+	for _, path := range []string{
+		"/api/v1/processes/" + processID + "/task-statuses",
+		"/api/v1/processes/" + processID + "/tasks/" + taskID + "/statuses",
+	} {
+		if rec := h.do(http.MethodGet, path, tokenBob, nil); rec.Code != http.StatusForbidden {
+			t.Errorf("GET %s as another user: status = %d, want 403", path, rec.Code)
+		}
+		if rec := h.do(http.MethodGet, path, "", nil); rec.Code != http.StatusUnauthorized {
+			t.Errorf("GET %s anonymously: status = %d, want 401", path, rec.Code)
+		}
+		h.mustDo(http.MethodGet, path, tokenAdmin, nil, http.StatusOK)
+	}
+
+	if rec := h.do(http.MethodGet, "/api/v1/processes/no-such-process/task-statuses", tokenAlice, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("unknown process: status = %d, want 404", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/task-statuses", tokenAlice, map[string]any{}); rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST task-statuses: status = %d, want 405", rec.Code)
+	}
+}

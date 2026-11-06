@@ -53,6 +53,18 @@ func (r *TaskStatusRepository) FindByTaskID(ctx context.Context, taskID string) 
 	return out, err
 }
 
+// FindByTaskIDAndProcessID returns every status recorded for one task of one process,
+// oldest first. Scoping by process as well stops a task id from one process reading
+// another's history.
+func (r *TaskStatusRepository) FindByTaskIDAndProcessID(ctx context.Context, taskID, processID string) ([]model.TaskStatus, error) {
+	var out []model.TaskStatus
+	err := r.db.WithContext(ctx).
+		Where("task_id = ? AND process_id = ?", taskID, processID).
+		Order("timestamp").
+		Find(&out).Error
+	return out, err
+}
+
 // FindByProcessID returns every status recorded for the tasks of one process, oldest
 // first.
 func (r *TaskStatusRepository) FindByProcessID(ctx context.Context, processID string) ([]model.TaskStatus, error) {
