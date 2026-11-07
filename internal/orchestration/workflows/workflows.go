@@ -171,7 +171,7 @@ func (w *Workflows) HandleBatchJobCompletion(ctx workflow.Context, processID str
 }
 
 // HandleBatchJobSubmission stages a process's inputs onto its cluster and submits the
-// job.
+// job. This is an async call and will not block the caller.
 func (w *Workflows) HandleBatchJobSubmission(ctx workflow.Context, processID string) error {
 
 	ctxInt := context.Background()
