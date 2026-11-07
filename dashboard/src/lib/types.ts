@@ -262,6 +262,21 @@ export interface ProcessStatus {
   timestamp: number | null;
 }
 
+export type ProcessWorkflowType = "BATCH_JOB_SUBMISSION" | "JOB_MONITORING" | "BATCH_JOB_COMPLETION";
+
+export type ProcessWorkflowStatusType = "RUNNING" | "SUCCEEDED" | "FAILED";
+
+// One workflow run of a process, updated in place as it moves from RUNNING to its
+// outcome. workflowId is the workflow engine's instance id.
+export interface ProcessWorkflow {
+  processWorkflowId: string;
+  processId: string | null;
+  workflowId: string;
+  workflowType: ProcessWorkflowType | null;
+  status: ProcessWorkflowStatusType | null;
+  timestamp: number | null;
+}
+
 export type TaskType = "DATA_STAGING" | "JOB_SUBMISSION" | "JOB_MONITORING" | "INTERACTIVE_COMMAND";
 
 export type TaskStatusType = "CREATED" | "EXECUTING" | "PAUSED" | "COMPLETED" | "FAILED" | "CANCELED";

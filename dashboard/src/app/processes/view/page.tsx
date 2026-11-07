@@ -7,7 +7,17 @@ import { Alert, Card, formatTime, Id, PageHead, StatusBadge, Table } from "@/com
 import { api, errorText, tryGet } from "@/lib/api";
 import { useDeploymentNames } from "@/lib/catalog";
 import { useResource } from "@/lib/hooks";
-import { isFileType, type DataProduct, type Process, type ProcessStatus, type Task, type TaskStatus, type TaskType } from "@/lib/types";
+import {
+  isFileType,
+  type DataProduct,
+  type Process,
+  type ProcessStatus,
+  type ProcessWorkflow,
+  type ProcessWorkflowType,
+  type Task,
+  type TaskStatus,
+  type TaskType,
+} from "@/lib/types";
 
 const TERMINAL = new Set(["COMPLETED", "FAILED"]);
 const POLL_MS = 5000;
@@ -18,6 +28,12 @@ const TASK_KINDS: readonly { path: string; label: string; type: TaskType }[] = [
   { path: "job-monitoring-tasks", label: "Job monitoring", type: "JOB_MONITORING" },
   { path: "interactive-command-tasks", label: "Interactive commands", type: "INTERACTIVE_COMMAND" },
 ];
+
+const WORKFLOW_LABELS: Record<ProcessWorkflowType, string> = {
+  BATCH_JOB_SUBMISSION: "Job submission",
+  JOB_MONITORING: "Job monitoring",
+  BATCH_JOB_COMPLETION: "Job completion",
+};
 
 // Fields every task carries; the rest are kind-specific and shown as they come.
 const COMMON_TASK_FIELDS = new Set(["taskId", "processId", "onFailure", "retryCount", "taskOrder"]);
@@ -41,13 +57,19 @@ function ProcessView() {
         api.get<ProcessStatus[]>(`/api/v1/processes/${id}/statuses`),
       ]);
       // Tasks are owner-scoped: a viewer who is neither owner nor admin sees none.
-      const [tasks, taskStatuses] = await Promise.all([
+      // So are workflows.
+      const [tasks, taskStatuses, workflows] = await Promise.all([
         Promise.all(TASK_KINDS.map((k) => tryGet<Task[]>(`/api/v1/processes/${id}/${k.path}`))),
         tryGet<TaskStatus[]>(`/api/v1/processes/${id}/task-statuses`),
+        tryGet<ProcessWorkflow[]>(`/api/v1/processes/${id}/workflows`),
       ]);
-      const done = TERMINAL.has(statuses[statuses.length - 1]?.status ?? "");
+      // A process is marked COMPLETED from inside its completion workflow, just before
+      // that workflow records its own outcome, so keep polling until it has.
+      const done =
+        TERMINAL.has(statuses[statuses.length - 1]?.status ?? "") &&
+        !(workflows ?? []).some((w) => w.status === "RUNNING");
       if (done) setLive(false);
-      return { process, statuses, tasks, taskStatuses: taskStatuses ?? [] };
+      return { process, statuses, tasks, taskStatuses: taskStatuses ?? [], workflows };
     },
     [id],
     live ? POLL_MS : undefined,
@@ -173,6 +195,30 @@ function ProcessView() {
               </>
             )}
           </Card>
+
+          {d.workflows && d.workflows.length > 0 && (
+            <Card title="Workflows" flush>
+              <Table
+                rows={d.workflows}
+                rowKey={(w) => w.processWorkflowId}
+                empty=""
+                columns={[
+                  {
+                    header: "Workflow",
+                    cell: (w) => (
+                      <span className="row">
+                        <strong>{w.workflowType ? WORKFLOW_LABELS[w.workflowType] : "—"}</strong>
+                        {w.processWorkflowId === d.process.lastWorkflowId && <span className="small muted">latest</span>}
+                      </span>
+                    ),
+                  },
+                  { header: "Status", cell: (w) => <StatusBadge status={w.status} /> },
+                  { header: "Started", cell: (w) => <span className="small">{formatTime(w.timestamp)}</span> },
+                  { header: "Workflow ID", cell: (w) => <Id value={w.workflowId} /> },
+                ]}
+              />
+            </Card>
+          )}
 
           {d.taskStatuses.length > 0 && (
             <Card title="Task history">
