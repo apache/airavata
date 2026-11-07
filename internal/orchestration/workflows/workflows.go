@@ -88,7 +88,7 @@ func (w *Workflows) Register(r Registrar) error {
 			return err
 		}
 	}
-	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.CompleteProcess} {
+	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.CompleteProcess, w.RecordWorkflowStatus} {
 		if err := r.RegisterActivity(a); err != nil {
 			return err
 		}
@@ -99,6 +99,12 @@ func (w *Workflows) Register(r Registrar) error {
 // HandleBatchJobCompletion runs once the scheduler reports a job finished: it checks
 // the job's outcome, stages its outputs back and marks the process complete.
 func (w *Workflows) HandleBatchJobCompletion(ctx workflow.Context, processID string) error {
+	return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeJobCompletion, func() error {
+		return w.handleBatchJobCompletion(ctx, processID)
+	})
+}
+
+func (w *Workflows) handleBatchJobCompletion(ctx workflow.Context, processID string) error {
 	// Implement the logic for batch job completion workflow here
 
 	ctxInt := context.Background()
@@ -170,18 +176,18 @@ func (w *Workflows) HandleBatchJobCompletion(ctx workflow.Context, processID str
 		return err
 	}
 
-	// record workflow completion
-	if _, err := w.processWorkflows.Record(ctxInt, processID, workflow.WorkflowInstance(ctx).InstanceID, model.ProcessWorkflowTypeJobCompletion, model.ProcessWorkflowStatusTypeSucceeded); err != nil {
-		slog.Error("Failed to record process workflow", "processId", processID, "error", err)
-		return err
-	}
-
 	return nil
 }
 
 // HandleBatchJobSubmission stages a process's inputs onto its cluster and submits the
 // job. This is an async call and will not block the caller.
 func (w *Workflows) HandleBatchJobSubmission(ctx workflow.Context, processID string) error {
+	return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission, func() error {
+		return w.handleBatchJobSubmission(ctx, processID)
+	})
+}
+
+func (w *Workflows) handleBatchJobSubmission(ctx workflow.Context, processID string) error {
 
 	ctxInt := context.Background()
 
@@ -241,11 +247,6 @@ func (w *Workflows) HandleBatchJobSubmission(ctx workflow.Context, processID str
 		w.batch.SubmitBatchJob, executionContext, processID, jst.ID).Get(ctx)
 	if err != nil {
 		slog.Error("Failed processing job submission task", "processId", processID, "taskId", jst.ID, "error", err)
-		return err
-	}
-
-	if _, err := w.processWorkflows.Record(ctxInt, processID, workflow.WorkflowInstance(ctx).InstanceID, model.ProcessWorkflowTypeBatchJobSubmission, model.ProcessWorkflowStatusTypeSucceeded); err != nil {
-		slog.Error("Failed to record process workflow", "processId", processID, "error", err)
 		return err
 	}
 

@@ -39,7 +39,7 @@ func TestRegister(t *testing.T) {
 			t.Errorf("workflow %s: %v", name, err)
 		}
 	}
-	for _, name := range []string{"CopyData", "SubmitBatchJob", "MonitorBatchJob", "CompleteProcess"} {
+	for _, name := range []string{"CopyData", "SubmitBatchJob", "MonitorBatchJob", "CompleteProcess", "RecordWorkflowStatus"} {
 		if _, err := r.GetActivity(name); err != nil {
 			t.Errorf("activity %s: %v", name, err)
 		}

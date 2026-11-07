@@ -265,7 +265,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
-			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, processWorkflowSvc, stagingTasks, submissionTasks,
+			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, executionEngine),
 
 		ExecutionEngine: executionEngine,
