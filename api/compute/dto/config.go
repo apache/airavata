@@ -137,4 +137,5 @@ type Allocation struct {
 // AllocationDiscoveryResponse is what a cluster config's login may charge.
 type AllocationDiscoveryResponse struct {
 	Allocations []Allocation `json:"allocations"`
+	*PartitionDiscoveryResponse
 }

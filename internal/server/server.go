@@ -36,6 +36,7 @@ import (
 	datactl "github.com/apache/airavata/api/data/controller"
 	iamctl "github.com/apache/airavata/api/iam/controller"
 	processctl "github.com/apache/airavata/api/process/controller"
+	sessionctl "github.com/apache/airavata/api/session/controller"
 	sharingctl "github.com/apache/airavata/api/sharing/controller"
 )
 
@@ -46,6 +47,9 @@ import (
 // over the same database.
 func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) http.Handler {
 	mux := http.NewServeMux()
+	if svcs.SignIn != nil {
+		iamctl.NewSignInController(svcs.SignIn, introspector, svcs.User).Register(mux)
+	}
 	iamctl.NewUserController(svcs.User).Register(mux)
 	iamctl.NewGroupController(svcs.Group).Register(mux)
 	iamctl.NewGroupMemberController(svcs.GroupMember).Register(mux)
@@ -70,12 +74,13 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	sharingctl.New(svcs.VirtualDataDirectorySharing, "/api/v1/virtual-data-directories", "virtualDataDirectoryId").Register(mux)
 	sharingctl.New(svcs.SlurmClusterConfigSharing, "/api/v1/slurm-cluster-configs", "slurmClusterConfigId").Register(mux)
 	processctl.NewProcessController(svcs.Process).Register(mux)
-	processctl.NewLaunchController(svcs.Launch).Register(mux)
+	processctl.NewLaunchController(svcs.Launch, svcs.ExecutionEngine).Register(mux)
 	processctl.NewStatusController(svcs.ProcessStatus).Register(mux)
 	processctl.NewDataStagingTaskController(svcs.DataStagingTask).Register(mux)
 	processctl.NewJobSubmissionTaskController(svcs.JobSubmissionTask).Register(mux)
 	processctl.NewJobMonitoringTaskController(svcs.JobMonitoringTask).Register(mux)
 	processctl.NewInteractiveCommandTaskController(svcs.InteractiveCommandTask).Register(mux)
+	sessionctl.NewSessionController(svcs.Session).Register(mux)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})
@@ -120,8 +125,8 @@ func cors(allowed []string) func(http.Handler) http.Handler {
 
 			if origin != "" && (allowAll || origins[origin]) {
 				w.Header().Set("Access-Control-Allow-Credentials", "true")
-				w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, "+auth.ConnectionHeader)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			}
 
 			if r.Method == http.MethodOptions {

@@ -48,6 +48,8 @@ type SSHCredential struct {
 	PrivateKey string  `gorm:"column:private_key;type:text;not null" json:"-"`
 	Passphrase *string `gorm:"column:passphrase;type:varchar(255)" json:"-"`
 
+	Password *string `gorm:"column:password;type:varchar(255)" json:"-"`
+
 	// Certificate based authentication. This indicates whether the SSH credential uses a certificate for authentication.
 	IsCertificate bool `gorm:"column:is_certificate;not null" json:"isCertificate"`
 

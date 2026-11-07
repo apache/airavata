@@ -61,6 +61,8 @@ type BatchJobConfig struct {
 	Constraints *string `gorm:"column:constraints;type:varchar(255)" json:"constraints,omitempty"`
 
 	Allocation string `gorm:"column:allocation;type:varchar(255);not null" json:"allocation"`
+
+	Partition *string `gorm:"column:partition;type:varchar(255)" json:"partition,omitempty"`
 }
 
 // TableName returns the table backing BatchJobConfig.
@@ -106,6 +108,9 @@ type BatchDeployment struct {
 	DefaultBatchJobConfig   *BatchJobConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"defaultBatchJobConfig,omitempty"`
 
 	DefaultPartition *string `gorm:"column:default_partition;type:varchar(255)" json:"defaultPartition,omitempty"`
+
+	ContainerImage *string `gorm:"column:container_image;type:varchar(1024)" json:"containerImage,omitempty"`
+	ContainerBind  *string `gorm:"column:container_bind;type:text" json:"containerBind,omitempty"`
 }
 
 // TableName returns the table backing BatchDeployment.

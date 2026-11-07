@@ -23,10 +23,12 @@
 package service
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/auth"
@@ -138,49 +140,55 @@ func (s *ProcessService) Get(ctx context.Context, id string) (*dto.Response, err
 // Any authenticated caller may submit for themselves — this is self-service, not an
 // administrative operation — and the owner always comes from the token.
 func (s *ProcessService) Create(ctx context.Context, req *dto.Request) (*dto.Response, error) {
-	principal, err := auth.RequireAuthenticated(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	var out dto.Response
-	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		processes, users := s.processes.WithTx(tx), s.users.WithTx(tx)
-
-		owner, err := users.FindByID(ctx, principal.Name)
-		if err != nil {
-			return notFoundAs(err, "No user record found for authenticated principal: %s", principal.Name)
-		}
-
-		proc := &model.Process{OwnerID: &owner.ID, ProcessType: req.ProcessType}
-		if err := processes.Save(ctx, proc); err != nil {
-			return err
-		}
-
-		if req.BatchProcess != nil {
-			batch, err := s.saveBatchProcess(ctx, tx, proc.ID, nil, req.BatchProcess)
-			if err != nil {
-				return err
-			}
-			if err := s.saveMappings(ctx, tx, batch.ID, req.BatchProcess); err != nil {
-				return err
-			}
-		}
-
-		// Recorded in the same transaction as the process itself, so a caller never
-		// observes a process that exists but has no status yet.
-		if _, err := s.statuses.RecordTx(ctx, tx, proc.ID, model.ProcessStatusTypeCreated, nil); err != nil {
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		proc := &model.Process{}
+		if err := s.CreateTx(ctx, tx, proc, req); err != nil {
 			return err
 		}
 
 		// Read back rather than assembled from the request, so the response is the
 		// stored row — including last_status_id, which the status write just set.
-		return s.render(ctx, processes, proc.ID, &out)
+		return s.render(ctx, s.processes.WithTx(tx), proc.ID, &out)
 	})
 	if err != nil {
 		return nil, err
 	}
 	return &out, nil
+}
+
+// CreateTx writes a process for the calling user on tx, which the caller owns. The
+// caller may preset proc.ID and proc.SessionID; the owner and type are set here.
+func (s *ProcessService) CreateTx(ctx context.Context, tx *gorm.DB, proc *model.Process, req *dto.Request) error {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return err
+	}
+
+	owner, err := s.users.WithTx(tx).FindByID(ctx, principal.Name)
+	if err != nil {
+		return notFoundAs(err, "No user record found for authenticated principal: %s", principal.Name)
+	}
+
+	proc.OwnerID, proc.ProcessType = &owner.ID, req.ProcessType
+	if err := s.processes.WithTx(tx).Save(ctx, proc); err != nil {
+		return err
+	}
+
+	if req.BatchProcess != nil {
+		batch, err := s.saveBatchProcess(ctx, tx, proc.ID, nil, req.BatchProcess)
+		if err != nil {
+			return err
+		}
+		if err := s.saveMappings(ctx, tx, batch.ID, req.BatchProcess); err != nil {
+			return err
+		}
+	}
+
+	// Recorded in the same transaction as the process itself, so a caller never
+	// observes a process that exists but has no status yet.
+	_, err = s.statuses.RecordTx(ctx, tx, proc.ID, model.ProcessStatusTypeCreated, nil)
+	return err
 }
 
 // Update is an administrative correction of a process: its deployment, the resources
@@ -266,11 +274,13 @@ func (s *ProcessService) saveBatchProcess(
 		return nil, err
 	}
 
-	batch := &model.BatchJobProcess{ProcessID: &processID}
+	batch := &model.BatchJobProcess{ProcessID: &processID, Token: uuid.NewString(), LinkToken: uuid.NewString()}
 	config := &applicationmodel.BatchJobConfig{}
 	if existing != nil {
 		batch.ID = existing.ID
 		batch.BatchJobConfigID = existing.BatchJobConfigID
+		batch.Token = cmp.Or(existing.Token, batch.Token)
+		batch.LinkToken = cmp.Or(existing.LinkToken, batch.LinkToken)
 		if existing.BatchJobConfig != nil {
 			config = existing.BatchJobConfig
 		} else {

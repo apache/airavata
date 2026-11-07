@@ -33,6 +33,8 @@ import (
 )
 
 func (a *ExecutionEngine) copyData(ctx context.Context, executionContext *ExecutionContext, processId string, dataStagingTaskId string) (*ExecutionContext, error) {
+	ctx, done := a.activity(ctx, processId)
+	defer done()
 
 	process, err := a.process(ctx, processId)
 	if err != nil {

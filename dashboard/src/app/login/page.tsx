@@ -46,12 +46,12 @@ export default function LoginPage() {
               autoComplete="off"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="Root token or CILogon access token"
+              placeholder="Root token or CILogon ID token"
             />
           </Field>
           <p className="small muted" style={{ margin: 0 }}>
             The root token is printed in the server log at startup (pin it with <code>AIRAVATA_ROOT_ACCOUNT_TOKEN</code>
-            ). A CILogon access token works too. The token is kept in this browser&apos;s local storage until you sign
+            ). A CILogon ID token works too. The token is kept in this browser&apos;s local storage until you sign
             out.
           </p>
           <Alert>{error}</Alert>

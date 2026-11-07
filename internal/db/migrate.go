@@ -30,6 +30,7 @@ import (
 	datamodel "github.com/apache/airavata/api/data/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	processmodel "github.com/apache/airavata/api/process/model"
+	sessionmodel "github.com/apache/airavata/api/session/model"
 	sharingmodel "github.com/apache/airavata/api/sharing/model"
 )
 
@@ -44,6 +45,7 @@ func Entities() []any {
 		&credentialsmodel.SSHCredential{},
 		&applicationmodel.Template{},
 		&applicationmodel.BatchJobConfig{},
+		&sessionmodel.Session{},
 
 		// One level in.
 		&iammodel.UserRole{},

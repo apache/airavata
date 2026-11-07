@@ -25,13 +25,27 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/coder/websocket"
+	"github.com/cschleiden/go-workflows/backend"
+	"github.com/cschleiden/go-workflows/backend/history"
+	"github.com/cschleiden/go-workflows/backend/metrics"
+	"github.com/cschleiden/go-workflows/workflow"
 	"github.com/glebarez/sqlite"
+	"github.com/hashicorp/yamux"
+	"go.opentelemetry.io/otel/trace"
+	gossh "golang.org/x/crypto/ssh"
+	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
@@ -44,6 +58,7 @@ import (
 	"github.com/apache/airavata/internal/ssh"
 
 	iammodel "github.com/apache/airavata/api/iam/model"
+	model "github.com/apache/airavata/api/process/model"
 	sharingmodel "github.com/apache/airavata/api/sharing/model"
 )
 
@@ -56,6 +71,29 @@ func (s stubIntrospector) Introspect(_ context.Context, token string) (*auth.Pri
 		return p, nil
 	}
 	return nil, auth.ErrInvalidToken
+}
+
+// queuedBackend accepts every workflow and runs none, so a launch ends at SUBMITTED. The
+// real sqlite backend's driver collides with the harness's own.
+type queuedBackend struct{ backend.Backend }
+
+func (queuedBackend) Options() *backend.Options { return &backend.DefaultOptions }
+func (queuedBackend) Metrics() metrics.Client   { return backend.DefaultOptions.Metrics }
+func (queuedBackend) Tracer() trace.Tracer {
+	return backend.DefaultOptions.TracerProvider.Tracer(backend.TracerName)
+}
+func (queuedBackend) CreateWorkflowInstance(context.Context, *workflow.Instance, *history.Event) error {
+	return nil
+}
+func (queuedBackend) PrepareWorkflowQueues(context.Context, []workflow.Queue) error { return nil }
+func (queuedBackend) PrepareActivityQueues(context.Context, []workflow.Queue) error { return nil }
+func (queuedBackend) GetWorkflowTask(ctx context.Context, _ []workflow.Queue) (*backend.WorkflowTask, error) {
+	<-ctx.Done()
+	return nil, ctx.Err()
+}
+func (queuedBackend) GetActivityTask(ctx context.Context, _ []workflow.Queue) (*backend.ActivityTask, error) {
+	<-ctx.Done()
+	return nil, ctx.Err()
 }
 
 // Tokens used throughout. Each names a seeded user except "bogus".
@@ -87,6 +125,10 @@ func newHarness(t *testing.T) *harness {
 	if err != nil {
 		t.Fatalf("open sqlite: %v", err)
 	}
+	// Each connection to :memory: is its own database, and links write from another goroutine.
+	sqlDB, _ := gdb.DB()
+	sqlDB.SetMaxOpenConns(1)
+	t.Cleanup(func() { _ = sqlDB.Close() })
 	if err := db.AutoMigrate(gdb); err != nil {
 		t.Fatalf("automigrate: %v", err)
 	}
@@ -109,7 +151,7 @@ func newHarness(t *testing.T) *harness {
 		}
 	}
 
-	cfg := config.Config{CORSAllowedOrigins: []string{"*"}}
+	cfg := config.Config{CORSAllowedOrigins: []string{"*"}, PublicURL: "https://api.example.org"}
 	introspector := stubIntrospector{
 		tokenAdmin: {Name: "admin-user", Authorities: []string{string(role.Admin)}},
 		tokenAlice: {Name: "alice", Authorities: []string{string(role.User)}},
@@ -117,8 +159,7 @@ func newHarness(t *testing.T) *harness {
 	}
 
 	repos := app.NewRepositories(gdb)
-	// passing nil for workflow backend to prevent test panic due to sqlite driver collision
-	svcs := app.NewServices(cfg, gdb, repos, nil)
+	svcs := app.NewServices(cfg, gdb, repos, queuedBackend{})
 	return &harness{
 		t:            t,
 		db:           gdb,
@@ -360,10 +401,13 @@ func TestSSHCredentialSecretsAreNeverReturnedAndRequiredOnCreate(t *testing.T) {
 		"sshCredentialName": "k", "publicKey": "ssh-ed25519 AAAA", "privateKey": "SUPER-SECRET",
 		"passphrase": "hunter2",
 	}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/ssh-credentials", tokenAdmin, map[string]any{
+		"sshCredentialName": "p", "password": "letmein-pw",
+	}, http.StatusCreated)
 
 	for _, path := range []string{"/api/v1/ssh-credentials", "/api/v1/ssh-credentials/" + created["sshCredentialId"].(string)} {
 		body := h.do(http.MethodGet, path, tokenAdmin, nil).Body.String()
-		if strings.Contains(body, "SUPER-SECRET") || strings.Contains(body, "hunter2") {
+		if strings.Contains(body, "SUPER-SECRET") || strings.Contains(body, "hunter2") || strings.Contains(body, "letmein-pw") {
 			t.Errorf("GET %s leaked a secret: %s", path, body)
 		}
 	}
@@ -1447,6 +1491,10 @@ func TestProcessSubmitsUnderAConfigTheCallerMayUse(t *testing.T) {
 		t.Errorf("slurmClusterConfigId = %v, want the named config %s", got, configID)
 	}
 
+	if rec := create("", configID); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous create: status = %d, want 401", rec.Code)
+	}
+
 	// Naming none is a validation error rather than a run with no identity behind it.
 	rec := create(tokenAlice, nil)
 	if rec.Code != http.StatusBadRequest {
@@ -1546,6 +1594,20 @@ func TestLaunchingTwiceIsRefused(t *testing.T) {
 	h.mustDo(http.MethodPost, base, tokenAlice, nil, http.StatusAccepted)
 	if rec := h.do(http.MethodPost, base, tokenAlice, nil); rec.Code != http.StatusConflict {
 		t.Errorf("second launch: status = %d, want 409", rec.Code)
+	}
+}
+
+func TestAnEndedRunIsNotLaunched(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("ended", tokenAlice)
+	if _, err := h.svcs.ProcessStatus.Record(h.t.Context(), processID, model.ProcessStatusTypeFailed, nil); err != nil {
+		t.Fatal(err)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/launch", tokenAlice, nil); rec.Code != http.StatusConflict {
+		t.Errorf("launching a FAILED run: status = %d, want 409", rec.Code)
+	}
+	if got := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID, tokenAlice, nil, http.StatusOK); got["lastStatus"].(map[string]any)["status"] != "FAILED" {
+		t.Errorf("after the refused launch the run is %v, want FAILED", got["lastStatus"])
 	}
 }
 
@@ -2103,6 +2165,18 @@ func TestUserRegistrationRequiresSuperAdmin(t *testing.T) {
 	if created["createdAt"].(float64) <= 0 {
 		t.Error("createdAt was not stamped")
 	}
+
+	issuer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"access_token":"a","id_token":"token-dave","expires_in":900}`))
+	}))
+	defer issuer.Close()
+	h.svcs.SignIn = auth.NewSignIn(oauth2.Endpoint{TokenURL: issuer.URL}, "the-client", "the-secret", nil)
+	h.withIntrospector(stubIntrospector{"token-dave": {Name: "dave", Authorities: []string{"USER"}, Attributes: map[string]any{"email": "dave@example.org"}}})
+	h.mustDo(http.MethodPost, "/api/v1/auth/token", "", map[string]any{"refresh_token": "r"}, http.StatusOK)
+	if dave := h.mustDo(http.MethodGet, "/api/v1/users/dave", "token-dave", nil, http.StatusOK); dave["userId"] != "dave" {
+		t.Errorf("enrolled user = %v", dave)
+	}
 }
 
 // The user response carries five fields and must not widen to email or roles.
@@ -2497,9 +2571,11 @@ func TestDiscoverPartitions(t *testing.T) {
 // under that config. sacctmgr is tried first; sshare is the fallback when it fails.
 func TestDiscoverAllocations(t *testing.T) {
 	h := newHarness(t)
-	sacctmgrWorks := true
+	sacctmgrWorks, scontrolFails, ran := true, error(nil), 0
+	scontrolOut := "PartitionName=gpu Default=YES MaxTime=1-00:00:00\n"
 	h.svcs.ClusterDiscovery = h.svcs.ClusterDiscovery.WithRunner(
 		func(_ context.Context, _ ssh.SSHDialConfig, command, _ string) (string, string, error) {
+			ran++
 			switch {
 			case strings.Contains(command, "show associations"):
 				if !sacctmgrWorks {
@@ -2510,6 +2586,11 @@ func TestDiscoverAllocations(t *testing.T) {
 				return "proj3\n", "", nil
 			case strings.Contains(command, "show account"):
 				return "proj1|GPU project\n", "", nil
+			case strings.Contains(command, "scontrol"):
+				if scontrolFails != nil {
+					return "", "scontrol: not found", scontrolFails
+				}
+				return scontrolOut, "", nil
 			}
 			return "", "", errors.New("unexpected command: " + command)
 		})
@@ -2530,6 +2611,9 @@ func TestDiscoverAllocations(t *testing.T) {
 	if len(allocs) != 2 {
 		t.Fatalf("allocations = %v, want proj1 and proj2", allocs)
 	}
+	if parts := got["partitions"].([]any); len(parts) != 1 || parts[0].(map[string]any)["name"] != "gpu" {
+		t.Errorf("partitions = %v, want the cluster's own", parts)
+	}
 	first := allocs[0].(map[string]any)
 	if first["account"] != "proj1" || first["description"] != "GPU project" || len(first["partitions"].([]any)) != 1 {
 		t.Errorf("proj1 = %v", first)
@@ -2540,4 +2624,124 @@ func TestDiscoverAllocations(t *testing.T) {
 	if allocs := got["allocations"].([]any); len(allocs) != 1 || allocs[0].(map[string]any)["account"] != "proj3" {
 		t.Errorf("fallback allocations = %v, want proj3 from sshare", allocs)
 	}
+
+	scontrolFails = fmt.Errorf("ssh scontrol: %w", &gossh.ExitError{})
+	got = h.mustDo(http.MethodPost, path, tokenAlice, nil, http.StatusOK)
+	if _, carried := got["partitions"]; carried || len(got["allocations"].([]any)) != 1 {
+		t.Errorf("with scontrol failing = %v, want the allocations without partitions", got)
+	}
+
+	scontrolFails, scontrolOut = nil, ""
+	got = h.mustDo(http.MethodPost, path, tokenAlice, nil, http.StatusOK)
+	if _, carried := got["partitions"]; carried || len(got["allocations"].([]any)) != 1 {
+		t.Errorf("with scontrol reporting no partitions = %v, want the allocations without partitions", got)
+	}
+
+	scontrolFails, ran = errors.New("ssh: handshake failed"), 0
+	if rec := h.do(http.MethodPost, path, tokenAlice, nil); rec.Code != http.StatusBadGateway || ran != 1 {
+		t.Errorf("with the login failing: status = %d after %d commands, want 502 after the first", rec.Code, ran)
+	}
+}
+
+func fakeApp(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.URL.Path == "/api/v1/forward/22" {
+		if ws, err := websocket.Accept(w, r, nil); err == nil {
+			kind, data, _ := ws.Read(r.Context())
+			_ = ws.Write(r.Context(), kind, data)
+			_ = ws.Close(websocket.StatusNormalClosure, "")
+		}
+		return
+	}
+	_, _ = w.Write([]byte("app saw " + r.URL.Path))
+}
+
+// fakeLinkspan answers every stream's port frame with an open server.
+type fakeLinkspan struct{ *yamux.Session }
+
+func (l fakeLinkspan) Accept() (net.Conn, error) {
+	stream, err := l.AcceptStream()
+	if err == nil {
+		_, err = io.ReadFull(stream, make([]byte, 2))
+		_, _ = stream.Write([]byte{1})
+	}
+	return stream, err
+}
+
+func TestProcessLinkCarriesTrafficUntilStopped(t *testing.T) {
+	h := newHarness(t)
+	srv := httptest.NewServer(h.srv)
+	t.Cleanup(srv.Close)
+	wsURL := "ws" + strings.TrimPrefix(srv.URL, "http")
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	processID := h.seedProcess("linked", tokenAlice)
+	var batch model.BatchJobProcess
+	if err := h.db.First(&batch, "parent_process_id = ?", processID).Error; err != nil {
+		t.Fatal(err)
+	}
+	control, app := model.PortsOf(processID)
+	base := "/api/v1/processes/" + processID
+	appPort := strconv.Itoa(int(app))
+
+	h.mustDo(http.MethodGet, base+"/access", tokenAlice, nil, http.StatusConflict)
+	for _, wrong := range []string{"wrong", batch.Token} {
+		if _, _, err := websocket.Dial(ctx, wsURL+base+"/link",
+			&websocket.DialOptions{Subprotocols: []string{"cybershuttle.v1", "link." + wrong}}); err == nil {
+			t.Fatalf("the link accepted %q, which is not its link token", wrong)
+		}
+	}
+
+	ws, _, err := websocket.Dial(ctx, wsURL+base+"/link",
+		&websocket.DialOptions{Subprotocols: []string{"cybershuttle.v1", "link." + batch.LinkToken}})
+	if err != nil {
+		t.Fatalf("dial link: %v", err)
+	}
+	config := yamux.DefaultConfig()
+	config.LogOutput = io.Discard
+	fake, _ := yamux.Server(websocket.NetConn(ctx, ws, websocket.MessageBinary), config)
+	go func() { _ = http.Serve(fakeLinkspan{fake}, http.HandlerFunc(fakeApp)) }()
+	t.Cleanup(func() { _ = fake.Close() })
+	for deadline := time.Now().Add(5 * time.Second); h.do(http.MethodGet, base+"/access", tokenAlice, nil).Code != http.StatusOK; time.Sleep(20 * time.Millisecond) {
+		if time.Now().After(deadline) {
+			t.Fatal("the link never came up")
+		}
+	}
+	access := h.mustDo(http.MethodGet, base+"/access", tokenAlice, nil, http.StatusOK)
+	granted := access["app"].(map[string]any)
+	if granted["uri"] != "https://api.example.org"+base+"/proxy/"+appPort+"/" || granted["token"] != batch.Token {
+		t.Fatalf("app access = %v", granted)
+	}
+	h.mustDo(http.MethodGet, base+"/access", tokenBob, nil, http.StatusForbidden)
+
+	rec := h.do(http.MethodGet, base+"/proxy/"+appPort+"/lab/tree?token="+batch.Token, "", nil)
+	if rec.Code != http.StatusOK || rec.Body.String() != "app saw /lab/tree" || rec.Header().Get("Access-Control-Allow-Origin") != "" {
+		t.Fatalf("proxy = %d %q %v", rec.Code, rec.Body.String(), rec.Header())
+	}
+	h.mustDo(http.MethodGet, base+"/proxy/"+appPort+"/?token=wrong", "", nil, http.StatusUnauthorized)
+
+	forward, _, err := websocket.Dial(ctx, wsURL+base+"/proxy/"+strconv.Itoa(int(control))+"/api/v1/forward/22?token="+batch.Token, nil)
+	if err != nil {
+		t.Fatalf("Linkspan's forward through the proxy: %v", err)
+	}
+	defer forward.CloseNow()
+	_ = forward.Write(ctx, websocket.MessageBinary, []byte("ping"))
+	if _, reply, _ := forward.Read(ctx); string(reply) != "ping" {
+		t.Fatalf("forwarded reply = %q", reply)
+	}
+
+	stopped := h.mustDo(http.MethodPost, base+"/stop", tokenAlice, nil, http.StatusOK)
+	if stopped["lastStatus"].(map[string]any)["status"] != "CANCELLED" {
+		t.Fatalf("stopped = %v", stopped["lastStatus"])
+	}
+	_, _ = h.svcs.ProcessStatus.Record(ctx, processID, model.ProcessStatusTypeSubmitted, nil)
+	if again := h.mustDo(http.MethodPost, base+"/stop", tokenAlice, nil, http.StatusOK); again["lastStatusId"] != stopped["lastStatusId"] {
+		t.Fatalf("a late status or a second stop moved the run to %v", again["lastStatus"])
+	}
+	select {
+	case <-fake.CloseChan():
+	case <-time.After(5 * time.Second):
+		t.Fatal("the link outlived the stop")
+	}
+	h.mustDo(http.MethodGet, base+"/access", tokenAlice, nil, http.StatusConflict)
 }

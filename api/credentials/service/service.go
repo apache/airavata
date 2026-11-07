@@ -24,9 +24,9 @@
 package service
 
 import (
+	"cmp"
 	"context"
 	"errors"
-	"strings"
 
 	"gorm.io/gorm"
 
@@ -162,8 +162,8 @@ func (s *SSHCredentialService) Create(ctx context.Context, req *dto.SSHCredentia
 	if err != nil {
 		return nil, err
 	}
-	if (req.PrivateKey == nil || strings.TrimSpace(*req.PrivateKey) == "") && !req.FullInteractive {
-		return nil, httpx.BadRequest("Private key is required when creating a key unless full interactive mode is enabled")
+	if ptr.NonBlank(req.PrivateKey) == nil && ptr.NonBlank(req.Password) == nil && !req.FullInteractive {
+		return nil, httpx.BadRequest("A private key or a password is required when creating a key unless full interactive mode is enabled")
 	}
 
 	key := &model.SSHCredential{
@@ -171,6 +171,7 @@ func (s *SSHCredentialService) Create(ctx context.Context, req *dto.SSHCredentia
 		PublicKey:         req.PublicKey,
 		PrivateKey:        ptr.From(req.PrivateKey),
 		Passphrase:        ptr.NonBlank(req.Passphrase),
+		Password:          ptr.NonBlank(req.Password),
 		FullInteractive:   req.FullInteractive,
 		OwnerID:           owner.ID,
 	}
@@ -201,6 +202,7 @@ func (s *SSHCredentialService) Update(ctx context.Context, id string, req *dto.S
 	if v := ptr.NonBlank(req.Passphrase); v != nil {
 		key.Passphrase = v
 	}
+	key.Password = cmp.Or(ptr.NonBlank(req.Password), key.Password)
 
 	if err := s.keys.Save(ctx, key); err != nil {
 		return nil, err

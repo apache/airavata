@@ -40,6 +40,7 @@ import (
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/orchestration"
 	"github.com/apache/airavata/internal/server"
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/backend/sqlite"
 )
@@ -149,9 +150,6 @@ func runServer() error {
 			return fmt.Errorf("ensure root user: %w", err)
 		}
 	}
-	introspector := auth.NewCILogonIntrospector(
-		cfg.IntrospectionURI, cfg.UserInfoURI, cfg.ClientID, cfg.ClientSecret, roles, root)
-
 	repos := app.NewRepositories(gdb)
 	// The object graph, built once. The HTTP handler takes it, and so does the workflow
 	// worker once it has a backend to run against — both act through the same services
@@ -167,6 +165,18 @@ func runServer() error {
 	}
 
 	svcs := app.NewServices(cfg, gdb, repos, workflowBackend)
+
+	introspector := &auth.IDTokenVerifier{Roles: roles, Root: root, Verifier: oidc.NewVerifier(cfg.Issuer, &oidc.StaticKeySet{}, &oidc.Config{ClientID: cfg.ClientID})}
+	if cfg.ClientID != "" {
+		provider, err := oidc.NewProvider(context.Background(), cfg.Issuer)
+		if err != nil {
+			return fmt.Errorf("discover %s: %w", cfg.Issuer, err)
+		}
+		introspector.Verifier = provider.Verifier(&oidc.Config{ClientID: cfg.ClientID})
+		if cfg.ClientSecret != "" {
+			svcs.SignIn = auth.NewSignIn(provider.Endpoint(), cfg.ClientID, cfg.ClientSecret, cfg.CORSAllowedOrigins)
+		}
+	}
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,

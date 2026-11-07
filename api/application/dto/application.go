@@ -213,6 +213,7 @@ type BatchJobConfigRequest struct {
 	CPUsPerGPU      *string `json:"cpusPerGpu"`
 	GPUsPerNode     *int32  `json:"gpusPerNode"`
 	Constraints     *string `json:"constraints"`
+	Partition       *string `json:"partition"`
 }
 
 // Validate implements httpx.Validator.
@@ -243,6 +244,7 @@ type BatchJobConfigResponse struct {
 	CPUsPerGPU       *string `json:"cpusPerGpu"`
 	GPUsPerNode      *int32  `json:"gpusPerNode"`
 	Constraints      *string `json:"constraints"`
+	Partition        *string `json:"partition"`
 }
 
 // ApplyBatchJobConfigRequest copies a request onto a config entity, preserving the
@@ -265,6 +267,7 @@ func ApplyBatchJobConfigRequest(dst *model.BatchJobConfig, src *BatchJobConfigRe
 	dst.CPUsPerGPU = src.CPUsPerGPU
 	dst.GPUsPerNode = src.GPUsPerNode
 	dst.Constraints = src.Constraints
+	dst.Partition = src.Partition
 }
 
 // ToBatchJobConfigResponse renders a config entity.
@@ -289,6 +292,7 @@ func ToBatchJobConfigResponse(c *model.BatchJobConfig) *BatchJobConfigResponse {
 		CPUsPerGPU:       c.CPUsPerGPU,
 		GPUsPerNode:      c.GPUsPerNode,
 		Constraints:      c.Constraints,
+		Partition:        c.Partition,
 	}
 }
 
@@ -305,6 +309,8 @@ type BatchDeploymentRequest struct {
 	// what any particular job is submitted with.
 	DefaultBatchJobConfig *BatchJobConfigRequest `json:"defaultBatchJobConfig"`
 	DefaultPartition      *string                `json:"defaultPartition"`
+	ContainerImage        *string                `json:"containerImage"`
+	ContainerBind         *string                `json:"containerBind"`
 }
 
 // Validate implements httpx.Validator.
@@ -330,6 +336,8 @@ type BatchDeploymentResponse struct {
 	SlurmRunSection       string                  `json:"slurmRunSection"`
 	DefaultBatchJobConfig *BatchJobConfigResponse `json:"defaultBatchJobConfig"`
 	DefaultPartition      *string                 `json:"defaultPartition"`
+	ContainerImage        *string                 `json:"containerImage"`
+	ContainerBind         *string                 `json:"containerBind"`
 }
 
 func ToBatchDeploymentResponse(d *model.BatchDeployment) BatchDeploymentResponse {
@@ -340,6 +348,8 @@ func ToBatchDeploymentResponse(d *model.BatchDeployment) BatchDeploymentResponse
 		SlurmRunSection:       d.SlurmRunSection,
 		DefaultBatchJobConfig: ToBatchJobConfigResponse(d.DefaultBatchJobConfig),
 		DefaultPartition:      d.DefaultPartition,
+		ContainerImage:        d.ContainerImage,
+		ContainerBind:         d.ContainerBind,
 	}
 }
 

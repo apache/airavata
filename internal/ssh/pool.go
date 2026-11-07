@@ -114,8 +114,9 @@ func (p *SSHConnectionPool) acquire(ctx context.Context, dialConfig SSHDialConfi
 		}
 		p.release(key, entry)
 		// The dial ran on whichever caller got there first, so it may have failed only
-		// because that caller gave up. That says nothing about this caller's chances.
-		if ok && isContextError(entry.err) && ctx.Err() == nil {
+		// because that caller gave up, or left its prompts unanswered on its own connection.
+		// That says nothing about this caller's chances.
+		if ok && (isContextError(entry.err) || errors.Is(entry.err, errUnanswered)) && ctx.Err() == nil {
 			continue
 		}
 		return nil, entry.err

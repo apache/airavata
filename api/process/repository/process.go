@@ -50,6 +50,7 @@ func (r *ProcessRepository) WithTx(tx *gorm.DB) *ProcessRepository { return &Pro
 // request a caller has to make.
 func (r *ProcessRepository) query(ctx context.Context) *gorm.DB {
 	return r.db.WithContext(ctx).
+		Preload("LastStatus").
 		Preload("BatchProcess.BatchJobConfig").
 		Preload("BatchProcess.InputMappings").
 		Preload("BatchProcess.OutputMappings").
@@ -81,6 +82,16 @@ func (r *ProcessRepository) FindByDeploymentID(ctx context.Context, deploymentID
 func (r *ProcessRepository) FindByOwnerID(ctx context.Context, userID string) ([]model.Process, error) {
 	var out []model.Process
 	err := r.query(ctx).Where("user_id = ?", userID).Find(&out).Error
+	return out, err
+}
+
+// FindBySessionID returns the runs of one session, newest created first: by their first status, the
+// CREATED one written with the process, so a later status on an old run does not reorder them.
+func (r *ProcessRepository) FindBySessionID(ctx context.Context, sessionID string) ([]model.Process, error) {
+	var out []model.Process
+	err := r.query(ctx).Where("session_id = ?", sessionID).
+		Order("(SELECT MIN(timestamp) FROM process_statuses WHERE process_statuses.process_id = processes.process_id) DESC").
+		Find(&out).Error
 	return out, err
 }
 

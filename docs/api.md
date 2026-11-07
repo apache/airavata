@@ -6,6 +6,25 @@ This page is the narrative reference, with a worked `curl` example per endpoint.
 
 All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
+## Authentication
+
+```
+GET  /api/v1/auth/config
+POST /api/v1/auth/device
+POST /api/v1/auth/token
+```
+
+Public routes a client uses to obtain a bearer from CILogon, present when `CILOGON_CLIENT_SECRET` is set; the server holds the secret. The bearer is the CILogon **ID token**, verified against the issuer's key set; no other CILogon token is accepted.
+
+`GET /auth/config` returns the authorization endpoint, client id and scope a browser needs to start an authorization-code flow with PKCE. `POST /auth/token` redeems one grant for the tokens: `{code, code_verifier, redirect_uri}`, where `redirect_uri` must sit on one of `AIRAVATA_CORS_ALLOWED_ORIGINS`; `{refresh_token}`; or `{device_code}` from `POST /auth/device`, which answers `202 Accepted` until the user approves.
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | a missing field, a rejected grant, or a `redirect_uri` outside the allowed origins |
+| `502 Bad Gateway` | the identity provider did not answer |
+
+A caller the server has never seen gets a [user](#users) record when their grant is redeemed.
+
 ## Error responses
 
 Every failure — validation, authorization, missing record — comes back in the same envelope:
@@ -43,7 +62,7 @@ The statuses in use:
 | `404 Not Found` | no such record — or, for [groups](#groups), a record the caller has no standing to know exists |
 | `409 Conflict` | the request collides with existing state, e.g. deleting an SSH credential still in use |
 | `413 Content Too Large` | the body ran past a size cap — only [data product content](#upload-and-download-data-product-content) has one |
-| `502 Bad Gateway` | an upstream could not be reached: the identity provider when validating a token, or the storage host when [transferring data product content](#upload-and-download-data-product-content). Not the caller's fault either way |
+| `502 Bad Gateway` | an upstream could not be reached: the identity provider during [sign-in](#authentication), a login node, or the storage host when [transferring data product content](#upload-and-download-data-product-content). Not the caller's fault either way |
 
 Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
@@ -94,9 +113,10 @@ echo "$SSH_CREDENTIAL_ID"
 | Field | Type | Notes |
 |---|---|---|
 | `sshCredentialName` | string | required, cannot be blank |
-| `publicKey` | string | required, cannot be blank |
-| `privateKey` | string \| null | required on create; omit on update to keep the stored secret |
+| `publicKey` | string | the keypair's public half; empty for a password credential |
+| `privateKey` | string \| null | create requires this or `password`; omit on update to keep the stored secret |
 | `passphrase` | string \| null | optional |
+| `password` | string \| null | sent for the login's password; any further prompt (OTP, Duo) raises an [interactive auth](#list-interactive-ssh-auths) |
 | `fullInteractive` | boolean | optional, default `false`; also answer keyboard-interactive prompts (OTP, Duo) after the key |
 
 ```json
@@ -125,7 +145,7 @@ echo "$SSH_CREDENTIAL_ID"
 
 | Status | Cause |
 |---|---|
-| `400 Bad Request` | `sshCredentialName` or `publicKey` blank, or `privateKey` missing on create |
+| `400 Bad Request` | `sshCredentialName` blank, or neither `privateKey` nor `password` on create |
 | `401 Unauthorized` | no token — every route here needs one, reads included |
 | `403 Forbidden` | the credential belongs to another user |
 | `404 Not Found` | no such credential, or the caller has no `users` row |
@@ -133,7 +153,7 @@ echo "$SSH_CREDENTIAL_ID"
 
 **Validation errors — `400 Bad Request`**
 
-Returned when `sshCredentialName` or `publicKey` is blank.
+Returned when `sshCredentialName` is blank.
 
 ```json
 {
@@ -150,7 +170,9 @@ Returned when `sshCredentialName` or `publicKey` is blank.
 
 `GET /api/v1/ssh-interactive-auths`
 
-A connection made with a `fullInteractive` credential stops at the host's keyboard-interactive prompts (a password, an OTP, a Duo push) and waits for its owner to answer. This lists the caller's waiting auths, oldest first. Only the caller's own auths are returned — admins are not exempt. An auth disappears once it is answered or the connection gives up.
+A connection made with a `fullInteractive` or password credential stops at the host's keyboard-interactive prompts (a password, an OTP, a Duo push) and waits for its owner to answer. This lists the caller's waiting auths, oldest first. Only the caller's own auths are returned — admins are not exempt. An auth disappears once it is answered, the host drops the login, or five minutes pass.
+
+An auth goes back only to the client connection that started its login, named by the `X-Connection-Id` header (a `connection.<id>` subprotocol on a WebSocket). A client sends one id per window or tab on every call. A login started in the background, such as a submission, prompts the connection that launched the process. Calls without the header form one connection of their own.
 
 ```bash
 curl -s localhost:9095/api/v1/ssh-interactive-auths \
@@ -255,7 +277,7 @@ websocat -H="Authorization: Bearer $TOKEN" \
 
 ### Subscribe to Interactive SSH Auths
 
-`GET /api/v1/ssh-interactive-auths/ws` — a WebSocket serving all of the caller's auths, one at a time, for as long as it stays open.
+`GET /api/v1/ssh-interactive-auths/ws` — a WebSocket serving all of the caller's auths on this connection, one at a time, for as long as it stays open.
 
 The server sends the oldest pending auth as a `challenge` (same shape as above), or `{"type": "idle"}` when nothing is waiting. The next challenge — or `idle` — follows once the current auth is answered on this socket, answered elsewhere (another socket or [REST](#answer-an-interactive-ssh-auth-over-rest)), or abandoned. Answers take the same body as the single-auth socket, optionally naming the auth they are for; one naming any other auth than the current challenge is an `error`. An accepted answer is acknowledged with `{"type": "accepted", "authId": "…"}` and the socket stays open.
 
@@ -953,6 +975,8 @@ An empty `allocations` means Slurm answered and listed none for the login.
 | `409 Conflict` | the config names no cluster or no credential |
 | `502 Bad Gateway` | the login failed, or neither sacctmgr nor sshare could be run; the message says why |
 
+The response also carries `partitions`: the cluster's partitions as they stand now, in the shape the [admin discovery](#discover-a-clusters-partitions) returns. They are left out if `scontrol` fails or lists none; a failed login still fails the discovery.
+
 ### Share a Slurm Cluster Config
 
 ```
@@ -1225,7 +1249,10 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `defaultBatchJobConfig.cpusPerGpu` | string \| null | optional |
 | `defaultBatchJobConfig.gpusPerNode` | integer \| null | optional |
 | `defaultBatchJobConfig.constraints` | string \| null | optional |
+| `defaultBatchJobConfig.partition` | string \| null | optional; a run's own `partition` overrides `defaultPartition` |
 | `defaultPartition` | string \| null | optional |
+| `containerImage` | string \| null | optional; the Apptainer image every run executes in, such as `docker://python:3.12` or a `.sif` path |
+| `containerBind` | string \| null | optional; the image's `--bind` value, such as `/data/proj:/data,/scratch` |
 
 ```json
 {
@@ -1992,12 +2019,60 @@ returns. The tasks themselves are read back through the run's task collections.
 | `401 Unauthorized` | no token |
 | `403 Forbidden` | the run belongs to another user |
 | `404 Not Found` | no such process, or a `dataId` in a file mapping resolves to nothing |
-| `409 Conflict` | the run has already been launched; or it cannot be launched as it stands — its deployment names no cluster or no template, or nothing supplies a work directory |
+| `409 Conflict` | the run has already been launched or has ended; or it cannot be launched as it stands — its deployment names no cluster or no template, or nothing supplies a work directory |
+
+A launch that fails past the owner, already-launched and ended checks records a
+`FAILED` status whose log is the error, so the run does not read live.
 
 Launching is **not idempotent** — it writes a task per staged file — so a second call is
 refused with `409` rather than doubling the work. Only `FILE` declarations are staged
 today: the `FILE_LIST` and `DIRECTORY` branches are stubs, so a run carrying those is
 launched without staging tasks for them.
+
+## Process Links
+
+Every batch job the server submits starts [Linkspan](https://github.com/cyber-shuttle/linkspan) beside its run section when `AIRAVATA_PUBLIC_URL` is set. Linkspan dials the server back, and through that link the owner reaches the servers Linkspan started in the job.
+
+```
+POST /api/v1/processes/{processId}/stop
+GET  /api/v1/processes/{processId}/access
+GET  /api/v1/processes/{processId}/link              (WebSocket, Linkspan only)
+*    /api/v1/processes/{processId}/proxy/{port}/…    (HTTP and WebSocket)
+```
+
+`stop` and `access` are owner-scoped like [launch](#launch-a-process). `stop` cancels the job with the scheduler when one was submitted, records a `CANCELLED` status and drops the link; a job the scheduler reports as already gone or completing counts as cancelled; on a run that has ended it changes nothing and answers the run. `access` names the application once the link is up, and is `409` before: `{"app": {"uri": "https://…/api/v1/processes/…/proxy/24001/", "token": "…"}}`.
+
+The `proxy` route is not bearer-guarded: it takes the run's token from `access`, as a `token` query parameter or an `Authorization: token …` header, so a browser can open the application directly. Any port Linkspan serves is reachable the same way, such as its own API at `batchProcess.controlPort` for the allocation's resource use (`…/proxy/{controlPort}/api/v1/usage`) or a raw stream to another of its servers (`…/proxy/{controlPort}/api/v1/forward/{port}`, a WebSocket). A process status of `READY` is recorded when the link first comes up.
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | a wrong token |
+| `409 Conflict` | the job has no link yet |
+| `502 Bad Gateway` | nothing listens on that port of the job, or the scheduler refused the cancel |
+
+### What the job sees
+
+| Variable | Meaning |
+|---|---|
+| `CS_APP_PORT` | The loopback port the application should listen on. |
+| `CS_APP_TOKEN` | The application's token: the owner presents it, from `access`, to reach the application. |
+| `CS_CONTROL_PORT` | Linkspan's own port: its API for the run section, and for the owner through the proxy. |
+| `CS_LINK_URL` | Where Linkspan dials back. |
+| `LINKSPAN_LINK_TOKEN` | Linkspan's token for `CS_LINK_URL`. It never leaves the job, so `access` does not return it. |
+
+With a deployment's `containerImage`, the job runs Linkspan and the run section together under `apptainer exec --nv`, so every server Linkspan starts sees the image and its binds.
+
+The ports are derived from the process id. Linkspan is installed at `$HOME/.cybershuttle/bin/linkspan`, at the release and SHA-256 the server pins, unless that or a newer one is there; where that fails the job runs without a link and the process history says why. Linkspan carries only the servers it started, so an interactive run section asks its API for one, as a Jupyter deployment does:
+
+```sh
+curl -fsS -o /dev/null --retry 30 --retry-connrefused --retry-delay 1 -H 'Content-Type: application/json' -d @- \
+  "http://127.0.0.1:$CS_CONTROL_PORT/api/v1/jupyter/sessions" <<EOF
+{"addr": "127.0.0.1:$CS_APP_PORT", "token": "$CS_APP_TOKEN", "root_dir": "$PWD"}
+EOF
+sleep infinity
+```
+
+The body travels on standard input, so the token shows on no command line. The server strips its own path prefix, so the application is served at its root.
 
 ## Process Statuses
 
@@ -2028,7 +2103,7 @@ Statuses come back oldest first. The newest one is also cached on the process it
 ]
 ```
 
-`status` is one of `CREATED`, `SUBMITTED`, `RUNNING`, `COMPLETED`, `FAILED`.
+`status` is one of `CREATED`, `SUBMITTED`, `READY`, `RUNNING`, `COMPLETED`, `FAILED`, `CANCELLED`.
 
 A `statusId` from one process is not reachable through another process's path: the
 mismatch is a `404`, not another run's status.
@@ -2185,3 +2260,134 @@ Runs a command on the remote host — filtering the output of a running job, for
 | `403 Forbidden` | the process is not the caller's |
 | `404 Not Found` | no such process, or a `taskId` that belongs to a different process |
 
+## Sessions
+
+A session is a restartable allocation. Its runs are [processes](#processes): each start adds a `BATCH_JOB` process.
+
+```
+GET    /api/v1/sessions/me
+GET    /api/v1/sessions/{sessionId}
+POST   /api/v1/sessions
+POST   /api/v1/sessions/{sessionId}/start
+DELETE /api/v1/sessions/{sessionId}
+```
+
+| Route | Who | Answers |
+|---|---|---|
+| `GET /sessions/me` | the caller | `200`, newest first |
+| `GET /sessions/{sessionId}` | the owner or an admin | `200` |
+| `POST /sessions` | any authenticated caller | `201` with the session |
+| `POST /sessions/{sessionId}/start` | the owner only; an admin gets `403` | `200` with the session |
+| `DELETE /sessions/{sessionId}` | the owner or an admin | `204` |
+
+Anonymous callers get `401`, another user `403`, an unknown id `404`.
+
+### Create a Session
+
+```bash
+curl -s -X POST localhost:9095/api/v1/sessions \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "slurmClusterConfigId": "'"$CLUSTER_CONFIG_ID"'",
+    "deploymentId": "'"$DEPLOYMENT_ID"'",
+    "account": "MY-ALLOC",
+    "partition": "gpu",
+    "resources": { "cores": 8, "memoryMb": 32768, "wallMinutes": 120, "gpuCount": 1, "gpuType": "a100" }
+  }'
+```
+
+| Field | Type | Notes |
+|---|---|---|
+| `slurmClusterConfigId` | string | required; the [cluster config](#slurm-cluster-configs) the runs submit under |
+| `deploymentId` | string | required |
+| `account` | string | required |
+| `partition` | string | optional |
+| `resources.cores` | integer | required, positive |
+| `resources.memoryMb` | integer | required, positive |
+| `resources.wallMinutes` | integer | required, positive |
+| `resources.gpuCount` | integer | optional, not negative; with `gpuType` it becomes `gres gpu:<type>:<n>`, without it `gpus` |
+| `resources.gpuType` | string | optional; needs a positive `gpuCount` |
+
+The session and its first run are created together, then the run is launched. The cluster config follows the [process](#create-process) rules: `404` if it does not exist, `403` if it is neither the caller's nor shared with them. A launch that fails after the run is created still answers `201` with the session. The run ends `FAILED`, and `runs[0].error` says why, such as a deployment with no cluster or template.
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | a field above is missing or out of range |
+
+```json
+{
+  "sessionId": "5b0e…",
+  "createdAt": 1790000000000,
+  "slurmClusterConfigId": "…",
+  "deploymentId": "…",
+  "account": "MY-ALLOC",
+  "partition": "gpu",
+  "resources": { "cores": 8, "memoryMb": 32768, "wallMinutes": 120, "gpuCount": 1, "gpuType": "a100" },
+  "state": "RUNNING",
+  "live": true,
+  "runs": [
+    {
+      "processId": "9c41…",
+      "controlPort": 24001,
+      "state": "RUNNING",
+      "startedAt": 1790000060000,
+      "deadline": 1790007260000,
+      "endedAt": null,
+      "error": null
+    }
+  ]
+}
+```
+
+### Session Response
+
+| Field | Meaning |
+|---|---|
+| `state`, `live` | the current run's state; `live` is false once it has ended |
+| `resources` and the ids | read back from the current run |
+| `runs` | newest first; `runs[0]` is the current run |
+| `runs[].processId`, `controlPort` | the run's process and its Linkspan port |
+| `runs[].startedAt` | the run's `BEGIN` batch status, in epoch milliseconds; absent before it |
+| `runs[].deadline` | `startedAt` plus `wallMinutes`; absent before `BEGIN` |
+| `runs[].endedAt` | when the run ended |
+| `runs[].error` | the log of the `FAILED` status |
+
+A run past its `deadline` reads `COMPLETED` and not live, whatever its stored state, with `endedAt` equal to the `deadline`. An expired session can be started and deleted at once.
+
+### Start a Session
+
+```
+POST /api/v1/sessions/{sessionId}/start
+```
+
+Adds a run from the current run's request and launches it. The body is optional. No body, or `{}`, keeps the current run's wall time. `{"wallMinutes": 60}` overrides it for the new run.
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `wallMinutes` is zero or less |
+| `403 Forbidden` | the caller is not the owner, an admin included |
+| `409 Conflict` | the current run is live, or another start or delete won a race |
+
+Two starts at once make one run. A failed launch answers `200` with the session, the failure in `runs[0].error`, as under create.
+
+### Delete a Session
+
+```
+DELETE /api/v1/sessions/{sessionId}
+```
+
+Removes the session and every run, with their statuses and tasks. `409` while the current run is live, or when a start won a race. Delete sessions here and not through `DELETE /processes/{processId}`, so no session points at a deleted run.
+
+### Runs Are Processes
+
+A session has no stop, access or proxy of its own. They stay on the current run:
+
+```
+POST /api/v1/processes/{runs[0].processId}/stop
+GET  /api/v1/processes/{runs[0].processId}/access
+*    /api/v1/processes/{runs[0].processId}/proxy/{port}/…
+GET  /api/v1/processes/{runs[0].processId}/statuses
+```
+
+[Process Statuses](#process-statuses) carries the status log; `runs[].error` is only the last `FAILED` entry.

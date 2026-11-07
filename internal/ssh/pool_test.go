@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"errors"
+	"fmt"
 	"net"
 	"sync"
 	"sync/atomic"
@@ -204,5 +205,37 @@ func TestPoolDoesNotCacheFailedDials(t *testing.T) {
 	c.Close()
 	if dials.Load() != 1 {
 		t.Fatal("failed dial was cached")
+	}
+}
+
+func TestPoolJoinerLogsInItselfWhenTheFirstLoginGoesUnanswered(t *testing.T) {
+	pool := newSSHConnectionPool()
+	defer pool.Close()
+	var dials atomic.Int32
+	dial := pipeDialer(t, &dials)
+	joined := make(chan struct{})
+	first := func(context.Context) (*gossh.Client, error) {
+		<-joined
+		return nil, fmt.Errorf("%w on the editor", errUnanswered)
+	}
+
+	go func() { _, _ = pool.acquire(t.Context(), testDialConfig(), first) }()
+	for {
+		pool.lock.Lock()
+		dialing := len(pool.entries) == 1
+		pool.lock.Unlock()
+		if dialing {
+			break
+		}
+		time.Sleep(time.Millisecond)
+	}
+	go func() { time.Sleep(50 * time.Millisecond); close(joined) }()
+	c, err := pool.acquire(t.Context(), testDialConfig(), dial)
+	if err != nil {
+		t.Fatalf("the joiner failed with the first caller's unanswered login: %v", err)
+	}
+	c.Close()
+	if dials.Load() != 1 {
+		t.Fatalf("joiner dialed %d times, want 1", dials.Load())
 	}
 }

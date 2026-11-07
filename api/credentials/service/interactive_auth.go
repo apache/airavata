@@ -35,9 +35,9 @@ import (
 // InteractiveAuthService exposes the keyboard-interactive challenges waiting on
 // the calling user.
 //
-// An interactive auth belongs to the user whose request opened the connection, and only that
-// user sees it — admins included, for the same reason a credential is private: the
-// answer is a password or a one-time code.
+// An interactive auth belongs to the user and client connection whose request started
+// the login, and only that connection sees it — admins included, for the same reason a
+// credential is private: the answer is a password or a one-time code.
 type InteractiveAuthService struct {
 	store *ssh.SSHInteractiveAuthStore
 }
@@ -52,7 +52,7 @@ func (s *InteractiveAuthService) List(ctx context.Context) ([]dto.InteractiveAut
 	if err != nil {
 		return nil, err
 	}
-	auths := s.store.ListAuthsForUser(p.Name)
+	auths := s.store.ListAuthsForUser(p.Name, auth.Connection(ctx))
 	sort.Slice(auths, func(i, j int) bool { return auths[i].CreatedAt.Before(auths[j].CreatedAt) })
 
 	out := make([]dto.InteractiveAuthResponse, 0, len(auths))
@@ -69,8 +69,8 @@ func (s *InteractiveAuthService) Next(ctx context.Context) (*ssh.SSHInteractiveA
 	if err != nil {
 		return nil, nil, err
 	}
-	auth, changed := s.store.NextAuthForUser(p.Name)
-	return auth, changed, nil
+	pending, changed := s.store.NextAuthForUser(p.Name, auth.Connection(ctx))
+	return pending, changed, nil
 }
 
 // Get returns one of the caller's pending interactive auths. Another user's is a 404,
@@ -80,7 +80,7 @@ func (s *InteractiveAuthService) Get(ctx context.Context, authID string) (*ssh.S
 	if err != nil {
 		return nil, err
 	}
-	pending, ok := s.store.GetAuth(p.Name, authID)
+	pending, ok := s.store.GetAuth(p.Name, auth.Connection(ctx), authID)
 	if !ok {
 		return nil, httpx.NotFound("No pending interactive auth: %s", authID)
 	}

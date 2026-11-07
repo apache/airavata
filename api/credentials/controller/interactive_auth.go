@@ -99,7 +99,7 @@ func (h *InteractiveAuthController) respond(w http.ResponseWriter, r *http.Reque
 	httpx.WriteJSON(w, http.StatusNoContent, nil)
 }
 
-// subscribe serves all of the caller's auths over one websocket, oldest first and
+// subscribe serves the caller's auths for this connection over one websocket, oldest first and
 // one at a time. The next challenge (or "idle") is sent once the current auth is
 // answered here, answered elsewhere, or abandoned.
 func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Request) {

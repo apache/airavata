@@ -27,6 +27,7 @@ import (
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	"github.com/apache/airavata/api/iam/service"
+	"github.com/apache/airavata/internal/auth"
 )
 
 // UserController serves /api/v1/users.
@@ -95,4 +96,48 @@ func (h *UserController) update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpx.WriteJSON(w, http.StatusOK, user)
+}
+
+type SignInController struct {
+	signIn *auth.SignIn
+	bearer auth.Introspector
+	users  *service.UserService
+}
+
+func NewSignInController(signIn *auth.SignIn, bearer auth.Introspector, users *service.UserService) *SignInController {
+	return &SignInController{signIn: signIn, bearer: bearer, users: users}
+}
+
+func (h *SignInController) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v1/auth/config", h.config)
+	mux.HandleFunc("POST /api/v1/auth/device", h.device)
+	mux.HandleFunc("POST /api/v1/auth/token", h.token)
+}
+
+func (h *SignInController) config(w http.ResponseWriter, _ *http.Request) {
+	httpx.WriteJSON(w, http.StatusOK, h.signIn.Config())
+}
+
+func (h *SignInController) device(w http.ResponseWriter, r *http.Request) {
+	device, err := h.signIn.DeviceStart(r.Context())
+	w.Header().Set("Cache-Control", "no-store")
+	httpx.Answer(w, r, device, err)
+}
+
+func (h *SignInController) token(w http.ResponseWriter, r *http.Request) {
+	var grant auth.Grant
+	if err := httpx.DecodeJSON(r, &grant); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	tokens, err := h.signIn.Redeem(r.Context(), grant)
+	var caller *auth.Principal
+	if err == nil {
+		caller, err = h.bearer.Introspect(r.Context(), tokens.IDToken)
+	}
+	if err == nil {
+		err = h.users.Enroll(r.Context(), caller)
+	}
+	w.Header().Set("Cache-Control", "no-store")
+	httpx.Answer(w, r, tokens, err)
 }

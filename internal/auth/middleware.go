@@ -22,7 +22,6 @@ package auth
 
 import (
 	"encoding/base64"
-	"errors"
 	"net/http"
 	"strings"
 
@@ -40,6 +39,7 @@ import (
 func Middleware(introspector Introspector) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r = r.WithContext(WithConnection(r.Context(), connection(r)))
 			token := bearerToken(r)
 			if token == "" {
 				next.ServeHTTP(w, r)
@@ -48,18 +48,8 @@ func Middleware(introspector Introspector) func(http.Handler) http.Handler {
 
 			principal, err := introspector.Introspect(r.Context(), token)
 			if err != nil {
-				if errors.Is(err, ErrInvalidToken) {
-					w.Header().Set("WWW-Authenticate", `Bearer error="invalid_token"`)
-					httpx.WriteError(w, r, httpx.Unauthorized("Invalid bearer token"))
-					return
-				}
-				// The identity provider is unreachable or misbehaving. That is not the
-				// caller's fault, so it must not be reported as an auth failure.
-				httpx.WriteError(w, r, &httpx.Error{
-					Status:  http.StatusBadGateway,
-					Message: "Unable to validate bearer token",
-					Err:     err,
-				})
+				w.Header().Set("WWW-Authenticate", `Bearer error="invalid_token"`)
+				httpx.WriteError(w, r, httpx.Unauthorized("Invalid bearer token"))
 				return
 			}
 
@@ -78,6 +68,17 @@ const WebSocketProtocol = "airavata.v1"
 // token does.
 const webSocketTokenPrefix = "base64url.bearer."
 
+// ConnectionHeader names the client connection a request comes from, such as one editor
+// window or one browser tab; a websocket offers it as a "connection." subprotocol instead.
+const ConnectionHeader = "X-Connection-Id"
+
+func connection(r *http.Request) string {
+	if id := r.Header.Get(ConnectionHeader); id != "" {
+		return id
+	}
+	return Subprotocol(r, "connection.")
+}
+
 func bearerToken(r *http.Request) string {
 	header := r.Header.Get("Authorization")
 	if header == "" {
@@ -94,20 +95,23 @@ func bearerToken(r *http.Request) string {
 // WebSocket API cannot set an Authorization header, so the dashboard offers the token as
 // a subprotocol instead — the one header it does control.
 func webSocketToken(r *http.Request) string {
+	token, err := base64.RawURLEncoding.DecodeString(Subprotocol(r, webSocketTokenPrefix))
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(string(token))
+}
+
+// Subprotocol returns the value of the websocket subprotocol r offers under prefix, or "".
+func Subprotocol(r *http.Request, prefix string) string {
 	if !strings.EqualFold(r.Header.Get("Upgrade"), "websocket") {
 		return ""
 	}
 	for _, offered := range r.Header.Values("Sec-WebSocket-Protocol") {
 		for _, p := range strings.Split(offered, ",") {
-			encoded, ok := strings.CutPrefix(strings.TrimSpace(p), webSocketTokenPrefix)
-			if !ok {
-				continue
+			if value, ok := strings.CutPrefix(strings.TrimSpace(p), prefix); ok {
+				return value
 			}
-			token, err := base64.RawURLEncoding.DecodeString(encoded)
-			if err != nil {
-				return ""
-			}
-			return strings.TrimSpace(string(token))
 		}
 	}
 	return ""
