@@ -1890,6 +1890,55 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/processes/{processId}/executions:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: List the workflow executions started for a process
+      description: |
+        Read-only, oldest first. Executions are recorded by the server when it starts a
+        workflow for the process, never accepted from a client, so there is no `POST`
+        or `PUT` here. Only the process's owner or an admin may read them.
+      operationId: listProcessExecutions
+      responses:
+        "200":
+          description: Every execution recorded for the process.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ExecutionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/executions/{executionId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - name: executionId
+        in: path
+        required: true
+        description: The execution's `processExecutionId`.
+        schema: { type: string }
+    get:
+      tags: [Processes]
+      summary: Read one recorded execution
+      description: |
+        An execution of another process is a `404` through this process's path.
+      operationId: getProcessExecution
+      responses:
+        "200":
+          description: The execution.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ExecutionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/processes/{processId}/data-staging-tasks:
     parameters:
       - $ref: "#/components/parameters/ProcessId"
@@ -2908,6 +2957,9 @@ components:
     ProcessStatusType:
       type: string
       enum: [CREATED, SUBMITTED, RUNNING, COMPLETED, FAILED]
+    ProcessExecutionType:
+      type: string
+      enum: [BATCH_JOB_SUBMISSION, JOB_MONITORING, BATCH_JOB_COMPLETION]
     OnFailureAction:
       type: string
       enum: [RETRY, SKIP, EXIT]
@@ -3597,6 +3649,10 @@ components:
             - { $ref: "#/components/schemas/ProcessType" }
             - { type: "null" }
         lastStatusId: { type: [string, "null"], format: uuid }
+        lastExecutionId:
+          type: [string, "null"]
+          format: uuid
+          description: The newest recorded execution's `processExecutionId`, if any.
         batchProcess:
           oneOf:
             - { $ref: "#/components/schemas/BatchProcessResponse" }
@@ -3621,6 +3677,28 @@ components:
           format: int64
           description: When the status was recorded, in milliseconds since the epoch.
       required: [processStatusId]
+
+    ExecutionResponse:
+      type: object
+      description: |
+        One workflow execution started for a process. There is no request counterpart:
+        executions are recorded by the server when it starts a workflow, never created
+        from a client body.
+      properties:
+        processExecutionId: { type: string, format: uuid }
+        processId: { type: [string, "null"], format: uuid }
+        executionId:
+          type: string
+          description: The id the workflow engine knows the run by.
+        executionType:
+          oneOf:
+            - { $ref: "#/components/schemas/ProcessExecutionType" }
+            - { type: "null" }
+        timestamp:
+          type: [integer, "null"]
+          format: int64
+          description: When the execution was recorded, in milliseconds since the epoch.
+      required: [processExecutionId, executionId]
 
     DataStagingTaskRequest:
       type: object
