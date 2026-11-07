@@ -2607,15 +2607,15 @@ func TestExecutionsAreReadThroughTheirProcess(t *testing.T) {
 	other := h.seedProcess("other-executions", tokenAlice)
 
 	ctx := context.Background()
-	submission, err := h.svcs.Execution.Record(ctx, processID, "workflow-1", "BATCH_JOB_SUBMISSION")
+	submission, err := h.svcs.Execution.Record(ctx, processID, "workflow-1", "BATCH_JOB_SUBMISSION", "RUNNING")
 	if err != nil {
 		t.Fatalf("record submission: %v", err)
 	}
-	completion, err := h.svcs.Execution.Record(ctx, processID, "workflow-2", "BATCH_JOB_COMPLETION")
+	completion, err := h.svcs.Execution.Record(ctx, processID, "workflow-2", "BATCH_JOB_COMPLETION", "RUNNING")
 	if err != nil {
 		t.Fatalf("record completion: %v", err)
 	}
-	if _, err := h.svcs.Execution.Record(ctx, "no-such-process", "workflow-3", "BATCH_JOB_SUBMISSION"); err == nil {
+	if _, err := h.svcs.Execution.Record(ctx, "no-such-process", "workflow-3", "BATCH_JOB_SUBMISSION", "RUNNING"); err == nil {
 		t.Error("recording against an unknown process succeeded, want an error")
 	}
 
@@ -2623,8 +2623,24 @@ func TestExecutionsAreReadThroughTheirProcess(t *testing.T) {
 	if len(all) != 2 || all[0]["executionId"] != "workflow-1" || all[1]["executionId"] != "workflow-2" {
 		t.Fatalf("executions = %v, want workflow-1 then workflow-2", all)
 	}
-	if all[1]["executionType"] != "BATCH_JOB_COMPLETION" {
-		t.Errorf("execution = %v, want it to name its type", all[1])
+	if all[1]["executionType"] != "BATCH_JOB_COMPLETION" || all[1]["status"] != "RUNNING" {
+		t.Errorf("execution = %v, want it to name its type and RUNNING status", all[1])
+	}
+
+	// Recording the same workflow again moves its execution on rather than adding one,
+	// keeping the type and start time it was first recorded with.
+	finished, err := h.svcs.Execution.Record(ctx, processID, "workflow-1", "JOB_MONITORING", "SUCCEEDED")
+	if err != nil {
+		t.Fatalf("record finished submission: %v", err)
+	}
+	if finished.ProcessExecutionID != submission.ProcessExecutionID {
+		t.Errorf("re-recording created execution %s, want it to update %s", finished.ProcessExecutionID, submission.ProcessExecutionID)
+	}
+	if *finished.ExecutionType != "BATCH_JOB_SUBMISSION" || *finished.Timestamp != *submission.Timestamp {
+		t.Errorf("re-recorded execution = %+v, want its original type and timestamp", finished)
+	}
+	if again := h.list("/api/v1/processes/"+processID+"/executions", tokenAlice); len(again) != 2 {
+		t.Errorf("executions after re-recording = %d, want still 2", len(again))
 	}
 
 	proc := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID, tokenAlice, nil, http.StatusOK)
@@ -2633,8 +2649,8 @@ func TestExecutionsAreReadThroughTheirProcess(t *testing.T) {
 	}
 
 	one := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID+"/executions/"+submission.ProcessExecutionID, tokenAlice, nil, http.StatusOK)
-	if one["executionId"] != "workflow-1" {
-		t.Errorf("execution = %v, want workflow-1", one)
+	if one["executionId"] != "workflow-1" || one["status"] != "SUCCEEDED" {
+		t.Errorf("execution = %v, want workflow-1 SUCCEEDED", one)
 	}
 
 	// An execution id from one process reads nothing through another's path.

@@ -28,11 +28,12 @@ import (
 // StatusResponse it has no request counterpart: executions are recorded when a
 // workflow is started for a process, never accepted from a client.
 type ExecutionResponse struct {
-	ProcessExecutionID string                      `json:"processExecutionId"`
-	ProcessID          *string                     `json:"processId"`
-	ExecutionID        string                      `json:"executionId"`
-	ExecutionType      *model.ProcessExecutionType `json:"executionType"`
-	Timestamp          *int64                      `json:"timestamp"`
+	ProcessExecutionID string                            `json:"processExecutionId"`
+	ProcessID          *string                           `json:"processId"`
+	ExecutionID        string                            `json:"executionId"`
+	ExecutionType      *model.ProcessExecutionType       `json:"executionType"`
+	Status             *model.ProcessExecutionStatusType `json:"status"`
+	Timestamp          *int64                            `json:"timestamp"`
 }
 
 func ToExecutionResponse(e *model.ProcessExecution) ExecutionResponse {
@@ -41,6 +42,7 @@ func ToExecutionResponse(e *model.ProcessExecution) ExecutionResponse {
 		ProcessID:          e.ProcessID,
 		ExecutionID:        e.ExecutionID,
 		ExecutionType:      e.ExecutionType,
+		Status:             e.Status,
 		Timestamp:          e.Timestamp,
 	}
 }

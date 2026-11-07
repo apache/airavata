@@ -30,8 +30,8 @@ import (
 
 // ExecutionRepository reads and writes process executions.
 //
-// There is no Update: an execution records a workflow run that was started, which is
-// never corrected in place.
+// Only an execution's status is ever updated: the rest records a workflow run that was
+// started, which is never corrected in place.
 type ExecutionRepository struct{ db *gorm.DB }
 
 // NewExecutionRepository returns a repository backed by db.
@@ -64,6 +64,33 @@ func (r *ExecutionRepository) FindByIDAndProcessID(ctx context.Context, id, proc
 		return nil, err
 	}
 	return &out, nil
+}
+
+// FindByExecutionIDAndProcessID returns the execution recorded for one workflow
+// instance of one process, or gorm.ErrRecordNotFound if none was.
+func (r *ExecutionRepository) FindByExecutionIDAndProcessID(ctx context.Context, executionID, processID string) (*model.ProcessExecution, error) {
+	var out model.ProcessExecution
+	err := r.db.WithContext(ctx).
+		First(&out, "execution_id = ? AND process_id = ?", executionID, processID).Error
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// UpdateStatus sets the status of one execution, or returns gorm.ErrRecordNotFound if
+// no execution has that id.
+func (r *ExecutionRepository) UpdateStatus(ctx context.Context, id string, status model.ProcessExecutionStatusType) error {
+	res := r.db.WithContext(ctx).Model(&model.ProcessExecution{}).
+		Where("process_execution_id = ?", id).
+		Update("status", status)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 // Create inserts an execution row. BeforeCreate assigns its id and AfterCreate

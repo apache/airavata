@@ -2058,13 +2058,17 @@ as `lastExecutionId`, which stays `null` until the first workflow is started.
     "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
     "executionId": "e0d1c2b3-a4f5-4e6d-8c7b-9a0f1e2d3c4b",
     "executionType": "BATCH_JOB_SUBMISSION",
+    "status": "RUNNING",
     "timestamp": 1755780005000
   }
 ]
 ```
 
 `executionType` is one of `BATCH_JOB_SUBMISSION`, `JOB_MONITORING`,
-`BATCH_JOB_COMPLETION`. The `{executionId}` in the path is the entry's
+`BATCH_JOB_COMPLETION`. `status` is `RUNNING` once the workflow is started, then
+`SUCCEEDED` or `FAILED` when it finishes; it is `null` for executions recorded before
+the server tracked it. `timestamp` is when the execution was started and does not
+change with its status. The `{executionId}` in the path is the entry's
 `processExecutionId`, not the workflow engine's `executionId`.
 
 Reads are owner-scoped: only the process's owner or an admin may list or read its

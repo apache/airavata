@@ -236,6 +236,14 @@ const (
 	ProcessExecutionTypeJobCompletion      ProcessExecutionType = "BATCH_JOB_COMPLETION"
 )
 
+type ProcessExecutionStatusType string
+
+const (
+	ProcessExecutionStatusTypeRunning   ProcessExecutionStatusType = "RUNNING"
+	ProcessExecutionStatusTypeSucceeded ProcessExecutionStatusType = "SUCCEEDED"
+	ProcessExecutionStatusTypeFailed    ProcessExecutionStatusType = "FAILED"
+)
+
 // ProcessExecution records one workflow run started on behalf of a process — the job
 // submission, monitoring or completion workflow — by the id the workflow engine knows
 // it by.
@@ -247,6 +255,9 @@ type ProcessExecution struct {
 	// Workflow id or monitoring task id
 	ExecutionID   string                `gorm:"column:execution_id;type:varchar(36)" json:"executionId"`
 	ExecutionType *ProcessExecutionType `gorm:"column:execution_type;type:varchar(255)" json:"executionType,omitempty"`
+
+	// Where the run stands: RUNNING once started, then SUCCEEDED or FAILED.
+	Status *ProcessExecutionStatusType `gorm:"column:status;type:varchar(255)" json:"status,omitempty"`
 
 	// The time the execution was recorded, in milliseconds since the epoch.
 	Timestamp *int64 `gorm:"column:timestamp" json:"timestamp,omitempty"`

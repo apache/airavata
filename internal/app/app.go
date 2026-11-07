@@ -192,8 +192,10 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	monitoringTasks := repos.JobMonitoringTasks
 	commandTasks := repos.InteractiveCommandTasks
 	batchStatus := repos.BatchJobStatuses
+	processExecutions := repos.Executions
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
+	executionSvc := processsvc.NewExecutionService(db, processExecutions, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, shares, groupMembers)
 	keyAccess := credentialssvc.NewKeyAccess(sshCredentials)
 	processSvs := processsvc.NewProcessService(db, processes, deployments, configAccess, users, statusSvc)
@@ -255,7 +257,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		Process:                processSvs,
 		ProcessStatus:          statusSvc,
 		TaskStatus:             processsvc.NewTaskStatusService(repos.TaskStatuses, processes),
-		Execution:              processsvc.NewExecutionService(db, repos.Executions, processes),
+		Execution:              executionSvc,
 		DataStagingTask:        processsvc.NewDataStagingTaskService(db, stagingTasks, processes),
 		JobSubmissionTask:      processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes),
 		JobMonitoringTask:      processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes),
@@ -263,7 +265,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
-			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
+			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, executionSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, executionEngine),
 
 		ExecutionEngine: executionEngine,

@@ -2960,6 +2960,9 @@ components:
     ProcessExecutionType:
       type: string
       enum: [BATCH_JOB_SUBMISSION, JOB_MONITORING, BATCH_JOB_COMPLETION]
+    ProcessExecutionStatusType:
+      type: string
+      enum: [RUNNING, SUCCEEDED, FAILED]
     OnFailureAction:
       type: string
       enum: [RETRY, SKIP, EXIT]
@@ -3693,6 +3696,13 @@ components:
         executionType:
           oneOf:
             - { $ref: "#/components/schemas/ProcessExecutionType" }
+            - { type: "null" }
+        status:
+          description: |
+            `RUNNING` once the workflow is started, then `SUCCEEDED` or `FAILED`. `null`
+            for executions recorded before the server tracked it.
+          oneOf:
+            - { $ref: "#/components/schemas/ProcessExecutionStatusType" }
             - { type: "null" }
         timestamp:
           type: [integer, "null"]

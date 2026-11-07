@@ -22,6 +22,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -52,18 +53,21 @@ func NewExecutionService(db *gorm.DB, executions *repository.ExecutionRepository
 	return &ExecutionService{db: db, executions: executions, processes: processes}
 }
 
-// Record appends a new execution for a process, in its own transaction.
+// Record records where a workflow execution of a process stands, in its own
+// transaction: the first call for an executionID creates the execution, and later
+// calls for the same one move it to the new status — RUNNING when the workflow is
+// started, SUCCEEDED or FAILED when it finishes.
 //
 // It does not check authorisation: recording an execution is an internal operation
 // performed by trusted service code, never taken directly from a client request.
-func (s *ExecutionService) Record(ctx context.Context, processID, executionID string, executionType model.ProcessExecutionType) (*dto.ExecutionResponse, error) {
+func (s *ExecutionService) Record(ctx context.Context, processID, executionID string, executionType model.ProcessExecutionType, status model.ProcessExecutionStatusType) (*dto.ExecutionResponse, error) {
 	var out dto.ExecutionResponse
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		created, err := s.RecordTx(ctx, tx, processID, executionID, executionType)
+		recorded, err := s.RecordTx(ctx, tx, processID, executionID, executionType, status)
 		if err != nil {
 			return err
 		}
-		out = dto.ToExecutionResponse(created)
+		out = dto.ToExecutionResponse(recorded)
 		return nil
 	})
 	if err != nil {
@@ -72,21 +76,38 @@ func (s *ExecutionService) Record(ctx context.Context, processID, executionID st
 	return &out, nil
 }
 
-// RecordTx appends a new execution inside an already-open transaction, so a caller
-// that is already inside one of its own commits or rolls back the execution together
-// with the rest of its work.
-func (s *ExecutionService) RecordTx(ctx context.Context, tx *gorm.DB, processID, executionID string, executionType model.ProcessExecutionType) (*model.ProcessExecution, error) {
+// RecordTx creates or updates an execution inside an already-open transaction, so a
+// caller that is already inside one of its own commits or rolls back the execution
+// together with the rest of its work.
+//
+// An update changes only the status. The type and timestamp stay as first recorded,
+// so the timestamp keeps saying when the workflow was started.
+func (s *ExecutionService) RecordTx(ctx context.Context, tx *gorm.DB, processID, executionID string, executionType model.ProcessExecutionType, status model.ProcessExecutionStatusType) (*model.ProcessExecution, error) {
 	if _, err := s.processes.WithTx(tx).FindByID(ctx, processID); err != nil {
 		return nil, notFoundAs(err, "Process not found: %s", processID)
+	}
+
+	executions := s.executions.WithTx(tx)
+	existing, err := executions.FindByExecutionIDAndProcessID(ctx, executionID, processID)
+	switch {
+	case err == nil:
+		if err := executions.UpdateStatus(ctx, existing.ID, status); err != nil {
+			return nil, err
+		}
+		existing.Status = &status
+		return existing, nil
+	case !errors.Is(err, gorm.ErrRecordNotFound):
+		return nil, err
 	}
 
 	created := &model.ProcessExecution{
 		ProcessID:     &processID,
 		ExecutionID:   executionID,
 		ExecutionType: &executionType,
+		Status:        &status,
 		Timestamp:     ptr.To(time.Now().UnixMilli()),
 	}
-	if err := s.executions.WithTx(tx).Create(ctx, created); err != nil {
+	if err := executions.Create(ctx, created); err != nil {
 		return nil, err
 	}
 	return created, nil
