@@ -98,6 +98,7 @@ type Services struct {
 	Process                *processsvc.ProcessService
 	ProcessStatus          *processsvc.StatusService
 	TaskStatus             *processsvc.TaskStatusService
+	Execution              *processsvc.ExecutionService
 	DataStagingTask        *processsvc.DataStagingTaskService
 	JobSubmissionTask      *processsvc.JobSubmissionTaskService
 	JobMonitoringTask      *processsvc.JobMonitoringTaskService
@@ -128,6 +129,7 @@ type Repositories struct {
 	Processes               *processrepo.ProcessRepository
 	Statuses                *processrepo.StatusRepository
 	TaskStatuses            *processrepo.TaskStatusRepository
+	Executions              *processrepo.ExecutionRepository
 	BatchJobStatuses        *processrepo.BatchJobStatusRepository
 	DataStagingTasks        *processrepo.DataStagingTaskRepository
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
@@ -154,6 +156,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Processes:               processrepo.NewProcessRepository(db),
 		Statuses:                processrepo.NewStatusRepository(db),
 		TaskStatuses:            processrepo.NewTaskStatusRepository(db),
+		Executions:              processrepo.NewExecutionRepository(db),
 		BatchJobStatuses:        processrepo.NewBatchJobStatusRepository(db),
 		DataStagingTasks:        processrepo.NewDataStagingTaskRepository(db),
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
@@ -252,6 +255,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		Process:                processSvs,
 		ProcessStatus:          statusSvc,
 		TaskStatus:             processsvc.NewTaskStatusService(repos.TaskStatuses, processes),
+		Execution:              processsvc.NewExecutionService(db, repos.Executions, processes),
 		DataStagingTask:        processsvc.NewDataStagingTaskService(db, stagingTasks, processes),
 		JobSubmissionTask:      processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes),
 		JobMonitoringTask:      processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes),

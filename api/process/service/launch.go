@@ -269,7 +269,14 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 	}
 
 	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
-	s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
+	workflowId, err := s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
+
+	if err != nil {
+		slog.Error("Failed to launch batch job submission", "processId", process.ProcessID, "error", err)
+		return err
+	}
+
+	slog.Info("Launched batch job submission", "processId", process.ProcessID, "workflowId", workflowId)
 
 	if _, err := s.statusService.Record(ctx, process.ProcessID, procmodel.ProcessStatusTypeSubmitted, nil); err != nil {
 		return err

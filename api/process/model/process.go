@@ -102,6 +102,11 @@ type Process struct {
 	// the newest status row, maintained by ProcessStatus.AfterCreate.
 	LastStatusID *string `gorm:"column:last_status_id;type:varchar(36);index" json:"lastStatusId,omitempty"`
 
+	// The last execution recorded for this process, if any. Like LastStatusID it
+	// carries no foreign key, for the same reason, and is maintained by
+	// ProcessExecution.AfterCreate.
+	LastExecutionID *string `gorm:"column:last_execution_id;type:varchar(36);index" json:"lastExecutionId,omitempty"`
+
 	// BatchProcess is present exactly when ProcessType is BATCH_JOB. It is owned by
 	// the process, not shared with it: deleting the process deletes it too.
 	BatchProcess *BatchJobProcess `gorm:"foreignKey:ProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"batchProcess,omitempty"`
@@ -126,10 +131,10 @@ func (p *Process) BeforeCreate(*gorm.DB) error {
 
 // BeforeDelete removes what the database will not.
 //
-// The statuses have to go first: their own ProcessID foreign key is RESTRICT, so the
-// server would refuse to delete a process any status still points at. LastStatusID
-// needs no clearing — it holds no constraint — and the row carrying it is about to be
-// deleted in this same transaction.
+// The statuses and executions have to go first: their own ProcessID foreign keys are
+// RESTRICT, so the server would refuse to delete a process any of them still points at.
+// LastStatusID and LastExecutionID need no clearing — they hold no constraint — and the
+// row carrying them is about to be deleted in this same transaction.
 //
 // The batch process is deleted through GORM rather than left to its ON DELETE CASCADE
 // so that its own AfterDelete fires and takes the owned BatchJobConfig with it. A
@@ -141,6 +146,9 @@ func (p *Process) BeforeCreate(*gorm.DB) error {
 // themselves.
 func (p *Process) BeforeDelete(tx *gorm.DB) error {
 	if err := tx.Where("process_id = ?", p.ID).Delete(&ProcessStatus{}).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("process_id = ?", p.ID).Delete(&ProcessExecution{}).Error; err != nil {
 		return err
 	}
 
@@ -218,4 +226,47 @@ func (s *ProcessStatus) AfterCreate(tx *gorm.DB) error {
 	return tx.Model(&Process{}).
 		Where("process_id = ?", *s.ProcessID).
 		Update("last_status_id", s.ID).Error
+}
+
+type ProcessExecutionType string
+
+const (
+	ProcessExecutionTypeBatchJobSubmission ProcessExecutionType = "BATCH_JOB_SUBMISSION"
+	ProcessExecutionTypeJobMonitoring      ProcessExecutionType = "JOB_MONITORING"
+	ProcessExecutionTypeJobCompletion      ProcessExecutionType = "BATCH_JOB_COMPLETION"
+)
+
+// ProcessExecution records one workflow run started on behalf of a process — the job
+// submission, monitoring or completion workflow — by the id the workflow engine knows
+// it by.
+type ProcessExecution struct {
+	ID string `gorm:"column:process_execution_id;primaryKey;type:varchar(36)" json:"processExecutionId"`
+
+	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	Process   *Process `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	// Workflow id or monitoring task id
+	ExecutionID   string                `gorm:"column:execution_id;type:varchar(36)" json:"executionId"`
+	ExecutionType *ProcessExecutionType `gorm:"column:execution_type;type:varchar(255)" json:"executionType,omitempty"`
+
+	// The time the execution was recorded, in milliseconds since the epoch.
+	Timestamp *int64 `gorm:"column:timestamp" json:"timestamp,omitempty"`
+}
+
+// TableName returns the table backing ProcessExecution.
+func (ProcessExecution) TableName() string { return "process_executions" }
+
+func (p *ProcessExecution) BeforeCreate(*gorm.DB) error {
+	if p.ID == "" {
+		p.ID = uuid.NewString()
+	}
+	return nil
+}
+
+func (p *ProcessExecution) AfterCreate(tx *gorm.DB) error {
+	if p.ProcessID == nil || *p.ProcessID == "" {
+		return nil
+	}
+	return tx.Model(&Process{}).
+		Where("process_id = ?", *p.ProcessID).
+		Update("last_execution_id", p.ID).Error
 }

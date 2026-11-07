@@ -102,6 +102,10 @@ func Entities() []any {
 		// The status history of those steps. It references the process rather than a
 		// task, since a task id may name a row in any of the four tables above.
 		&processmodel.TaskStatus{},
+
+		// The workflow runs started for a process. Like ProcessStatus it is referenced
+		// back from Process, through LastExecutionID, which carries no constraint.
+		&processmodel.ProcessExecution{},
 	}
 }
 

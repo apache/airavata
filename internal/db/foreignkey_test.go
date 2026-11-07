@@ -71,6 +71,7 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"batch_processes", "slurm_cluster_config_id", "slurm_cluster_configs", "slurm_cluster_config_id"},
 		{"batch_processes", "batch_job_config_id", "batch_job_configs", "batch_job_config_id"},
 		{"process_statuses", "process_id", "processes", "process_id"},
+		{"process_executions", "process_id", "processes", "process_id"},
 		{"process_template_input_mappings", "batch_process_id", "batch_processes", "batch_process_id"},
 		{"process_template_input_mappings", "template_input_id", "application_template_inputs", "input_id"},
 		{"process_template_output_mappings", "batch_process_id", "batch_processes", "batch_process_id"},
@@ -81,7 +82,7 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"job_submission_tasks", "process_id", "processes", "process_id"},
 		{"job_monitoring_tasks", "process_id", "processes", "process_id"},
 		{"interactive_command_tasks", "process_id", "processes", "process_id"},
-		// processes.last_status_id deliberately has none: a constraint in that
+		// processes.last_status_id and last_execution_id deliberately have none: a constraint in that
 		// direction would make the two tables mutually dependent, which PostgreSQL
 		// cannot create. See Process.LastStatusID.
 	}
