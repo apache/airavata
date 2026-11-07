@@ -98,7 +98,7 @@ type Services struct {
 	Process                *processsvc.ProcessService
 	ProcessStatus          *processsvc.StatusService
 	TaskStatus             *processsvc.TaskStatusService
-	Execution              *processsvc.ExecutionService
+	ProcessWorkflow        *processsvc.WorkflowService
 	DataStagingTask        *processsvc.DataStagingTaskService
 	JobSubmissionTask      *processsvc.JobSubmissionTaskService
 	JobMonitoringTask      *processsvc.JobMonitoringTaskService
@@ -129,7 +129,7 @@ type Repositories struct {
 	Processes               *processrepo.ProcessRepository
 	Statuses                *processrepo.StatusRepository
 	TaskStatuses            *processrepo.TaskStatusRepository
-	Executions              *processrepo.ExecutionRepository
+	ProcessWorkflows        *processrepo.WorkflowRepository
 	BatchJobStatuses        *processrepo.BatchJobStatusRepository
 	DataStagingTasks        *processrepo.DataStagingTaskRepository
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
@@ -156,7 +156,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Processes:               processrepo.NewProcessRepository(db),
 		Statuses:                processrepo.NewStatusRepository(db),
 		TaskStatuses:            processrepo.NewTaskStatusRepository(db),
-		Executions:              processrepo.NewExecutionRepository(db),
+		ProcessWorkflows:        processrepo.NewWorkflowRepository(db),
 		BatchJobStatuses:        processrepo.NewBatchJobStatusRepository(db),
 		DataStagingTasks:        processrepo.NewDataStagingTaskRepository(db),
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
@@ -192,10 +192,10 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	monitoringTasks := repos.JobMonitoringTasks
 	commandTasks := repos.InteractiveCommandTasks
 	batchStatus := repos.BatchJobStatuses
-	processExecutions := repos.Executions
+	processWorkflows := repos.ProcessWorkflows
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
-	executionSvc := processsvc.NewExecutionService(db, processExecutions, processes)
+	processWorkflowSvc := processsvc.NewWorkflowService(db, processWorkflows, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, shares, groupMembers)
 	keyAccess := credentialssvc.NewKeyAccess(sshCredentials)
 	processSvs := processsvc.NewProcessService(db, processes, deployments, configAccess, users, statusSvc)
@@ -219,7 +219,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processExecutions, workflowBackend, sshContext)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -257,7 +257,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		Process:                processSvs,
 		ProcessStatus:          statusSvc,
 		TaskStatus:             processsvc.NewTaskStatusService(repos.TaskStatuses, processes),
-		Execution:              executionSvc,
+		ProcessWorkflow:        processWorkflowSvc,
 		DataStagingTask:        processsvc.NewDataStagingTaskService(db, stagingTasks, processes),
 		JobSubmissionTask:      processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes),
 		JobMonitoringTask:      processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes),
@@ -265,7 +265,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
-			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, executionSvc, stagingTasks, submissionTasks,
+			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, processWorkflowSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, executionEngine),
 
 		ExecutionEngine: executionEngine,

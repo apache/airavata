@@ -60,7 +60,7 @@ type LaunchService struct {
 	scpDataStorageService  *datasev.SCPDataStorageService
 	dataProductService     *datasev.DataProductService
 	statusService          *StatusService
-	executionService       *ExecutionService
+	processWorkflowService *WorkflowService
 
 	dataStagingTasks   *repository.DataStagingTaskRepository
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository
@@ -82,7 +82,7 @@ func NewLaunchService(
 	scpDataStorageService *datasev.SCPDataStorageService,
 	dataProductService *datasev.DataProductService,
 	statusService *StatusService,
-	executionService *ExecutionService,
+	processWorkflowService *WorkflowService,
 
 	dataStagingTasks *repository.DataStagingTaskRepository,
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository,
@@ -107,7 +107,7 @@ func NewLaunchService(
 		monitoringTasks:        monitoringTasks,
 		interactiveTasks:       interactiveTasks,
 		executionEngine:        executionEngine,
-		executionService:       executionService,
+		processWorkflowService: processWorkflowService,
 	}
 }
 
@@ -279,10 +279,10 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 		return err
 	}
 
-	_, err = s.executionService.Record(ctx, process.ProcessID, workflowId, procmodel.ProcessExecutionTypeBatchJobSubmission, procmodel.ProcessExecutionStatusTypeRunning)
+	_, err = s.processWorkflowService.Record(ctx, process.ProcessID, workflowId, procmodel.ProcessWorkflowTypeBatchJobSubmission, procmodel.ProcessWorkflowStatusTypeRunning)
 
 	if err != nil {
-		slog.Error("Failed to record execution", "processId", process.ProcessID, "error", err)
+		slog.Error("Failed to record process workflow", "processId", process.ProcessID, "error", err)
 		return err
 	}
 	slog.Info("Launched batch job submission", "processId", process.ProcessID, "workflowId", workflowId)

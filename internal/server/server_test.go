@@ -2599,68 +2599,69 @@ func TestTaskStatusesAreReadThroughTheirProcess(t *testing.T) {
 	}
 }
 
-// Executions are recorded by the engine, read through the process they belong to, and
-// owner-scoped like task statuses. Recording one repoints the process's lastExecutionId.
-func TestExecutionsAreReadThroughTheirProcess(t *testing.T) {
+// Process workflows are recorded by the engine, read through the process they belong
+// to, and owner-scoped like task statuses. Recording one repoints the process's
+// lastWorkflowId.
+func TestProcessWorkflowsAreReadThroughTheirProcess(t *testing.T) {
 	h := newHarness(t)
-	processID := h.seedProcess("executions", tokenAlice)
-	other := h.seedProcess("other-executions", tokenAlice)
+	processID := h.seedProcess("workflows", tokenAlice)
+	other := h.seedProcess("other-workflows", tokenAlice)
 
 	ctx := context.Background()
-	submission, err := h.svcs.Execution.Record(ctx, processID, "workflow-1", "BATCH_JOB_SUBMISSION", "RUNNING")
+	submission, err := h.svcs.ProcessWorkflow.Record(ctx, processID, "workflow-1", "BATCH_JOB_SUBMISSION", "RUNNING")
 	if err != nil {
 		t.Fatalf("record submission: %v", err)
 	}
-	completion, err := h.svcs.Execution.Record(ctx, processID, "workflow-2", "BATCH_JOB_COMPLETION", "RUNNING")
+	completion, err := h.svcs.ProcessWorkflow.Record(ctx, processID, "workflow-2", "BATCH_JOB_COMPLETION", "RUNNING")
 	if err != nil {
 		t.Fatalf("record completion: %v", err)
 	}
-	if _, err := h.svcs.Execution.Record(ctx, "no-such-process", "workflow-3", "BATCH_JOB_SUBMISSION", "RUNNING"); err == nil {
+	if _, err := h.svcs.ProcessWorkflow.Record(ctx, "no-such-process", "workflow-3", "BATCH_JOB_SUBMISSION", "RUNNING"); err == nil {
 		t.Error("recording against an unknown process succeeded, want an error")
 	}
 
-	all := h.list("/api/v1/processes/"+processID+"/executions", tokenAlice)
-	if len(all) != 2 || all[0]["executionId"] != "workflow-1" || all[1]["executionId"] != "workflow-2" {
-		t.Fatalf("executions = %v, want workflow-1 then workflow-2", all)
+	all := h.list("/api/v1/processes/"+processID+"/workflows", tokenAlice)
+	if len(all) != 2 || all[0]["workflowId"] != "workflow-1" || all[1]["workflowId"] != "workflow-2" {
+		t.Fatalf("workflows = %v, want workflow-1 then workflow-2", all)
 	}
-	if all[1]["executionType"] != "BATCH_JOB_COMPLETION" || all[1]["status"] != "RUNNING" {
-		t.Errorf("execution = %v, want it to name its type and RUNNING status", all[1])
+	if all[1]["workflowType"] != "BATCH_JOB_COMPLETION" || all[1]["status"] != "RUNNING" {
+		t.Errorf("workflow = %v, want it to name its type and RUNNING status", all[1])
 	}
 
-	// Recording the same workflow again moves its execution on rather than adding one,
+	// Recording the same workflow again moves it on rather than adding one,
 	// keeping the type and start time it was first recorded with.
-	finished, err := h.svcs.Execution.Record(ctx, processID, "workflow-1", "JOB_MONITORING", "SUCCEEDED")
+	finished, err := h.svcs.ProcessWorkflow.Record(ctx, processID, "workflow-1", "JOB_MONITORING", "SUCCEEDED")
 	if err != nil {
 		t.Fatalf("record finished submission: %v", err)
 	}
-	if finished.ProcessExecutionID != submission.ProcessExecutionID {
-		t.Errorf("re-recording created execution %s, want it to update %s", finished.ProcessExecutionID, submission.ProcessExecutionID)
+	if finished.ProcessWorkflowID != submission.ProcessWorkflowID {
+		t.Errorf("re-recording created workflow %s, want it to update %s", finished.ProcessWorkflowID, submission.ProcessWorkflowID)
 	}
-	if *finished.ExecutionType != "BATCH_JOB_SUBMISSION" || *finished.Timestamp != *submission.Timestamp {
-		t.Errorf("re-recorded execution = %+v, want its original type and timestamp", finished)
+	if *finished.WorkflowType != "BATCH_JOB_SUBMISSION" || *finished.Timestamp != *submission.Timestamp {
+		t.Errorf("re-recorded workflow = %+v, want its original type and timestamp", finished)
 	}
-	if again := h.list("/api/v1/processes/"+processID+"/executions", tokenAlice); len(again) != 2 {
-		t.Errorf("executions after re-recording = %d, want still 2", len(again))
+	if again := h.list("/api/v1/processes/"+processID+"/workflows", tokenAlice); len(again) != 2 {
+		t.Errorf("workflows after re-recording = %d, want still 2", len(again))
 	}
 
 	proc := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID, tokenAlice, nil, http.StatusOK)
-	if proc["lastExecutionId"] != completion.ProcessExecutionID {
-		t.Errorf("lastExecutionId = %v, want %s", proc["lastExecutionId"], completion.ProcessExecutionID)
+	if proc["lastWorkflowId"] != completion.ProcessWorkflowID {
+		t.Errorf("lastWorkflowId = %v, want %s", proc["lastWorkflowId"], completion.ProcessWorkflowID)
 	}
 
-	one := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID+"/executions/"+submission.ProcessExecutionID, tokenAlice, nil, http.StatusOK)
-	if one["executionId"] != "workflow-1" || one["status"] != "SUCCEEDED" {
-		t.Errorf("execution = %v, want workflow-1 SUCCEEDED", one)
+	one := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID+"/workflows/"+submission.ProcessWorkflowID, tokenAlice, nil, http.StatusOK)
+	if one["workflowId"] != "workflow-1" || one["status"] != "SUCCEEDED" {
+		t.Errorf("workflow = %v, want workflow-1 SUCCEEDED", one)
 	}
 
-	// An execution id from one process reads nothing through another's path.
-	if rec := h.do(http.MethodGet, "/api/v1/processes/"+other+"/executions/"+submission.ProcessExecutionID, tokenAlice, nil); rec.Code != http.StatusNotFound {
-		t.Errorf("cross-process execution: status = %d, want 404", rec.Code)
+	// An workflow id from one process reads nothing through another's path.
+	if rec := h.do(http.MethodGet, "/api/v1/processes/"+other+"/workflows/"+submission.ProcessWorkflowID, tokenAlice, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("cross-process workflow: status = %d, want 404", rec.Code)
 	}
 
 	for _, path := range []string{
-		"/api/v1/processes/" + processID + "/executions",
-		"/api/v1/processes/" + processID + "/executions/" + submission.ProcessExecutionID,
+		"/api/v1/processes/" + processID + "/workflows",
+		"/api/v1/processes/" + processID + "/workflows/" + submission.ProcessWorkflowID,
 	} {
 		if rec := h.do(http.MethodGet, path, tokenBob, nil); rec.Code != http.StatusForbidden {
 			t.Errorf("GET %s as another user: status = %d, want 403", path, rec.Code)
@@ -2671,21 +2672,21 @@ func TestExecutionsAreReadThroughTheirProcess(t *testing.T) {
 		h.mustDo(http.MethodGet, path, tokenAdmin, nil, http.StatusOK)
 	}
 
-	if rec := h.do(http.MethodGet, "/api/v1/processes/no-such-process/executions", tokenAlice, nil); rec.Code != http.StatusNotFound {
+	if rec := h.do(http.MethodGet, "/api/v1/processes/no-such-process/workflows", tokenAlice, nil); rec.Code != http.StatusNotFound {
 		t.Errorf("unknown process: status = %d, want 404", rec.Code)
 	}
-	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/executions", tokenAlice, map[string]any{}); rec.Code != http.StatusMethodNotAllowed {
-		t.Errorf("POST executions: status = %d, want 405", rec.Code)
+	if rec := h.do(http.MethodPost, "/api/v1/processes/"+processID+"/workflows", tokenAlice, map[string]any{}); rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST workflows: status = %d, want 405", rec.Code)
 	}
 
-	// The executions' foreign key is RESTRICT, so deleting the process relies on
+	// The workflows' foreign key is RESTRICT, so deleting the process relies on
 	// Process.BeforeDelete removing them first.
 	h.mustDo(http.MethodDelete, "/api/v1/processes/"+processID, tokenAdmin, nil, http.StatusNoContent)
 	var left int64
-	if err := h.db.Table("process_executions").Where("process_id = ?", processID).Count(&left).Error; err != nil {
-		t.Fatalf("count executions: %v", err)
+	if err := h.db.Table("process_workflows").Where("process_id = ?", processID).Count(&left).Error; err != nil {
+		t.Fatalf("count workflows: %v", err)
 	}
 	if left != 0 {
-		t.Errorf("executions left after deleting their process = %d, want 0", left)
+		t.Errorf("workflows left after deleting their process = %d, want 0", left)
 	}
 }

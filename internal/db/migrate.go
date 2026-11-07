@@ -104,8 +104,8 @@ func Entities() []any {
 		&processmodel.TaskStatus{},
 
 		// The workflow runs started for a process. Like ProcessStatus it is referenced
-		// back from Process, through LastExecutionID, which carries no constraint.
-		&processmodel.ProcessExecution{},
+		// back from Process, through LastWorkflowID, which carries no constraint.
+		&processmodel.ProcessWorkflow{},
 	}
 }
 

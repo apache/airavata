@@ -250,7 +250,7 @@ export interface Process {
   userId: string | null;
   processType: "BATCH_JOB" | "CLOUD_JOB" | null;
   lastStatusId: string | null;
-  lastExecutionId: string | null;
+  lastWorkflowId: string | null;
   batchProcess: BatchProcess | null;
 }
 

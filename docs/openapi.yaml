@@ -1890,50 +1890,50 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
-  /api/v1/processes/{processId}/executions:
+  /api/v1/processes/{processId}/workflows:
     parameters:
       - $ref: "#/components/parameters/ProcessId"
     get:
       tags: [Processes]
-      summary: List the workflow executions started for a process
+      summary: List the workflows started for a process
       description: |
-        Read-only, oldest first. Executions are recorded by the server when it starts a
+        Read-only, oldest first. Workflows are recorded by the server when it starts a
         workflow for the process, never accepted from a client, so there is no `POST`
         or `PUT` here. Only the process's owner or an admin may read them.
-      operationId: listProcessExecutions
+      operationId: listProcessWorkflows
       responses:
         "200":
-          description: Every execution recorded for the process.
+          description: Every workflow recorded for the process.
           content:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/ExecutionResponse" }
+                items: { $ref: "#/components/schemas/WorkflowResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalError" }
 
-  /api/v1/processes/{processId}/executions/{executionId}:
+  /api/v1/processes/{processId}/workflows/{processWorkflowId}:
     parameters:
       - $ref: "#/components/parameters/ProcessId"
-      - name: executionId
+      - name: processWorkflowId
         in: path
         required: true
-        description: The execution's `processExecutionId`.
+        description: The process workflow's `processWorkflowId`.
         schema: { type: string }
     get:
       tags: [Processes]
-      summary: Read one recorded execution
+      summary: Read one recorded process workflow
       description: |
-        An execution of another process is a `404` through this process's path.
-      operationId: getProcessExecution
+        A workflow of another process is a `404` through this process's path.
+      operationId: getProcessWorkflow
       responses:
         "200":
-          description: The execution.
+          description: The process workflow.
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/ExecutionResponse" }
+              schema: { $ref: "#/components/schemas/WorkflowResponse" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -2957,10 +2957,10 @@ components:
     ProcessStatusType:
       type: string
       enum: [CREATED, SUBMITTED, RUNNING, COMPLETED, FAILED]
-    ProcessExecutionType:
+    ProcessWorkflowType:
       type: string
       enum: [BATCH_JOB_SUBMISSION, JOB_MONITORING, BATCH_JOB_COMPLETION]
-    ProcessExecutionStatusType:
+    ProcessWorkflowStatusType:
       type: string
       enum: [RUNNING, SUCCEEDED, FAILED]
     OnFailureAction:
@@ -3652,10 +3652,10 @@ components:
             - { $ref: "#/components/schemas/ProcessType" }
             - { type: "null" }
         lastStatusId: { type: [string, "null"], format: uuid }
-        lastExecutionId:
+        lastWorkflowId:
           type: [string, "null"]
           format: uuid
-          description: The newest recorded execution's `processExecutionId`, if any.
+          description: The newest recorded workflow's `processWorkflowId`, if any.
         batchProcess:
           oneOf:
             - { $ref: "#/components/schemas/BatchProcessResponse" }
@@ -3681,34 +3681,34 @@ components:
           description: When the status was recorded, in milliseconds since the epoch.
       required: [processStatusId]
 
-    ExecutionResponse:
+    WorkflowResponse:
       type: object
       description: |
-        One workflow execution started for a process. There is no request counterpart:
-        executions are recorded by the server when it starts a workflow, never created
+        One workflow started for a process. There is no request counterpart:
+        workflows are recorded by the server when it starts a workflow, never created
         from a client body.
       properties:
-        processExecutionId: { type: string, format: uuid }
+        processWorkflowId: { type: string, format: uuid }
         processId: { type: [string, "null"], format: uuid }
-        executionId:
+        workflowId:
           type: string
           description: The id the workflow engine knows the run by.
-        executionType:
+        workflowType:
           oneOf:
-            - { $ref: "#/components/schemas/ProcessExecutionType" }
+            - { $ref: "#/components/schemas/ProcessWorkflowType" }
             - { type: "null" }
         status:
           description: |
             `RUNNING` once the workflow is started, then `SUCCEEDED` or `FAILED`. `null`
-            for executions recorded before the server tracked it.
+            for workflows recorded before the server tracked it.
           oneOf:
-            - { $ref: "#/components/schemas/ProcessExecutionStatusType" }
+            - { $ref: "#/components/schemas/ProcessWorkflowStatusType" }
             - { type: "null" }
         timestamp:
           type: [integer, "null"]
           format: int64
-          description: When the execution was recorded, in milliseconds since the epoch.
-      required: [processExecutionId, executionId]
+          description: When the workflow was recorded, in milliseconds since the epoch.
+      required: [processWorkflowId, workflowId]
 
     DataStagingTaskRequest:
       type: object

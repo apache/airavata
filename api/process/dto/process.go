@@ -190,23 +190,23 @@ func (r *Request) Validate() []httpx.FieldError {
 // Response is the read model for a process, with every section it carries nested
 // inside it.
 type Response struct {
-	ProcessID       string             `json:"processId"`
-	UserID          *string            `json:"userId"`
-	ProcessType     *model.ProcessType `json:"processType"`
-	LastStatusID    *string            `json:"lastStatusId"`
-	LastExecutionID *string            `json:"lastExecutionId"`
+	ProcessID      string             `json:"processId"`
+	UserID         *string            `json:"userId"`
+	ProcessType    *model.ProcessType `json:"processType"`
+	LastStatusID   *string            `json:"lastStatusId"`
+	LastWorkflowID *string            `json:"lastWorkflowId"`
 
 	BatchProcess *BatchProcessResponse `json:"batchProcess"`
 }
 
 func ToResponse(p *model.Process) Response {
 	return Response{
-		ProcessID:       p.ID,
-		UserID:          p.OwnerID,
-		ProcessType:     p.ProcessType,
-		LastStatusID:    p.LastStatusID,
-		LastExecutionID: p.LastExecutionID,
-		BatchProcess:    ToBatchProcessResponse(p.BatchProcess),
+		ProcessID:      p.ID,
+		UserID:         p.OwnerID,
+		ProcessType:    p.ProcessType,
+		LastStatusID:   p.LastStatusID,
+		LastWorkflowID: p.LastWorkflowID,
+		BatchProcess:   ToBatchProcessResponse(p.BatchProcess),
 	}
 }
 
