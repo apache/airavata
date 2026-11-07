@@ -22,6 +22,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -30,6 +31,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	gossh "golang.org/x/crypto/ssh"
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
@@ -62,7 +65,7 @@ func NewClusterDiscoveryService(keys *credsvc.KeyAccess, configs *ConfigAccess, 
 		keys:    keys,
 		configs: configs,
 		run: func(ctx context.Context, dial ssh.SSHDialConfig, command, target string) (string, string, error) {
-			return ssh.RunSSHCommand(ctx, dial, sshCtx, command, target)
+			return ssh.RunSSHCommand(ctx, dial, sshCtx, command, nil, target)
 		},
 	}
 }
@@ -97,7 +100,10 @@ func (s *ClusterDiscoveryService) DiscoverPartitions(ctx context.Context, req *d
 	}
 	dial := ssh.NewSSHDialConfig(req.HeadnodeHost, port, req.LoginUser, *key, principal.Name)
 	target := fmt.Sprintf("ssh %s@%s:%d", req.LoginUser, req.HeadnodeHost, port)
+	return s.discoverPartitions(ctx, dial, req, target)
+}
 
+func (s *ClusterDiscoveryService) discoverPartitions(ctx context.Context, dial ssh.SSHDialConfig, req *dto.PartitionDiscoveryRequest, target string) (*dto.PartitionDiscoveryResponse, error) {
 	scontrol := slurmCommand(req.SlurmHome, "scontrol") + " show partition -o"
 	stdout, stderr, err := s.run(ctx, dial, scontrol, target)
 	if err != nil {
@@ -374,6 +380,15 @@ func (s *ClusterDiscoveryService) DiscoverAllocations(ctx context.Context, confi
 	dial := ssh.NewSSHDialConfig(cluster.HeadnodeHost, cluster.HeadnodePort, config.LoginUser, *config.SSHCredential, principal.Name)
 	target := fmt.Sprintf("ssh %s@%s:%d", config.LoginUser, cluster.HeadnodeHost, cluster.HeadnodePort)
 	user := ssh.ShellQuote(config.LoginUser)
+	found, err := s.discoverPartitions(ctx, dial, &dto.PartitionDiscoveryRequest{HeadnodeHost: cluster.HeadnodeHost, SlurmHome: cluster.SlurmHome}, target)
+	// Only failing to reach the host fails discovery; scontrol exiting non-zero or listing nothing costs the partitions.
+	var exited *gossh.ExitError
+	if err != nil && !errors.As(err, &exited) && httpx.StatusOf(err) != http.StatusConflict {
+		return nil, err
+	}
+	if err != nil {
+		slog.Warn("scontrol gave no partitions during allocation discovery; partitions omitted", "host", cluster.HeadnodeHost, "error", err)
+	}
 
 	// sacctmgr knows each association with its partition and QOS limits. Some sites
 	// close it to ordinary users, so sshare — which lists the same accounts without the
@@ -395,7 +410,7 @@ func (s *ClusterDiscoveryService) DiscoverAllocations(ctx context.Context, confi
 		allocations = parseShareAccounts(out)
 	}
 	if len(allocations) == 0 {
-		return &dto.AllocationDiscoveryResponse{Allocations: []dto.Allocation{}}, nil
+		return &dto.AllocationDiscoveryResponse{Allocations: []dto.Allocation{}, PartitionDiscoveryResponse: found}, nil
 	}
 
 	// Descriptions are what tell "tg-bio210001" from "tg-che220002"; a site that will
@@ -409,7 +424,7 @@ func (s *ClusterDiscoveryService) DiscoverAllocations(ctx context.Context, confi
 	if out, _, err := s.run(ctx, dial, describe, target); err == nil {
 		applyDescriptions(allocations, out)
 	}
-	return &dto.AllocationDiscoveryResponse{Allocations: allocations}, nil
+	return &dto.AllocationDiscoveryResponse{Allocations: allocations, PartitionDiscoveryResponse: found}, nil
 }
 
 // parseAssociations reads `sacctmgr -nP show associations format=Account,Partition,QOS`,

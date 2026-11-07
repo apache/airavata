@@ -43,10 +43,15 @@ export class ApiError extends Error {
 // and sends the user back to sign in.
 export const UNAUTHORIZED_EVENT = "airavata:unauthorized";
 
+// This tab's connection, kept across reloads: SSH logins it starts prompt only here.
+const connection = (): string =>
+  (sessionStorage.airavataConnection ??= crypto.getRandomValues(new Uint32Array(4)).join("."));
+
 async function raw(method: string, path: string, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
+  headers.set("X-Connection-Id", connection());
 
   let res: Response;
   try {
@@ -139,5 +144,5 @@ export function wsProtocols(token: string): string[] {
   let bin = "";
   bytes.forEach((b) => (bin += String.fromCharCode(b)));
   const encoded = btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  return ["airavata.v1", `base64url.bearer.${encoded}`];
+  return ["airavata.v1", `base64url.bearer.${encoded}`, `connection.${connection()}`];
 }

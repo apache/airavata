@@ -73,6 +73,14 @@ func WriteError(w http.ResponseWriter, r *http.Request, err error) {
 	})
 }
 
+func Answer(w http.ResponseWriter, r *http.Request, value any, err error) {
+	if err != nil {
+		WriteError(w, r, err)
+		return
+	}
+	WriteJSON(w, http.StatusOK, value)
+}
+
 // DecodeJSON reads the request body into dst.
 //
 // Unknown fields are ignored, matching Spring Boot's Jackson defaults

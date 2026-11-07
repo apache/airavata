@@ -21,9 +21,10 @@ type SSHInteractiveAuth struct {
 	CreatedAt  time.Time
 	dialConfig SSHDialConfig
 
-	// banner is set before the auth is published and never changes, so it needs
-	// no lock.
-	banner string
+	// banner and connection are set before the auth is published and never change, so
+	// they need no lock. connection is the client connection the prompts go back to.
+	banner     string
+	connection string
 
 	// mu guards the challenge fields: Challenge writes them on the dialing goroutine
 	// while an HTTP handler reads them to list the auth.
@@ -61,7 +62,7 @@ func (s *SSHInteractiveAuth) Challenge(ctx context.Context, name, instruction st
 	select {
 	case <-s.authWaitSignal:
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		return nil, context.Cause(ctx)
 	}
 
 	s.mu.Lock()

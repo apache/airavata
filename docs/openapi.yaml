@@ -27,12 +27,11 @@ info:
 
     ## Authentication
 
-    Authentication is a bearer token validated by CILogon introspection, carried as
-    `Authorization: Bearer <token>`. A request without a token is anonymous rather
+    Authentication is a CILogon ID token verified against the issuer's key set, carried
+    as `Authorization: Bearer <token>`. A request without a token is anonymous rather
     than rejected at the door: each operation decides for itself whether an anonymous
     caller is acceptable. A token that is present but invalid is always `401`, with
-    `WWW-Authenticate: Bearer error="invalid_token"`. If the identity provider cannot
-    be reached the call fails `502`, because that is not the caller's fault.
+    `WWW-Authenticate: Bearer error="invalid_token"`.
 
     ## Authorization
 
@@ -73,6 +72,8 @@ servers:
 tags:
   - name: Health
     description: Liveness probe.
+  - name: Authentication
+    description: Obtaining a bearer from CILogon through the server.
   - name: Users
     description: User accounts.
   - name: Groups
@@ -97,6 +98,8 @@ tags:
       subject's kind is a field, not a choice of endpoint. See docs/sharing.md.
   - name: Processes
     description: Runs, their status history and their tasks.
+  - name: Sessions
+    description: A named, restartable allocation whose runs are processes.
 
 security:
   - bearerAuth: []
@@ -126,6 +129,65 @@ paths:
                     const: UP
                 required: [status]
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  # ------------------------------------------------------- Authentication
+
+  /api/v1/auth/config:
+    get:
+      tags: [Authentication]
+      summary: What a browser needs to start a PKCE sign-in
+      operationId: signInConfig
+      security: []
+      responses:
+        "200":
+          description: The authorization endpoint, client id and scope.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SignInConfig" }
+  /api/v1/auth/device:
+    post:
+      tags: [Authentication]
+      summary: Start a device grant
+      operationId: signInDevice
+      security: []
+      responses:
+        "200":
+          description: The code the user approves and the code to redeem.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Device" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+  /api/v1/auth/token:
+    post:
+      tags: [Authentication]
+      summary: Redeem a grant for tokens
+      description: |
+        One of `refresh_token`, `device_code`, or `code` with its `code_verifier` and a
+        `redirect_uri` on an allowed origin.
+      operationId: signInToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code: { type: string }
+                code_verifier: { type: string }
+                redirect_uri: { type: string }
+                refresh_token: { type: string }
+                device_code: { type: string }
+      responses:
+        "200":
+          description: The tokens.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Tokens" }
+        "202": { description: The user has not approved the device code yet; ask again. }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "502": { $ref: "#/components/responses/BadGateway" }
 
   # ---------------------------------------------------------------- Users
@@ -1009,6 +1071,10 @@ paths:
                         qos:
                           type: array
                           items: { type: string }
+                  partitions:
+                    type: array
+                    description: The cluster's partitions as they stand now; absent if scontrol fails or lists none.
+                    items: { $ref: "#/components/schemas/ClusterPartitionRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
@@ -1688,6 +1754,109 @@ paths:
               schema: { $ref: "#/components/schemas/Error" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/sessions:
+    post:
+      tags: [Sessions]
+      summary: Create a session
+      description: |
+        Creates the session and its first run, then launches the run. The owner comes
+        from the token. A launch that fails after the run is created still answers
+        `201`; the run ends `FAILED` with the cause in `runs[0].error`.
+      operationId: createSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SessionRequest" }
+      responses:
+        "201":
+          description: The created session.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/sessions/me:
+    get:
+      tags: [Sessions]
+      summary: List the caller's sessions
+      description: Newest first. Needs no platform role.
+      operationId: listMySessions
+      responses:
+        "200":
+          description: The caller's sessions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SessionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/sessions/{sessionId}:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    get:
+      tags: [Sessions]
+      summary: Get a session
+      description: The owner or an admin.
+      operationId: getSession
+      responses:
+        "200":
+          description: The session.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Sessions]
+      summary: Delete a session
+      description: |
+        The owner or an admin. Removes the session and all its runs. `409` while the
+        current run is live, or when a start won a race with the delete.
+      operationId: deleteSession
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/sessions/{sessionId}/start:
+    parameters:
+      - $ref: "#/components/parameters/SessionId"
+    post:
+      tags: [Sessions]
+      summary: Start another run
+      description: |
+        Owner only; an admin gets `403`. The body is optional: none, or `{}`, keeps the
+        current run's wall time. `409` while the current run is live, or when another
+        start or delete won a race. A launch that fails after the run is created
+        still answers `200`; the run ends `FAILED` with the cause in `runs[0].error`.
+      operationId: startSession
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SessionStartRequest" }
+      responses:
+        "200":
+          description: The session, with the new run as `runs[0]`.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SessionResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/processes:
     get:
       tags: [Processes]
@@ -1826,7 +1995,8 @@ paths:
         Owner only. Takes no body. Answers `202`: the tasks are recorded here, and
         carrying them out is later work done elsewhere. The body is the process
         itself, so a caller that launched by id has the run to hand. What the launch
-        produced is read back through the process's task collections.
+        produced is read back through the process's task collections. A launch that
+        fails past the owner, already-launched and stopped checks records `FAILED`.
       operationId: launchProcess
       responses:
         "202":
@@ -1841,6 +2011,80 @@ paths:
         "409": { $ref: "#/components/responses/Conflict" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/stop:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    post:
+      tags: [Processes]
+      summary: Cancel the job
+      description: Owner only. Records `CANCELLED` and drops the job's link, also when the scheduler reports the job already gone or completing; a run that has ended is answered unchanged.
+      operationId: stopProcess
+      responses:
+        "200":
+          description: The process as it now stands.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+  /api/v1/processes/{processId}/access:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: Where the job's application is; 409 until its link is up
+      operationId: processAccess
+      responses:
+        "200":
+          description: The access.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /api/v1/processes/{processId}/link:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: Linkspan's dial-back WebSocket
+      description: |
+        Linkspan only. Offers subprotocols `cybershuttle.v1` and `link.<token>`, with the
+        job's `LINKSPAN_LINK_TOKEN`, never the app token `access` returns; the socket then
+        carries yamux streams to the job's ports.
+      operationId: processLink
+      security: []
+      responses:
+        "101":
+          description: Switching to the WebSocket protocol.
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/processes/{processId}/proxy/{port}/:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - name: port
+        in: path
+        required: true
+        schema: { type: integer }
+      - name: token
+        in: query
+        schema: { type: string }
+        description: "The run's token; or send `Authorization: token <token>`."
+    get:
+      tags: [Processes]
+      summary: HTTP reverse-proxied to one port of the job
+      description: Every method and any sub-path under the prefix is relayed, WebSocket upgrades included.
+      operationId: processProxy
+      security: []
+      responses:
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
 
   /api/v1/processes/{processId}/statuses:
     parameters:
@@ -2621,8 +2865,8 @@ components:
       type: http
       scheme: bearer
       description: |
-        A CILogon access token, validated by RFC 7662 introspection. The bootstrap
-        root token is also accepted; see INSTALL.md.
+        A CILogon ID token, verified against the issuer's key set. The bootstrap root
+        token is also accepted; see INSTALL.md.
 
   parameters:
     UserId:
@@ -2677,6 +2921,11 @@ components:
       schema: { type: string, format: uuid }
     ProcessId:
       name: processId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    SessionId:
+      name: sessionId
       in: path
       required: true
       schema: { type: string, format: uuid }
@@ -2752,8 +3001,8 @@ components:
           schema: { $ref: "#/components/schemas/Error" }
     BadGateway:
       description: |
-        The identity provider could not be reached to validate the token. Not the
-        caller's fault, so it is not reported as an auth failure.
+        An upstream the operation depends on could not be reached: the identity
+        provider, a login node or a storage host. Not the caller's fault.
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -2907,7 +3156,7 @@ components:
       enum: [BATCH_JOB, CLOUD_JOB]
     ProcessStatusType:
       type: string
-      enum: [CREATED, SUBMITTED, RUNNING, COMPLETED, FAILED]
+      enum: [CREATED, SUBMITTED, READY, RUNNING, COMPLETED, FAILED, CANCELLED]
     OnFailureAction:
       type: string
       enum: [RETRY, SKIP, EXIT]
@@ -2933,6 +3182,43 @@ components:
         - END
 
     # ------------------------------------------------------------ IAM
+
+    SignInConfig:
+      type: object
+      properties:
+        authorization_endpoint: { type: string }
+        client_id: { type: string }
+        scope: { type: string }
+      required: [authorization_endpoint, client_id, scope]
+
+    Tokens:
+      type: object
+      properties:
+        id_token: { type: string }
+        refresh_token: { type: string }
+        expires_in: { type: integer, format: int64 }
+      required: [id_token, expires_in]
+
+    Device:
+      type: object
+      properties:
+        device_code: { type: string }
+        user_code: { type: string }
+        verification_uri_complete: { type: string }
+        interval: { type: integer, format: int64 }
+      required: [device_code, user_code, verification_uri_complete, interval]
+
+    AccessResponse:
+      type: object
+      properties:
+        processId: { type: string, format: uuid }
+        app:
+          type: object
+          properties:
+            uri: { type: string, description: The proxy prefix the application answers under. }
+            token: { type: string, description: The run's one token, which the proxy takes. }
+          required: [uri, token]
+      required: [processId, app]
 
     UserRegistration:
       type: object
@@ -3034,8 +3320,9 @@ components:
     SSHCredentialRequest:
       type: object
       description: |
-        The create/update payload for a credential. `privateKey` is required on create; an
-        update that omits it keeps the stored secret. There is no owner field.
+        The create/update payload for a credential: a keypair, a password, or both. Create
+        requires `privateKey` or `password` unless `fullInteractive`; an update that omits a
+        secret keeps the stored one. There is no owner field.
       properties:
         sshCredentialName: { type: string }
         publicKey: { type: string }
@@ -3045,10 +3332,15 @@ components:
         passphrase:
           type: [string, "null"]
           description: Write-only. Never returned by any read endpoint.
+        password:
+          type: [string, "null"]
+          description: |
+            Write-only. Sent for the login's password; any further prompt (OTP, Duo) is
+            raised to the owner as an interactive auth.
         fullInteractive:
           type: boolean
           description: Also answer keyboard-interactive prompts (OTP, Duo) after the key.
-      required: [sshCredentialName, publicKey]
+      required: [sshCredentialName]
 
     SSHCredentialResponse:
       type: object
@@ -3313,6 +3605,7 @@ components:
         cpusPerGpu: { type: [string, "null"] }
         gpusPerNode: { type: [integer, "null"], format: int32 }
         constraints: { type: [string, "null"] }
+        partition: { type: [string, "null"], description: Overrides the deployment's `defaultPartition`. }
       required: [wallTimeMinutes, allocation]
 
     BatchJobConfigResponse:
@@ -3334,6 +3627,7 @@ components:
         cpusPerGpu: { type: [string, "null"] }
         gpusPerNode: { type: [integer, "null"], format: int32 }
         constraints: { type: [string, "null"] }
+        partition: { type: [string, "null"] }
       required: [batchJobConfigId, wallTimeMinutes, allocation]
 
     BatchDeploymentRequest:
@@ -3350,6 +3644,12 @@ components:
             The resource request a run of this deployment starts from. A run carries
             its own copy and may depart from it.
         defaultPartition: { type: [string, "null"] }
+        containerImage:
+          type: [string, "null"]
+          description: An Apptainer image every run, Linkspan included, runs in.
+        containerBind:
+          type: [string, "null"]
+          description: The image's `--bind` value, such as `/data/proj:/data,/scratch`.
       required: [templateId, slurmRunSection, defaultBatchJobConfig]
 
     BatchDeploymentResponse:
@@ -3364,6 +3664,8 @@ components:
             - { $ref: "#/components/schemas/BatchJobConfigResponse" }
             - { type: "null" }
         defaultPartition: { type: [string, "null"] }
+        containerImage: { type: [string, "null"] }
+        containerBind: { type: [string, "null"] }
       required: [deploymentId, slurmRunSection]
 
     # ----------------------------------------------------------- Data
@@ -3560,12 +3862,16 @@ components:
           oneOf:
             - { $ref: "#/components/schemas/BatchJobStatusResponse" }
             - { type: "null" }
+        controlPort:
+          type: integer
+          description: Where Linkspan's own API listens in the job, derived from the process id.
       required:
         - batchProcessId
         - slurmClusterConfigId
         - inputMappings
         - outputMappings
         - batchJobStatuses
+        - controlPort
 
     ProcessRequest:
       type: object
@@ -3597,11 +3903,94 @@ components:
             - { $ref: "#/components/schemas/ProcessType" }
             - { type: "null" }
         lastStatusId: { type: [string, "null"], format: uuid }
+        lastStatus: { $ref: "#/components/schemas/StatusResponse" }
         batchProcess:
           oneOf:
             - { $ref: "#/components/schemas/BatchProcessResponse" }
             - { type: "null" }
       required: [processId]
+
+    SessionResources:
+      type: object
+      description: What a session asks of the cluster.
+      properties:
+        cores: { type: integer, format: int32, minimum: 1 }
+        memoryMb: { type: integer, format: int64, minimum: 1 }
+        wallMinutes: { type: integer, format: int64, minimum: 1 }
+        gpuCount: { type: integer, format: int32, minimum: 0, description: Omitted when zero. }
+        gpuType: { type: string, description: Omitted when empty; needs a positive `gpuCount`. }
+      required: [cores, memoryMb, wallMinutes]
+
+    SessionRequest:
+      type: object
+      description: The create payload for a session. There is no owner field.
+      properties:
+        slurmClusterConfigId: { type: string, minLength: 1 }
+        deploymentId: { type: string, minLength: 1 }
+        account: { type: string, minLength: 1 }
+        partition: { type: string }
+        resources: { $ref: "#/components/schemas/SessionResources" }
+      required: [slurmClusterConfigId, deploymentId, account, resources]
+
+    SessionStartRequest:
+      type: object
+      description: Optional body of a start.
+      properties:
+        wallMinutes:
+          type: [integer, "null"]
+          format: int64
+          minimum: 1
+          description: Overrides the wall time; absent or null keeps the current run's.
+
+    SessionRun:
+      type: object
+      description: |
+        One run of a session. A run is a `BATCH_JOB` process; its statuses are at
+        `/api/v1/processes/{processId}/statuses`.
+      properties:
+        processId: { type: string, format: uuid }
+        controlPort: { type: integer }
+        state:
+          description: |
+            A run past its `deadline` reads `COMPLETED`, whatever the stored state.
+          $ref: "#/components/schemas/ProcessStatusType"
+        startedAt:
+          type: [integer, "null"]
+          format: int64
+          description: Epoch milliseconds of the BEGIN batch status; null before it.
+        deadline:
+          type: [integer, "null"]
+          format: int64
+          description: '`startedAt` plus the wall time, in epoch milliseconds; null before BEGIN.'
+        endedAt:
+          type: [integer, "null"]
+          format: int64
+          description: When the run ended, in epoch milliseconds; the `deadline` for a run that expired.
+        error:
+          type: [string, "null"]
+          description: The log of the `FAILED` status.
+      required: [processId, controlPort, state, startedAt, deadline, endedAt, error]
+
+    SessionResponse:
+      type: object
+      description: |
+        The read model of a session. `state` and `live` follow the current run,
+        `runs[0]`. Stop, access and proxy stay at `/api/v1/processes/{runs[0].processId}/...`.
+      properties:
+        sessionId: { type: string, format: uuid }
+        createdAt: { type: integer, format: int64, description: Epoch milliseconds. }
+        slurmClusterConfigId: { type: string }
+        deploymentId: { type: string }
+        account: { type: string }
+        partition: { type: string }
+        resources: { $ref: "#/components/schemas/SessionResources" }
+        state: { $ref: "#/components/schemas/ProcessStatusType" }
+        live: { type: boolean, description: False once the current run has ended. }
+        runs:
+          type: array
+          description: Newest first.
+          items: { $ref: "#/components/schemas/SessionRun" }
+      required: [sessionId, createdAt, slurmClusterConfigId, deploymentId, account, partition, resources, state, live, runs]
 
     StatusResponse:
       type: object

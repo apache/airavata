@@ -31,6 +31,7 @@ package app
 import (
 	"gorm.io/gorm"
 
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
@@ -45,6 +46,8 @@ import (
 	iamsvc "github.com/apache/airavata/api/iam/service"
 	processrepo "github.com/apache/airavata/api/process/repository"
 	processsvc "github.com/apache/airavata/api/process/service"
+	sessionrepo "github.com/apache/airavata/api/session/repository"
+	sessionsvc "github.com/apache/airavata/api/session/service"
 	sharingrepo "github.com/apache/airavata/api/sharing/repository"
 	sharingsvc "github.com/apache/airavata/api/sharing/service"
 	orchestration "github.com/apache/airavata/internal/orchestration"
@@ -104,7 +107,9 @@ type Services struct {
 
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
-	Launch *processsvc.LaunchService
+	Launch  *processsvc.LaunchService
+	Session *sessionsvc.SessionService
+	SignIn  *auth.SignIn
 
 	ExecutionEngine *orchestration.ExecutionEngine
 }
@@ -131,6 +136,7 @@ type Repositories struct {
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
 	JobMonitoringTasks      *processrepo.JobMonitoringTaskRepository
 	InteractiveCommandTasks *processrepo.InteractiveCommandTaskRepository
+	Sessions                *sessionrepo.SessionRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -156,6 +162,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
 		JobMonitoringTasks:      processrepo.NewJobMonitoringTaskRepository(db),
 		InteractiveCommandTasks: processrepo.NewInteractiveCommandTaskRepository(db),
+		Sessions:                sessionrepo.NewSessionRepository(db),
 	}
 }
 
@@ -212,7 +219,13 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
 		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend, sshContext)
+	executionEngine.PublicURL = cfg.PublicURL
 	executionEngine.StartEngine()
+
+	launchSvc := processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
+		templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
+		sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
+		monitoringTasks, commandTasks, executionEngine)
 
 	return &Services{
 		Config: cfg,
@@ -253,10 +266,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		JobMonitoringTask:      processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes),
 		InteractiveCommandTask: processsvc.NewInteractiveCommandTaskService(db, commandTasks, processes),
 
-		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
-			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
-			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
-			monitoringTasks, commandTasks, executionEngine),
+		Launch:  launchSvc,
+		Session: sessionsvc.NewSessionService(db, repos.Sessions, processes, processSvs, launchSvc),
 
 		ExecutionEngine: executionEngine,
 	}

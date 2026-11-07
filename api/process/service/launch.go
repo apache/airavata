@@ -22,7 +22,9 @@ package service
 
 import (
 	"context"
+	"crypto/subtle"
 	"log/slog"
+	"net/http"
 	"strings"
 
 	"github.com/apache/airavata/api/process/repository"
@@ -34,6 +36,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	internalptr "github.com/apache/airavata/internal/ptr"
 
 	appdto "github.com/apache/airavata/api/application/dto"
 	appmod "github.com/apache/airavata/api/application/model"
@@ -116,44 +119,33 @@ func NewLaunchService(
 //
 // Launching is not idempotent: it writes a task per staged file plus a submission and a
 // monitoring task, so a second call would double them. A process that already carries
-// tasks is refused rather than launched again.
+// tasks is refused rather than launched again. A launch that fails past these guards
+// records FAILED, so the run does not read live.
 func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*dto.Response, error) {
-	proc, err := s.processService.Get(ctx, processID)
+	owned, err := s.owned(ctx, processID)
 	if err != nil {
-		return nil, notFoundAs(err, "Process not found: %s", processID)
-	}
-	if err := s.requireOwnership(ctx, proc); err != nil {
 		return nil, err
 	}
-	if err := s.requireNotLaunched(ctx, proc.ProcessID); err != nil {
+	if err := s.requireNotLaunched(ctx, owned.ID); err != nil {
 		return nil, err
 	}
+	if owned.Ended() {
+		return nil, httpx.Conflict("Process %s has ended", owned.ID)
+	}
+	proc := dto.ToResponse(owned)
 
 	if proc.ProcessType == nil {
 		return nil, fmt.Errorf("Process %s has no process type", proc.ProcessID)
 	}
 
 	if *proc.ProcessType == procmodel.ProcessTypeBatchJob {
-		if err := s.launchBatchProcess(ctx, proc); err != nil {
+		if err := s.launchBatchProcess(ctx, &proc); err != nil {
+			_, _ = s.statusService.Record(context.WithoutCancel(ctx), proc.ProcessID, procmodel.ProcessStatusTypeFailed, internalptr.To(err.Error()))
 			return nil, err
 		}
 	}
 
-	return proc, nil
-}
-
-// requireOwnership allows the run's owner and platform admins. A process with no owner
-// belongs to nobody, so it must not match the empty principal name.
-func (s *LaunchService) requireOwnership(ctx context.Context, proc *dto.Response) error {
-	principal, err := auth.RequireAuthenticated(ctx)
-	if err != nil {
-		return err
-	}
-	owned := proc.UserID != nil && *proc.UserID == principal.Name
-	if !owned && !principal.IsAdmin() {
-		return httpx.Forbidden("Access denied: you may only launch your own processes")
-	}
-	return nil
+	return &proc, nil
 }
 
 // requireNotLaunched reports a conflict when a process already carries the tasks a
@@ -389,12 +381,11 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 	}
 
 	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
-	s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
-
 	if _, err := s.statusService.Record(ctx, process.ProcessID, procmodel.ProcessStatusTypeSubmitted, nil); err != nil {
 		return err
 	}
-	return nil
+	_, err = s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
+	return err
 }
 
 func findTemplateInput(template *appdto.TemplateResponse, inputID string) *appdto.TemplateInputDTO {
@@ -413,4 +404,75 @@ func findTemplateOutput(template *appdto.TemplateResponse, outputID string) *app
 		}
 	}
 	return nil
+}
+
+func (s *LaunchService) find(ctx context.Context, id string) (*procmodel.Process, error) {
+	proc, err := s.processService.processes.FindByID(ctx, id)
+	return proc, notFoundAs(err, "Process not found: %s", id)
+}
+
+// owned finds a process for its owner or an admin. A process with no owner matches nobody.
+func (s *LaunchService) owned(ctx context.Context, id string) (*procmodel.Process, error) {
+	proc, err := s.find(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if !proc.OwnedBy(principal.Name) && !principal.IsAdmin() {
+		return nil, httpx.Forbidden("Access denied: the process belongs to another user")
+	}
+	return proc, nil
+}
+
+func (s *LaunchService) Stop(ctx context.Context, id string) (*dto.Response, error) {
+	proc, err := s.owned(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if proc.BatchProcess == nil {
+		return nil, httpx.Conflict("Process %s carries no batch job", id)
+	}
+	if !proc.Ended() {
+		if err := s.executionEngine.CancelBatchJob(ctx, proc); err != nil {
+			return nil, &httpx.Error{Status: http.StatusBadGateway, Message: "The scheduler could not cancel the job", Err: err}
+		}
+	}
+	return s.processService.Get(ctx, id)
+}
+
+func (s *LaunchService) Access(ctx context.Context, id string) (*dto.AccessResponse, error) {
+	proc, err := s.owned(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if _, linked := s.executionEngine.Token(proc.ID); !linked {
+		return nil, httpx.Conflict("The job has no link to the server")
+	}
+	_, app := procmodel.PortsOf(proc.ID)
+	uri := fmt.Sprintf("%s/api/v1/processes/%s/proxy/%d/", s.executionEngine.PublicURL, proc.ID, app)
+	return &dto.AccessResponse{ProcessID: proc.ID, App: dto.AppAccess{URI: uri, Token: proc.BatchProcess.Token}}, nil
+}
+
+func (s *LaunchService) AuthorizeLink(ctx context.Context, id, token string) (*procmodel.Process, error) {
+	proc, err := s.find(ctx, id)
+	if err != nil || proc.BatchProcess == nil || proc.Ended() || !equal(token, proc.BatchProcess.LinkToken) {
+		return nil, httpx.Unauthorized("Unauthorized")
+	}
+	return proc, nil
+}
+
+func (s *LaunchService) AuthorizeTraffic(id, token string) error {
+	if expected, linked := s.executionEngine.Token(id); !linked {
+		return httpx.Conflict("The job has no link to the server")
+	} else if !equal(token, expected) {
+		return httpx.Unauthorized("Unauthorized")
+	}
+	return nil
+}
+
+func equal(token, expected string) bool {
+	return expected != "" && subtle.ConstantTimeCompare([]byte(token), []byte(expected)) == 1
 }

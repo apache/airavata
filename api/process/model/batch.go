@@ -21,6 +21,9 @@
 package model
 
 import (
+	"crypto/sha256"
+	"encoding/binary"
+
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	"github.com/google/uuid"
@@ -58,6 +61,14 @@ type BatchJobProcess struct {
 	BatchJobConfig   *applicationmodel.BatchJobConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"batchJobConfig,omitempty"`
 
 	JobID *string `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
+
+	// Token reaches the application and is handed to the owner; LinkToken links Linkspan back and
+	// stays in the job, so whoever holds an app URL cannot take over the link.
+	Token     string `gorm:"column:token;type:text" json:"-"`
+	LinkToken string `gorm:"column:link_token;type:text" json:"-"`
+
+	// The client connection that launched the run: its logins prompt only there.
+	Connection string `gorm:"column:connection;type:text" json:"-"`
 
 	// The values this run supplies for the deployment template's declared inputs and
 	// outputs. They hang off the batch process rather than off the process because the
@@ -129,4 +140,11 @@ func (s *BatchJobStatus) BeforeCreate(*gorm.DB) error {
 		s.ID = uuid.NewString()
 	}
 	return nil
+}
+
+// PortsOf derives a run's Linkspan control port and the application port beside it from its process id.
+func PortsOf(processID string) (control, app uint16) {
+	sum := sha256.Sum256([]byte(processID))
+	control = 20000 + binary.BigEndian.Uint16(sum[:2])%20000
+	return control, control + 1
 }

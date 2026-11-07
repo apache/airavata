@@ -45,12 +45,12 @@ type Config struct {
 
 	// CORSAllowedOrigins is airavata.cors.allowed-origins.
 	CORSAllowedOrigins []string
+	PublicURL          string
 
 	// CILogon
-	IntrospectionURI string
-	UserInfoURI      string
-	ClientID         string
-	ClientSecret     string
+	Issuer       string
+	ClientID     string
+	ClientSecret string
 
 	// Root account
 	RootAccountEnabled bool
@@ -76,11 +76,11 @@ func load() (Config, error) {
 		AutoMigrate: envBool("AIRAVATA_DB_AUTO_MIGRATE", true),
 
 		CORSAllowedOrigins: strings.Split(env("AIRAVATA_CORS_ALLOWED_ORIGINS", "*"), ","),
+		PublicURL:          strings.TrimSuffix(env("AIRAVATA_PUBLIC_URL", ""), "/"),
 
-		IntrospectionURI: env("CILOGON_INTROSPECTION_URI", "https://cilogon.org/oauth2/introspect"),
-		UserInfoURI:      env("CILOGON_USERINFO_URI", "https://cilogon.org/oauth2/userinfo"),
-		ClientID:         env("CILOGON_CLIENT_ID", ""),
-		ClientSecret:     env("CILOGON_CLIENT_SECRET", ""),
+		Issuer:       env("CILOGON_ISSUER", "https://cilogon.org"),
+		ClientID:     env("CILOGON_CLIENT_ID", ""),
+		ClientSecret: env("CILOGON_CLIENT_SECRET", ""),
 
 		RootAccountEnabled:        envBool("AIRAVATA_ROOT_ACCOUNT_ENABLED", true),
 		RootAccountToken:          env("AIRAVATA_ROOT_ACCOUNT_TOKEN", ""),

@@ -21,6 +21,9 @@
 package orchestration
 
 import (
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -67,6 +70,7 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 			DeploymentID:         ptr("dep-1"),
 			SlurmClusterConfigID: "cfg-1",
 			BatchJobConfig: &appmodel.BatchJobConfig{
+				Partition:       ptr("debug"),
 				ID:              "cfg-run",
 				Nodes:           ptr(int32(2)),
 				CPUsPerTask:     ptr(int32(8)),
@@ -114,11 +118,13 @@ func TestBuildSlurmScript(t *testing.T) {
 		"#SBATCH --mail-user=airavata@example.com",
 		"#SBATCH --mail-type=BEGIN,END,FAIL,REQUEUE,INVALID_DEPEND,STAGE_OUT,TIME_LIMIT,TIME_LIMIT_90,TIME_LIMIT_80,TIME_LIMIT_50",
 		"#SBATCH --account=alloc-123",
-		"#SBATCH --partition=gpu",
+		"#SBATCH --partition=debug",
 		"#SBATCH --nodes=2",
 		"#SBATCH --cpus-per-task=8",
 		"#SBATCH --mem=64G",
 		"#SBATCH --gpus=4",
+		`"$HOME/.cybershuttle/bin/linkspan" --port "$CS_CONTROL_PORT" --tunnel-enable --tunnel-mode link --tunnel-link-args "--url $CS_LINK_URL" & }`,
+		`kill "$airavata_linkspan"`,
 		"module load alphafold",
 		"run_fold --in /scratch/airavata/proc-1/data-product-9 --iterations 300 " +
 			"--files /scratch/airavata/proc-1/file1 /scratch/airavata/proc-1/file2 /scratch/airavata/proc-1/file3 " +
@@ -162,6 +168,18 @@ func TestBuildSlurmScriptFallsBackToDeploymentConfig(t *testing.T) {
 	}
 }
 
+func TestBuildSlurmScriptOmitsMailWithoutAnAddress(t *testing.T) {
+	process, deployment, template, clusterConfig := scriptFixture()
+
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &GlobalJobConfigs{})
+	if err != nil {
+		t.Fatalf("buildSlurmScript: %v", err)
+	}
+	if strings.Contains(script, "--mail-") {
+		t.Errorf("script should carry no mail directive\n---\n%s", script)
+	}
+}
+
 // A base work dir on the run overrides the cluster config's work root, and the process
 // id still separates one run's directory from another's.
 func TestBuildSlurmScriptHonoursBaseWorkDir(t *testing.T) {
@@ -197,6 +215,32 @@ func TestBuildSlurmScriptDoesNotReexpandInputValues(t *testing.T) {
 	}
 	if !strings.Contains(script, "--iterations {{ account }}") {
 		t.Errorf("expected the input value verbatim\n---\n%s", script)
+	}
+}
+
+func TestBuildSlurmScriptRunsTheBodyInTheContainer(t *testing.T) {
+	process, deployment, template, clusterConfig := scriptFixture()
+	dir := t.TempDir()
+	process.BatchProcess.BaseWorkDir = &dir
+	deployment.ContainerImage = ptr("docker://python:3.12")
+	deployment.ContainerBind = ptr("/data/proj:/data")
+	deployment.SlurmRunSection = `x=in; echo "it's $x" > ran`
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &GlobalJobConfigs{})
+	if err != nil {
+		t.Fatalf("buildSlurmScript: %v", err)
+	}
+	work := filepath.Join(dir, "proc-1")
+	_ = os.Mkdir(work, 0o755)
+	_ = os.WriteFile(filepath.Join(dir, "apptainer"), []byte("#!/bin/sh\necho \"$1 $2 $3 $4 $5\" > args\nshift 5\nexec \"$@\"\n"), 0o755)
+	run := exec.Command("bash", "-c", script)
+	run.Env = []string{"PATH=" + dir + ":" + os.Getenv("PATH")}
+	if out, err := run.CombinedOutput(); err != nil {
+		t.Fatalf("script: %v\n%s\n---\n%s", err, out, script)
+	}
+	args, _ := os.ReadFile(filepath.Join(work, "args"))
+	ran, _ := os.ReadFile(filepath.Join(work, "ran"))
+	if string(args) != "exec --nv --bind /data/proj:/data docker://python:3.12\n" || string(ran) != "it's in\n" {
+		t.Errorf("apptainer got %q and the run section wrote %q\n---\n%s", args, ran, script)
 	}
 }
 

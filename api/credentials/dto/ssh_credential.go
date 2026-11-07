@@ -29,7 +29,7 @@ import (
 // SSHCredentialRequest is the create/update payload for a key.
 //
 // PrivateKey is optional on the type because the same payload serves both create and
-// update: creation requires it, while an update that omits it keeps the stored secret.
+// update: creation requires it or Password, while an update that omits one keeps the stored secret.
 // That split cannot be expressed as a field constraint, so the service enforces it.
 //
 // Java: org.apache.airavata.credentials.dto.SSHKeyRequestDto
@@ -38,6 +38,7 @@ type SSHCredentialRequest struct {
 	PublicKey         string  `json:"publicKey"`
 	PrivateKey        *string `json:"privateKey"`
 	Passphrase        *string `json:"passphrase"`
+	Password          *string `json:"password"`
 	FullInteractive   bool    `json:"fullInteractive"`
 }
 

@@ -259,6 +259,8 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 			DefaultBatchJobConfigID: config.ID,
 			DefaultBatchJobConfig:   config,
 			DefaultPartition:        req.DefaultPartition,
+			ContainerImage:          req.ContainerImage,
+			ContainerBind:           req.ContainerBind,
 		}
 		if err := deployments.Save(ctx, deployment); err != nil {
 			return err
@@ -307,6 +309,8 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		deployment.DefaultBatchJobConfigID = config.ID
 		deployment.DefaultBatchJobConfig = config
 		deployment.DefaultPartition = req.DefaultPartition
+		deployment.ContainerImage = req.ContainerImage
+		deployment.ContainerBind = req.ContainerBind
 
 		if err := deployments.Save(ctx, deployment); err != nil {
 			return err

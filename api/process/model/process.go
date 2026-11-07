@@ -23,10 +23,14 @@
 package model
 
 import (
+	"slices"
+
 	application "github.com/apache/airavata/api/application/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
+	"github.com/apache/airavata/internal/ptr"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type TemplateInputMapping struct {
@@ -101,11 +105,22 @@ type Process struct {
 	// table exists when the referencing table is declared. This column is a cache of
 	// the newest status row, maintained by ProcessStatus.AfterCreate.
 	LastStatusID *string `gorm:"column:last_status_id;type:varchar(36);index" json:"lastStatusId,omitempty"`
+	// -:migration keeps the cycle above out of the schema.
+	LastStatus *ProcessStatus `gorm:"foreignKey:LastStatusID;references:ID;-:migration" json:"-"`
+
+	// The session this run belongs to, if any. No association: the session service owns it.
+	SessionID *string `gorm:"column:session_id;type:varchar(36);index" json:"sessionId,omitempty"`
 
 	// BatchProcess is present exactly when ProcessType is BATCH_JOB. It is owned by
 	// the process, not shared with it: deleting the process deletes it too.
 	BatchProcess *BatchJobProcess `gorm:"foreignKey:ProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"batchProcess,omitempty"`
 }
+
+func (p *Process) State() ProcessStatusType {
+	return ptr.FromOr(ptr.From(p.LastStatus).Status, ProcessStatusTypeCreated)
+}
+
+func (p *Process) Ended() bool { return p.State().Ended() }
 
 // TableName returns the table backing Process.
 func (Process) TableName() string { return "processes" }
@@ -186,7 +201,14 @@ const (
 	ProcessStatusTypeRunning   ProcessStatusType = "RUNNING"
 	ProcessStatusTypeCompleted ProcessStatusType = "COMPLETED"
 	ProcessStatusTypeFailed    ProcessStatusType = "FAILED"
+	ProcessStatusTypeReady     ProcessStatusType = "READY"
+	ProcessStatusTypeCancelled ProcessStatusType = "CANCELLED"
 )
+
+// Ended reports whether a run in this state is over.
+func (s ProcessStatusType) Ended() bool {
+	return slices.Contains([]ProcessStatusType{ProcessStatusTypeCompleted, ProcessStatusTypeFailed, ProcessStatusTypeCancelled}, s)
+}
 
 type ProcessStatus struct {
 	ID string `gorm:"column:process_status_id;primaryKey;type:varchar(36)" json:"processStatusId"`
@@ -215,7 +237,12 @@ func (s *ProcessStatus) AfterCreate(tx *gorm.DB) error {
 	if s.ProcessID == nil || *s.ProcessID == "" {
 		return nil
 	}
+	// Lock first: an UPDATE that waits on Stop's lock keeps its old snapshot and would miss CANCELLED.
+	// NO KEY UPDATE, not UPDATE: this row's key-share lock from a concurrent insert would deadlock it.
+	if err := tx.Clauses(clause.Locking{Strength: "NO KEY UPDATE"}).Select("process_id").Take(&Process{}, "process_id = ?", *s.ProcessID).Error; err != nil {
+		return err
+	}
 	return tx.Model(&Process{}).
-		Where("process_id = ?", *s.ProcessID).
+		Where("process_id = ? AND NOT EXISTS (SELECT 1 FROM process_statuses WHERE process_status_id = processes.last_status_id AND status = ?)", *s.ProcessID, ProcessStatusTypeCancelled).
 		Update("last_status_id", s.ID).Error
 }

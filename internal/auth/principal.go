@@ -77,6 +77,20 @@ func FromContext(ctx context.Context) *Principal {
 	return p
 }
 
+type connectionKey struct{}
+
+// WithConnection returns a context carrying the client connection id, which routes an SSH
+// login's prompts back to the connection that started it.
+func WithConnection(ctx context.Context, id string) context.Context {
+	return context.WithValue(ctx, connectionKey{}, id)
+}
+
+// Connection returns the client connection id on ctx, or "" when the client sent none.
+func Connection(ctx context.Context) string {
+	id, _ := ctx.Value(connectionKey{}).(string)
+	return id
+}
+
 // RequireAuthenticated is the @PreAuthorize("isAuthenticated()") guard.
 //
 // An anonymous caller gets 401 rather than 403: Spring's ExceptionTranslationFilter

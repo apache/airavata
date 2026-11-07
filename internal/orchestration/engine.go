@@ -26,7 +26,6 @@ import (
 	"fmt"
 	"time"
 
-	internalptr "github.com/apache/airavata/internal/ptr"
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/client"
 	"github.com/cschleiden/go-workflows/worker"
@@ -34,12 +33,14 @@ import (
 	"github.com/google/uuid"
 
 	"log/slog"
+	"sync"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	datastorerepo "github.com/apache/airavata/api/data/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
@@ -57,6 +58,11 @@ type ExecutionEngine struct {
 	batchStatus         *processrepo.BatchJobStatusRepository
 	processStatus       *processrepo.StatusRepository
 	sshContext          *ssh.GlobalSSHContext
+
+	// shortcut: links live in this process, so one server instance; share them (or route by instance) to scale out.
+	PublicURL string
+	links     sync.Map
+	stops     sync.Map
 }
 
 type GlobalJobConfigs struct {
@@ -165,6 +171,11 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 		return nil
 	}
 
+	// A link already recorded BEGIN; a later one from mail would restart the walltime count.
+	if parsed.Status == model.BatchJobStatusBegin && process.State() != model.ProcessStatusTypeSubmitted {
+		return nil
+	}
+
 	err = w.batchStatus.Create(ctx, &model.BatchJobStatus{
 		BatchProcessID: process.BatchProcess.ID,
 		Status:         parsed.Status,
@@ -182,7 +193,7 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 	}
 
 	// Trigger actions for specific batch job statuses (failed or ended)
-	if _, ok := triggeringStatus[parsed.Status]; ok {
+	if _, ok := triggeringStatus[parsed.Status]; ok && !process.Ended() {
 		slog.Info("Triggering action for batch job status", "status", parsed.Status)
 
 		if w.orchestrator == nil {
@@ -202,18 +213,7 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 	}
 
 	if parsed.Status == model.BatchJobStatusBegin {
-		slog.Info("Handling begun batch job", "processID", process.ID)
-		// Update the process status to indicate that the batch job has begun
-		runningStatus := model.ProcessStatusTypeRunning
-		if err := w.processStatus.Create(ctx, &model.ProcessStatus{
-			ProcessID: &process.ID,
-			Status:    &runningStatus,
-			Log:       internalptr.To("Batch job has begun"),
-			Timestamp: internalptr.To(time.Now().UnixMilli()),
-		}); err != nil {
-			slog.Error("Failed to create process status", "processID", process.ID, "error", err)
-			return nil
-		}
+		w.recordStatus(ctx, process.ID, model.ProcessStatusTypeRunning, "Batch job has begun")
 	}
 
 	return nil
@@ -226,9 +226,18 @@ func (w *ExecutionEngine) LaunchBatchJobSubmission(ctx context.Context, processI
 		return "", ErrNoWorkflowBackend
 	}
 
+	process, err := w.process(ctx, processID)
+	if err != nil {
+		return "", err
+	}
+	process.BatchProcess.Connection = auth.Connection(ctx)
+	if err := w.processes.SaveBatchProcess(ctx, process.BatchProcess); err != nil {
+		return "", err
+	}
+
 	workflowId := uuid.NewString()
 
-	_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
+	_, err = w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
 		InstanceID: workflowId,
 	}, w.handleBatchJobSubmission, processID)
 	if err != nil {
@@ -312,7 +321,7 @@ func (w *ExecutionEngine) handleBatchJobCompletion(ctx workflow.Context, process
 				w.copyData, executionContext, processID, dst.ID).Get(ctx)
 			if err != nil {
 				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
-				return err
+				return w.failed(processID, err)
 			}
 		}
 	}
@@ -378,7 +387,7 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 				w.copyData, executionContext, processID, dst.ID).Get(ctx)
 			if err != nil {
 				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
-				return err
+				return w.failed(processID, err)
 			}
 		}
 	}
@@ -388,10 +397,19 @@ func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, process
 		w.submitBatchJob, executionContext, processID, jst.ID).Get(ctx)
 	if err != nil {
 		slog.Error("Failed processing job submission task", "processId", processID, "taskId", jst.ID, "error", err)
-		return err
+		return w.failed(processID, err)
 	}
 
 	return nil
+}
+
+// failed records FAILED for a run whose activity gave up, unless the run already ended, and returns err.
+func (w *ExecutionEngine) failed(processID string, err error) error {
+	ctx := context.Background()
+	if process, lookup := w.process(ctx, processID); lookup == nil && !process.Ended() {
+		w.recordStatus(ctx, processID, model.ProcessStatusTypeFailed, err.Error())
+	}
+	return err
 }
 
 func retryOptions(onFailure model.OnFailureAction, retryCount int) workflow.RetryOptions {

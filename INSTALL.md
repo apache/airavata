@@ -97,6 +97,7 @@ compose database.
 | `SERVER_PORT` | `9095` | Port the HTTP API listens on. |
 | `AIRAVATA_DASHBOARD_ENABLED` | `true` | Serve the [dashboard](#dashboard) under `/dashboard/`. |
 | `AIRAVATA_DASHBOARD_DIR` | `dashboard/out` | The dashboard's built static export, relative to the working directory. |
+| `AIRAVATA_PUBLIC_URL` | *(empty)* | The origin jobs dial back to and clients are pointed at. Unset, jobs run without Linkspan. |
 | `AIRAVATA_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origins. The server echoes the caller's origin rather than sending `*`, because every authenticated call carries an `Authorization` header and browsers reject the wildcard for credentialed requests. |
 
 ### Database
@@ -126,15 +127,12 @@ of 20 open connections, 2 kept idle, and a 30-minute connection lifetime
 
 | Variable | Default | Description |
 |---|---|---|
-| `CILOGON_CLIENT_ID` | *(empty)* | OAuth client id used to authenticate introspection calls. |
-| `CILOGON_CLIENT_SECRET` | *(empty)* | OAuth client secret. |
-| `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | RFC 7662 introspection endpoint. |
-| `CILOGON_USERINFO_URI` | `https://cilogon.org/oauth2/userinfo` | Profile claims endpoint. |
+| `CILOGON_CLIENT_ID` | *(empty)* | OAuth client id; the audience every ID token must name. |
+| `CILOGON_CLIENT_SECRET` | *(empty)* | OAuth client secret, held only by the server for the sign-in routes. |
+| `CILOGON_ISSUER` | `https://cilogon.org` | Issuer an ID token must name; its discovery document gives the key set and the OAuth endpoints, read at startup when a client id is set. |
 
-CILogon access tokens for standard OAuth clients are opaque strings, not JWTs, so they
-cannot be verified locally against a key set. Each bearer token is validated by calling
-the introspection endpoint; profile claims come from a second call to userinfo, since
-introspection alone returns only a small fixed claim set.
+[Sign-in](docs/api.md#authentication) redirects only to `AIRAVATA_CORS_ALLOWED_ORIGINS`,
+so list the dashboard's origin there rather than `*`.
 
 Authorities are never read from the token. They are looked up in the `user_roles` table
 by username, so a token cannot assert its own privileges.
@@ -377,8 +375,7 @@ NEXT_PUBLIC_AIRAVATA_API_URL=http://localhost:9095 npm run dev   # http://localh
 |---|---|
 | `connect to database: dial tcp ...: connection refused` | PostgreSQL is not running or the host/port is wrong. Check `docker compose -f dev-tools/compose/compose.yml ps`. |
 | `no authentication configured` at startup | Root account disabled with no `CILOGON_CLIENT_ID`. Set one or re-enable the root account. |
-| `401` with `WWW-Authenticate: Bearer error="invalid_token"` | The token was rejected by introspection, or it is a stale root token from a previous start. Restart and use the newly printed token, or pin it with `AIRAVATA_ROOT_ACCOUNT_TOKEN`. |
-| `502 Unable to validate bearer token` | CILogon is unreachable. This is reported separately from `401` because it is not the caller's fault. |
+| `401` with `WWW-Authenticate: Bearer error="invalid_token"` | The ID token failed verification (expired, wrong audience, or the key set could not be fetched), or it is a stale root token from a previous start. Restart and use the newly printed token, or pin it with `AIRAVATA_ROOT_ACCOUNT_TOKEN`. |
 | `403 Access denied` on a write | The caller authenticated but lacks `ADMIN`/`SUPER_ADMIN`. Grant the role in `user_roles`. |
 | `404 No user record found for authenticated principal` | The caller has no `users` row. Register the user (see "First run" above). The `root` row is created automatically on startup. |
 | `409 SSH credential <id> is still presented by N record(s)` | A credential cannot be deleted while a cluster config or a data storage still presents it. Repoint or delete those first. |
@@ -394,7 +391,7 @@ api/<domain>/model/    persistent entities
 api/<domain>/dto/      request/response payloads and mappers
 cmd/airavata-server/   entrypoint
 dashboard/             Next.js web UI, served under /dashboard/
-internal/auth/         bearer token introspection and authority guards
+internal/auth/         bearer token verification, sign-in and authority guards
 internal/config/       environment configuration
 internal/db/           connection and schema migration
 internal/httpx/        error, JSON and validation plumbing

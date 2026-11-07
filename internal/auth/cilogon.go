@@ -21,14 +21,18 @@
 package auth
 
 import (
+	"cmp"
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
-	"time"
+
+	"github.com/apache/airavata/internal/httpx"
+	"github.com/coreos/go-oidc/v3/oidc"
+	"golang.org/x/oauth2"
 )
 
 // Introspector validates a bearer token and resolves it to a principal.
@@ -39,128 +43,31 @@ type Introspector interface {
 // ErrInvalidToken reports a token that introspection rejected.
 var ErrInvalidToken = fmt.Errorf("invalid bearer token")
 
-// CILogonIntrospector validates tokens against CILogon.
-//
-// CILogon access tokens for standard OAuth clients are opaque strings rather than
-// self-contained JWTs, so they cannot be verified locally against a JWK set — each
-// one is checked by calling CILogon's RFC 7662 introspection endpoint. Introspection
-// returns only a small fixed claim set, so profile attributes come from a second call
-// to userinfo with the same token.
-type CILogonIntrospector struct {
-	HTTPClient       *http.Client
-	IntrospectionURI string
-	UserInfoURI      string
-	ClientID         string
-	ClientSecret     string
-	Roles            RoleLookup
-
-	// Root, when set, short-circuits introspection for the bootstrap token.
-	Root *RootTokenProvider
-}
-
-// NewCILogonIntrospector builds an introspector with a bounded HTTP client, so a
-// hanging identity provider cannot pin request goroutines indefinitely.
-func NewCILogonIntrospector(introspectionURI, userInfoURI, clientID, clientSecret string, roles RoleLookup, root *RootTokenProvider) *CILogonIntrospector {
-	return &CILogonIntrospector{
-		HTTPClient:       &http.Client{Timeout: 10 * time.Second},
-		IntrospectionURI: introspectionURI,
-		UserInfoURI:      userInfoURI,
-		ClientID:         clientID,
-		ClientSecret:     clientSecret,
-		Roles:            roles,
-		Root:             root,
-	}
+type IDTokenVerifier struct {
+	// Verifier has no keys when no OIDC client is configured, so only the root token is admitted.
+	Verifier *oidc.IDTokenVerifier
+	Roles    RoleLookup
+	Root     *RootTokenProvider
 }
 
 // Introspect implements Introspector.
-func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Principal, error) {
-	if c.Root.Matches(token) {
-		return c.Root.Principal(), nil
+func (v *IDTokenVerifier) Introspect(ctx context.Context, token string) (*Principal, error) {
+	if v.Root.Matches(token) {
+		return v.Root.Principal(), nil
 	}
-
-	attributes, err := c.introspect(ctx, token)
+	idToken, err := v.Verifier.Verify(ctx, token)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%w: %v", ErrInvalidToken, err)
 	}
-
-	// Introspection claims win on conflict; userinfo only fills in gaps.
-	for k, v := range c.userInfo(ctx, token) {
-		if _, exists := attributes[k]; !exists {
-			attributes[k] = v
-		}
+	var claims map[string]any
+	if err := idToken.Claims(&claims); err != nil {
+		return nil, fmt.Errorf("%w: %v", ErrInvalidToken, err)
 	}
-
-	username := NormalizeUsername(firstString(attributes, "username", "preferred_username", "sub"))
+	username := NormalizeUsername(firstString(claims, "username", "preferred_username", "sub"))
 	if username == "" {
 		return nil, ErrInvalidToken
 	}
-
-	return &Principal{
-		Name:        username,
-		Authorities: c.Roles.Roles(ctx, username),
-		Attributes:  attributes,
-	}, nil
-}
-
-func (c *CILogonIntrospector) introspect(ctx context.Context, token string) (map[string]any, error) {
-	form := url.Values{"token": {token}}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.IntrospectionURI, strings.NewReader(form.Encode()))
-	if err != nil {
-		return nil, fmt.Errorf("build introspection request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Accept", "application/json")
-	req.SetBasicAuth(c.ClientID, c.ClientSecret)
-
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("call introspection endpoint: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%w: introspection returned %s", ErrInvalidToken, resp.Status)
-	}
-
-	var claims map[string]any
-	if err := json.NewDecoder(resp.Body).Decode(&claims); err != nil {
-		return nil, fmt.Errorf("decode introspection response: %w", err)
-	}
-	if active, _ := claims["active"].(bool); !active {
-		return nil, ErrInvalidToken
-	}
-	return claims, nil
-}
-
-// userInfo fetches profile claims. A failure here is not fatal — the token is already
-// known to be valid, and the profile only enriches the principal — so it degrades to
-// no extra claims, as the Java client did.
-func (c *CILogonIntrospector) userInfo(ctx context.Context, token string) map[string]any {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.UserInfoURI, nil)
-	if err != nil {
-		return nil
-	}
-	req.Header.Set("Authorization", "Bearer "+token)
-	req.Header.Set("Accept", "application/json")
-
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		slog.Warn("failed to fetch CILogon userinfo; proceeding without profile claims", "error", err)
-		return nil
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		slog.Warn("CILogon userinfo returned a non-OK status; proceeding without profile claims",
-			"status", resp.Status)
-		return nil
-	}
-	var claims map[string]any
-	if err := json.NewDecoder(resp.Body).Decode(&claims); err != nil {
-		slog.Warn("failed to decode CILogon userinfo; proceeding without profile claims", "error", err)
-		return nil
-	}
-	return claims
+	return &Principal{Name: username, Authorities: v.Roles.Roles(ctx, username), Attributes: claims}, nil
 }
 
 // NormalizeUsername reduces a CILogon identifier to the form stored as iam/model.User.ID.
@@ -185,4 +92,85 @@ func firstString(m map[string]any, keys ...string) string {
 		}
 	}
 	return ""
+}
+
+const signInScope = "openid email profile org.cilogon.userinfo offline_access"
+
+type SignIn struct {
+	oauth   oauth2.Config
+	origins []string
+}
+
+func NewSignIn(endpoint oauth2.Endpoint, clientID, clientSecret string, redirectOrigins []string) *SignIn {
+	// One auth style, or oauth2 sends every refused grant to the issuer twice while it probes for one.
+	endpoint.AuthStyle = oauth2.AuthStyleInParams
+	return &SignIn{
+		oauth:   oauth2.Config{ClientID: clientID, ClientSecret: clientSecret, Endpoint: endpoint, Scopes: strings.Fields(signInScope)},
+		origins: redirectOrigins,
+	}
+}
+
+func (s *SignIn) Config() map[string]string {
+	return map[string]string{"authorization_endpoint": s.oauth.Endpoint.AuthURL, "client_id": s.oauth.ClientID, "scope": signInScope}
+}
+
+type Tokens struct {
+	IDToken      string `json:"id_token"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	ExpiresIn    int64  `json:"expires_in"`
+}
+
+type Grant struct {
+	Code         string `json:"code"`
+	CodeVerifier string `json:"code_verifier"`
+	RedirectURI  string `json:"redirect_uri"`
+	RefreshToken string `json:"refresh_token"`
+	DeviceCode   string `json:"device_code"`
+}
+
+func (s *SignIn) Redeem(ctx context.Context, grant Grant) (Tokens, error) {
+	switch {
+	case grant.RefreshToken != "":
+		return tokens(s.oauth.TokenSource(ctx, &oauth2.Token{RefreshToken: grant.RefreshToken}).Token())
+	case grant.DeviceCode != "":
+		return tokens(s.oauth.Exchange(ctx, "", oauth2.SetAuthURLParam("grant_type", "urn:ietf:params:oauth:grant-type:device_code"), oauth2.SetAuthURLParam("device_code", grant.DeviceCode)))
+	}
+	if parsed, err := url.Parse(grant.RedirectURI); grant.CodeVerifier == "" || err != nil || !slices.Contains(s.origins, parsed.Scheme+"://"+parsed.Host) {
+		return Tokens{}, httpx.BadRequest("A refresh_token, a device_code, or a code with its code_verifier and a redirect_uri on an allowed origin is required")
+	}
+	return tokens(s.oauth.Exchange(ctx, grant.Code, oauth2.VerifierOption(grant.CodeVerifier), oauth2.SetAuthURLParam("redirect_uri", grant.RedirectURI)))
+}
+
+type Device struct {
+	DeviceCode      string `json:"device_code"`
+	UserCode        string `json:"user_code"`
+	VerificationURI string `json:"verification_uri_complete"`
+	Interval        int64  `json:"interval"`
+}
+
+func (s *SignIn) DeviceStart(ctx context.Context) (Device, error) {
+	started, err := s.oauth.DeviceAuth(ctx, oauth2.SetAuthURLParam("client_secret", s.oauth.ClientSecret))
+	if err != nil {
+		return Device{}, classify(err)
+	}
+	return Device{DeviceCode: started.DeviceCode, UserCode: started.UserCode, VerificationURI: cmp.Or(started.VerificationURIComplete, started.VerificationURI), Interval: max(started.Interval, 5)}, nil
+}
+
+func tokens(token *oauth2.Token, err error) (Tokens, error) {
+	if err != nil {
+		return Tokens{}, classify(err)
+	}
+	idToken, _ := token.Extra("id_token").(string)
+	return Tokens{IDToken: idToken, RefreshToken: token.RefreshToken, ExpiresIn: token.ExpiresIn}, nil
+}
+
+func classify(err error) error {
+	var refusal *oauth2.RetrieveError
+	switch {
+	case !errors.As(err, &refusal) || refusal.ErrorCode == "":
+		return &httpx.Error{Status: http.StatusBadGateway, Message: "The identity provider is unavailable", Err: err}
+	case refusal.ErrorCode == "authorization_pending" || refusal.ErrorCode == "slow_down":
+		return &httpx.Error{Status: http.StatusAccepted, Message: "The device code is not approved yet"}
+	}
+	return httpx.BadRequest("The identity provider rejected the grant: %s", refusal.ErrorCode)
 }

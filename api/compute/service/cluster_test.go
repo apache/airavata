@@ -46,6 +46,7 @@ func newDB(t *testing.T) *gorm.DB {
 	if err != nil {
 		t.Fatalf("open sqlite: %v", err)
 	}
+	t.Cleanup(func() { sqlDB, _ := gdb.DB(); _ = sqlDB.Close() })
 	if err := db.AutoMigrate(gdb); err != nil {
 		t.Fatalf("automigrate: %v", err)
 	}

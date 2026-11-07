@@ -22,6 +22,7 @@ package orchestration
 
 import (
 	"bytes"
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"path"
@@ -41,8 +42,10 @@ const slurmScriptTemplate = `#!/bin/bash
 #SBATCH --output={{ stdout_file }}
 #SBATCH --error={{ stderr_file }}
 #SBATCH --time={{ wall_time }}
+{% if mail_user %}
 #SBATCH --mail-user={{ mail_user }}
 #SBATCH --mail-type=BEGIN,END,FAIL,REQUEUE,INVALID_DEPEND,STAGE_OUT,TIME_LIMIT,TIME_LIMIT_90,TIME_LIMIT_80,TIME_LIMIT_50
+{% endif %}
 {% if account %}
 #SBATCH --account={{ account }}
 {% endif %}
@@ -91,12 +94,19 @@ const slurmScriptTemplate = `#!/bin/bash
 echo "Airavata process {{ process_id }} starting on $(hostname) at $(date)"
 cd {{ work_dir_quoted }} || exit 1
 
+{{ body }}
+`
+
+// jobBody runs inside the container, Linkspan included.
+const jobBody = `[ -z "${CS_LINK_URL:-}" ] || { ` + BinaryPath + ` --port "$CS_CONTROL_PORT" --tunnel-enable --tunnel-mode link --tunnel-link-args "--url $CS_LINK_URL" & }
+airavata_linkspan=$!
+
 {{ run_section }}
 airavata_status=$?
+kill "$airavata_linkspan" 2>/dev/null
 
 echo "Airavata process {{ process_id }} finished at $(date) with exit status ${airavata_status}"
-exit ${airavata_status}
-`
+exit ${airavata_status}`
 
 // buildSlurmScript renders the submission script for one run.
 func buildSlurmScript(
@@ -142,7 +152,7 @@ func buildSlurmScript(
 		"stderr_file":     path.Join(workDir, "stderr.txt"),
 		"wall_time":       slurmWallTime(jobConfig.WallTimeMinutes),
 		"account":         strings.TrimSpace(jobConfig.Allocation),
-		"partition":       optional(deployment.DefaultPartition),
+		"partition":       cmp.Or(optional(jobConfig.Partition), optional(deployment.DefaultPartition)),
 		"mail_user":       globalJobConfigs.MailUser,
 
 		"nodes":           optional(jobConfig.Nodes),
@@ -185,6 +195,18 @@ func buildSlurmScript(
 		return "", err
 	}
 	ctx["run_section"] = strings.TrimRight(runSection, "\n")
+	body, err := renderJinja("job body of process "+process.ID, jobBody, ctx)
+	if err != nil {
+		return "", err
+	}
+	if image := optional(deployment.ContainerImage); image != "" {
+		bind := ""
+		if b := optional(deployment.ContainerBind); b != "" {
+			bind = "--bind " + ssh.ShellQuote(b) + " "
+		}
+		body = "exec apptainer exec --nv " + bind + ssh.ShellQuote(image) + " bash -c " + ssh.ShellQuote(body)
+	}
+	ctx["body"] = body
 
 	return renderJinja("slurm script for process "+process.ID, slurmScriptTemplate, ctx)
 }

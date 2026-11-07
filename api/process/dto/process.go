@@ -29,6 +29,7 @@
 package dto
 
 import (
+	"cmp"
 	"strconv"
 
 	"github.com/apache/airavata/internal/httpx"
@@ -111,6 +112,8 @@ type BatchProcessResponse struct {
 
 	BatchJobStatuses     []BatchJobStatusResponse `json:"batchJobStatuses"`
 	LatestBatchJobStatus *BatchJobStatusResponse  `json:"latestBatchJobStatus"`
+
+	ControlPort uint16 `json:"controlPort"`
 }
 
 // InputMapping binds one of the template's declared inputs to a value for this run.
@@ -194,6 +197,7 @@ type Response struct {
 	UserID       *string            `json:"userId"`
 	ProcessType  *model.ProcessType `json:"processType"`
 	LastStatusID *string            `json:"lastStatusId"`
+	LastStatus   StatusResponse     `json:"lastStatus,omitzero"`
 
 	BatchProcess *BatchProcessResponse `json:"batchProcess"`
 }
@@ -204,6 +208,7 @@ func ToResponse(p *model.Process) Response {
 		UserID:       p.OwnerID,
 		ProcessType:  p.ProcessType,
 		LastStatusID: p.LastStatusID,
+		LastStatus:   ToStatusResponse(cmp.Or(p.LastStatus, &model.ProcessStatus{})),
 		BatchProcess: ToBatchProcessResponse(p.BatchProcess),
 	}
 }
@@ -223,6 +228,7 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		return nil
 	}
 	batchJobStatuses := ToBatchJobStatusResponsesFromPtrs(b.BatchJobStatuses)
+	control, _ := model.PortsOf(derefString(b.ProcessID))
 	var latest *BatchJobStatusResponse
 	if len(batchJobStatuses) > 0 {
 		// The association is loaded oldest first (see ProcessRepository.query), so the
@@ -241,6 +247,7 @@ func ToBatchProcessResponse(b *model.BatchJobProcess) *BatchProcessResponse {
 		OutputMappings:       ToOutputMappings(b.OutputMappings),
 		BatchJobStatuses:     batchJobStatuses,
 		LatestBatchJobStatus: latest,
+		ControlPort:          control,
 	}
 }
 
@@ -322,4 +329,14 @@ func derefString(s *string) string {
 
 func indexed(field string, i int) string {
 	return field + "[" + strconv.Itoa(i) + "]"
+}
+
+type AccessResponse struct {
+	ProcessID string    `json:"processId"`
+	App       AppAccess `json:"app"`
+}
+
+type AppAccess struct {
+	URI   string `json:"uri"`
+	Token string `json:"token"`
 }

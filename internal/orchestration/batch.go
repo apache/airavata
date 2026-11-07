@@ -21,6 +21,7 @@
 package orchestration
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"log/slog"
@@ -32,6 +33,7 @@ import (
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/internal/auth"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
 
@@ -44,6 +46,8 @@ type SubmitBatchJobParameters struct {
 
 func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
 	slog.Info("Starting to submit batch job", "taskId", taskID, "processId", processID)
+	ctx, done := a.activity(ctx, processID)
+	defer done()
 
 	process, err := a.process(ctx, processID)
 	if err != nil {
@@ -114,6 +118,8 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 
 	slog.Info("Submitting slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath)
 
+	// From sbatch on, a Stop cancels the job rather than abandoning the submission, which would orphan it.
+	ctx = context.WithoutCancel(ctx)
 	sbatchPath := "sbatch"
 	if clusterConfig.SlurmCluster.SlurmHome != nil && strings.TrimSpace(*clusterConfig.SlurmCluster.SlurmHome) != "" {
 		sbatchPath = path.Join(*clusterConfig.SlurmCluster.SlurmHome, "sbatch")
@@ -121,10 +127,13 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 
 	// sbatch is run from the working directory so that a script writing relative paths —
 	// and the job's own stdout and stderr files — land beside the staged inputs rather
-	// than in the login user's home.
-	submitCommand := "cd " + ssh.ShellQuote(*jst.WorkingDir) + " && " + ssh.ShellQuote(sbatchPath) + " " + ssh.ShellQuote(scriptUploadPath)
+	// than in the login user's home. The Linkspan environment goes in on stdin, so no token
+	// reaches the login node's argv.
+	submitCommand := "cd " + ssh.ShellQuote(*jst.WorkingDir) + " && exec sh -s"
+	program := a.linkExports(ctx, dialConfig, process, fmt.Sprintf("ssh provision-linkspan %s@%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost)) +
+		"exec " + ssh.ShellQuote(sbatchPath) + " " + ssh.ShellQuote(scriptUploadPath) + "\n"
 
-	stdout, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, submitCommand,
+	stdout, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, submitCommand, strings.NewReader(program),
 		fmt.Sprintf("ssh sbatch %s@%s:%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost, scriptUploadPath))
 	if err != nil {
 		slog.Error("Failed to submit slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "stdout", stdout, "stderr", stderr, "error", err)
@@ -165,6 +174,9 @@ func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *
 	if err := a.processes.SaveBatchProcess(ctx, process.BatchProcess); err != nil {
 		slog.Error("Failed to record job id on batch process", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
 		return nil, err
+	}
+	if err := a.cancelIfStopped(ctx, processID); err != nil {
+		return executionContext, err
 	}
 
 	slog.Info("Completed submitting batch job", "taskId", taskID, "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID, "jobId", jobID)
@@ -217,20 +229,88 @@ func (a *ExecutionEngine) slurmScript(ctx context.Context, process *model.Proces
 	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs)
 }
 
-func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
-	slog.Info("Starting to cancel batch job", "taskId", taskID, "processId", processID)
-	process, err := a.process(ctx, processID)
-	if err != nil {
-		slog.Error("Failed to retrieve process for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
+func (a *ExecutionEngine) linkExports(ctx context.Context, dialConfig ssh.SSHDialConfig, process *model.Process, target string) string {
+	if a.PublicURL == "" {
+		return ""
 	}
-	jst, err := a.jobSubmissionTasks.FindByIDAndProcessID(ctx, taskID, processID)
-	if err != nil {
-		slog.Error("Failed to retrieve job submission task for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
+	if _, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, "sh -s", strings.NewReader(ProvisionScript), target); err != nil {
+		a.recordStatus(ctx, process.ID, process.State(), "Linkspan could not be provisioned, so the job runs without a link: "+cmp.Or(strings.TrimSpace(stderr), err.Error()))
+		return ""
 	}
-	slog.Info("Completed cancelling batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JST Id", jst.ID)
-	return executionContext, nil
+	control, app := model.PortsOf(process.ID)
+	return fmt.Sprintf("export CS_LINK_URL='ws%s/api/v1/processes/%s/link' LINKSPAN_LINK_TOKEN=%s CS_APP_TOKEN=%s CS_APP_PORT=%d CS_CONTROL_PORT=%d\n",
+		strings.TrimPrefix(a.PublicURL, "http"), process.ID, process.BatchProcess.LinkToken, process.BatchProcess.Token, app, control)
+}
+
+// activity gives an activity a context that prompts the run's launching connection and that a Stop cancels.
+func (a *ExecutionEngine) activity(ctx context.Context, processID string) (context.Context, func()) {
+	ctx, cancel := context.WithCancel(ctx)
+	a.stops.Store(processID, cancel)
+	if process, err := a.process(ctx, processID); err == nil {
+		ctx = auth.WithConnection(ctx, process.BatchProcess.Connection)
+		if process.State() == model.ProcessStatusTypeCancelled {
+			cancel()
+		}
+	}
+	return ctx, func() {
+		a.stops.Delete(processID)
+		cancel()
+	}
+}
+
+// cancelIfStopped cancels the job of a run a Stop ended while sbatch ran. The submission saves its job id
+// before this read and a Stop records CANCELLED before its own, so one of the two sees the other.
+func (a *ExecutionEngine) cancelIfStopped(ctx context.Context, processID string) error {
+	if latest, err := a.process(ctx, processID); err == nil && latest.State() == model.ProcessStatusTypeCancelled {
+		return a.scancel(ctx, latest)
+	}
+	return nil
+}
+
+// CancelBatchJob ends a run for Stop. With no job id yet it records CANCELLED first, then re-reads for one.
+func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, process *model.Process) error {
+	if process.BatchProcess.JobID == nil {
+		a.end(ctx, process.ID)
+		latest, err := a.process(ctx, process.ID)
+		if err != nil {
+			return err
+		}
+		return a.scancel(ctx, latest)
+	}
+	if err := a.scancel(ctx, process); err != nil {
+		return err
+	}
+	a.end(ctx, process.ID)
+	return nil
+}
+
+func (a *ExecutionEngine) end(ctx context.Context, processID string) {
+	if linked, ok := a.links.LoadAndDelete(processID); ok {
+		_ = linked.(*Link).Close()
+	}
+	a.recordStatus(ctx, processID, model.ProcessStatusTypeCancelled, "Cancelled")
+	if cancel, ok := a.stops.Load(processID); ok {
+		cancel.(context.CancelFunc)()
+	}
+}
+
+// jobGone matches scancel's refusals for a job that has already ended, which leave nothing to cancel.
+var jobGone = regexp.MustCompile(`(?i)invalid job id specified|already completing or completed`)
+
+func (a *ExecutionEngine) scancel(ctx context.Context, process *model.Process) error {
+	if process.BatchProcess.JobID == nil {
+		return nil
+	}
+	clusterConfig, err := a.slurmClusterConfigs.FindByID(ctx, process.BatchProcess.SlurmClusterConfigID)
+	if err != nil {
+		return err
+	}
+	dialConfig := ssh.NewSSHDialConfig(clusterConfig.SlurmCluster.HeadnodeHost, clusterConfig.SlurmCluster.HeadnodePort, clusterConfig.LoginUser, *clusterConfig.SSHCredential, *process.OwnerID)
+	scancel := ssh.ShellQuote(path.Join(optional(clusterConfig.SlurmCluster.SlurmHome), "scancel")) + " " + ssh.ShellQuote(*process.BatchProcess.JobID)
+	if _, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, scancel, nil, fmt.Sprintf("ssh scancel %s@%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost)); err != nil && !jobGone.MatchString(stderr) {
+		return fmt.Errorf("scancel %s: %w: %s", *process.BatchProcess.JobID, err, strings.TrimSpace(stderr))
+	}
+	return nil
 }
 
 func (a *ExecutionEngine) monitorBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {

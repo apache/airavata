@@ -32,7 +32,8 @@ func newSSHInteractiveAuthStore() *SSHInteractiveAuthStore {
 	}
 }
 
-func (store *SSHInteractiveAuthStore) GetAuth(userId, authId string) (*SSHInteractiveAuth, bool) {
+// Lookups take the caller's connection and see only auths whose login it started.
+func (store *SSHInteractiveAuthStore) GetAuth(userId, connection, authId string) (*SSHInteractiveAuth, bool) {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
@@ -41,7 +42,10 @@ func (store *SSHInteractiveAuthStore) GetAuth(userId, authId string) (*SSHIntera
 		return nil, false
 	}
 	auth, ok := userAuths[authId]
-	return auth, ok
+	if !ok || auth.connection != connection {
+		return nil, false
+	}
+	return auth, true
 }
 
 func (store *SSHInteractiveAuthStore) AddAuth(auth *SSHInteractiveAuth) {
@@ -88,7 +92,7 @@ func (store *SSHInteractiveAuthStore) resetSubscriberQueue(userId string) {
 	store.SubscriberQueue[userId] = make(chan struct{})
 }
 
-func (store *SSHInteractiveAuthStore) ListAuthsForUser(userId string) []*SSHInteractiveAuth {
+func (store *SSHInteractiveAuthStore) ListAuthsForUser(userId, connection string) []*SSHInteractiveAuth {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
@@ -98,7 +102,9 @@ func (store *SSHInteractiveAuthStore) ListAuthsForUser(userId string) []*SSHInte
 	}
 	auths := make([]*SSHInteractiveAuth, 0, len(userAuths))
 	for _, auth := range userAuths {
-		auths = append(auths, auth)
+		if auth.connection == connection {
+			auths = append(auths, auth)
+		}
 	}
 	return auths
 }
@@ -110,7 +116,7 @@ var errAuthWithdrawn = errors.New("interactive auth withdrawn")
 // It only returns auths that have not been answered yet, or nil if there are none.
 // The returned channel closes the next time the user's auths are added or removed.
 // Both are taken under one lock, so a change right after the call is never missed.
-func (store *SSHInteractiveAuthStore) NextAuthForUser(userId string) (*SSHInteractiveAuth, <-chan struct{}) {
+func (store *SSHInteractiveAuthStore) NextAuthForUser(userId, connection string) (*SSHInteractiveAuth, <-chan struct{}) {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
@@ -122,7 +128,7 @@ func (store *SSHInteractiveAuthStore) NextAuthForUser(userId string) (*SSHIntera
 
 	earliest := (*SSHInteractiveAuth)(nil)
 	for _, auth := range store.Auths[userId] {
-		if (earliest == nil || auth.CreatedAt.Before(earliest.CreatedAt)) && auth.Answered() == false {
+		if (earliest == nil || auth.CreatedAt.Before(earliest.CreatedAt)) && auth.Answered() == false && auth.connection == connection {
 			earliest = auth
 		}
 	}

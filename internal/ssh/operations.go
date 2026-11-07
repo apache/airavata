@@ -77,7 +77,7 @@ func CreateDirectorySSH(ctx context.Context, dialConfig SSHDialConfig, sshContex
 		return fmt.Errorf("%s: no remote directory was named", target)
 	}
 
-	if _, _, err := RunSSHCommand(ctx, dialConfig, sshContext, "mkdir -p "+ShellQuote(remotePath), target); err != nil {
+	if _, _, err := RunSSHCommand(ctx, dialConfig, sshContext, "mkdir -p "+ShellQuote(remotePath), nil, target); err != nil {
 		return err
 	}
 

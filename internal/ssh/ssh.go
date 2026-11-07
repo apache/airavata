@@ -36,6 +36,7 @@ import (
 	"time"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
+	"github.com/apache/airavata/internal/auth"
 	"github.com/google/uuid"
 	gossh "golang.org/x/crypto/ssh"
 )
@@ -51,6 +52,25 @@ const scpOK = 0x00
 // activity is retried by the workflow, so a host that is merely down should fail the
 // attempt quickly rather than hold a worker slot until the OS gives up on the socket.
 const scpDialTimeout = 30 * time.Second
+
+const loginTimeout = 5 * time.Minute
+
+// errUnanswered ends a login whose prompts went unanswered; another connection waiting on it may log in itself.
+var errUnanswered = errors.New("the login was not answered")
+
+// watchedConn calls closed when the host ends the connection; a deadline passing is loginTimeout's to report.
+type watchedConn struct {
+	net.Conn
+	closed func()
+}
+
+func (c *watchedConn) Read(b []byte) (int, error) {
+	n, err := c.Conn.Read(b)
+	if err != nil && !errors.Is(err, os.ErrDeadlineExceeded) {
+		c.closed()
+	}
+	return n, err
+}
 
 type FileMetadata struct {
 	Path string
@@ -106,10 +126,16 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 	// DialContext rather than ssh.Dial: the activity's context has to be able to
 	// abandon a connect that is going nowhere.
 	dialer := net.Dialer{Timeout: scpDialTimeout}
-	conn, err := dialer.DialContext(ctx, "tcp", addr)
+	tcp, err := dialer.DialContext(ctx, "tcp", addr)
 	if err != nil {
 		return nil, fmt.Errorf("connecting to %s: %w", addr, err)
 	}
+	// A prompt lives only while the host still holds the login open, and never past loginTimeout.
+	ctx, dropped := context.WithCancelCause(ctx)
+	defer dropped(nil)
+	ctx, cancel := context.WithTimeoutCause(ctx, loginTimeout, fmt.Errorf("%w within %v at %s", errUnanswered, loginTimeout, addr))
+	defer cancel()
+	conn := &watchedConn{Conn: tcp, closed: func() { dropped(fmt.Errorf("%w before %s closed it", errUnanswered, addr)) }}
 	if deadline, ok := ctx.Deadline(); ok {
 		_ = conn.SetDeadline(deadline)
 	}
@@ -127,7 +153,16 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 		authMethods = append(authMethods, gossh.PublicKeys(signer))
 	}
 
-	if dialConfig.cred.FullInteractive {
+	// A stored password answers only the login's first lone password prompt; every other prompt goes to the user.
+	stored := dialConfig.cred.Password
+	ask := func(name, instruction string, prompts []Prompt) ([]string, error) {
+		if answer := stored; answer != nil && len(prompts) == 1 && !prompts[0].Echo && strings.Contains(strings.ToLower(prompts[0].Text), "password") {
+			stored = nil
+			return []string{*answer}, nil
+		}
+		return askUserInteractive(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
+	}
+	if stored != nil || dialConfig.cred.FullInteractive {
 		ki := gossh.KeyboardInteractive(func(name, instruction string, questions []string, echos []bool) ([]string, error) {
 			// RFC 4256 allows an INFO_REQUEST with zero prompts (servers use it to
 			// display a banner-like instruction). It still requires a response.
@@ -140,7 +175,7 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 				return []string{}, nil
 			}
 
-			answers, err := askUserInteractive(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
+			answers, err := ask(name, instruction, prompts)
 			if err != nil {
 				return nil, err
 			}
@@ -154,7 +189,7 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 		// The server only tries it if it advertises the method.
 		password := gossh.PasswordCallback(func() (string, error) {
 			prompt := fmt.Sprintf("%s@%s's password: ", dialConfig.sshUsername, dialConfig.host)
-			answers, err := askUserInteractive(ctx, dialConfig, sshContext, banner, "", "", []Prompt{{Text: prompt, Echo: false}})
+			answers, err := ask("", "", []Prompt{{Text: prompt, Echo: false}})
 			if err != nil {
 				return "", err
 			}
@@ -238,7 +273,7 @@ func intializeScpSession(ctx context.Context, dialConfig SSHDialConfig, sshConte
 // to stderr is folded into the error as well, so a caller that only checks err is no
 // worse off than before. The streams are returned as the command wrote them, trailing
 // newline included; a caller parsing them should trim.
-func RunSSHCommand(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, command, target string) (string, string, error) {
+func RunSSHCommand(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, command string, input io.Reader, target string) (string, string, error) {
 	client, err := dialSSH(ctx, dialConfig, sshContext)
 	if err != nil {
 		return "", "", fmt.Errorf("%s: %w", target, err)
@@ -254,6 +289,7 @@ func RunSSHCommand(ctx context.Context, dialConfig SSHDialConfig, sshContext *Gl
 	var stdout, stderr bytes.Buffer
 	session.Stdout = &stdout
 	session.Stderr = &stderr
+	session.Stdin = input
 
 	done := make(chan struct{})
 	defer close(done)
@@ -524,8 +560,9 @@ func ShellQuote(s string) string {
 // their answers. The auth leaves the store once answered or abandoned. banner is
 // the server's pre-login banner, if it sent one, so the user sees what a terminal would.
 func askUserInteractive(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext, banner, name, instruction string, prompts []Prompt) ([]string, error) {
+	connection := auth.Connection(ctx)
 	auth := NewSSHInteractiveAuth(uuid.New().String(), dialConfig)
-	auth.banner = banner
+	auth.banner, auth.connection = banner, connection
 	// Record the challenge before publishing, so a subscriber never sees an auth
 	// with no prompts yet.
 	auth.name, auth.instruction, auth.prompts = name, instruction, prompts
