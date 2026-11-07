@@ -35,6 +35,18 @@ const WORKFLOW_LABELS: Record<ProcessWorkflowType, string> = {
   BATCH_JOB_COMPLETION: "Job completion",
 };
 
+// Whether a retry would be accepted, by the same rule the server applies: no workflow
+// is running, and the latest submission failed, or it succeeded and the latest
+// completion failed. The server decides; this only chooses whether to offer it.
+function canRetry(workflows: ProcessWorkflow[] | null | undefined): boolean {
+  const latest = new Map<string, string | null>();
+  for (const w of workflows ?? []) if (w.workflowType) latest.set(w.workflowType, w.status);
+  if ([...latest.values()].includes("RUNNING")) return false;
+  const submission = latest.get("BATCH_JOB_SUBMISSION");
+  if (submission === undefined) return false;
+  return submission === "FAILED" || latest.get("BATCH_JOB_COMPLETION") === "FAILED";
+}
+
 // Fields every task carries; the rest are kind-specific and shown as they come.
 const COMMON_TASK_FIELDS = new Set(["taskId", "processId", "onFailure", "retryCount", "taskOrder"]);
 
@@ -88,11 +100,11 @@ function ProcessView() {
   const taskOrder = new Map<string, number | null>();
   d?.tasks.forEach((list) => list?.forEach((t) => taskOrder.set(t.taskId, t.taskOrder)));
 
-  const launch = async () => {
+  const act = async (action: "launch" | "retry") => {
     setBusy(true);
     setError(null);
     try {
-      await api.post(`/api/v1/processes/${id}/launch`);
+      await api.post(`/api/v1/processes/${id}/${action}`);
       setLive(true);
       await detail.reload();
     } catch (e) {
@@ -130,8 +142,18 @@ function ProcessView() {
           <button onClick={() => setLive(true)}>Resume live updates</button>
         )}
         {latest?.status === "CREATED" && (
-          <button className="primary" disabled={busy} onClick={() => void launch()}>
+          <button className="primary" disabled={busy} onClick={() => void act("launch")}>
             {busy ? "Launching…" : "Launch"}
+          </button>
+        )}
+        {canRetry(d?.workflows) && (
+          <button
+            className="primary"
+            disabled={busy}
+            title="Run the failed workflow again, skipping tasks that already completed"
+            onClick={() => void act("retry")}
+          >
+            {busy ? "Retrying…" : "Retry"}
           </button>
         )}
       </PageHead>

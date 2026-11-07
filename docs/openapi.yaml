@@ -1842,6 +1842,32 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/processes/{processId}/retry:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    post:
+      tags: [Processes]
+      summary: Retry a process's failed workflow
+      description: |
+        Owner only. Takes no body. Starts again the workflow whose latest run failed —
+        the job submission, or, once that succeeded, the job completion — and skips
+        every task that has already completed, so the run picks up at the step that
+        failed. Refused with `409` while a workflow is still running, before the
+        process is launched, or when no workflow's latest run failed. Answers `202`
+        with the process as it now stands.
+      operationId: retryProcess
+      responses:
+        "202":
+          description: The retry was accepted; the process is returned as it now stands.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/processes/{processId}/statuses:
     parameters:
       - $ref: "#/components/parameters/ProcessId"

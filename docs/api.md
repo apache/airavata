@@ -2000,6 +2000,47 @@ refused with `409` rather than doubling the work. Only `FILE` declarations are s
 today: the `FILE_LIST` and `DIRECTORY` branches are stubs, so a run carrying those is
 launched without staging tasks for them.
 
+### Retry a Process
+
+```
+POST /api/v1/processes/{processId}/retry
+```
+
+Starts again the [workflow](#process-workflows) of a launched run that failed,
+**skipping what already completed**. Owner-scoped like launching, and takes no body.
+
+Only the failed workflow runs again. Each workflow type is judged by its latest run:
+
+- if the latest job submission workflow failed, a new one is started;
+- if the submission succeeded and the latest job completion workflow failed, only the
+  completion workflow is started — the job is never submitted twice.
+
+Inside the new workflow, every [task](#process-tasks) that has already recorded a
+`COMPLETED` status is passed over rather than run again, so the retry picks up at the
+step that failed: staged inputs are not copied again, and a job that was submitted is
+not resubmitted.
+
+The new workflow appears straight away in the process's workflows as `RUNNING`, and the
+process records a new status — `SUBMITTED` when the submission is retried, `RUNNING`
+when the completion is — with a log saying what was retried.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/retry \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `202 Accepted`**, with the process as its body, for the same reason as
+[launching](#launch-a-process).
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | no token |
+| `403 Forbidden` | the run belongs to another user |
+| `404 Not Found` | no such process |
+| `409 Conflict` | a workflow of the run is still running; the run has not been launched; or no workflow's latest run failed |
+
 ## Process Statuses
 
 A run's status history, read-only and nested under the process:
