@@ -231,6 +231,48 @@ func (e ProcessType) Valid() bool {
 	}
 }
 
+// Defines values for ProcessWorkflowStatusType.
+const (
+	ProcessWorkflowStatusTypeFAILED    ProcessWorkflowStatusType = "FAILED"
+	ProcessWorkflowStatusTypeRUNNING   ProcessWorkflowStatusType = "RUNNING"
+	ProcessWorkflowStatusTypeSUCCEEDED ProcessWorkflowStatusType = "SUCCEEDED"
+)
+
+// Valid indicates whether the value is a known member of the ProcessWorkflowStatusType enum.
+func (e ProcessWorkflowStatusType) Valid() bool {
+	switch e {
+	case ProcessWorkflowStatusTypeFAILED:
+		return true
+	case ProcessWorkflowStatusTypeRUNNING:
+		return true
+	case ProcessWorkflowStatusTypeSUCCEEDED:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ProcessWorkflowType.
+const (
+	BATCHJOBCOMPLETION ProcessWorkflowType = "BATCH_JOB_COMPLETION"
+	BATCHJOBSUBMISSION ProcessWorkflowType = "BATCH_JOB_SUBMISSION"
+	JOBMONITORING      ProcessWorkflowType = "JOB_MONITORING"
+)
+
+// Valid indicates whether the value is a known member of the ProcessWorkflowType enum.
+func (e ProcessWorkflowType) Valid() bool {
+	switch e {
+	case BATCHJOBCOMPLETION:
+		return true
+	case BATCHJOBSUBMISSION:
+		return true
+	case JOBMONITORING:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ProvisionStatus.
 const (
 	ProvisionStatusDEPROVISIONED  ProvisionStatus = "DEPROVISIONED"
@@ -941,8 +983,11 @@ type ProcessRequest struct {
 type ProcessResponse struct {
 	BatchProcess *BatchProcessResponse `json:"batchProcess,omitempty"`
 	LastStatusId *openapi_types.UUID   `json:"lastStatusId,omitempty"`
-	ProcessId    openapi_types.UUID    `json:"processId"`
-	ProcessType  *ProcessType          `json:"processType,omitempty"`
+
+	// LastWorkflowId The newest recorded workflow's `processWorkflowId`, if any.
+	LastWorkflowId *openapi_types.UUID `json:"lastWorkflowId,omitempty"`
+	ProcessId      openapi_types.UUID  `json:"processId"`
+	ProcessType    *ProcessType        `json:"processType,omitempty"`
 
 	// UserId The owner, taken from the token at creation.
 	UserId *string `json:"userId,omitempty"`
@@ -953,6 +998,12 @@ type ProcessStatusType string
 
 // ProcessType defines model for ProcessType.
 type ProcessType string
+
+// ProcessWorkflowStatusType defines model for ProcessWorkflowStatusType.
+type ProcessWorkflowStatusType string
+
+// ProcessWorkflowType defines model for ProcessWorkflowType.
+type ProcessWorkflowType string
 
 // ProvisionStatus The lifecycle state of a registered dataset. `REGISTERD` is spelled that way
 // on the wire.
@@ -1212,6 +1263,25 @@ type UserResponse struct {
 // UserStatus defines model for UserStatus.
 type UserStatus string
 
+// WorkflowResponse One workflow started for a process. There is no request counterpart:
+// workflows are recorded by the server when it starts a workflow, never created
+// from a client body.
+type WorkflowResponse struct {
+	ProcessId         *openapi_types.UUID `json:"processId,omitempty"`
+	ProcessWorkflowId openapi_types.UUID  `json:"processWorkflowId"`
+
+	// Status `RUNNING` once the workflow is started, then `SUCCEEDED` or `FAILED`. `null`
+	// for workflows recorded before the server tracked it.
+	Status *ProcessWorkflowStatusType `json:"status,omitempty"`
+
+	// Timestamp When the workflow was recorded, in milliseconds since the epoch.
+	Timestamp *int64 `json:"timestamp,omitempty"`
+
+	// WorkflowId The id the workflow engine knows the run by.
+	WorkflowId   string               `json:"workflowId"`
+	WorkflowType *ProcessWorkflowType `json:"workflowType,omitempty"`
+}
+
 // DataProductId defines model for DataProductId.
 type DataProductId = openapi_types.UUID
 
@@ -1284,6 +1354,15 @@ type UploadDataProductContentMultipartBody struct {
 type ListProcessesParams struct {
 	// DeploymentId Return only the runs of this deployment.
 	DeploymentId *string `form:"deploymentId,omitempty" json:"deploymentId,omitempty"`
+}
+
+// DiscoverPartitionsJSONBody defines parameters for DiscoverPartitions.
+type DiscoverPartitionsJSONBody struct {
+	HeadnodeHost    string  `json:"headnodeHost"`
+	HeadnodePort    *int    `json:"headnodePort,omitempty"`
+	LoginUser       string  `json:"loginUser"`
+	SlurmHome       *string `json:"slurmHome,omitempty"`
+	SshCredentialId string  `json:"sshCredentialId"`
 }
 
 // ListBatchDeploymentsParams defines parameters for ListBatchDeployments.
@@ -1384,6 +1463,9 @@ type PutApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesSharingIdJSONRequestBo
 
 // CreateSlurmClusterJSONRequestBody defines body for CreateSlurmCluster for application/json ContentType.
 type CreateSlurmClusterJSONRequestBody = SlurmClusterRequest
+
+// DiscoverPartitionsJSONRequestBody defines body for DiscoverPartitions for application/json ContentType.
+type DiscoverPartitionsJSONRequestBody DiscoverPartitionsJSONBody
 
 // UpdateSlurmClusterJSONRequestBody defines body for UpdateSlurmCluster for application/json ContentType.
 type UpdateSlurmClusterJSONRequestBody = SlurmClusterRequest
@@ -1860,6 +1942,14 @@ type ClientInterface interface {
 	// Corresponds with POST /api/v1/processes (the `CreateProcess` operationId).
 	CreateProcess(ctx context.Context, body CreateProcessJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListMyProcesses List the caller's processes
+	//
+	// Every process the caller owns. Unlike the unfiltered listing it needs no
+	// platform role.
+	//
+	// Corresponds with GET /api/v1/processes/me (the `ListMyProcesses` operationId).
+	ListMyProcesses(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DeleteProcess Delete a process
 	//
 	// Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -2082,6 +2172,18 @@ type ClientInterface interface {
 	// Corresponds with POST /api/v1/processes/{processId}/launch (the `LaunchProcess` operationId).
 	LaunchProcess(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// RetryProcess Retry a process's failed workflow
+	//
+	// Owner only. Takes no body. Starts again the workflow whose latest run failed —
+	// the job submission, or, once that succeeded, the job completion — and skips
+	// every task that has already completed, so the run picks up at the step that
+	// failed. Refused with `409` while a workflow is still running, before the
+	// process is launched, or when no workflow's latest run failed. Answers `202`
+	// with the process as it now stands.
+	//
+	// Corresponds with POST /api/v1/processes/{processId}/retry (the `RetryProcess` operationId).
+	RetryProcess(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListProcessStatuses List a process's status history
 	//
 	// Read-only. Statuses are recorded internally — by process submission and by
@@ -2095,6 +2197,22 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 	GetProcessStatus(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListProcessWorkflows List the workflows started for a process
+	//
+	// Read-only, oldest first. Workflows are recorded by the server when it starts a
+	// workflow for the process, never accepted from a client, so there is no `POST`
+	// or `PUT` here. Only the process's owner or an admin may read them.
+	//
+	// Corresponds with GET /api/v1/processes/{processId}/workflows (the `ListProcessWorkflows` operationId).
+	ListProcessWorkflows(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetProcessWorkflow Read one recorded process workflow
+	//
+	// A workflow of another process is a `404` through this process's path.
+	//
+	// Corresponds with GET /api/v1/processes/{processId}/workflows/{processWorkflowId} (the `GetProcessWorkflow` operationId).
+	GetProcessWorkflow(ctx context.Context, processId ProcessId, processWorkflowId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListSCPDataStorages List all SCP data storages
 	//
@@ -2293,6 +2411,15 @@ type ClientInterface interface {
 	// Corresponds with PUT /api/v1/slurm-cluster-configs/{slurmClusterConfigId} (the `UpdateSlurmClusterConfig` operationId).
 	UpdateSlurmClusterConfig(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, body UpdateSlurmClusterConfigJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DiscoverAllocations Discover the allocations a config's login may charge
+	//
+	// Logs in under the config and lists the Slurm accounts its login may charge,
+	// from sacctmgr (falling back to sshare). Open to anyone who may submit under the
+	// config.
+	//
+	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations (the `DiscoverAllocations` operationId).
+	DiscoverAllocations(ctx context.Context, slurmClusterConfigId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetApiV1SlurmClusterConfigsSlurmClusterConfigIdShares List who has access to this Slurm cluster config
 	//
 	// Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
@@ -2371,6 +2498,28 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /api/v1/slurm-clusters (the `CreateSlurmCluster` operationId).
 	CreateSlurmCluster(ctx context.Context, body CreateSlurmClusterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DiscoverPartitionsWithBody Discover a head node's partitions
+	//
+	// Logs in to the head node under a credential the caller owns and reads its
+	// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+	// result is in the shape a cluster registration's `partitions` takes.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+	DiscoverPartitionsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DiscoverPartitions Discover a head node's partitions
+	//
+	// Logs in to the head node under a credential the caller owns and reads its
+	// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+	// result is in the shape a cluster registration's `partitions` takes.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+	DiscoverPartitions(ctx context.Context, body DiscoverPartitionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteSlurmCluster Delete a Slurm cluster
 	//
@@ -3534,6 +3683,24 @@ func (c *Client) CreateProcess(ctx context.Context, body CreateProcessJSONReques
 	return c.Client.Do(req)
 }
 
+// ListMyProcesses List the caller's processes
+//
+// Every process the caller owns. Unlike the unfiltered listing it needs no
+// platform role.
+//
+// Corresponds with GET /api/v1/processes/me (the `ListMyProcesses` operationId).
+func (c *Client) ListMyProcesses(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMyProcessesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // DeleteProcess Delete a process
 //
 // Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -4086,6 +4253,28 @@ func (c *Client) LaunchProcess(ctx context.Context, processId ProcessId, reqEdit
 	return c.Client.Do(req)
 }
 
+// RetryProcess Retry a process's failed workflow
+//
+// Owner only. Takes no body. Starts again the workflow whose latest run failed —
+// the job submission, or, once that succeeded, the job completion — and skips
+// every task that has already completed, so the run picks up at the step that
+// failed. Refused with `409` while a workflow is still running, before the
+// process is launched, or when no workflow's latest run failed. Answers `202`
+// with the process as it now stands.
+//
+// Corresponds with POST /api/v1/processes/{processId}/retry (the `RetryProcess` operationId).
+func (c *Client) RetryProcess(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRetryProcessRequest(c.Server, processId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // ListProcessStatuses List a process's status history
 //
 // Read-only. Statuses are recorded internally — by process submission and by
@@ -4110,6 +4299,42 @@ func (c *Client) ListProcessStatuses(ctx context.Context, processId ProcessId, r
 // Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 func (c *Client) GetProcessStatus(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetProcessStatusRequest(c.Server, processId, statusId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListProcessWorkflows List the workflows started for a process
+//
+// Read-only, oldest first. Workflows are recorded by the server when it starts a
+// workflow for the process, never accepted from a client, so there is no `POST`
+// or `PUT` here. Only the process's owner or an admin may read them.
+//
+// Corresponds with GET /api/v1/processes/{processId}/workflows (the `ListProcessWorkflows` operationId).
+func (c *Client) ListProcessWorkflows(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListProcessWorkflowsRequest(c.Server, processId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetProcessWorkflow Read one recorded process workflow
+//
+// A workflow of another process is a `404` through this process's path.
+//
+// Corresponds with GET /api/v1/processes/{processId}/workflows/{processWorkflowId} (the `GetProcessWorkflow` operationId).
+func (c *Client) GetProcessWorkflow(ctx context.Context, processId ProcessId, processWorkflowId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProcessWorkflowRequest(c.Server, processId, processWorkflowId)
 	if err != nil {
 		return nil, err
 	}
@@ -4557,6 +4782,25 @@ func (c *Client) UpdateSlurmClusterConfig(ctx context.Context, slurmClusterConfi
 	return c.Client.Do(req)
 }
 
+// DiscoverAllocations Discover the allocations a config's login may charge
+//
+// Logs in under the config and lists the Slurm accounts its login may charge,
+// from sacctmgr (falling back to sshare). Open to anyone who may submit under the
+// config.
+//
+// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations (the `DiscoverAllocations` operationId).
+func (c *Client) DiscoverAllocations(ctx context.Context, slurmClusterConfigId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDiscoverAllocationsRequest(c.Server, slurmClusterConfigId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // GetApiV1SlurmClusterConfigsSlurmClusterConfigIdShares List who has access to this Slurm cluster config
 //
 // Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
@@ -4716,6 +4960,48 @@ func (c *Client) CreateSlurmClusterWithBody(ctx context.Context, contentType str
 // Corresponds with POST /api/v1/slurm-clusters (the `CreateSlurmCluster` operationId).
 func (c *Client) CreateSlurmCluster(ctx context.Context, body CreateSlurmClusterJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateSlurmClusterRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DiscoverPartitionsWithBody Discover a head node's partitions
+//
+// Logs in to the head node under a credential the caller owns and reads its
+// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+// result is in the shape a cluster registration's `partitions` takes.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+func (c *Client) DiscoverPartitionsWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDiscoverPartitionsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DiscoverPartitions Discover a head node's partitions
+//
+// Logs in to the head node under a credential the caller owns and reads its
+// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+// result is in the shape a cluster registration's `partitions` takes.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+func (c *Client) DiscoverPartitions(ctx context.Context, body DiscoverPartitionsJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDiscoverPartitionsRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6716,6 +7002,33 @@ func NewCreateProcessRequestWithBody(server string, contentType string, body io.
 	return req, nil
 }
 
+// NewListMyProcessesRequest constructs an http.Request for the ListMyProcesses method
+func NewListMyProcessesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/processes/me")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewDeleteProcessRequest constructs an http.Request for the DeleteProcess method
 func NewDeleteProcessRequest(server string, processId ProcessId) (*http.Request, error) {
 	var err error
@@ -7733,6 +8046,40 @@ func NewLaunchProcessRequest(server string, processId ProcessId) (*http.Request,
 	return req, nil
 }
 
+// NewRetryProcessRequest constructs an http.Request for the RetryProcess method
+func NewRetryProcessRequest(server string, processId ProcessId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "processId", processId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/processes/%s/retry", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListProcessStatusesRequest constructs an http.Request for the ListProcessStatuses method
 func NewListProcessStatusesRequest(server string, processId ProcessId) (*http.Request, error) {
 	var err error
@@ -7791,6 +8138,81 @@ func NewGetProcessStatusRequest(server string, processId ProcessId, statusId str
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/processes/%s/statuses/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListProcessWorkflowsRequest constructs an http.Request for the ListProcessWorkflows method
+func NewListProcessWorkflowsRequest(server string, processId ProcessId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "processId", processId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/processes/%s/workflows", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetProcessWorkflowRequest constructs an http.Request for the GetProcessWorkflow method
+func NewGetProcessWorkflowRequest(server string, processId ProcessId, processWorkflowId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "processId", processId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "processWorkflowId", processWorkflowId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/processes/%s/workflows/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -8456,6 +8878,40 @@ func NewUpdateSlurmClusterConfigRequestWithBody(server string, slurmClusterConfi
 	return req, nil
 }
 
+// NewDiscoverAllocationsRequest constructs an http.Request for the DiscoverAllocations method
+func NewDiscoverAllocationsRequest(server string, slurmClusterConfigId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "slurmClusterConfigId", slurmClusterConfigId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/slurm-cluster-configs/%s/discover-allocations", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesRequest constructs an http.Request for the GetApiV1SlurmClusterConfigsSlurmClusterConfigIdShares method
 func NewGetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesRequest(server string, slurmClusterConfigId SlurmClusterConfigId) (*http.Request, error) {
 	var err error
@@ -8680,6 +9136,46 @@ func NewCreateSlurmClusterRequestWithBody(server string, contentType string, bod
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/slurm-clusters")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDiscoverPartitionsRequest calls the generic DiscoverPartitions builder with application/json body
+func NewDiscoverPartitionsRequest(server string, body DiscoverPartitionsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewDiscoverPartitionsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewDiscoverPartitionsRequestWithBody constructs an http.Request for the DiscoverPartitions method, with any body, and a specified content type
+func NewDiscoverPartitionsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/slurm-clusters/discover-partitions")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -10362,6 +10858,16 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /api/v1/processes (the `CreateProcess` operationId).
 	CreateProcessWithResponse(ctx context.Context, body CreateProcessJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateProcessResponse, error)
 
+	// ListMyProcessesWithResponse List the caller's processes
+	//
+	// Every process the caller owns. Unlike the unfiltered listing it needs no
+	// platform role.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/processes/me (the `ListMyProcesses` operationId).
+	ListMyProcessesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListMyProcessesResponse, error)
+
 	// DeleteProcessWithResponse Delete a process
 	//
 	// Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -10614,6 +11120,20 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /api/v1/processes/{processId}/launch (the `LaunchProcess` operationId).
 	LaunchProcessWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*LaunchProcessResponse, error)
 
+	// RetryProcessWithResponse Retry a process's failed workflow
+	//
+	// Owner only. Takes no body. Starts again the workflow whose latest run failed —
+	// the job submission, or, once that succeeded, the job completion — and skips
+	// every task that has already completed, so the run picks up at the step that
+	// failed. Refused with `409` while a workflow is still running, before the
+	// process is launched, or when no workflow's latest run failed. Answers `202`
+	// with the process as it now stands.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/processes/{processId}/retry (the `RetryProcess` operationId).
+	RetryProcessWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*RetryProcessResponse, error)
+
 	// ListProcessStatusesWithResponse List a process's status history
 	//
 	// Read-only. Statuses are recorded internally — by process submission and by
@@ -10631,6 +11151,26 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 	GetProcessStatusWithResponse(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*GetProcessStatusResponse, error)
+
+	// ListProcessWorkflowsWithResponse List the workflows started for a process
+	//
+	// Read-only, oldest first. Workflows are recorded by the server when it starts a
+	// workflow for the process, never accepted from a client, so there is no `POST`
+	// or `PUT` here. Only the process's owner or an admin may read them.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/processes/{processId}/workflows (the `ListProcessWorkflows` operationId).
+	ListProcessWorkflowsWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*ListProcessWorkflowsResponse, error)
+
+	// GetProcessWorkflowWithResponse Read one recorded process workflow
+	//
+	// A workflow of another process is a `404` through this process's path.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/processes/{processId}/workflows/{processWorkflowId} (the `GetProcessWorkflow` operationId).
+	GetProcessWorkflowWithResponse(ctx context.Context, processId ProcessId, processWorkflowId string, reqEditors ...RequestEditorFn) (*GetProcessWorkflowResponse, error)
 
 	// ListSCPDataStoragesWithResponse List all SCP data storages
 	//
@@ -10853,6 +11393,17 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/v1/slurm-cluster-configs/{slurmClusterConfigId} (the `UpdateSlurmClusterConfig` operationId).
 	UpdateSlurmClusterConfigWithResponse(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, body UpdateSlurmClusterConfigJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSlurmClusterConfigResponse, error)
 
+	// DiscoverAllocationsWithResponse Discover the allocations a config's login may charge
+	//
+	// Logs in under the config and lists the Slurm accounts its login may charge,
+	// from sacctmgr (falling back to sshare). Open to anyone who may submit under the
+	// config.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations (the `DiscoverAllocations` operationId).
+	DiscoverAllocationsWithResponse(ctx context.Context, slurmClusterConfigId string, reqEditors ...RequestEditorFn) (*DiscoverAllocationsResponse, error)
+
 	// GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesWithResponse List who has access to this Slurm cluster config
 	//
 	// Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
@@ -10937,6 +11488,28 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /api/v1/slurm-clusters (the `CreateSlurmCluster` operationId).
 	CreateSlurmClusterWithResponse(ctx context.Context, body CreateSlurmClusterJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateSlurmClusterResponse, error)
+
+	// DiscoverPartitionsWithBodyWithResponse Discover a head node's partitions
+	//
+	// Logs in to the head node under a credential the caller owns and reads its
+	// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+	// result is in the shape a cluster registration's `partitions` takes.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+	DiscoverPartitionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DiscoverPartitionsResponse, error)
+
+	// DiscoverPartitionsWithResponse Discover a head node's partitions
+	//
+	// Logs in to the head node under a credential the caller owns and reads its
+	// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+	// result is in the shape a cluster registration's `partitions` takes.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+	DiscoverPartitionsWithResponse(ctx context.Context, body DiscoverPartitionsJSONRequestBody, reqEditors ...RequestEditorFn) (*DiscoverPartitionsResponse, error)
 
 	// DeleteSlurmClusterWithResponse Delete a Slurm cluster
 	//
@@ -13947,6 +14520,75 @@ func (r CreateProcessResponse) ContentType() string {
 	return ""
 }
 
+// ListMyProcessesResponse401Headers the declared response headers of an HTTP 401 response for ListMyProcesses
+type ListMyProcessesResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListMyProcessesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]ProcessResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListMyProcessesResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListMyProcessesResponse) GetJSON200() *[]ProcessResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListMyProcessesResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListMyProcessesResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListMyProcessesResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListMyProcessesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMyProcessesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMyProcessesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListMyProcessesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // DeleteProcessResponse401Headers the declared response headers of an HTTP 401 response for DeleteProcess
 type DeleteProcessResponse401Headers struct {
 	WWWAuthenticate *string
@@ -15988,6 +16630,89 @@ func (r LaunchProcessResponse) ContentType() string {
 	return ""
 }
 
+// RetryProcessResponse401Headers the declared response headers of an HTTP 401 response for RetryProcess
+type RetryProcessResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type RetryProcessResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *ProcessResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *RetryProcessResponse401Headers
+}
+
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
+func (r RetryProcessResponse) GetJSON202() *ProcessResponse {
+	return r.JSON202
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RetryProcessResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r RetryProcessResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RetryProcessResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r RetryProcessResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r RetryProcessResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r RetryProcessResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RetryProcessResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RetryProcessResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RetryProcessResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // ListProcessStatusesResponse401Headers the declared response headers of an HTTP 401 response for ListProcessStatuses
 type ListProcessStatusesResponse401Headers struct {
 	WWWAuthenticate *string
@@ -16148,6 +16873,158 @@ func (r GetProcessStatusResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetProcessStatusResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListProcessWorkflowsResponse401Headers the declared response headers of an HTTP 401 response for ListProcessWorkflows
+type ListProcessWorkflowsResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListProcessWorkflowsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]WorkflowResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListProcessWorkflowsResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListProcessWorkflowsResponse) GetJSON200() *[]WorkflowResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListProcessWorkflowsResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListProcessWorkflowsResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r ListProcessWorkflowsResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListProcessWorkflowsResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r ListProcessWorkflowsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListProcessWorkflowsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListProcessWorkflowsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListProcessWorkflowsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetProcessWorkflowResponse401Headers the declared response headers of an HTTP 401 response for GetProcessWorkflow
+type GetProcessWorkflowResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type GetProcessWorkflowResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *WorkflowResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *GetProcessWorkflowResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetProcessWorkflowResponse) GetJSON200() *WorkflowResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetProcessWorkflowResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetProcessWorkflowResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetProcessWorkflowResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetProcessWorkflowResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetProcessWorkflowResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetProcessWorkflowResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetProcessWorkflowResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetProcessWorkflowResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -17648,6 +18525,114 @@ func (r UpdateSlurmClusterConfigResponse) ContentType() string {
 	return ""
 }
 
+// DiscoverAllocationsResponse401Headers the declared response headers of an HTTP 401 response for DiscoverAllocations
+type DiscoverAllocationsResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type DiscoverAllocationsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Allocations *[]struct {
+			Account     *string `json:"account,omitempty"`
+			Description *string `json:"description,omitempty"`
+
+			// Partitions Partitions the account is limited to; empty means any.
+			Partitions *[]string `json:"partitions,omitempty"`
+			Qos        *[]string `json:"qos,omitempty"`
+		} `json:"allocations,omitempty"`
+	}
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *DiscoverAllocationsResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DiscoverAllocationsResponse) GetJSON200() *struct {
+	Allocations *[]struct {
+		Account     *string `json:"account,omitempty"`
+		Description *string `json:"description,omitempty"`
+
+		// Partitions Partitions the account is limited to; empty means any.
+		Partitions *[]string `json:"partitions,omitempty"`
+		Qos        *[]string `json:"qos,omitempty"`
+	} `json:"allocations,omitempty"`
+} {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DiscoverAllocationsResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DiscoverAllocationsResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DiscoverAllocationsResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DiscoverAllocationsResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DiscoverAllocationsResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r DiscoverAllocationsResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r DiscoverAllocationsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DiscoverAllocationsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DiscoverAllocationsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DiscoverAllocationsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesResponse401Headers the declared response headers of an HTTP 401 response for GetApiV1SlurmClusterConfigsSlurmClusterConfigIdShares
 type GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesResponse401Headers struct {
 	WWWAuthenticate *string
@@ -18140,6 +19125,107 @@ func (r CreateSlurmClusterResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateSlurmClusterResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// DiscoverPartitionsResponse401Headers the declared response headers of an HTTP 401 response for DiscoverPartitions
+type DiscoverPartitionsResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type DiscoverPartitionsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Partitions *[]ClusterPartitionRequest `json:"partitions,omitempty"`
+	}
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *DiscoverPartitionsResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON200() *struct {
+	Partitions *[]ClusterPartitionRequest `json:"partitions,omitempty"`
+} {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r DiscoverPartitionsResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r DiscoverPartitionsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DiscoverPartitionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DiscoverPartitionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DiscoverPartitionsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -21294,6 +22380,22 @@ func (c *ClientWithResponses) CreateProcessWithResponse(ctx context.Context, bod
 	return ParseCreateProcessResponse(rsp)
 }
 
+// ListMyProcessesWithResponse List the caller's processes
+//
+// Every process the caller owns. Unlike the unfiltered listing it needs no
+// platform role.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/processes/me (the `ListMyProcesses` operationId).
+func (c *ClientWithResponses) ListMyProcessesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListMyProcessesResponse, error) {
+	rsp, err := c.ListMyProcesses(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMyProcessesResponse(rsp)
+}
+
 // DeleteProcessWithResponse Delete a process
 //
 // Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -21744,6 +22846,26 @@ func (c *ClientWithResponses) LaunchProcessWithResponse(ctx context.Context, pro
 	return ParseLaunchProcessResponse(rsp)
 }
 
+// RetryProcessWithResponse Retry a process's failed workflow
+//
+// Owner only. Takes no body. Starts again the workflow whose latest run failed —
+// the job submission, or, once that succeeded, the job completion — and skips
+// every task that has already completed, so the run picks up at the step that
+// failed. Refused with `409` while a workflow is still running, before the
+// process is launched, or when no workflow's latest run failed. Answers `202`
+// with the process as it now stands.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/processes/{processId}/retry (the `RetryProcess` operationId).
+func (c *ClientWithResponses) RetryProcessWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*RetryProcessResponse, error) {
+	rsp, err := c.RetryProcess(ctx, processId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRetryProcessResponse(rsp)
+}
+
 // ListProcessStatusesWithResponse List a process's status history
 //
 // Read-only. Statuses are recorded internally — by process submission and by
@@ -21772,6 +22894,38 @@ func (c *ClientWithResponses) GetProcessStatusWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseGetProcessStatusResponse(rsp)
+}
+
+// ListProcessWorkflowsWithResponse List the workflows started for a process
+//
+// Read-only, oldest first. Workflows are recorded by the server when it starts a
+// workflow for the process, never accepted from a client, so there is no `POST`
+// or `PUT` here. Only the process's owner or an admin may read them.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/processes/{processId}/workflows (the `ListProcessWorkflows` operationId).
+func (c *ClientWithResponses) ListProcessWorkflowsWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*ListProcessWorkflowsResponse, error) {
+	rsp, err := c.ListProcessWorkflows(ctx, processId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListProcessWorkflowsResponse(rsp)
+}
+
+// GetProcessWorkflowWithResponse Read one recorded process workflow
+//
+// A workflow of another process is a `404` through this process's path.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/processes/{processId}/workflows/{processWorkflowId} (the `GetProcessWorkflow` operationId).
+func (c *ClientWithResponses) GetProcessWorkflowWithResponse(ctx context.Context, processId ProcessId, processWorkflowId string, reqEditors ...RequestEditorFn) (*GetProcessWorkflowResponse, error) {
+	rsp, err := c.GetProcessWorkflow(ctx, processId, processWorkflowId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetProcessWorkflowResponse(rsp)
 }
 
 // ListSCPDataStoragesWithResponse List all SCP data storages
@@ -22139,6 +23293,23 @@ func (c *ClientWithResponses) UpdateSlurmClusterConfigWithResponse(ctx context.C
 	return ParseUpdateSlurmClusterConfigResponse(rsp)
 }
 
+// DiscoverAllocationsWithResponse Discover the allocations a config's login may charge
+//
+// Logs in under the config and lists the Slurm accounts its login may charge,
+// from sacctmgr (falling back to sshare). Open to anyone who may submit under the
+// config.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations (the `DiscoverAllocations` operationId).
+func (c *ClientWithResponses) DiscoverAllocationsWithResponse(ctx context.Context, slurmClusterConfigId string, reqEditors ...RequestEditorFn) (*DiscoverAllocationsResponse, error) {
+	rsp, err := c.DiscoverAllocations(ctx, slurmClusterConfigId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDiscoverAllocationsResponse(rsp)
+}
+
 // GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesWithResponse List who has access to this Slurm cluster config
 //
 // Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
@@ -22276,6 +23447,40 @@ func (c *ClientWithResponses) CreateSlurmClusterWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseCreateSlurmClusterResponse(rsp)
+}
+
+// DiscoverPartitionsWithBodyWithResponse Discover a head node's partitions
+//
+// Logs in to the head node under a credential the caller owns and reads its
+// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+// result is in the shape a cluster registration's `partitions` takes.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+func (c *ClientWithResponses) DiscoverPartitionsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DiscoverPartitionsResponse, error) {
+	rsp, err := c.DiscoverPartitionsWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDiscoverPartitionsResponse(rsp)
+}
+
+// DiscoverPartitionsWithResponse Discover a head node's partitions
+//
+// Logs in to the head node under a credential the caller owns and reads its
+// partitions with scontrol (and sinfo, for per-node details). Admin only. The
+// result is in the shape a cluster registration's `partitions` takes.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/slurm-clusters/discover-partitions (the `DiscoverPartitions` operationId).
+func (c *ClientWithResponses) DiscoverPartitionsWithResponse(ctx context.Context, body DiscoverPartitionsJSONRequestBody, reqEditors ...RequestEditorFn) (*DiscoverPartitionsResponse, error) {
+	rsp, err := c.DiscoverPartitions(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDiscoverPartitionsResponse(rsp)
 }
 
 // DeleteSlurmClusterWithResponse Delete a Slurm cluster
@@ -25283,6 +26488,66 @@ func ParseCreateProcessResponse(rsp *http.Response) (*CreateProcessResponse, err
 	return response, nil
 }
 
+// ParseListMyProcessesResponse parses an HTTP response from a ListMyProcessesWithResponse call
+func ParseListMyProcessesResponse(rsp *http.Response) (*ListMyProcessesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMyProcessesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ProcessResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListMyProcessesResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
 // ParseDeleteProcessResponse parses an HTTP response from a DeleteProcessWithResponse call
 func ParseDeleteProcessResponse(rsp *http.Response) (*DeleteProcessResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -27123,6 +28388,80 @@ func ParseLaunchProcessResponse(rsp *http.Response) (*LaunchProcessResponse, err
 	return response, nil
 }
 
+// ParseRetryProcessResponse parses an HTTP response from a RetryProcessWithResponse call
+func ParseRetryProcessResponse(rsp *http.Response) (*RetryProcessResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RetryProcessResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
+		var dest ProcessResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON202 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers RetryProcessResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
 // ParseListProcessStatusesResponse parses an HTTP response from a ListProcessStatusesWithResponse call
 func ParseListProcessStatusesResponse(rsp *http.Response) (*ListProcessStatusesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -27258,6 +28597,140 @@ func ParseGetProcessStatusResponse(rsp *http.Response) (*GetProcessStatusRespons
 	switch {
 	case rsp.StatusCode == 401:
 		var headers GetProcessStatusResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListProcessWorkflowsResponse parses an HTTP response from a ListProcessWorkflowsWithResponse call
+func ParseListProcessWorkflowsResponse(rsp *http.Response) (*ListProcessWorkflowsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListProcessWorkflowsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []WorkflowResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListProcessWorkflowsResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetProcessWorkflowResponse parses an HTTP response from a GetProcessWorkflowWithResponse call
+func ParseGetProcessWorkflowResponse(rsp *http.Response) (*GetProcessWorkflowResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetProcessWorkflowResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest WorkflowResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers GetProcessWorkflowResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
@@ -28612,6 +30085,96 @@ func ParseUpdateSlurmClusterConfigResponse(rsp *http.Response) (*UpdateSlurmClus
 	return response, nil
 }
 
+// ParseDiscoverAllocationsResponse parses an HTTP response from a DiscoverAllocationsWithResponse call
+func ParseDiscoverAllocationsResponse(rsp *http.Response) (*DiscoverAllocationsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DiscoverAllocationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Allocations *[]struct {
+				Account     *string `json:"account,omitempty"`
+				Description *string `json:"description,omitempty"`
+
+				// Partitions Partitions the account is limited to; empty means any.
+				Partitions *[]string `json:"partitions,omitempty"`
+				Qos        *[]string `json:"qos,omitempty"`
+			} `json:"allocations,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers DiscoverAllocationsResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
 // ParseGetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesResponse parses an HTTP response from a GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesWithResponse call
 func ParseGetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesResponse(rsp *http.Response) (*GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -29046,6 +30609,96 @@ func ParseCreateSlurmClusterResponse(rsp *http.Response) (*CreateSlurmClusterRes
 	switch {
 	case rsp.StatusCode == 401:
 		var headers CreateSlurmClusterResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseDiscoverPartitionsResponse parses an HTTP response from a DiscoverPartitionsWithResponse call
+func ParseDiscoverPartitionsResponse(rsp *http.Response) (*DiscoverPartitionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DiscoverPartitionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Partitions *[]ClusterPartitionRequest `json:"partitions,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers DiscoverPartitionsResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
