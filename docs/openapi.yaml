@@ -1842,6 +1842,32 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/processes/{processId}/retry:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    post:
+      tags: [Processes]
+      summary: Retry a process's failed workflow
+      description: |
+        Owner only. Takes no body. Starts again the workflow whose latest run failed —
+        the job submission, or, once that succeeded, the job completion — and skips
+        every task that has already completed, so the run picks up at the step that
+        failed. Refused with `409` while a workflow is still running, before the
+        process is launched, or when no workflow's latest run failed. Answers `202`
+        with the process as it now stands.
+      operationId: retryProcess
+      responses:
+        "202":
+          description: The retry was accepted; the process is returned as it now stands.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProcessResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/processes/{processId}/statuses:
     parameters:
       - $ref: "#/components/parameters/ProcessId"
@@ -1888,6 +1914,55 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
         "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/workflows:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    get:
+      tags: [Processes]
+      summary: List the workflows started for a process
+      description: |
+        Read-only, oldest first. Workflows are recorded by the server when it starts a
+        workflow for the process, never accepted from a client, so there is no `POST`
+        or `PUT` here. Only the process's owner or an admin may read them.
+      operationId: listProcessWorkflows
+      responses:
+        "200":
+          description: Every workflow recorded for the process.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/WorkflowResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/processes/{processId}/workflows/{processWorkflowId}:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+      - name: processWorkflowId
+        in: path
+        required: true
+        description: The process workflow's `processWorkflowId`.
+        schema: { type: string }
+    get:
+      tags: [Processes]
+      summary: Read one recorded process workflow
+      description: |
+        A workflow of another process is a `404` through this process's path.
+      operationId: getProcessWorkflow
+      responses:
+        "200":
+          description: The process workflow.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/WorkflowResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalError" }
 
   /api/v1/processes/{processId}/data-staging-tasks:
@@ -2908,6 +2983,12 @@ components:
     ProcessStatusType:
       type: string
       enum: [CREATED, SUBMITTED, RUNNING, COMPLETED, FAILED]
+    ProcessWorkflowType:
+      type: string
+      enum: [BATCH_JOB_SUBMISSION, JOB_MONITORING, BATCH_JOB_COMPLETION]
+    ProcessWorkflowStatusType:
+      type: string
+      enum: [RUNNING, SUCCEEDED, FAILED]
     OnFailureAction:
       type: string
       enum: [RETRY, SKIP, EXIT]
@@ -3597,6 +3678,10 @@ components:
             - { $ref: "#/components/schemas/ProcessType" }
             - { type: "null" }
         lastStatusId: { type: [string, "null"], format: uuid }
+        lastWorkflowId:
+          type: [string, "null"]
+          format: uuid
+          description: The newest recorded workflow's `processWorkflowId`, if any.
         batchProcess:
           oneOf:
             - { $ref: "#/components/schemas/BatchProcessResponse" }
@@ -3621,6 +3706,35 @@ components:
           format: int64
           description: When the status was recorded, in milliseconds since the epoch.
       required: [processStatusId]
+
+    WorkflowResponse:
+      type: object
+      description: |
+        One workflow started for a process. There is no request counterpart:
+        workflows are recorded by the server when it starts a workflow, never created
+        from a client body.
+      properties:
+        processWorkflowId: { type: string, format: uuid }
+        processId: { type: [string, "null"], format: uuid }
+        workflowId:
+          type: string
+          description: The id the workflow engine knows the run by.
+        workflowType:
+          oneOf:
+            - { $ref: "#/components/schemas/ProcessWorkflowType" }
+            - { type: "null" }
+        status:
+          description: |
+            `RUNNING` once the workflow is started, then `SUCCEEDED` or `FAILED`. `null`
+            for workflows recorded before the server tracked it.
+          oneOf:
+            - { $ref: "#/components/schemas/ProcessWorkflowStatusType" }
+            - { type: "null" }
+        timestamp:
+          type: [integer, "null"]
+          format: int64
+          description: When the workflow was recorded, in milliseconds since the epoch.
+      required: [processWorkflowId, workflowId]
 
     DataStagingTaskRequest:
       type: object

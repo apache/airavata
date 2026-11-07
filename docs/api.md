@@ -1857,6 +1857,7 @@ Deleting the process deletes the batch section, and the mappings with it.
   "userId": "cilogon:sub:1234",
   "processType": "BATCH_JOB",
   "lastStatusId": "9f8e7d6c-5b4a-4392-8172-6a5b4c3d2e1f",
+  "lastWorkflowId": null,
   "batchProcess": {
     "batchProcessId": "7e6d5c4b-3a29-4187-9605-4b3a2c1d0e9f",
     "deploymentId": "c3d4e5f6-a7b8-4901-a2b3-c4d5e6f7a8b9",
@@ -1999,6 +2000,47 @@ refused with `409` rather than doubling the work. Only `FILE` declarations are s
 today: the `FILE_LIST` and `DIRECTORY` branches are stubs, so a run carrying those is
 launched without staging tasks for them.
 
+### Retry a Process
+
+```
+POST /api/v1/processes/{processId}/retry
+```
+
+Starts again the [workflow](#process-workflows) of a launched run that failed,
+**skipping what already completed**. Owner-scoped like launching, and takes no body.
+
+Only the failed workflow runs again. Each workflow type is judged by its latest run:
+
+- if the latest job submission workflow failed, a new one is started;
+- if the submission succeeded and the latest job completion workflow failed, only the
+  completion workflow is started — the job is never submitted twice.
+
+Inside the new workflow, every [task](#process-tasks) that has already recorded a
+`COMPLETED` status is passed over rather than run again, so the retry picks up at the
+step that failed: staged inputs are not copied again, and a job that was submitted is
+not resubmitted.
+
+The new workflow appears straight away in the process's workflows as `RUNNING`, and the
+process records a new status — `SUBMITTED` when the submission is retried, `RUNNING`
+when the completion is — with a log saying what was retried.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/retry \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `202 Accepted`**, with the process as its body, for the same reason as
+[launching](#launch-a-process).
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `401 Unauthorized` | no token |
+| `403 Forbidden` | the run belongs to another user |
+| `404 Not Found` | no such process |
+| `409 Conflict` | a workflow of the run is still running; the run has not been launched; or no workflow's latest run failed |
+
 ## Process Statuses
 
 A run's status history, read-only and nested under the process:
@@ -2032,6 +2074,49 @@ Statuses come back oldest first. The newest one is also cached on the process it
 
 A `statusId` from one process is not reachable through another process's path: the
 mismatch is a `404`, not another run's status.
+
+## Process Workflows
+
+The workflow runs started on a process's behalf, read-only and nested under the process:
+
+```
+GET /api/v1/processes/{processId}/workflows
+GET /api/v1/processes/{processId}/workflows/{processWorkflowId}
+```
+
+Each entry records one workflow instance — job submission, job monitoring or job
+completion — by the id the workflow engine knows it by (`workflowId`). Like statuses,
+workflows are recorded by the server when it starts a workflow, never accepted from a
+client: `POST` and `PUT` return `405 Method Not Allowed`.
+
+Workflows come back oldest first. The newest one is also cached on the process itself
+as `lastWorkflowId`, which stays `null` until the first workflow is started.
+
+```json
+[
+  {
+    "processWorkflowId": "4c3b2a19-0f8e-4d7c-9b6a-5e4d3c2b1a09",
+    "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+    "workflowId": "e0d1c2b3-a4f5-4e6d-8c7b-9a0f1e2d3c4b",
+    "workflowType": "BATCH_JOB_SUBMISSION",
+    "status": "RUNNING",
+    "timestamp": 1755780005000
+  }
+]
+```
+
+`workflowType` is one of `BATCH_JOB_SUBMISSION`, `JOB_MONITORING`,
+`BATCH_JOB_COMPLETION`. `status` is `RUNNING` once the workflow is started, then
+`SUCCEEDED` or `FAILED` when it finishes; it is `null` for workflows recorded before
+the server tracked it. `timestamp` is when the workflow was started and does not
+change with its status. The `{processWorkflowId}` in the path is the entry's
+`processWorkflowId`, not the workflow engine's `workflowId`.
+
+Reads are owner-scoped: only the process's owner or an admin may list or read its
+workflows; anyone else gets `403`. A `processWorkflowId` from one process is not
+reachable through another process's path — the mismatch is a `404`.
+
+Deleting a process deletes its workflows with it.
 
 ## Process Tasks
 

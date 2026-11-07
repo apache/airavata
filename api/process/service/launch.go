@@ -38,9 +38,11 @@ import (
 	appdto "github.com/apache/airavata/api/application/dto"
 	appmod "github.com/apache/airavata/api/application/model"
 	appserv "github.com/apache/airavata/api/application/service"
+	computedto "github.com/apache/airavata/api/compute/dto"
 	computesev "github.com/apache/airavata/api/compute/service"
 	credentialsev "github.com/apache/airavata/api/credentials/service"
 	datasev "github.com/apache/airavata/api/data/service"
+	processdto "github.com/apache/airavata/api/process/dto"
 
 	datamodel "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/process/dto"
@@ -63,6 +65,7 @@ type LaunchService struct {
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository
 	monitoringTasks    *repository.JobMonitoringTaskRepository
 	interactiveTasks   *repository.InteractiveCommandTaskRepository
+	processWorkflows   *repository.WorkflowRepository
 
 	executionEngine *orchestration.ExecutionEngine
 }
@@ -84,6 +87,7 @@ func NewLaunchService(
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository,
 	monitoringTasks *repository.JobMonitoringTaskRepository,
 	interactiveTasks *repository.InteractiveCommandTaskRepository,
+	processWorkflows *repository.WorkflowRepository,
 	executionEngine *orchestration.ExecutionEngine,
 
 ) *LaunchService {
@@ -102,6 +106,7 @@ func NewLaunchService(
 		jobSubmissionTasks:     jobSubmissionTasks,
 		monitoringTasks:        monitoringTasks,
 		interactiveTasks:       interactiveTasks,
+		processWorkflows:       processWorkflows,
 		executionEngine:        executionEngine,
 	}
 }
@@ -250,66 +255,79 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 	// same directory the submission task is carried out in.
 	workingDir := strings.TrimSpace(*workRoot) + "/" + process.ProcessID
 
-	inputMapping := batchProcess.InputMappings
+	if err := s.createInputStagingTasks(ctx, process.ProcessID, workingDir, batchProcess, template, clusterConfig); err != nil {
+		return err
+	}
+
+	if err := s.createOutputStagingTasks(ctx, process.ProcessID, workingDir, batchProcess, template, clusterConfig); err != nil {
+		return err
+	}
+
+	if err := s.createJobSubmissionTask(ctx, process.ProcessID, workingDir); err != nil {
+		return err
+	}
+
+	if err := s.createJobMonitoringTask(ctx, process.ProcessID); err != nil {
+		return err
+	}
+
+	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
+	workflowId, err := s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
+
+	if err != nil {
+		slog.Error("Failed to launch batch job submission", "processId", process.ProcessID, "error", err)
+		return err
+	}
+
+	slog.Info("Launched batch job submission", "processId", process.ProcessID, "workflowId", workflowId)
+
+	if _, err := s.statusService.Record(ctx, process.ProcessID, procmodel.ProcessStatusTypeSubmitted, nil); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *LaunchService) createJobMonitoringTask(ctx context.Context, processId string) error {
+
+	jobMonitoringRetryCount := 10
+	jobMonitoringTaskOrder := 3
+	jobMonitoringFailureAction := procmodel.OnFailureActionRetry
+	jobMonitoring := &procmodel.JobMonitoringTask{
+		ProcessID:  &processId,
+		OnFailure:  &jobMonitoringFailureAction,
+		RetryCount: &jobMonitoringRetryCount,
+		TaskOrder:  &jobMonitoringTaskOrder,
+	}
+	if err := s.monitoringTasks.Save(ctx, jobMonitoring); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *LaunchService) createJobSubmissionTask(ctx context.Context, processId string, workingDir string) error {
+
+	jobSubmissionFailureAction := procmodel.OnFailureActionExit
+	jobSubmissionRetryCount := 1
+	jobSubmissionTaskOrder := 1
+	jobSubmission := &procmodel.JobSubmissionTask{
+		ProcessID:  &processId,
+		WorkingDir: &workingDir,
+		OnFailure:  &jobSubmissionFailureAction,
+		RetryCount: &jobSubmissionRetryCount,
+		TaskOrder:  &jobSubmissionTaskOrder,
+	}
+
+	if err := s.jobSubmissionTasks.Save(ctx, jobSubmission); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *LaunchService) createOutputStagingTasks(ctx context.Context, processId string, workingDir string,
+	batchProcess *processdto.BatchProcessResponse, template *appdto.TemplateResponse, clusterConfig *computedto.SlurmClusterConfigResponse) error {
+
 	outputMapping := batchProcess.OutputMappings
 	hpcStorageType := datamodel.DataStorageTypeHPC
-	for _, input := range inputMapping {
-		// Process each input mapping here
-		tempInput := findTemplateInput(template, input.TemplateInputID)
-
-		if tempInput == nil {
-			return fmt.Errorf("Input mapping %s has no template input", input.TemplateInputMappingID)
-		}
-
-		if tempInput.InputType == nil {
-			return fmt.Errorf("Input mapping %s has no input type", input.TemplateInputMappingID)
-		}
-
-		if *tempInput.InputType == appmod.TemplateInputTypeFile {
-			// Create a data staging task for the file input
-			dataProductId := input.Value
-			if dataProductId == nil || *dataProductId == "" {
-				return fmt.Errorf("Input mapping %s has no value", input.TemplateInputMappingID)
-			}
-
-			dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
-			if err != nil {
-				return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
-			}
-
-			destPath := workingDir + "/" + *&tempInput.InputName
-
-			failureAction := procmodel.OnFailureActionRetry
-			retryCount := 3
-			taskOrder := 0
-
-			dataStagingTask := &procmodel.DataStagingTask{
-				ProcessID:             &process.ProcessID,
-				SourceDataStorageID:   dataProduct.DataStorageID,
-				SourcePath:            dataProduct.Path,
-				SourceDataStorageType: &dataProduct.DataStorageType,
-
-				DestinationDataStorageID:   &clusterConfig.SlurmClusterConfigID,
-				DestinationDataStorageType: &hpcStorageType,
-				DestinationPath:            &destPath,
-				OnFailure:                  &failureAction,
-				RetryCount:                 &retryCount,
-				TaskOrder:                  &taskOrder,
-			}
-
-			if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
-				return err
-			}
-		}
-
-		if *tempInput.InputType == appmod.TemplateInputTypeFileList {
-			// Create a data staging task for the list input
-		}
-
-		if *tempInput.InputType == appmod.TemplateInputTypeDirectory {
-			// Create a data staging task for the directory input
-		}
-	}
 
 	for _, output := range outputMapping {
 		// Process each output mapping here
@@ -342,7 +360,7 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 			retryCount := 3
 			taskOrder := 4
 			dataStagingTask := &procmodel.DataStagingTask{
-				ProcessID:             &process.ProcessID,
+				ProcessID:             &processId,
 				SourceDataStorageID:   &clusterConfig.SlurmClusterConfigID,
 				SourcePath:            &sourcePath,
 				SourceDataStorageType: &hpcStorageType,
@@ -359,40 +377,69 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 			}
 		}
 	}
+	return nil
+}
 
-	jobSubmissionFailureAction := procmodel.OnFailureActionExit
-	jobSubmissionRetryCount := 1
-	jobSubmissionTaskOrder := 1
-	jobSubmission := &procmodel.JobSubmissionTask{
-		ProcessID:  &process.ProcessID,
-		WorkingDir: &workingDir,
-		OnFailure:  &jobSubmissionFailureAction,
-		RetryCount: &jobSubmissionRetryCount,
-		TaskOrder:  &jobSubmissionTaskOrder,
-	}
+func (s *LaunchService) createInputStagingTasks(ctx context.Context, processId string, workingDir string,
+	batchProcess *processdto.BatchProcessResponse, template *appdto.TemplateResponse, clusterConfig *computedto.SlurmClusterConfigResponse) error {
+	inputMapping := batchProcess.InputMappings
+	hpcStorageType := datamodel.DataStorageTypeHPC
+	for _, input := range inputMapping {
+		// Process each input mapping here
+		tempInput := findTemplateInput(template, input.TemplateInputID)
 
-	if err := s.jobSubmissionTasks.Save(ctx, jobSubmission); err != nil {
-		return err
-	}
+		if tempInput == nil {
+			return fmt.Errorf("Input mapping %s has no template input", input.TemplateInputMappingID)
+		}
 
-	jobMonitoringRetryCount := 10
-	jobMonitoringTaskOrder := 3
-	jobMonitoringFailureAction := procmodel.OnFailureActionRetry
-	jobMonitoring := &procmodel.JobMonitoringTask{
-		ProcessID:  &process.ProcessID,
-		OnFailure:  &jobMonitoringFailureAction,
-		RetryCount: &jobMonitoringRetryCount,
-		TaskOrder:  &jobMonitoringTaskOrder,
-	}
-	if err := s.monitoringTasks.Save(ctx, jobMonitoring); err != nil {
-		return err
-	}
+		if tempInput.InputType == nil {
+			return fmt.Errorf("Input mapping %s has no input type", input.TemplateInputMappingID)
+		}
 
-	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
-	s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
+		if *tempInput.InputType == appmod.TemplateInputTypeFile {
+			// Create a data staging task for the file input
+			dataProductId := input.Value
+			if dataProductId == nil || *dataProductId == "" {
+				return fmt.Errorf("Input mapping %s has no value", input.TemplateInputMappingID)
+			}
 
-	if _, err := s.statusService.Record(ctx, process.ProcessID, procmodel.ProcessStatusTypeSubmitted, nil); err != nil {
-		return err
+			dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
+			if err != nil {
+				return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
+			}
+
+			destPath := workingDir + "/" + *&tempInput.InputName
+
+			failureAction := procmodel.OnFailureActionRetry
+			retryCount := 3
+			taskOrder := 0
+
+			dataStagingTask := &procmodel.DataStagingTask{
+				ProcessID:             &processId,
+				SourceDataStorageID:   dataProduct.DataStorageID,
+				SourcePath:            dataProduct.Path,
+				SourceDataStorageType: &dataProduct.DataStorageType,
+
+				DestinationDataStorageID:   &clusterConfig.SlurmClusterConfigID,
+				DestinationDataStorageType: &hpcStorageType,
+				DestinationPath:            &destPath,
+				OnFailure:                  &failureAction,
+				RetryCount:                 &retryCount,
+				TaskOrder:                  &taskOrder,
+			}
+
+			if err := s.dataStagingTasks.Save(ctx, dataStagingTask); err != nil {
+				return err
+			}
+		}
+
+		if *tempInput.InputType == appmod.TemplateInputTypeFileList {
+			// Create a data staging task for the list input
+		}
+
+		if *tempInput.InputType == appmod.TemplateInputTypeDirectory {
+			// Create a data staging task for the directory input
+		}
 	}
 	return nil
 }

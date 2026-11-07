@@ -102,6 +102,11 @@ type Process struct {
 	// the newest status row, maintained by ProcessStatus.AfterCreate.
 	LastStatusID *string `gorm:"column:last_status_id;type:varchar(36);index" json:"lastStatusId,omitempty"`
 
+	// The last workflow recorded for this process, if any. Like LastStatusID it
+	// carries no foreign key, for the same reason, and is maintained by
+	// ProcessWorkflow.AfterCreate.
+	LastWorkflowID *string `gorm:"column:last_workflow_id;type:varchar(36);index" json:"lastWorkflowId,omitempty"`
+
 	// BatchProcess is present exactly when ProcessType is BATCH_JOB. It is owned by
 	// the process, not shared with it: deleting the process deletes it too.
 	BatchProcess *BatchJobProcess `gorm:"foreignKey:ProcessID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"batchProcess,omitempty"`
@@ -126,10 +131,10 @@ func (p *Process) BeforeCreate(*gorm.DB) error {
 
 // BeforeDelete removes what the database will not.
 //
-// The statuses have to go first: their own ProcessID foreign key is RESTRICT, so the
-// server would refuse to delete a process any status still points at. LastStatusID
-// needs no clearing — it holds no constraint — and the row carrying it is about to be
-// deleted in this same transaction.
+// The statuses and workflows have to go first: their own ProcessID foreign keys are
+// RESTRICT, so the server would refuse to delete a process any of them still points at.
+// LastStatusID and LastWorkflowID need no clearing — they hold no constraint — and the
+// row carrying them is about to be deleted in this same transaction.
 //
 // The batch process is deleted through GORM rather than left to its ON DELETE CASCADE
 // so that its own AfterDelete fires and takes the owned BatchJobConfig with it. A
@@ -141,6 +146,9 @@ func (p *Process) BeforeCreate(*gorm.DB) error {
 // themselves.
 func (p *Process) BeforeDelete(tx *gorm.DB) error {
 	if err := tx.Where("process_id = ?", p.ID).Delete(&ProcessStatus{}).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("process_id = ?", p.ID).Delete(&ProcessWorkflow{}).Error; err != nil {
 		return err
 	}
 
@@ -218,4 +226,58 @@ func (s *ProcessStatus) AfterCreate(tx *gorm.DB) error {
 	return tx.Model(&Process{}).
 		Where("process_id = ?", *s.ProcessID).
 		Update("last_status_id", s.ID).Error
+}
+
+type ProcessWorkflowType string
+
+const (
+	ProcessWorkflowTypeBatchJobSubmission ProcessWorkflowType = "BATCH_JOB_SUBMISSION"
+	ProcessWorkflowTypeJobMonitoring      ProcessWorkflowType = "JOB_MONITORING"
+	ProcessWorkflowTypeJobCompletion      ProcessWorkflowType = "BATCH_JOB_COMPLETION"
+)
+
+type ProcessWorkflowStatusType string
+
+const (
+	ProcessWorkflowStatusTypeRunning   ProcessWorkflowStatusType = "RUNNING"
+	ProcessWorkflowStatusTypeSucceeded ProcessWorkflowStatusType = "SUCCEEDED"
+	ProcessWorkflowStatusTypeFailed    ProcessWorkflowStatusType = "FAILED"
+)
+
+// ProcessWorkflow records one workflow run started on behalf of a process — the job
+// submission, monitoring or completion workflow — by the id the workflow engine knows
+// it by.
+type ProcessWorkflow struct {
+	ID string `gorm:"column:process_workflow_id;primaryKey;type:varchar(36)" json:"processWorkflowId"`
+
+	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	Process   *Process `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	// Workflow id or monitoring task id
+	WorkflowID   string               `gorm:"column:workflow_id;type:varchar(36)" json:"workflowId"`
+	WorkflowType *ProcessWorkflowType `gorm:"column:workflow_type;type:varchar(255)" json:"workflowType,omitempty"`
+
+	// Where the run stands: RUNNING once started, then SUCCEEDED or FAILED.
+	Status *ProcessWorkflowStatusType `gorm:"column:status;type:varchar(255)" json:"status,omitempty"`
+
+	// The time the workflow was recorded, in milliseconds since the epoch.
+	Timestamp *int64 `gorm:"column:timestamp" json:"timestamp,omitempty"`
+}
+
+// TableName returns the table backing ProcessWorkflow.
+func (ProcessWorkflow) TableName() string { return "process_workflows" }
+
+func (p *ProcessWorkflow) BeforeCreate(*gorm.DB) error {
+	if p.ID == "" {
+		p.ID = uuid.NewString()
+	}
+	return nil
+}
+
+func (p *ProcessWorkflow) AfterCreate(tx *gorm.DB) error {
+	if p.ProcessID == nil || *p.ProcessID == "" {
+		return nil
+	}
+	return tx.Model(&Process{}).
+		Where("process_id = ?", *p.ProcessID).
+		Update("last_workflow_id", p.ID).Error
 }

@@ -7,17 +7,45 @@ import { Alert, Card, formatTime, Id, PageHead, StatusBadge, Table } from "@/com
 import { api, errorText, tryGet } from "@/lib/api";
 import { useDeploymentNames } from "@/lib/catalog";
 import { useResource } from "@/lib/hooks";
-import { isFileType, type DataProduct, type Process, type ProcessStatus, type Task } from "@/lib/types";
+import {
+  isFileType,
+  type DataProduct,
+  type Process,
+  type ProcessStatus,
+  type ProcessWorkflow,
+  type ProcessWorkflowType,
+  type Task,
+  type TaskStatus,
+  type TaskType,
+} from "@/lib/types";
 
 const TERMINAL = new Set(["COMPLETED", "FAILED"]);
 const POLL_MS = 5000;
 
-const TASK_KINDS = [
-  { path: "data-staging-tasks", label: "Data staging" },
-  { path: "job-submission-tasks", label: "Job submission" },
-  { path: "job-monitoring-tasks", label: "Job monitoring" },
-  { path: "interactive-command-tasks", label: "Interactive commands" },
-] as const;
+const TASK_KINDS: readonly { path: string; label: string; type: TaskType }[] = [
+  { path: "data-staging-tasks", label: "Data staging", type: "DATA_STAGING" },
+  { path: "job-submission-tasks", label: "Job submission", type: "JOB_SUBMISSION" },
+  { path: "job-monitoring-tasks", label: "Job monitoring", type: "JOB_MONITORING" },
+  { path: "interactive-command-tasks", label: "Interactive commands", type: "INTERACTIVE_COMMAND" },
+];
+
+const WORKFLOW_LABELS: Record<ProcessWorkflowType, string> = {
+  BATCH_JOB_SUBMISSION: "Job submission",
+  JOB_MONITORING: "Job monitoring",
+  BATCH_JOB_COMPLETION: "Job completion",
+};
+
+// Whether a retry would be accepted, by the same rule the server applies: no workflow
+// is running, and the latest submission failed, or it succeeded and the latest
+// completion failed. The server decides; this only chooses whether to offer it.
+function canRetry(workflows: ProcessWorkflow[] | null | undefined): boolean {
+  const latest = new Map<string, string | null>();
+  for (const w of workflows ?? []) if (w.workflowType) latest.set(w.workflowType, w.status);
+  if ([...latest.values()].includes("RUNNING")) return false;
+  const submission = latest.get("BATCH_JOB_SUBMISSION");
+  if (submission === undefined) return false;
+  return submission === "FAILED" || latest.get("BATCH_JOB_COMPLETION") === "FAILED";
+}
 
 // Fields every task carries; the rest are kind-specific and shown as they come.
 const COMMON_TASK_FIELDS = new Set(["taskId", "processId", "onFailure", "retryCount", "taskOrder"]);
@@ -41,10 +69,19 @@ function ProcessView() {
         api.get<ProcessStatus[]>(`/api/v1/processes/${id}/statuses`),
       ]);
       // Tasks are owner-scoped: a viewer who is neither owner nor admin sees none.
-      const tasks = await Promise.all(TASK_KINDS.map((k) => tryGet<Task[]>(`/api/v1/processes/${id}/${k.path}`)));
-      const done = TERMINAL.has(statuses[statuses.length - 1]?.status ?? "");
+      // So are workflows.
+      const [tasks, taskStatuses, workflows] = await Promise.all([
+        Promise.all(TASK_KINDS.map((k) => tryGet<Task[]>(`/api/v1/processes/${id}/${k.path}`))),
+        tryGet<TaskStatus[]>(`/api/v1/processes/${id}/task-statuses`),
+        tryGet<ProcessWorkflow[]>(`/api/v1/processes/${id}/workflows`),
+      ]);
+      // A process is marked COMPLETED from inside its completion workflow, just before
+      // that workflow records its own outcome, so keep polling until it has.
+      const done =
+        TERMINAL.has(statuses[statuses.length - 1]?.status ?? "") &&
+        !(workflows ?? []).some((w) => w.status === "RUNNING");
       if (done) setLive(false);
-      return { process, statuses, tasks };
+      return { process, statuses, tasks, taskStatuses: taskStatuses ?? [], workflows };
     },
     [id],
     live ? POLL_MS : undefined,
@@ -57,12 +94,17 @@ function ProcessView() {
   const bp = d?.process.batchProcess;
   const latest = d?.statuses[d.statuses.length - 1];
   const template = names.template(names.deployment(bp?.deploymentId)?.templateId);
+  // Statuses arrive oldest first, so the last one seen for a task is its current one.
+  const latestTaskStatus = new Map<string, TaskStatus>();
+  for (const s of d?.taskStatuses ?? []) latestTaskStatus.set(s.taskId, s);
+  const taskOrder = new Map<string, number | null>();
+  d?.tasks.forEach((list) => list?.forEach((t) => taskOrder.set(t.taskId, t.taskOrder)));
 
-  const launch = async () => {
+  const act = async (action: "launch" | "retry") => {
     setBusy(true);
     setError(null);
     try {
-      await api.post(`/api/v1/processes/${id}/launch`);
+      await api.post(`/api/v1/processes/${id}/${action}`);
       setLive(true);
       await detail.reload();
     } catch (e) {
@@ -100,8 +142,18 @@ function ProcessView() {
           <button onClick={() => setLive(true)}>Resume live updates</button>
         )}
         {latest?.status === "CREATED" && (
-          <button className="primary" disabled={busy} onClick={() => void launch()}>
+          <button className="primary" disabled={busy} onClick={() => void act("launch")}>
             {busy ? "Launching…" : "Launch"}
+          </button>
+        )}
+        {canRetry(d?.workflows) && (
+          <button
+            className="primary"
+            disabled={busy}
+            title="Run the failed workflow again, skipping tasks that already completed"
+            onClick={() => void act("retry")}
+          >
+            {busy ? "Retrying…" : "Retry"}
           </button>
         )}
       </PageHead>
@@ -166,6 +218,56 @@ function ProcessView() {
             )}
           </Card>
 
+          {d.workflows && d.workflows.length > 0 && (
+            <Card title="Workflows" flush>
+              <Table
+                rows={d.workflows}
+                rowKey={(w) => w.processWorkflowId}
+                empty=""
+                columns={[
+                  {
+                    header: "Workflow",
+                    cell: (w) => (
+                      <span className="row">
+                        <strong>{w.workflowType ? WORKFLOW_LABELS[w.workflowType] : "—"}</strong>
+                        {w.processWorkflowId === d.process.lastWorkflowId && <span className="small muted">latest</span>}
+                      </span>
+                    ),
+                  },
+                  { header: "Status", cell: (w) => <StatusBadge status={w.status} /> },
+                  { header: "Started", cell: (w) => <span className="small">{formatTime(w.timestamp)}</span> },
+                  { header: "Workflow ID", cell: (w) => <Id value={w.workflowId} /> },
+                ]}
+              />
+            </Card>
+          )}
+
+          {d.taskStatuses.length > 0 && (
+            <Card title="Task history">
+              <ul className="timeline">
+                {d.taskStatuses.map((s) => {
+                  const order = taskOrder.get(s.taskId);
+                  return (
+                    <li key={s.taskStatusId}>
+                      <span>
+                        <StatusBadge status={s.status} />
+                      </span>
+                      <span className="small muted">{formatTime(s.timestamp)}</span>
+                      <span>
+                        <span className="row">
+                          <strong>{TASK_KINDS.find((k) => k.type === s.taskType)?.label ?? s.taskType}</strong>
+                          {order !== undefined && order !== null && <span className="small muted">step {order}</span>}
+                          <Id value={s.taskId} />
+                        </span>
+                        {s.log && <pre className="block">{s.log}</pre>}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
+          )}
+
           {bp && (
             <Card title="Run">
               <dl className="kv">
@@ -223,6 +325,11 @@ function ProcessView() {
                   empty=""
                   columns={[
                     { header: "Order", cell: (t) => t.taskOrder ?? "—" },
+                    { header: "Status", cell: (t) => <StatusBadge status={latestTaskStatus.get(t.taskId)?.status} /> },
+                    {
+                      header: "Updated",
+                      cell: (t) => <span className="small">{formatTime(latestTaskStatus.get(t.taskId)?.timestamp)}</span>,
+                    },
                     ...extra.map((f) => ({
                       header: f,
                       cell: (t: Task) => {

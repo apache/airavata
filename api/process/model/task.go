@@ -183,3 +183,101 @@ func (t *InteractiveCommandTask) BeforeCreate(*gorm.DB) error {
 func (t *InteractiveCommandTask) BelongsTo(processID string) bool {
 	return t.ProcessID != nil && *t.ProcessID == processID
 }
+
+// TaskType names which of the four task tables a TaskStatus points into.
+type TaskType string
+
+const (
+	TaskTypeDataStaging        TaskType = "DATA_STAGING"
+	TaskTypeJobSubmission      TaskType = "JOB_SUBMISSION"
+	TaskTypeJobMonitoring      TaskType = "JOB_MONITORING"
+	TaskTypeInteractiveCommand TaskType = "INTERACTIVE_COMMAND"
+)
+
+// Valid reports whether t is a recognised task type.
+func (t TaskType) Valid() bool {
+	switch t {
+	case TaskTypeDataStaging, TaskTypeJobSubmission, TaskTypeJobMonitoring, TaskTypeInteractiveCommand:
+		return true
+	}
+	return false
+}
+
+type TaskStatusType string
+
+const (
+	TaskStatusTypeCreated   TaskStatusType = "CREATED"
+	TaskStatusTypeExecuting TaskStatusType = "EXECUTING"
+	// The task is blocked on something outside the workflow, such as an interactive
+	// authentication, and resumes once it arrives.
+	TaskStatusTypePaused    TaskStatusType = "PAUSED"
+	TaskStatusTypeCompleted TaskStatusType = "COMPLETED"
+	TaskStatusTypeFailed    TaskStatusType = "FAILED"
+	TaskStatusTypeCanceled  TaskStatusType = "CANCELED"
+)
+
+// Valid reports whether s is a recognised task status.
+func (s TaskStatusType) Valid() bool {
+	switch s {
+	case TaskStatusTypeCreated, TaskStatusTypeExecuting, TaskStatusTypePaused,
+		TaskStatusTypeCompleted, TaskStatusTypeFailed, TaskStatusTypeCanceled:
+		return true
+	}
+	return false
+}
+
+// TaskStatus is one entry in a task's status history.
+//
+// The four task kinds live in four tables, so TaskID cannot carry a foreign key; TaskType
+// says which table it names. Cleanup is split accordingly: deleting a process cascades
+// through ProcessID, and deleting a single task removes its history in the task's
+// AfterDelete.
+type TaskStatus struct {
+	ID string `gorm:"column:task_status_id;primaryKey;type:varchar(36)" json:"taskStatusId"`
+
+	TaskID   string   `gorm:"column:task_id;type:varchar(36);not null;index" json:"taskId"`
+	TaskType TaskType `gorm:"column:task_type;type:varchar(32);not null" json:"taskType"`
+
+	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
+	Process   *Process `gorm:"references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-"`
+
+	Status *TaskStatusType `gorm:"column:status;type:varchar(255)" json:"status,omitempty"`
+	Log    *string         `gorm:"column:log;type:text" json:"log,omitempty"`
+
+	// The time the status was recorded, in milliseconds since the epoch.
+	Timestamp *int64 `gorm:"column:timestamp" json:"timestamp,omitempty"`
+}
+
+// TableName returns the table backing TaskStatus.
+func (TaskStatus) TableName() string { return "task_statuses" }
+
+// BeforeCreate assigns a UUID when none was supplied.
+func (s *TaskStatus) BeforeCreate(*gorm.DB) error {
+	if s.ID == "" {
+		s.ID = uuid.NewString()
+	}
+	return nil
+}
+
+// deleteTaskStatuses removes the status history of one task. It stands in for the
+// cascade TaskStatus.TaskID cannot declare.
+func deleteTaskStatuses(tx *gorm.DB, taskID string) error {
+	if taskID == "" {
+		return nil
+	}
+	return tx.Where("task_id = ?", taskID).Delete(&TaskStatus{}).Error
+}
+
+// AfterDelete removes the task's status history.
+func (t *DataStagingTask) AfterDelete(tx *gorm.DB) error { return deleteTaskStatuses(tx, t.ID) }
+
+// AfterDelete removes the task's status history.
+func (t *JobSubmissionTask) AfterDelete(tx *gorm.DB) error { return deleteTaskStatuses(tx, t.ID) }
+
+// AfterDelete removes the task's status history.
+func (t *JobMonitoringTask) AfterDelete(tx *gorm.DB) error { return deleteTaskStatuses(tx, t.ID) }
+
+// AfterDelete removes the task's status history.
+func (t *InteractiveCommandTask) AfterDelete(tx *gorm.DB) error {
+	return deleteTaskStatuses(tx, t.ID)
+}

@@ -97,6 +97,8 @@ type Services struct {
 	// the process that owns it, written and read through ProcessService.
 	Process                *processsvc.ProcessService
 	ProcessStatus          *processsvc.StatusService
+	TaskStatus             *processsvc.TaskStatusService
+	ProcessWorkflow        *processsvc.WorkflowService
 	DataStagingTask        *processsvc.DataStagingTaskService
 	JobSubmissionTask      *processsvc.JobSubmissionTaskService
 	JobMonitoringTask      *processsvc.JobMonitoringTaskService
@@ -126,6 +128,8 @@ type Repositories struct {
 	Shares                  *sharingrepo.Repository
 	Processes               *processrepo.ProcessRepository
 	Statuses                *processrepo.StatusRepository
+	TaskStatuses            *processrepo.TaskStatusRepository
+	ProcessWorkflows        *processrepo.WorkflowRepository
 	BatchJobStatuses        *processrepo.BatchJobStatusRepository
 	DataStagingTasks        *processrepo.DataStagingTaskRepository
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
@@ -151,6 +155,8 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Shares:                  sharingrepo.NewRepository(db),
 		Processes:               processrepo.NewProcessRepository(db),
 		Statuses:                processrepo.NewStatusRepository(db),
+		TaskStatuses:            processrepo.NewTaskStatusRepository(db),
+		ProcessWorkflows:        processrepo.NewWorkflowRepository(db),
 		BatchJobStatuses:        processrepo.NewBatchJobStatusRepository(db),
 		DataStagingTasks:        processrepo.NewDataStagingTaskRepository(db),
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
@@ -186,8 +192,10 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	monitoringTasks := repos.JobMonitoringTasks
 	commandTasks := repos.InteractiveCommandTasks
 	batchStatus := repos.BatchJobStatuses
+	processWorkflows := repos.ProcessWorkflows
 
 	statusSvc := processsvc.NewStatusService(db, statuses, processes)
+	processWorkflowSvc := processsvc.NewWorkflowService(db, processWorkflows, processes)
 	configAccess := computesvc.NewConfigAccess(clusterConfigs, shares, groupMembers)
 	keyAccess := credentialssvc.NewKeyAccess(sshCredentials)
 	processSvs := processsvc.NewProcessService(db, processes, deployments, configAccess, users, statusSvc)
@@ -211,7 +219,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, workflowBackend, sshContext)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -248,6 +256,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 
 		Process:                processSvs,
 		ProcessStatus:          statusSvc,
+		TaskStatus:             processsvc.NewTaskStatusService(repos.TaskStatuses, processes),
+		ProcessWorkflow:        processWorkflowSvc,
 		DataStagingTask:        processsvc.NewDataStagingTaskService(db, stagingTasks, processes),
 		JobSubmissionTask:      processsvc.NewJobSubmissionTaskService(db, submissionTasks, processes),
 		JobMonitoringTask:      processsvc.NewJobMonitoringTaskService(db, monitoringTasks, processes),
@@ -256,7 +266,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		Launch: processsvc.NewLaunchService(db, processSvs, batchDeploymentSvc,
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
 			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
-			monitoringTasks, commandTasks, executionEngine),
+			monitoringTasks, commandTasks, processWorkflows, executionEngine),
 
 		ExecutionEngine: executionEngine,
 	}

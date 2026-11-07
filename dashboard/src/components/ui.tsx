@@ -219,9 +219,11 @@ export function Tabs<K extends string>({
 
 const STATUS_TONE: Record<string, string> = {
   COMPLETED: "ok",
+  SUCCEEDED: "ok",
   PROVISIONED: "ok",
   END: "ok",
   RUNNING: "info",
+  EXECUTING: "info",
   SUBMITTED: "info",
   BEGIN: "info",
   PROVISIONING: "info",
@@ -230,6 +232,8 @@ const STATUS_TONE: Record<string, string> = {
   FAIL: "danger",
   SUBMISSION_FAILED: "danger",
   CANCELLED: "warn",
+  CANCELED: "warn",
+  PAUSED: "warn",
   CANCELLING: "warn",
   TIME_LIMIT: "danger",
   READ: "",

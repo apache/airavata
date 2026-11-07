@@ -18,7 +18,9 @@
 * under the License.
  */
 
-package orchestration
+// Package batch holds the tasks that act on a batch job through its cluster's
+// scheduler: building the submission script, submitting it and cancelling it.
+package batch
 
 import (
 	"context"
@@ -31,9 +33,47 @@ import (
 	"time"
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
+	applicationrepo "github.com/apache/airavata/api/application/repository"
+	computerepo "github.com/apache/airavata/api/compute/repository"
 	model "github.com/apache/airavata/api/process/model"
+	processrepo "github.com/apache/airavata/api/process/repository"
+	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
+
+// Tasks carries out the batch tasks of a process. Its methods are workflow activities.
+type Tasks struct {
+	processes           *processrepo.ProcessRepository
+	jobSubmissionTasks  *processrepo.JobSubmissionTaskRepository
+	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository
+	batchDeployments    *applicationrepo.BatchDeploymentRepository
+	templates           *applicationrepo.TemplateRepository
+	batchStatus         *processrepo.BatchJobStatusRepository
+	sshContext          *ssh.GlobalSSHContext
+	tracker             *execution.TaskTracker
+}
+
+// New returns the batch tasks over the given repositories.
+func New(processes *processrepo.ProcessRepository,
+	jobSubmissionTasks *processrepo.JobSubmissionTaskRepository,
+	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository,
+	batchDeployments *applicationrepo.BatchDeploymentRepository,
+	templates *applicationrepo.TemplateRepository,
+	batchStatus *processrepo.BatchJobStatusRepository,
+	sshContext *ssh.GlobalSSHContext,
+	tracker *execution.TaskTracker,
+) *Tasks {
+	return &Tasks{
+		processes:           processes,
+		jobSubmissionTasks:  jobSubmissionTasks,
+		slurmClusterConfigs: slurmClusterConfigs,
+		batchDeployments:    batchDeployments,
+		templates:           templates,
+		batchStatus:         batchStatus,
+		sshContext:          sshContext,
+		tracker:             tracker,
+	}
+}
 
 type SubmitBatchJobParameters struct {
 	ProcessID      string
@@ -42,10 +82,18 @@ type SubmitBatchJobParameters struct {
 	Environment    map[string]string
 }
 
-func (a *ExecutionEngine) submitBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
+// SubmitBatchJob builds the process's submission script, uploads it and submits it,
+// recording the task's status as it goes.
+func (a *Tasks) SubmitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
+	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, executionContext, func() (*execution.Context, error) {
+		return a.submitBatchJob(ctx, executionContext, processID, taskID)
+	})
+}
+
+func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
 	slog.Info("Starting to submit batch job", "taskId", taskID, "processId", processID)
 
-	process, err := a.process(ctx, processID)
+	process, err := execution.FindBatchProcess(ctx, a.processes, processID)
 	if err != nil {
 		slog.Error("Failed to retrieve process for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
 		return nil, err
@@ -189,7 +237,7 @@ func parseSbatchJobID(out string) (string, error) {
 }
 
 // slurmScript gathers what a submission script is built from and renders it.
-func (a *ExecutionEngine) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *GlobalJobConfigs) (string, error) {
+func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *execution.GlobalJobConfigs) (string, error) {
 	batch := process.BatchProcess
 
 	if batch.DeploymentID == nil {
@@ -217,9 +265,9 @@ func (a *ExecutionEngine) slurmScript(ctx context.Context, process *model.Proces
 	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs)
 }
 
-func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
+func (a *Tasks) CancelBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
 	slog.Info("Starting to cancel batch job", "taskId", taskID, "processId", processID)
-	process, err := a.process(ctx, processID)
+	process, err := execution.FindBatchProcess(ctx, a.processes, processID)
 	if err != nil {
 		slog.Error("Failed to retrieve process for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
 		return nil, err
@@ -231,31 +279,4 @@ func (a *ExecutionEngine) CancelBatchJob(ctx context.Context, executionContext *
 	}
 	slog.Info("Completed cancelling batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JST Id", jst.ID)
 	return executionContext, nil
-}
-
-func (a *ExecutionEngine) monitorBatchJob(ctx context.Context, executionContext *ExecutionContext, processID string, taskID string) (*ExecutionContext, error) {
-	slog.Info("Starting to monitor batch job ", "taskId", taskID, "processId", processID)
-	process, err := a.process(ctx, processID)
-	if err != nil {
-		slog.Error("Failed to retrieve process for monitoring batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
-	}
-	jmt, err := a.jobMonitoringTasks.FindByIDAndProcessID(ctx, taskID, processID)
-	if err != nil {
-		slog.Error("Failed to retrieve job monitoring task for monitoring batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
-	}
-	slog.Info("Completed monitoring batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JMT Id", jmt.ID)
-	return executionContext, nil
-}
-
-func (a *ExecutionEngine) process(ctx context.Context, processID string) (*model.Process, error) {
-	process, err := a.processes.FindByID(ctx, processID)
-	if err != nil {
-		return nil, err
-	}
-	if process.BatchProcess == nil {
-		return nil, fmt.Errorf("process %s carries no batch process section", processID)
-	}
-	return process, nil
 }

@@ -18,7 +18,7 @@
 * under the License.
  */
 
-package orchestration
+package monitoring
 
 import (
 	"errors"
@@ -56,9 +56,9 @@ var slurmJobEvents = map[string]model.BatchJobStatusType{
 	"reached 50% of time limit": model.BatchJobStatusTimeLimit50,
 }
 
-// parseBatchJobSubject reads the job, and what happened to it, out of a notification's
+// ParseBatchJobSubject reads the job, and what happened to it, out of a notification's
 // subject.
-func parseBatchJobSubject(subject string) (BatchJobNotification, error) {
+func ParseBatchJobSubject(subject string) (BatchJobNotification, error) {
 	match := batchJobSubject.FindStringSubmatch(strings.TrimSpace(subject))
 	if match == nil {
 		return BatchJobNotification{}, fmt.Errorf("%w: %q", ErrNotBatchJobNotification, subject)

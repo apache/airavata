@@ -18,7 +18,7 @@
 * under the License.
  */
 
-package orchestration
+package monitoring
 
 import (
 	"bytes"

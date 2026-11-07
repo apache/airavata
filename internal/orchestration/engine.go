@@ -18,67 +18,46 @@
 * under the License.
  */
 
+// Package orchestration runs the workflows that carry out a process. The workflows are
+// in the workflows package and the tasks they are made of in the tasks packages; this
+// package wires them to the workflow backend and starts them.
 package orchestration
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
-	internalptr "github.com/apache/airavata/internal/ptr"
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/client"
 	"github.com/cschleiden/go-workflows/worker"
-	workflow "github.com/cschleiden/go-workflows/workflow"
+	"github.com/cschleiden/go-workflows/workflow"
 	"github.com/google/uuid"
-
-	"log/slog"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	datastorerepo "github.com/apache/airavata/api/data/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
-	"github.com/apache/airavata/internal/config"
+	"github.com/apache/airavata/internal/orchestration/execution"
+	"github.com/apache/airavata/internal/orchestration/tasks/batch"
+	"github.com/apache/airavata/internal/orchestration/tasks/data"
+	"github.com/apache/airavata/internal/orchestration/tasks/monitoring"
+	"github.com/apache/airavata/internal/orchestration/workflows"
+	internalptr "github.com/apache/airavata/internal/ptr"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
 
+// ExecutionEngine runs the workflows that carry out a process, and starts them when a
+// process is launched or the scheduler reports its job has finished.
 type ExecutionEngine struct {
-	dataStagingTasks    *processrepo.DataStagingTaskRepository
-	jobSubmissionTasks  *processrepo.JobSubmissionTaskRepository
-	jobMonitoringTasks  *processrepo.JobMonitoringTaskRepository
-	scpStorages         *datastorerepo.SCPDataStorageRepository
-	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository
-	processes           *processrepo.ProcessRepository
-	batchDeployments    *applicationrepo.BatchDeploymentRepository
-	templates           *applicationrepo.TemplateRepository
-	orchestrator        *worker.WorkflowOrchestrator
-	batchStatus         *processrepo.BatchJobStatusRepository
-	processStatus       *processrepo.StatusRepository
-	sshContext          *ssh.GlobalSSHContext
-}
-
-type GlobalJobConfigs struct {
-	MailUser string
-}
-
-type ExecutionContext struct {
-	GlobalJobConfigs *GlobalJobConfigs      `json:"globalJobConfigs,omitempty"`
-	Data             map[string]interface{} `json:"data,omitempty"`
-	SomeData         string                 `json:"someData,omitempty"`
-}
-
-// set records a value under key for the rest of the run to read.
-//
-// The map is created on demand rather than assumed: an activity is handed a context
-// rebuilt from what crossed the workflow backend, so one that writes cannot count on
-// finding the map the workflow started with.
-func (c *ExecutionContext) set(key string, value interface{}) {
-	if c.Data == nil {
-		c.Data = make(map[string]interface{})
-	}
-	c.Data[key] = value
+	workflows     *workflows.Workflows
+	orchestrator  *worker.WorkflowOrchestrator
+	processes     *processrepo.ProcessRepository
+	batchStatus   *processrepo.BatchJobStatusRepository
+	processStatus *processrepo.StatusRepository
 }
 
 // NewExecutionEngine returns the workflow set scheduling acts.
@@ -92,6 +71,8 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	templates *applicationrepo.TemplateRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
 	processStatus *processrepo.StatusRepository,
+	taskStatus *processrepo.TaskStatusRepository,
+	processWorkflows *processrepo.WorkflowRepository,
 	workflowBackend backend.Backend,
 	sshContext *ssh.GlobalSSHContext,
 ) *ExecutionEngine {
@@ -103,19 +84,20 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		orchestrator = worker.NewWorkflowOrchestrator(workflowBackend, nil)
 	}
 
+	tracker := execution.NewTaskTracker(taskStatus)
+
 	return &ExecutionEngine{
-		dataStagingTasks:    dataStagingTasks,
-		jobSubmissionTasks:  jobSubmissionTasks,
-		jobMonitoringTasks:  jobMonitoringTasks,
-		scpStorages:         scpStorages,
-		slurmClusterConfigs: slurmClusterConfigs,
-		processes:           processes,
-		batchDeployments:    batchDeployments,
-		templates:           templates,
-		orchestrator:        orchestrator,
-		batchStatus:         batchStatus,
-		processStatus:       processStatus,
-		sshContext:          sshContext,
+		workflows: workflows.New(
+			data.New(processes, dataStagingTasks, scpStorages, slurmClusterConfigs, sshContext, tracker),
+			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker),
+			monitoring.New(processes, jobMonitoringTasks, tracker),
+			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,
+			processWorkflows,
+		),
+		orchestrator:  orchestrator,
+		processes:     processes,
+		batchStatus:   batchStatus,
+		processStatus: processStatus,
 	}
 }
 
@@ -127,12 +109,10 @@ func (w *ExecutionEngine) StartEngine() {
 
 	slog.Info("Starting execution engine...........")
 	ctx := context.Background()
-	w.orchestrator.RegisterWorkflow(w.handleBatchJobSubmission)
-	w.orchestrator.RegisterWorkflow(w.handleBatchJobCompletion)
-	w.orchestrator.RegisterActivity(w.copyData)
-	w.orchestrator.RegisterActivity(w.submitBatchJob)
-	w.orchestrator.RegisterActivity(w.monitorBatchJob)
-	w.orchestrator.RegisterActivity(w.completeProcess)
+	if err := w.workflows.Register(w.orchestrator); err != nil {
+		slog.Error("Failed to register workflows", "error", err)
+		panic("Could not register workflows")
+	}
 
 	if err := w.orchestrator.Start(ctx); err != nil {
 		slog.Error("Failed to start execution engine", "error", err)
@@ -142,9 +122,9 @@ func (w *ExecutionEngine) StartEngine() {
 
 // This is invoked when an email related to a batch job is received.
 // It handles the email response accordingly.
-func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email Email) error {
+func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email monitoring.Email) error {
 	slog.Info("Handling batch job email response", "from", email.From, "subject", email.Subject)
-	parsed, err := parseBatchJobSubject(email.Subject)
+	parsed, err := monitoring.ParseBatchJobSubject(email.Subject)
 	if err != nil {
 		slog.Error("Failed to parse batch job email subject", "subject", email.Subject, "error", err)
 		// Do not return error. That will prevent the email from being read.
@@ -194,11 +174,12 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 
 		_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
 			InstanceID: workflowId,
-		}, w.handleBatchJobCompletion, process.ID)
+		}, w.workflows.HandleBatchJobCompletion, process.ID)
 		if err != nil {
 			slog.Error("Failed to create workflow instance for batch job completion", "error", err)
 			return nil
 		}
+
 	}
 
 	if parsed.Status == model.BatchJobStatusBegin {
@@ -222,195 +203,34 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 var ErrNoWorkflowBackend = errors.New("execution engine was built without a workflow backend")
 
 func (w *ExecutionEngine) LaunchBatchJobSubmission(ctx context.Context, processID string) (string, error) {
-	if w.orchestrator == nil {
-		return "", ErrNoWorkflowBackend
-	}
-
-	workflowId := uuid.NewString()
-
-	_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
-		InstanceID: workflowId,
-	}, w.handleBatchJobSubmission, processID)
-	if err != nil {
-		return "", err
-	}
-	return workflowId, nil
+	workflowID := uuid.NewString()
+	return workflowID, w.LaunchWorkflow(ctx, workflowID, processID, model.ProcessWorkflowTypeBatchJobSubmission)
 }
 
 func (w *ExecutionEngine) LaunchBatchJobCompletion(ctx context.Context, processID string) (string, error) {
+	workflowID := uuid.NewString()
+	return workflowID, w.LaunchWorkflow(ctx, workflowID, processID, model.ProcessWorkflowTypeJobCompletion)
+}
+
+// LaunchWorkflow starts the workflow of the given type for a process under an instance
+// id the caller chose, so a caller can record the workflow before it starts.
+func (w *ExecutionEngine) LaunchWorkflow(ctx context.Context, workflowID, processID string,
+	workflowType model.ProcessWorkflowType) error {
+
 	if w.orchestrator == nil {
-		return "", ErrNoWorkflowBackend
+		return ErrNoWorkflowBackend
 	}
-
-	workflowId := uuid.NewString()
-
+	var wf workflow.Workflow
+	switch workflowType {
+	case model.ProcessWorkflowTypeBatchJobSubmission:
+		wf = w.workflows.HandleBatchJobSubmission
+	case model.ProcessWorkflowTypeJobCompletion:
+		wf = w.workflows.HandleBatchJobCompletion
+	default:
+		return fmt.Errorf("no workflow runs %s", workflowType)
+	}
 	_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
-		InstanceID: workflowId,
-	}, w.handleBatchJobCompletion, processID)
-	if err != nil {
-		return "", err
-	}
-	return workflowId, nil
-}
-
-func (w *ExecutionEngine) handleBatchJobCompletion(ctx workflow.Context, processID string) error {
-	// Implement the logic for batch job completion workflow here
-
-	ctxInt := context.Background()
-	dsts, err := w.dataStagingTasks.FindByProcessID(ctxInt, processID)
-	if err != nil {
-		slog.Error("Failed to list data staging tasks", "processId", processID, "error", err)
-		return err
-	}
-
-	jmts, err := w.jobMonitoringTasks.FindByProcessID(ctxInt, processID)
-	if err != nil {
-		slog.Error("Failed to list job monitoring tasks", "processId", processID, "error", err)
-		return err
-	}
-
-	if len(jmts) == 0 {
-		slog.Warn("No job monitoring tasks found for process", "processId", processID)
-		return fmt.Errorf("No job monitoring tasks found for process %s", processID)
-	}
-
-	globalJobConfigs, err := getGlobalJobConfig()
-	if err != nil {
-		slog.Error("Failed to get global job config", "processId", processID, "error", err)
-		return err
-	}
-
-	executionContext := &ExecutionContext{
-		GlobalJobConfigs: globalJobConfigs,
-		Data:             make(map[string]interface{}),
-	}
-
-	if len(jmts) == 0 {
-		slog.Warn("No job monitoring tasks found for process", "processId", processID)
-		return fmt.Errorf("No job monitoring tasks found for process %s", processID)
-	}
-
-	if len(jmts) > 1 {
-		slog.Warn("Multiple job monitoring tasks found for process", "processId", processID)
-		return fmt.Errorf("Multiple job monitoring tasks found for process %s", processID)
-	}
-
-	jmt := jmts[0]
-
-	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jmt.OnFailure, *jmt.RetryCount)},
-		w.monitorBatchJob, executionContext, processID, jmt.ID).Get(ctx)
-	if err != nil {
-		slog.Error("Failed processing job monitoring task", "processId", processID, "taskId", jmt.ID, "error", err)
-		return err
-	}
-
-	for _, dst := range dsts { // Attach output staging tasks
-		if dst.TaskOrder != nil && *dst.TaskOrder > *jmt.TaskOrder {
-			executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, *dst.RetryCount)},
-				w.copyData, executionContext, processID, dst.ID).Get(ctx)
-			if err != nil {
-				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
-				return err
-			}
-		}
-	}
-
-	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(model.OnFailureActionExit, 0)},
-		w.completeProcess, executionContext, processID).Get(ctx)
-	if err != nil {
-		slog.Error("Failed completing process", "processId", processID, "error", err)
-		return err
-	}
-
-	return nil
-}
-
-func (w *ExecutionEngine) handleBatchJobSubmission(ctx workflow.Context, processID string) error {
-
-	ctxInt := context.Background()
-
-	// dsts are ordered by their task order
-	dsts, err := w.dataStagingTasks.FindByProcessID(ctxInt, processID)
-
-	if err != nil {
-		slog.Error("Failed to list data staging tasks", "processId", processID, "error", err)
-		return err
-	}
-
-	jsts, err := w.jobSubmissionTasks.FindByProcessID(ctxInt, processID)
-	if err != nil {
-		slog.Error("Failed to list job submission tasks", "processId", processID, "error", err)
-		return err
-	}
-
-	if len(jsts) == 0 {
-		slog.Error("No job submission tasks found for process", "processId", processID)
-		return fmt.Errorf("No job submission tasks found for process %s", processID)
-	}
-
-	if len(jsts) > 1 {
-		slog.Error("Multiple job submission tasks found for process", "processId", processID)
-		return fmt.Errorf("Multiple job submission tasks found for process %s", processID)
-	}
-	// At this point, we are guaranteed to have exactly one job submission task.
-
-	jst := jsts[0]
-
-	globalJobConfigs, err := getGlobalJobConfig()
-	if err != nil {
-		slog.Error("Failed to get global job config", "processId", processID, "error", err)
-		return err
-	}
-
-	executionContext := &ExecutionContext{
-		Data:             make(map[string]interface{}),
-		GlobalJobConfigs: globalJobConfigs,
-		SomeData:         "Fooooo",
-	}
-
-	for _, dst := range dsts { // tasks are already sorted by their task order. Attach input staging tasks
-		if dst.TaskOrder != nil && *dst.TaskOrder < *jst.TaskOrder {
-			executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-				ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*dst.OnFailure, *dst.RetryCount)},
-				w.copyData, executionContext, processID, dst.ID).Get(ctx)
-			if err != nil {
-				slog.Error("Failed processing data staging task", "processId", processID, "taskId", dst.ID, "error", err)
-				return err
-			}
-		}
-	}
-
-	executionContext, err = workflow.ExecuteActivity[*ExecutionContext](
-		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(*jst.OnFailure, *jst.RetryCount)},
-		w.submitBatchJob, executionContext, processID, jst.ID).Get(ctx)
-	if err != nil {
-		slog.Error("Failed processing job submission task", "processId", processID, "taskId", jst.ID, "error", err)
-		return err
-	}
-
-	return nil
-}
-
-func retryOptions(onFailure model.OnFailureAction, retryCount int) workflow.RetryOptions {
-	opts := workflow.RetryOptions{MaxAttempts: 1}
-	if onFailure != model.OnFailureActionRetry {
-		return opts
-	}
-	// retryCount counts retries, so the first run is one attempt on top of it.
-	opts.MaxAttempts = 1 + retryCount
-	opts.BackoffCoefficient = workflow.DefaultRetryOptions.BackoffCoefficient
-	return opts
-}
-
-func getGlobalJobConfig() (*GlobalJobConfigs, error) {
-	cfg, err := config.FetchSystemConfigs()
-	if err != nil {
-		return nil, err
-	}
-	return &GlobalJobConfigs{
-		MailUser: cfg.EmailMonitorAddress,
-	}, nil
+		InstanceID: workflowID,
+	}, wf, processID)
+	return err
 }

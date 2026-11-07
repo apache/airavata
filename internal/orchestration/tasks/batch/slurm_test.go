@@ -18,7 +18,7 @@
 * under the License.
  */
 
-package orchestration
+package batch
 
 import (
 	"strings"
@@ -27,6 +27,7 @@ import (
 	appmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/internal/orchestration/execution"
 )
 
 func ptr[T any](v T) *T { return &v }
@@ -95,7 +96,7 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 func TestBuildSlurmScript(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 
-	cfg := GlobalJobConfigs{
+	cfg := execution.GlobalJobConfigs{
 		MailUser: "airavata@example.com",
 	}
 
@@ -146,7 +147,7 @@ func TestBuildSlurmScriptFallsBackToDeploymentConfig(t *testing.T) {
 	process.BatchProcess.BatchJobConfig = nil
 	deployment.DefaultBatchJobConfig.Allocation = "alloc-default"
 
-	cfg := GlobalJobConfigs{
+	cfg := execution.GlobalJobConfigs{
 		MailUser: "airavata@example.com",
 	}
 
@@ -168,7 +169,7 @@ func TestBuildSlurmScriptHonoursBaseWorkDir(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 	process.BatchProcess.BaseWorkDir = ptr("/projects/fold")
 
-	cfg := GlobalJobConfigs{
+	cfg := execution.GlobalJobConfigs{
 		MailUser: "airavata@example.com",
 	}
 
@@ -187,7 +188,7 @@ func TestBuildSlurmScriptDoesNotReexpandInputValues(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 	process.BatchProcess.InputMappings[1].Value = ptr(`{"value": "{{ account }}"}`)
 
-	cfg := GlobalJobConfigs{
+	cfg := execution.GlobalJobConfigs{
 		MailUser: "airavata@example.com",
 	}
 
@@ -258,7 +259,7 @@ func equalSlices(a, b []string) bool {
 func TestBuildSlurmScriptRejectsLineBreaks(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 	process.BatchProcess.BaseWorkDir = ptr("/projects/fold\n#SBATCH --account=someone-else")
-	cfg := GlobalJobConfigs{
+	cfg := execution.GlobalJobConfigs{
 		MailUser: "airavata@example.com",
 	}
 

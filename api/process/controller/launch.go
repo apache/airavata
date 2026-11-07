@@ -40,10 +40,11 @@ func NewLaunchController(svc *service.LaunchService) *LaunchController {
 	return &LaunchController{svc: svc}
 }
 
-// Register mounts the launch route. The literal /launch segment cannot collide with
-// the task collections beside it, so no ordering is implied.
+// Register mounts the launch and retry routes. Their literal segments cannot collide
+// with the task collections beside them, so no ordering is implied.
 func (h *LaunchController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/processes/{processId}/launch", h.launch)
+	mux.HandleFunc("POST /api/v1/processes/{processId}/retry", h.retry)
 }
 
 // launch answers 202 rather than 200: the tasks are recorded here, and carrying them
@@ -51,6 +52,17 @@ func (h *LaunchController) Register(mux *http.ServeMux) {
 // launched by id learns nothing new but has the run to hand.
 func (h *LaunchController) launch(w http.ResponseWriter, r *http.Request) {
 	proc, err := h.svc.LaunchProcess(r.Context(), r.PathValue("processId"))
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusAccepted, proc)
+}
+
+// retry answers 202 for the same reason launch does: it starts the failed workflow
+// again, and carrying it out is later work.
+func (h *LaunchController) retry(w http.ResponseWriter, r *http.Request) {
+	proc, err := h.svc.RetryProcess(r.Context(), r.PathValue("processId"))
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
