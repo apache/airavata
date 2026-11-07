@@ -55,6 +55,7 @@ type Workflows struct {
 	jobSubmissionTasks *processrepo.JobSubmissionTaskRepository
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository
 	processStatus      *processrepo.StatusRepository
+	executionRepo      *processrepo.ExecutionRepository
 }
 
 // New returns the workflows over the given tasks and the repositories they are
@@ -64,6 +65,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 	jobSubmissionTasks *processrepo.JobSubmissionTaskRepository,
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository,
 	processStatus *processrepo.StatusRepository,
+	executionRepo *processrepo.ExecutionRepository,
 ) *Workflows {
 	return &Workflows{
 		data:               data,
@@ -73,6 +75,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 		jobSubmissionTasks: jobSubmissionTasks,
 		jobMonitoringTasks: jobMonitoringTasks,
 		processStatus:      processStatus,
+		executionRepo:      executionRepo,
 	}
 }
 
@@ -164,6 +167,12 @@ func (w *Workflows) HandleBatchJobCompletion(ctx workflow.Context, processID str
 		w.CompleteProcess, executionContext, processID).Get(ctx)
 	if err != nil {
 		slog.Error("Failed completing process", "processId", processID, "error", err)
+		return err
+	}
+
+	// record workflow completion
+	if _, err := w.executionRepo.Record(ctxInt, processID, workflow.WorkflowInstance(ctx).InstanceID, model.ProcessExecutionTypeBatchJobSubmission, model.ProcessExecutionStatusTypeSucceeded); err != nil {
+		slog.Error("Failed to record execution", "processId", processID, "error", err)
 		return err
 	}
 

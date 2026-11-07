@@ -22,8 +22,12 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"time"
 
 	"gorm.io/gorm"
+
+	"github.com/apache/airavata/internal/ptr"
 
 	model "github.com/apache/airavata/api/process/model"
 )
@@ -91,6 +95,40 @@ func (r *ExecutionRepository) UpdateStatus(ctx context.Context, id string, statu
 		return gorm.ErrRecordNotFound
 	}
 	return nil
+}
+
+// Record creates the execution of one workflow instance of a process, or moves an
+// existing one to status. An update changes only the status: the type and timestamp
+// stay as first recorded, so the timestamp keeps saying when the execution started.
+//
+// It is here rather than only in the service so that the orchestration activities,
+// which cannot import the service package, record executions the same way.
+func (r *ExecutionRepository) Record(ctx context.Context, processID, executionID string,
+	executionType model.ProcessExecutionType, status model.ProcessExecutionStatusType) (*model.ProcessExecution, error) {
+
+	existing, err := r.FindByExecutionIDAndProcessID(ctx, executionID, processID)
+	switch {
+	case err == nil:
+		if err := r.UpdateStatus(ctx, existing.ID, status); err != nil {
+			return nil, err
+		}
+		existing.Status = &status
+		return existing, nil
+	case !errors.Is(err, gorm.ErrRecordNotFound):
+		return nil, err
+	}
+
+	created := &model.ProcessExecution{
+		ProcessID:     &processID,
+		ExecutionID:   executionID,
+		ExecutionType: &executionType,
+		Status:        &status,
+		Timestamp:     ptr.To(time.Now().UnixMilli()),
+	}
+	if err := r.Create(ctx, created); err != nil {
+		return nil, err
+	}
+	return created, nil
 }
 
 // Create inserts an execution row. BeforeCreate assigns its id and AfterCreate

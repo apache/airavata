@@ -22,14 +22,11 @@ package service
 
 import (
 	"context"
-	"errors"
-	"time"
 
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
-	"github.com/apache/airavata/internal/ptr"
 
 	dto "github.com/apache/airavata/api/process/dto"
 	model "github.com/apache/airavata/api/process/model"
@@ -80,37 +77,13 @@ func (s *ExecutionService) Record(ctx context.Context, processID, executionID st
 // caller that is already inside one of its own commits or rolls back the execution
 // together with the rest of its work.
 //
-// An update changes only the status. The type and timestamp stay as first recorded,
-// so the timestamp keeps saying when the workflow was started.
+// See ExecutionRepository.Record for what an update changes.
 func (s *ExecutionService) RecordTx(ctx context.Context, tx *gorm.DB, processID, executionID string, executionType model.ProcessExecutionType, status model.ProcessExecutionStatusType) (*model.ProcessExecution, error) {
 	if _, err := s.processes.WithTx(tx).FindByID(ctx, processID); err != nil {
 		return nil, notFoundAs(err, "Process not found: %s", processID)
 	}
 
-	executions := s.executions.WithTx(tx)
-	existing, err := executions.FindByExecutionIDAndProcessID(ctx, executionID, processID)
-	switch {
-	case err == nil:
-		if err := executions.UpdateStatus(ctx, existing.ID, status); err != nil {
-			return nil, err
-		}
-		existing.Status = &status
-		return existing, nil
-	case !errors.Is(err, gorm.ErrRecordNotFound):
-		return nil, err
-	}
-
-	created := &model.ProcessExecution{
-		ProcessID:     &processID,
-		ExecutionID:   executionID,
-		ExecutionType: &executionType,
-		Status:        &status,
-		Timestamp:     ptr.To(time.Now().UnixMilli()),
-	}
-	if err := executions.Create(ctx, created); err != nil {
-		return nil, err
-	}
-	return created, nil
+	return s.executions.WithTx(tx).Record(ctx, processID, executionID, executionType, status)
 }
 
 // ListForProcess returns every execution recorded for a process, oldest first.
