@@ -171,7 +171,7 @@ func (w *Workflows) HandleBatchJobCompletion(ctx workflow.Context, processID str
 	}
 
 	// record workflow completion
-	if _, err := w.processWorkflows.Record(ctxInt, processID, workflow.WorkflowInstance(ctx).InstanceID, model.ProcessWorkflowTypeBatchJobSubmission, model.ProcessWorkflowStatusTypeSucceeded); err != nil {
+	if _, err := w.processWorkflows.Record(ctxInt, processID, workflow.WorkflowInstance(ctx).InstanceID, model.ProcessWorkflowTypeJobCompletion, model.ProcessWorkflowStatusTypeSucceeded); err != nil {
 		slog.Error("Failed to record process workflow", "processId", processID, "error", err)
 		return err
 	}
@@ -241,6 +241,11 @@ func (w *Workflows) HandleBatchJobSubmission(ctx workflow.Context, processID str
 		w.batch.SubmitBatchJob, executionContext, processID, jst.ID).Get(ctx)
 	if err != nil {
 		slog.Error("Failed processing job submission task", "processId", processID, "taskId", jst.ID, "error", err)
+		return err
+	}
+
+	if _, err := w.processWorkflows.Record(ctxInt, processID, workflow.WorkflowInstance(ctx).InstanceID, model.ProcessWorkflowTypeBatchJobSubmission, model.ProcessWorkflowStatusTypeSucceeded); err != nil {
+		slog.Error("Failed to record process workflow", "processId", processID, "error", err)
 		return err
 	}
 

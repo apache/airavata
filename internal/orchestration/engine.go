@@ -51,11 +51,12 @@ import (
 // ExecutionEngine runs the workflows that carry out a process, and starts them when a
 // process is launched or the scheduler reports its job has finished.
 type ExecutionEngine struct {
-	workflows     *workflows.Workflows
-	orchestrator  *worker.WorkflowOrchestrator
-	processes     *processrepo.ProcessRepository
-	batchStatus   *processrepo.BatchJobStatusRepository
-	processStatus *processrepo.StatusRepository
+	workflows        *workflows.Workflows
+	orchestrator     *worker.WorkflowOrchestrator
+	processes        *processrepo.ProcessRepository
+	batchStatus      *processrepo.BatchJobStatusRepository
+	processStatus    *processrepo.StatusRepository
+	processWorkflows *processrepo.WorkflowRepository
 }
 
 // NewExecutionEngine returns the workflow set scheduling acts.
@@ -92,10 +93,11 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,
 			processWorkflows,
 		),
-		orchestrator:  orchestrator,
-		processes:     processes,
-		batchStatus:   batchStatus,
-		processStatus: processStatus,
+		orchestrator:     orchestrator,
+		processes:        processes,
+		batchStatus:      batchStatus,
+		processStatus:    processStatus,
+		processWorkflows: processWorkflows,
 	}
 }
 
@@ -177,6 +179,14 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 			slog.Error("Failed to create workflow instance for batch job completion", "error", err)
 			return nil
 		}
+
+		// Update the process workflow repository to indicate that the job completion workflow is running
+		_, err = w.processWorkflows.Record(ctx, process.ID, workflowId, model.ProcessWorkflowTypeJobCompletion, model.ProcessWorkflowStatusTypeRunning)
+		if err != nil {
+			slog.Error("Failed to record process workflow", "processID", process.ID, "error", err)
+			return nil
+		}
+
 	}
 
 	if parsed.Status == model.BatchJobStatusBegin {
