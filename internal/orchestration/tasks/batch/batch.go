@@ -85,7 +85,7 @@ type SubmitBatchJobParameters struct {
 // SubmitBatchJob builds the process's submission script, uploads it and submits it,
 // recording the task's status as it goes.
 func (a *Tasks) SubmitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
-	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, func() (*execution.Context, error) {
+	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, executionContext, func() (*execution.Context, error) {
 		return a.submitBatchJob(ctx, executionContext, processID, taskID)
 	})
 }

@@ -48,7 +48,7 @@ func New(processes *processrepo.ProcessRepository, jobMonitoringTasks *processre
 // MonitorBatchJob checks the outcome of a finished batch job, recording the task's
 // status as it goes.
 func (a *Tasks) MonitorBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
-	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobMonitoring, func() (*execution.Context, error) {
+	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobMonitoring, executionContext, func() (*execution.Context, error) {
 		return a.monitorBatchJob(ctx, executionContext, processID, taskID)
 	})
 }

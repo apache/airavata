@@ -71,7 +71,7 @@ func TestTrackRecordsExecutingThenCompleted(t *testing.T) {
 	}
 
 	want := &execution.Context{SomeData: "carried"}
-	got, err := tracker.Track(context.Background(), proc.ID, "task-1", model.TaskTypeDataStaging,
+	got, err := tracker.Track(context.Background(), proc.ID, "task-1", model.TaskTypeDataStaging, nil,
 		func() (*execution.Context, error) { return want, nil })
 	if err != nil {
 		t.Fatalf("track: %v", err)
@@ -94,7 +94,7 @@ func TestTrackRecordsFailureWithItsError(t *testing.T) {
 	}
 
 	boom := errors.New("scp refused")
-	_, err := tracker.Track(context.Background(), proc.ID, "task-2", model.TaskTypeJobSubmission,
+	_, err := tracker.Track(context.Background(), proc.ID, "task-2", model.TaskTypeJobSubmission, nil,
 		func() (*execution.Context, error) { return nil, boom })
 	if !errors.Is(err, boom) {
 		t.Fatalf("Track error = %v, want the run's own error", err)
@@ -120,7 +120,7 @@ func TestTrackSurvivesUnwritableStatus(t *testing.T) {
 	tracker, repo, _ := newTracker(t)
 
 	// No such process, so the foreign key rejects every status row.
-	_, err := tracker.Track(context.Background(), "missing-process", "task-3", model.TaskTypeJobMonitoring,
+	_, err := tracker.Track(context.Background(), "missing-process", "task-3", model.TaskTypeJobMonitoring, nil,
 		func() (*execution.Context, error) { return &execution.Context{}, nil })
 	if err != nil {
 		t.Fatalf("Track error = %v, want the run's success to stand", err)
@@ -149,5 +149,51 @@ func TestDeletingTaskRemovesItsStatuses(t *testing.T) {
 	}
 	if statuses := statusesOf(t, repo, task.ID); len(statuses) != 0 {
 		t.Errorf("statuses = %v, want none after the task was deleted", statuses)
+	}
+}
+
+// A task that has completed is not run again, so a retried workflow passes over the
+// steps that already got through and hands their input on unchanged.
+func TestTrackSkipsCompletedTask(t *testing.T) {
+	tracker, repo, gdb := newTracker(t)
+	proc := &model.Process{}
+	if err := gdb.Create(proc).Error; err != nil {
+		t.Fatalf("create process: %v", err)
+	}
+	ctx := context.Background()
+	if _, err := tracker.Track(ctx, proc.ID, "task-4", model.TaskTypeDataStaging, nil,
+		func() (*execution.Context, error) { return &execution.Context{}, nil }); err != nil {
+		t.Fatalf("first run: %v", err)
+	}
+
+	in := &execution.Context{SomeData: "handed on"}
+	ran := false
+	got, err := tracker.Track(ctx, proc.ID, "task-4", model.TaskTypeDataStaging, in,
+		func() (*execution.Context, error) { ran = true; return nil, errors.New("must not run") })
+	if err != nil {
+		t.Fatalf("second run: %v", err)
+	}
+	if ran {
+		t.Error("a completed task ran again")
+	}
+	if got != in {
+		t.Errorf("Track returned %v, want the input context", got)
+	}
+	if got := statusesOf(t, repo, "task-4"); len(got) != 2 {
+		t.Errorf("statuses = %v, want only the first run's EXECUTING and COMPLETED", got)
+	}
+
+	// A failed task is not completed, so it runs again.
+	if _, err := tracker.Track(ctx, proc.ID, "task-5", model.TaskTypeDataStaging, nil,
+		func() (*execution.Context, error) { return nil, errors.New("boom") }); err == nil {
+		t.Fatal("failing run returned no error")
+	}
+	ran = false
+	if _, err := tracker.Track(ctx, proc.ID, "task-5", model.TaskTypeDataStaging, nil,
+		func() (*execution.Context, error) { ran = true; return &execution.Context{}, nil }); err != nil {
+		t.Fatalf("rerun of failed task: %v", err)
+	}
+	if !ran {
+		t.Error("a failed task was skipped")
 	}
 }

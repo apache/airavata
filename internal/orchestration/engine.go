@@ -26,12 +26,14 @@ package orchestration
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"time"
 
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/client"
 	"github.com/cschleiden/go-workflows/worker"
+	"github.com/cschleiden/go-workflows/workflow"
 	"github.com/google/uuid"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
@@ -201,33 +203,34 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 var ErrNoWorkflowBackend = errors.New("execution engine was built without a workflow backend")
 
 func (w *ExecutionEngine) LaunchBatchJobSubmission(ctx context.Context, processID string) (string, error) {
-	if w.orchestrator == nil {
-		return "", ErrNoWorkflowBackend
-	}
-
-	workflowId := uuid.NewString()
-
-	_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
-		InstanceID: workflowId,
-	}, w.workflows.HandleBatchJobSubmission, processID)
-	if err != nil {
-		return "", err
-	}
-	return workflowId, nil
+	workflowID := uuid.NewString()
+	return workflowID, w.LaunchWorkflow(ctx, workflowID, processID, model.ProcessWorkflowTypeBatchJobSubmission)
 }
 
 func (w *ExecutionEngine) LaunchBatchJobCompletion(ctx context.Context, processID string) (string, error) {
+	workflowID := uuid.NewString()
+	return workflowID, w.LaunchWorkflow(ctx, workflowID, processID, model.ProcessWorkflowTypeJobCompletion)
+}
+
+// LaunchWorkflow starts the workflow of the given type for a process under an instance
+// id the caller chose, so a caller can record the workflow before it starts.
+func (w *ExecutionEngine) LaunchWorkflow(ctx context.Context, workflowID, processID string,
+	workflowType model.ProcessWorkflowType) error {
+
 	if w.orchestrator == nil {
-		return "", ErrNoWorkflowBackend
+		return ErrNoWorkflowBackend
 	}
-
-	workflowId := uuid.NewString()
-
+	var wf workflow.Workflow
+	switch workflowType {
+	case model.ProcessWorkflowTypeBatchJobSubmission:
+		wf = w.workflows.HandleBatchJobSubmission
+	case model.ProcessWorkflowTypeJobCompletion:
+		wf = w.workflows.HandleBatchJobCompletion
+	default:
+		return fmt.Errorf("no workflow runs %s", workflowType)
+	}
 	_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
-		InstanceID: workflowId,
-	}, w.workflows.HandleBatchJobCompletion, processID)
-	if err != nil {
-		return "", err
-	}
-	return workflowId, nil
+		InstanceID: workflowID,
+	}, wf, processID)
+	return err
 }

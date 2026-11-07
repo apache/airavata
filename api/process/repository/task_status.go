@@ -76,6 +76,15 @@ func (r *TaskStatusRepository) FindByProcessID(ctx context.Context, processID st
 	return out, err
 }
 
+// HasStatus reports whether one task of one process has ever recorded status.
+func (r *TaskStatusRepository) HasStatus(ctx context.Context, taskID, processID string, status model.TaskStatusType) (bool, error) {
+	var n int64
+	err := r.db.WithContext(ctx).Model(&model.TaskStatus{}).
+		Where("task_id = ? AND process_id = ? AND status = ?", taskID, processID, status).
+		Count(&n).Error
+	return n > 0, err
+}
+
 // Create inserts a status row. BeforeCreate assigns its id.
 func (r *TaskStatusRepository) Create(ctx context.Context, s *model.TaskStatus) error {
 	return r.db.WithContext(ctx).Create(s).Error

@@ -65,6 +65,7 @@ type LaunchService struct {
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository
 	monitoringTasks    *repository.JobMonitoringTaskRepository
 	interactiveTasks   *repository.InteractiveCommandTaskRepository
+	processWorkflows   *repository.WorkflowRepository
 
 	executionEngine *orchestration.ExecutionEngine
 }
@@ -86,6 +87,7 @@ func NewLaunchService(
 	jobSubmissionTasks *repository.JobSubmissionTaskRepository,
 	monitoringTasks *repository.JobMonitoringTaskRepository,
 	interactiveTasks *repository.InteractiveCommandTaskRepository,
+	processWorkflows *repository.WorkflowRepository,
 	executionEngine *orchestration.ExecutionEngine,
 
 ) *LaunchService {
@@ -104,6 +106,7 @@ func NewLaunchService(
 		jobSubmissionTasks:     jobSubmissionTasks,
 		monitoringTasks:        monitoringTasks,
 		interactiveTasks:       interactiveTasks,
+		processWorkflows:       processWorkflows,
 		executionEngine:        executionEngine,
 	}
 }

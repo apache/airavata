@@ -47,11 +47,22 @@ func NewTaskTracker(statuses *processrepo.TaskStatusRepository) *TaskTracker {
 // is replayed and must not write. Each retry of the activity is an attempt of its own,
 // so a task retried twice shows two FAILED entries before its last outcome.
 //
+// A task that has already completed is not run again: Track hands in back unchanged
+// and records nothing. That is what lets a retried process re-run a failed workflow
+// without repeating the steps that got through — staging a file twice, or submitting
+// the job again. A completed status is enough to go by, rather than the latest one,
+// because two statuses of one attempt can share a timestamp.
+//
 // A status that cannot be written is logged and dropped rather than failing the task:
 // the history describes the work, and losing an entry of it is no reason to redo work
 // that succeeded.
 func (t *TaskTracker) Track(ctx context.Context, processID, taskID string, taskType model.TaskType,
-	run func() (*Context, error)) (*Context, error) {
+	in *Context, run func() (*Context, error)) (*Context, error) {
+
+	if t.completed(ctx, processID, taskID) {
+		slog.Info("Skipping task that has already completed", "taskId", taskID, "processId", processID, "taskType", taskType)
+		return in, nil
+	}
 
 	t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeExecuting, nil)
 
@@ -62,6 +73,21 @@ func (t *TaskTracker) Track(ctx context.Context, processID, taskID string, taskT
 	}
 	t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeCompleted, nil)
 	return out, nil
+}
+
+// completed reports whether the task has already completed. A failure to read is
+// logged and taken as not completed: running a step again is recoverable, and skipping
+// one that never ran is not.
+func (t *TaskTracker) completed(ctx context.Context, processID, taskID string) bool {
+	if t == nil || t.statuses == nil {
+		return false
+	}
+	done, err := t.statuses.HasStatus(ctx, taskID, processID, model.TaskStatusTypeCompleted)
+	if err != nil {
+		slog.Error("Failed to read task status history", "taskId", taskID, "processId", processID, "error", err)
+		return false
+	}
+	return done
 }
 
 // Record appends one status to a task's history, logging rather than returning a

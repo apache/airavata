@@ -2690,3 +2690,51 @@ func TestProcessWorkflowsAreReadThroughTheirProcess(t *testing.T) {
 		t.Errorf("workflows left after deleting their process = %d, want 0", left)
 	}
 }
+
+// Retrying is owner-scoped and refused unless the latest run of some workflow failed and
+// none is running. Retrying starts a new workflow, which this harness has no backend
+// for, so the accepted case shows up here as the new workflow being recorded and then
+// marked failed when it could not start.
+func TestRetryingAProcessRunsItsFailedWorkflow(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("retry", tokenAlice)
+	ctx := context.Background()
+	path := "/api/v1/processes/" + processID + "/retry"
+
+	if rec := h.do(http.MethodPost, path, tokenAlice, nil); rec.Code != http.StatusConflict {
+		t.Errorf("retry before launch: status = %d, want 409", rec.Code)
+	}
+
+	if _, err := h.svcs.ProcessWorkflow.Record(ctx, processID, "submission-1", "BATCH_JOB_SUBMISSION", "RUNNING"); err != nil {
+		t.Fatalf("record submission: %v", err)
+	}
+	if rec := h.do(http.MethodPost, path, tokenAlice, nil); rec.Code != http.StatusConflict {
+		t.Errorf("retry while running: status = %d, want 409", rec.Code)
+	}
+
+	if _, err := h.svcs.ProcessWorkflow.Record(ctx, processID, "submission-1", "BATCH_JOB_SUBMISSION", "FAILED"); err != nil {
+		t.Fatalf("fail submission: %v", err)
+	}
+	if rec := h.do(http.MethodPost, path, tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("retry as another user: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, path, "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("retry anonymously: status = %d, want 401", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, "/api/v1/processes/no-such-process/retry", tokenAlice, nil); rec.Code != http.StatusNotFound {
+		t.Errorf("retry unknown process: status = %d, want 404", rec.Code)
+	}
+
+	h.do(http.MethodPost, path, tokenAlice, nil)
+	workflows := h.list("/api/v1/processes/"+processID+"/workflows", tokenAlice)
+	if len(workflows) != 2 {
+		t.Fatalf("workflows after retry = %v, want the failed one and its retry", workflows)
+	}
+	retried := workflows[1]
+	if retried["workflowId"] == "submission-1" || retried["workflowType"] != "BATCH_JOB_SUBMISSION" {
+		t.Errorf("retried workflow = %v, want a new submission workflow", retried)
+	}
+	if retried["status"] != "FAILED" {
+		t.Errorf("retried workflow status = %v, want FAILED since it could not start here", retried["status"])
+	}
+}
