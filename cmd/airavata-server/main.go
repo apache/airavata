@@ -151,6 +151,9 @@ func runServer() error {
 	}
 	introspector := auth.NewCILogonIntrospector(
 		cfg.IntrospectionURI, cfg.UserInfoURI, cfg.ClientID, cfg.ClientSecret, roles, root)
+	// Service account tokens are Airavata-issued, so they are checked against the
+	// database and never forwarded to CILogon.
+	introspector.ServiceAccounts = iamrepo.ServiceAccountTokenLookup{DB: gdb}
 
 	repos := app.NewRepositories(gdb)
 	// The object graph, built once. The HTTP handler takes it, and so does the workflow

@@ -58,6 +58,10 @@ type User struct {
 	// statement about this account, so deleting the account withdraws it. Owning a
 	// group is a different matter and is deliberately RESTRICT — see Group.OwnerID.
 	Memberships []GroupMember `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-"`
+
+	// ServiceAccount is set only for a user whose AuthMethod is SERVICE_ACCOUNT, and
+	// carries its token. It goes with the user.
+	ServiceAccount *ServiceAccount `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-"`
 }
 
 // TableName pins the table name, matching the Java @Entity(name = "users").
@@ -73,8 +77,17 @@ func (u *User) HasRole(r Role) bool {
 	return false
 }
 
-// IsAdmin reports whether the user holds ADMIN or SUPER_ADMIN.
+// IsServiceAccount reports whether the user is a service account.
+func (u *User) IsServiceAccount() bool {
+	return u.AuthMethod != nil && *u.AuthMethod == AuthMethodServiceAccount
+}
+
+// IsAdmin reports whether the user holds ADMIN or SUPER_ADMIN. A service account
+// never does, whatever its role rows say.
 func (u *User) IsAdmin() bool {
+	if u.IsServiceAccount() {
+		return false
+	}
 	for _, ur := range u.Roles {
 		if ur.Role.IsAdmin() {
 			return true

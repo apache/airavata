@@ -56,6 +56,11 @@ type CILogonIntrospector struct {
 
 	// Root, when set, short-circuits introspection for the bootstrap token.
 	Root *RootTokenProvider
+
+	// ServiceAccounts, when set, resolves service account tokens locally. A token
+	// carrying the service account prefix is never forwarded to CILogon, whether or
+	// not this is set.
+	ServiceAccounts ServiceAccountResolver
 }
 
 // NewCILogonIntrospector builds an introspector with a bounded HTTP client, so a
@@ -77,6 +82,12 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 	if c.Root.Matches(token) {
 		return c.Root.Principal(), nil
 	}
+	if IsServiceAccountToken(token) {
+		if c.ServiceAccounts == nil {
+			return nil, ErrInvalidToken
+		}
+		return c.ServiceAccounts.ResolveServiceAccount(ctx, token)
+	}
 
 	attributes, err := c.introspect(ctx, token)
 	if err != nil {
@@ -91,7 +102,9 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 	}
 
 	username := NormalizeUsername(firstString(attributes, "username", "preferred_username", "sub"))
-	if username == "" {
+	// The service account namespace is reserved: an identity provider that reported
+	// such a username would otherwise authenticate as that service account.
+	if username == "" || IsServiceAccountID(username) {
 		return nil, ErrInvalidToken
 	}
 

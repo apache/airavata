@@ -47,6 +47,7 @@ func Entities() []any {
 
 		// One level in.
 		&iammodel.UserRole{},
+		&iammodel.ServiceAccount{},
 		&iammodel.Group{},
 		&computemodel.SlurmCluster{},
 		&datamodel.SCPDataStorage{},

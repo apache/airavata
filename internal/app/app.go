@@ -67,6 +67,8 @@ type Services struct {
 	User        *iamsvc.UserService
 	Group       *iamsvc.GroupService
 	GroupMember *iamsvc.GroupMemberService
+	// ServiceAccount administers non-human users and their expiring tokens.
+	ServiceAccount *iamsvc.ServiceAccountService
 
 	// Credentials.
 	SSHCredential   *credentialssvc.SSHCredentialService
@@ -115,6 +117,7 @@ type Repositories struct {
 	Users                   *iamrepo.UserRepository
 	Groups                  *iamrepo.GroupRepository
 	GroupMembers            *iamrepo.GroupMemberRepository
+	ServiceAccounts         *iamrepo.ServiceAccountRepository
 	SSHCredentials          *credentialsrepo.SSHCredentialRepository
 	SlurmClusters           *computerepo.SlurmClusterRepository
 	ClusterPartitions       *computerepo.ClusterPartitionRepository
@@ -142,6 +145,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Users:                   iamrepo.NewUserRepository(db),
 		Groups:                  iamrepo.NewGroupRepository(db),
 		GroupMembers:            iamrepo.NewGroupMemberRepository(db),
+		ServiceAccounts:         iamrepo.NewServiceAccountRepository(db),
 		SSHCredentials:          credentialsrepo.NewSSHCredentialRepository(db),
 		SlurmClusters:           computerepo.NewSlurmClusterRepository(db),
 		ClusterPartitions:       computerepo.NewClusterPartitionRepository(db),
@@ -229,6 +233,9 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		User:        iamsvc.NewUserService(db, users),
 		Group:       iamsvc.NewGroupService(db, groups, groupMembers, users, shares),
 		GroupMember: iamsvc.NewGroupMemberService(db, groups, groupMembers, users),
+		// A deleted service account takes the shares granted to it along, hence the
+		// sharing repository.
+		ServiceAccount: iamsvc.NewServiceAccountService(db, repos.ServiceAccounts, users, shares),
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.

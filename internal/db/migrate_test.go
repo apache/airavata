@@ -61,7 +61,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 	gdb := newTestDB(t)
 
 	want := []string{
-		"users", "user_roles", "groups", "group_members",
+		"users", "user_roles", "service_accounts", "groups", "group_members",
 		"ssh_credentials",
 		"slurm_clusters", "cluster_partitions",
 		"slurm_cluster_configs",

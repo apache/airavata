@@ -32,12 +32,17 @@ type AuthMethod string
 const (
 	AuthMethodCILogon AuthMethod = "CILOGON"
 	AuthMethodSystem  AuthMethod = "SYSTEM"
+
+	// AuthMethodServiceAccount marks a non-human account that authenticates with an
+	// Airavata-issued token. Such users are created only through the service account
+	// API, never through user registration.
+	AuthMethodServiceAccount AuthMethod = "SERVICE_ACCOUNT"
 )
 
 // Valid reports whether m is a recognised AuthMethod.
 func (m AuthMethod) Valid() bool {
 	switch m {
-	case AuthMethodCILogon, AuthMethodSystem:
+	case AuthMethodCILogon, AuthMethodSystem, AuthMethodServiceAccount:
 		return true
 	}
 	return false
