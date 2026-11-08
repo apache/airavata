@@ -43,6 +43,9 @@ type Config struct {
 	// updated from the entity model at startup.
 	AutoMigrate bool
 
+	// AutoSeed, when enabled, runs database seeding on server startup.
+	AutoSeed bool
+
 	// CORSAllowedOrigins is airavata.cors.allowed-origins.
 	CORSAllowedOrigins []string
 
@@ -74,6 +77,7 @@ func load() (Config, error) {
 		HTTPAddr:    ":" + env("SERVER_PORT", "9095"),
 		DSN:         env("AIRAVATA_DB_DSN", defaultDSN()),
 		AutoMigrate: envBool("AIRAVATA_DB_AUTO_MIGRATE", true),
+		AutoSeed:    envBool("AIRAVATA_DB_AUTO_SEED", false),
 
 		CORSAllowedOrigins: strings.Split(env("AIRAVATA_CORS_ALLOWED_ORIGINS", "*"), ","),
 

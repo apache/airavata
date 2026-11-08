@@ -39,7 +39,7 @@ func isolate(t *testing.T) {
 	t.Helper()
 	for _, key := range []string{
 		"SERVER_PORT",
-		"AIRAVATA_DB_DSN", "AIRAVATA_DB_AUTO_MIGRATE",
+		"AIRAVATA_DB_DSN", "AIRAVATA_DB_AUTO_MIGRATE", "AIRAVATA_DB_AUTO_SEED",
 		"AIRAVATA_DB_HOST", "AIRAVATA_DB_PORT", "AIRAVATA_DB_NAME",
 		"AIRAVATA_DB_USER", "AIRAVATA_DB_PASSWORD",
 		"AIRAVATA_CORS_ALLOWED_ORIGINS",
@@ -65,6 +65,9 @@ func TestDefaults(t *testing.T) {
 	}
 	if !cfg.AutoMigrate {
 		t.Error("AutoMigrate = false, want true by default")
+	}
+	if cfg.AutoSeed {
+		t.Error("AutoSeed = true, want false by default")
 	}
 	if !cfg.RootAccountEnabled {
 		t.Error("RootAccountEnabled = false, want true by default")

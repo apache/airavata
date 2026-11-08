@@ -32,10 +32,13 @@ docker compose -f dev-tools/compose/compose.yml up -d
 gofmt -w .
 go build -o bin/airavata-server ./cmd/airavata-server
 
-# 3. Build the dashboard (optional; needs Node.js)
+# 3. Seed initial development resources (mock Slurm cluster, keys, template & deployment)
+./bin/airavata-server seed
+
+# 4. Build the dashboard (optional; needs Node.js)
 npm --prefix dashboard ci && npm --prefix dashboard run build
 
-# 4. Run
+# 5. Run
 ./bin/airavata-server
 ```
 
@@ -111,6 +114,7 @@ compose database.
 | `AIRAVATA_DB_SSLMODE` | `disable` | libpq TLS mode: `disable`, `require`, `verify-ca`, `verify-full`. **Set at least `require` for anything but a loopback database.** |
 | `AIRAVATA_DB_DSN` | *(built from the above)* | Full PostgreSQL connection URL. Set this to override the six variables above entirely — useful for extra TLS options or a managed database. |
 | `AIRAVATA_DB_AUTO_MIGRATE` | `true` | Create/update tables from the entity model at startup. |
+| `AIRAVATA_DB_AUTO_SEED` | `false` | Automatically seed development resources (mock Slurm cluster, partitions, credentials, template, deployment) on startup. |
 
 The assembled default DSN is:
 
@@ -230,6 +234,30 @@ AIRAVATA_TEST_POSTGRES_DSN='postgres://airavata:123456@localhost:15432/airavata?
 
 Those tests skip without that variable, so `go test ./...` stays green on a machine
 with no database.
+
+### Database seeding (`seed` command)
+
+To eliminate manual resource registration on every clean run, Airavata includes an
+idempotent database seeder:
+
+```bash
+airavata-server seed
+```
+
+This seeds:
+- **Users & Roles**: `root` (`SUPER_ADMIN`) and `dev-user` (`ADMIN`)
+- **SSH Credential**: `mock-slurm-key` using the pre-seeded development ed25519 key pair
+- **Slurm Cluster**: `local-mock-cluster` on `localhost:12222` (configurable via `MOCK_SLURM_HOST` and `MOCK_SLURM_PORT`)
+- **Partitions**: `debug` (default queue, 1 node, 4 CPUs) and `compute` (4 nodes, 16 CPUs, gpu:1)
+- **Cluster Config**: `mock-slurm-root-config` for `slurmuser` with scratch directory `/home/slurmuser/scratch`
+- **Application Template**: `Echo App` with default input message and output file
+- **Batch Deployment**: `Echo App` deployed to `local-mock-cluster` on partition `debug`
+- **Data Storage**: `mock-slurm-storage` (SCP storage on `localhost:12222`)
+- **Sharing**: Grants write permission on the cluster config and storage to `dev-user`
+
+Seeding is safe to re-run at any time — existing rows are reused or updated rather than
+duplicated. Alternatively, set `AIRAVATA_DB_AUTO_SEED=true` to seed automatically whenever
+the server starts.
 
 ---
 

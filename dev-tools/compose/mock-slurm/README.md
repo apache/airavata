@@ -86,13 +86,23 @@ ssh -i dev-tools/compose/mock-slurm/keys/id_ed25519 -p 12222 -o StrictHostKeyChe
 
 ## Testing the Process Launch Lifecycle
 
-You can run the automated end-to-end verification script:
+### Automatic Setup with Database Seeding
+
+To eliminate all manual setup, run the database seeder:
+
+```bash
+./bin/airavata-server seed
+```
+
+This immediately registers the SSH credential, local Slurm cluster, partitions (`debug` and `compute`), cluster config (`slurmuser`), Echo App template, and batch deployment. You can then immediately launch processes via the Dashboard or API!
+
+Alternatively, you can run the automated end-to-end verification script:
 
 ```bash
 ./dev-tools/compose/mock-slurm/demo-launch.sh
 ```
 
-Or step through the API using curl:
+Or step through the API manually using curl:
 
 ### 1. Register SSH Credential
 
