@@ -7,6 +7,9 @@ import { useInteractiveAuth } from "@/lib/interactive-auth";
 import { useSession } from "@/lib/session";
 import { InteractiveAuthDialog } from "./InteractiveAuth";
 
+// Admin-only destinations, shown below the rest once the session is known to be an admin.
+const ADMIN_NAV = [{ href: "/service-accounts/", label: "Service accounts" }];
+
 const NAV = [
   { href: "/", label: "Overview" },
   { href: "/credentials/", label: "SSH credentials" },
@@ -52,7 +55,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <small>Dashboard</small>
         </div>
         <nav className="nav">
-          {NAV.map((n) => (
+          {[...NAV, ...(isAdmin ? ADMIN_NAV : [])].map((n) => (
             <Link key={n.href} href={n.href} className={isActive(n.href) ? "active" : ""}>
               {n.label}
               {n.href === "/interactive-auth/" && current && <span className="badge warn">1+</span>}

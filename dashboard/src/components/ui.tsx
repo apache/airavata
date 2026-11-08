@@ -238,6 +238,9 @@ const STATUS_TONE: Record<string, string> = {
   TIME_LIMIT: "danger",
   READ: "",
   WRITE: "info",
+  ACTIVE: "ok",
+  INACTIVE: "warn",
+  SUSPENDED: "danger",
 };
 
 export function StatusBadge({ status }: { status: string | null | undefined }) {
