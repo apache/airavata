@@ -14,6 +14,44 @@ export interface ErrorEnvelope {
   fieldErrors?: FieldError[];
 }
 
+// Service accounts (admin only)
+
+export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+
+export interface ServiceAccount {
+  serviceAccountId: string; // "sa:<name>"
+  name: string;
+  displayName: string | null;
+  description: string | null;
+  email: string | null;
+  status: UserStatus | null;
+  createdBy: string;
+  createdAt: number;
+  tokenIssuedAt: number;
+  tokenExpiresAt: number;
+}
+
+// Returned on create and regenerate: the only times the token is ever sent.
+export interface ServiceAccountToken {
+  serviceAccount: ServiceAccount;
+  token: string;
+}
+
+export interface ServiceAccountCreate {
+  name: string;
+  displayName: string | null;
+  description: string | null;
+  email: string | null;
+  validityDays: number | null;
+}
+
+export interface ServiceAccountUpdate {
+  displayName?: string | null;
+  description?: string | null;
+  email?: string | null;
+  status?: UserStatus;
+}
+
 // Credentials
 
 export interface SSHCredential {
