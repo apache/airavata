@@ -398,7 +398,7 @@ func (s *ClusterDiscoveryService) DiscoverAllocations(ctx context.Context, confi
 		return &dto.AllocationDiscoveryResponse{Allocations: []dto.Allocation{}}, nil
 	}
 
-	// Descriptions are what tell "tg-bio210001" from "tg-che220002"; a site that will
+	// Descriptions are what tell "tg-abc123456" from "tg-xyz654321"; a site that will
 	// not show them costs only the descriptions.
 	names := make([]string, len(allocations))
 	for i, a := range allocations {

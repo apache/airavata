@@ -23,7 +23,7 @@ A data storage says how to reach a host. The supported storage type is **SCP**: 
 
 | Field | Required | Meaning |
 |---|---|---|
-| `dataName` | yes | A name for the storage, e.g. `lab-sequences` or `expanse-scratch`. |
+| `dataName` | yes | A name for the storage, e.g. `lab-sequences` or `hpc-scratch`. |
 | `hostName` | yes | The host the data sits on. |
 | `port` | no | The SSH port (default `22`). |
 | `loginUser` | yes | The account to log in as. |

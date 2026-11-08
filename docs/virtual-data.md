@@ -9,7 +9,7 @@ my-study/                         virtual data directory (root)    ── owned 
 ├── inputs/                       virtual data directory
 │   ├── T1050.fasta               virtual data file  ──▶ file product on lab-sequences
 │   └── T1051.fasta               virtual data file  ──▶ file product on lab-sequences
-├── reference-db/                 virtual data directory ──▶ directory product on expanse-scratch
+├── reference-db/                 virtual data directory ──▶ directory product on hpc-scratch
 └── results/
     └── run-1/
         └── confidence.json       virtual data file  ──▶ file product written by a run

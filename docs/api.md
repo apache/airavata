@@ -80,8 +80,8 @@ SSH_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/ssh-credentials \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "sshCredentialName": "expanse-key",
-    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+    "sshCredentialName": "hpc-key",
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@hpc",
     "privateKey": "-----BEGIN OPENSSH PRIVATE KEY-----\nExampleKeyDoNotUse\n-----END OPENSSH PRIVATE KEY-----",
     "passphrase": null
   }' | jq -r '.sshCredentialId')
@@ -101,8 +101,8 @@ echo "$SSH_CREDENTIAL_ID"
 
 ```json
 {
-  "sshCredentialName": "expanse-key",
-  "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+  "sshCredentialName": "hpc-key",
+  "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@hpc",
   "privateKey": "-----BEGIN OPENSSH PRIVATE KEY-----\nExampleKeyDoNotUse\n-----END OPENSSH PRIVATE KEY-----",
   "passphrase": null
 }
@@ -115,8 +115,8 @@ echo "$SSH_CREDENTIAL_ID"
 ```json
 {
   "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-  "sshCredentialName": "expanse-key",
-  "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+  "sshCredentialName": "hpc-key",
+  "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@hpc",
   "ownerId": "cilogon:12345"
 }
 ```
@@ -165,11 +165,11 @@ curl -s localhost:9095/api/v1/ssh-interactive-auths \
 [
   {
     "authId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
-    "hostName": "login1.nexus.gatech.edu",
+    "hostName": "login.cluster.example.edu",
     "port": 22,
-    "loginUser": "dimuthu",
+    "loginUser": "jdoe",
     "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-    "banner": "\nNCSA Delta System\n\nLogin with NCSA Kerberos + NCSA Duo multi-factor.\n",
+    "banner": "\nExample HPC Cluster\n\nLogin with your password + Duo multi-factor.\n",
     "name": "",
     "instruction": "",
     "prompts": [
@@ -199,15 +199,15 @@ curl -s "localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID" \
 ```json
 {
   "authId": "3f2c1d7e-5b8a-4c9d-a1e2-f3b4c5d6e7f8",
-  "hostName": "login.delta.ncsa.illinois.edu",
+  "hostName": "login.cluster.example.edu",
   "port": 22,
-  "loginUser": "dwannipu",
+  "loginUser": "jdoe",
   "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-  "banner": "\nNCSA Delta System\n\nLogin with NCSA Kerberos + NCSA Duo multi-factor.\n",
+  "banner": "\nExample HPC Cluster\n\nLogin with your password + Duo multi-factor.\n",
   "name": "",
   "instruction": "",
   "prompts": [
-    { "text": "dwannipu@login.delta.ncsa.illinois.edu's password: ", "echo": false }
+    { "text": "jdoe@login.cluster.example.edu's password: ", "echo": false }
   ],
   "createdAt": "2026-10-30T14:02:11.482Z"
 }
@@ -265,7 +265,7 @@ websocat -H="Authorization: Bearer $TOKEN" "ws://localhost:9095/api/v1/ssh-inter
 # then type: {"authId": "3f2c…", "responses": ["<password>"]}
 ```
 
-The [dashboard](../INSTALL.md#dashboard) holds this socket open to pop each waiting login up on whichever page is open.
+The [dashboard](https://github.com/apache/airavata/blob/master/INSTALL.md#dashboard) holds this socket open to pop each waiting login up on whichever page is open.
 
 ### Answer an Interactive SSH Auth over REST
 
@@ -462,11 +462,11 @@ CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-clusters \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "clusterName": "expanse",
-    "clusterDescription": "SDSC Expanse HPC cluster",
-    "headnodeHost": "login.expanse.sdsc.edu",
+    "clusterName": "hpc",
+    "clusterDescription": "Example university HPC cluster",
+    "headnodeHost": "login.hpc.example.edu",
     "headnodePort": 22,
-    "dataHost": "dtn.expanse.sdsc.edu",
+    "dataHost": "dtn.hpc.example.edu",
     "dataPort": 22,
     "partitions": [
       {
@@ -506,12 +506,12 @@ echo "$CLUSTER_ID"
 ```json
 {
   "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
-  "clusterName": "expanse",
-  "clusterDescription": "SDSC Expanse HPC cluster",
-  "headnodeHost": "login.expanse.sdsc.edu",
+  "clusterName": "hpc",
+  "clusterDescription": "Example university HPC cluster",
+  "headnodeHost": "login.hpc.example.edu",
   "headnodePort": 22,
   "slurmHome": null,
-  "dataHost": "dtn.expanse.sdsc.edu",
+  "dataHost": "dtn.hpc.example.edu",
   "dataPort": 22,
   "partitions": [
     {
@@ -571,7 +571,7 @@ curl -s -X POST localhost:9095/api/v1/slurm-clusters/discover-partitions \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "headnodeHost": "login.expanse.sdsc.edu",
+    "headnodeHost": "login.hpc.example.edu",
     "headnodePort": 22,
     "slurmHome": null,
     "loginUser": "airavata",
@@ -827,11 +827,11 @@ CLUSTER_CONFIG_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs 
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "expanse-alloc-TG-BIO123456",
-    "description": "Group allocation on Expanse",
+    "name": "hpc-alloc-TG-ABC123456",
+    "description": "Group allocation on the example cluster",
     "slurmClusterId": "'"$CLUSTER_ID"'",
     "loginUser": "airavata",
-    "workRoot": "/expanse/lustre/scratch/airavata/jobs",
+    "workRoot": "/scratch/airavata/jobs",
     "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
   }' | jq -r '.slurmClusterConfigId')
 ```
@@ -856,28 +856,28 @@ The cluster is inlined, since a config is only meaningful together with the mach
 ```json
 {
   "slurmClusterConfigId": "9a8b7c6d-5e4f-4a3b-9c2d-1e0f9a8b7c6d",
-  "name": "expanse-alloc-TG-BIO123456",
-  "description": "Group allocation on Expanse",
+  "name": "hpc-alloc-TG-ABC123456",
+  "description": "Group allocation on the example cluster",
   "ownerId": "cilogon:12345",
   "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
   "slurmCluster": {
     "slurmClusterId": "c1d2e3f4-5678-4abc-9def-0123456789ab",
-    "clusterName": "expanse",
-    "clusterDescription": "SDSC Expanse HPC cluster",
-    "headnodeHost": "login.expanse.sdsc.edu",
+    "clusterName": "hpc",
+    "clusterDescription": "Example university HPC cluster",
+    "headnodeHost": "login.hpc.example.edu",
     "headnodePort": 22,
     "slurmHome": "/usr/bin",
-    "dataHost": "dtn.expanse.sdsc.edu",
+    "dataHost": "dtn.hpc.example.edu",
     "dataPort": 22,
     "partitions": []
   },
   "loginUser": "airavata",
-  "workRoot": "/expanse/lustre/scratch/airavata/jobs",
+  "workRoot": "/scratch/airavata/jobs",
   "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
   "sshCredential": {
     "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-    "sshCredentialName": "expanse-key",
-    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+    "sshCredentialName": "hpc-key",
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@hpc",
     "ownerId": "cilogon:12345"
   },
   "permission": "WRITE"
@@ -931,12 +931,12 @@ curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"
 {
   "allocations": [
     {
-      "account": "tg-bio210001",
+      "account": "tg-abc123456",
       "description": "Protein folding",
       "partitions": ["gpu", "gpu-debug"],
       "qos": ["normal", "gpu-shared"]
     },
-    { "account": "tg-che220002", "description": null, "partitions": [], "qos": ["normal"] }
+    { "account": "tg-xyz654321", "description": null, "partitions": [], "qos": ["normal"] }
   ]
 }
 ```
@@ -1190,7 +1190,7 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "slurmRunSection": "module load alphafold\nrun_alphafold.sh --fasta_paths=$fastaFile --model_preset=$modelPreset",
     "defaultBatchJobConfig": {
       "wallTimeMinutes": 720,
-      "allocation": "TG-BIO210001",
+      "allocation": "TG-ABC123456",
       "cpus": 8,
       "mem": "64G",
       "nodes": 1,
@@ -1234,7 +1234,7 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
   "slurmRunSection": "module load alphafold\nrun_alphafold.sh --fasta_paths=$fastaFile --model_preset=$modelPreset",
   "defaultBatchJobConfig": {
     "wallTimeMinutes": 720,
-    "allocation": "TG-BIO210001",
+    "allocation": "TG-ABC123456",
     "cpus": 8,
     "mem": "64G",
     "nodes": 1,
@@ -1259,7 +1259,7 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
   "defaultBatchJobConfig": {
     "batchJobConfigId": "f6a7b8c9-de01-4f23-9456-789abcdef012",
     "wallTimeMinutes": 720,
-    "allocation": "TG-BIO210001",
+    "allocation": "TG-ABC123456",
     "cpus": 8,
     "mem": "64G",
     "memPerCpu": null,
@@ -1345,8 +1345,8 @@ STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
-    "dataName": "expanse-scratch",
-    "hostName": "login.expanse.sdsc.edu",
+    "dataName": "hpc-scratch",
+    "hostName": "login.hpc.example.edu",
     "port": 22,
     "loginUser": "airavata",
     "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
@@ -1370,16 +1370,16 @@ The credential is inlined as its safe (public-only) summary — the private mate
 ```json
 {
   "dataId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
-  "dataName": "expanse-scratch",
+  "dataName": "hpc-scratch",
   "ownerId": "cilogon:12345",
-  "hostName": "login.expanse.sdsc.edu",
+  "hostName": "login.hpc.example.edu",
   "port": 22,
   "loginUser": "airavata",
   "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
   "sshCredential": {
     "sshCredentialId": "8b1a9953-c461-4a3d-9d2f-0a1b2c3d4e5f",
-    "sshCredentialName": "expanse-key",
-    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@expanse",
+    "sshCredentialName": "hpc-key",
+    "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@hpc",
     "ownerId": "cilogon:12345"
   },
   "permission": "WRITE"
@@ -1536,7 +1536,7 @@ The remote name always comes from the product's `path`, never from a part's file
   "dataId": "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
   "dataName": "sample-fasta",
   "isFile": true,
-  "path": "/home/exouser/data/sample.fasta",
+  "path": "/home/jdoe/data/sample.fasta",
   "provisionStatus": "PROVISIONED",
   "ownerId": "cilogon:12345",
   "dataStorageId": "d1e2f3a4-5b6c-4d7e-8f90-1a2b3c4d5e6f",
@@ -1674,7 +1674,7 @@ FASTA_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/scp-data-storages \
 
 **The cluster.** The outputs land on the login host the cluster is reached through, which
 is the storage registered in [Create SCP Data Storage](#create-scp-data-storage) —
-`expanse-scratch`, on `login.expanse.sdsc.edu` as `airavata`. A
+`hpc-scratch`, on `login.hpc.example.edu` as `airavata`. A
 [Slurm cluster](#slurm-clusters) itself names no storage: it carries its own head node
 and data host, and the account a run submits under comes from the
 [cluster config](#slurm-cluster-configs). So this storage is registered separately, and
@@ -1727,8 +1727,8 @@ CONFIDENCE_SCORES_DATA_ID=$(curl -s -X POST localhost:9095/api/v1/data-products 
 | Declaration | Type | Product | Storage | Registered path |
 |---|---|---|---|---|
 | `fastaFile` (input) | `FILE` | `$FASTA_DATA_ID` | `lab-sequences` on `data.lab.example.edu` | `/data/sequences/T1050.fasta` |
-| `rankedModels` (output) | `FILE_LIST` | `$RANKED_MODELS_DATA_ID` | `expanse-scratch` on the cluster's login host | `/scratch/airavata/alphafold/results/run-1/ranked_models` |
-| `confidenceScores` (output) | `FILE` | `$CONFIDENCE_SCORES_DATA_ID` | `expanse-scratch` on the cluster's login host | `/scratch/airavata/alphafold/results/run-1/confidence_scores.json` |
+| `rankedModels` (output) | `FILE_LIST` | `$RANKED_MODELS_DATA_ID` | `hpc-scratch` on the cluster's login host | `/scratch/airavata/alphafold/results/run-1/ranked_models` |
+| `confidenceScores` (output) | `FILE` | `$CONFIDENCE_SCORES_DATA_ID` | `hpc-scratch` on the cluster's login host | `/scratch/airavata/alphafold/results/run-1/confidence_scores.json` |
 
 Note that launching currently builds staging tasks for the single-`FILE` declarations
 only: the `FILE_LIST` and `DIRECTORY` branches are stubs, so `rankedModels` is registered

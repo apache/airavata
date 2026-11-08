@@ -91,7 +91,7 @@ The server refuses to start if both the root account and CILogon are off, becaus
 no authentication configured: enable the root account or set CILOGON_CLIENT_ID
 ```
 
-Tokens travel in every request, so put TLS in front of the server in any deployment that is reachable over a network. See [INSTALL.md](../INSTALL.md#production-notes).
+Tokens travel in every request, so put TLS in front of the server in any deployment that is reachable over a network. See [INSTALL.md](https://github.com/apache/airavata/blob/master/INSTALL.md#production-notes).
 
 ### 3. Bootstrap the first administrator
 
@@ -133,7 +133,7 @@ The dashboard signs users in with CILogon directly. Open it and choose CILogon s
 
 ### Programmatic access: web-api-client
 
-To call the API programmatically, get a CILogon token through the **web-api-client** in [`dev-tools/web-api-client`](../dev-tools/web-api-client/README.md). It is a small web UI that runs the CILogon sign-in flow (authorization code with PKCE) and holds the resulting access token.
+To call the API programmatically, get a CILogon token through the **web-api-client** in [`dev-tools/web-api-client`](https://github.com/apache/airavata/blob/master/dev-tools/web-api-client/README.md). It is a small web UI that runs the CILogon sign-in flow (authorization code with PKCE) and holds the resulting access token.
 
 1. Add `http://localhost:8082/callback` as a redirect URI on your CILogon client.
 2. Configure the client in `dev-tools/web-api-client/.env.local`. This file is never committed.

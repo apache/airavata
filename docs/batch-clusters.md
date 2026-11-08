@@ -26,9 +26,9 @@ The easiest way to register all of this is the **dashboard**. It logs in to the 
 
 | Field | Required | Meaning |
 |---|---|---|
-| `clusterName` | yes | A name for the cluster, e.g. `expanse`. |
+| `clusterName` | yes | A name for the cluster, e.g. `hpc`. |
 | `clusterDescription` | no | Free text. |
-| `headnodeHost` | yes | The login host jobs are submitted through, e.g. `login.expanse.sdsc.edu`. |
+| `headnodeHost` | yes | The login host jobs are submitted through, e.g. `login.hpc.example.edu`. |
 | `headnodePort` | yes | Its SSH port, usually `22`. |
 | `slurmHome` | no | The Slurm install prefix, e.g. `/opt/slurm`, if `sbatch` and `squeue` are not on the login shell's `PATH`. Commands are then run as `<slurmHome>/bin/sbatch`. |
 | `dataHost` | no | A separate host for moving data, typically a DTN. If it is not set, data is staged through the head node. |
@@ -77,7 +77,7 @@ Any user can register a cluster config, and it belongs to them. Sharing one with
 
 ## Registering with the dashboard
 
-The dashboard is at `http://localhost:3000/dashboard/` when it runs locally (see [INSTALL.md](../INSTALL.md)). Cluster screens are under **Compute clusters**.
+The dashboard is at `http://localhost:3000/dashboard/` when it runs locally (see [INSTALL.md](https://github.com/apache/airavata/blob/master/INSTALL.md)). Cluster screens are under **Compute clusters**.
 
 ### Before you start
 
@@ -145,7 +145,7 @@ The same steps through the API. Full request and response bodies are in [api.md]
 PARTITIONS=$(curl -s -X POST localhost:9095/api/v1/slurm-clusters/discover-partitions \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
   -d '{
-    "headnodeHost": "login.expanse.sdsc.edu",
+    "headnodeHost": "login.hpc.example.edu",
     "headnodePort": 22,
     "slurmHome": null,
     "loginUser": "airavata",
@@ -156,10 +156,10 @@ PARTITIONS=$(curl -s -X POST localhost:9095/api/v1/slurm-clusters/discover-parti
 CLUSTER_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-clusters \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
   -d '{
-    "clusterName": "expanse",
-    "headnodeHost": "login.expanse.sdsc.edu",
+    "clusterName": "hpc",
+    "headnodeHost": "login.hpc.example.edu",
     "headnodePort": 22,
-    "dataHost": "dtn.expanse.sdsc.edu",
+    "dataHost": "dtn.hpc.example.edu",
     "dataPort": 22,
     "partitions": '"$PARTITIONS"'
   }' | jq -r '.slurmClusterId')
@@ -170,7 +170,7 @@ CLUSTER_CONFIG_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs 
   -d '{
     "slurmClusterId": "'"$CLUSTER_ID"'",
     "loginUser": "airavata",
-    "workRoot": "/expanse/lustre/scratch/airavata/jobs",
+    "workRoot": "/scratch/airavata/jobs",
     "sshCredentialId": "'"$SSH_CREDENTIAL_ID"'"
   }' | jq -r '.slurmClusterConfigId')
 

@@ -97,26 +97,26 @@ func TestSlurmMinutes(t *testing.T) {
 }
 
 func TestParsesAssociations(t *testing.T) {
-	got := parseAssociations(`tg-bio210001|gpu|normal,gpu-shared
-tg-bio210001|gpu-debug|normal
-tg-che220002||normal
-tg-che220002|compute|high
+	got := parseAssociations(`tg-abc123456|gpu|normal,gpu-shared
+tg-abc123456|gpu-debug|normal
+tg-xyz654321||normal
+tg-xyz654321|compute|high
 |||
 `)
 	if len(got) != 2 {
 		t.Fatalf("got %d allocations, want 2: %+v", len(got), got)
 	}
 	bio, che := got[0], got[1]
-	if bio.Account != "tg-bio210001" || len(bio.Partitions) != 2 || bio.Partitions[1] != "gpu-debug" ||
+	if bio.Account != "tg-abc123456" || len(bio.Partitions) != 2 || bio.Partitions[1] != "gpu-debug" ||
 		len(bio.QOS) != 2 || bio.QOS[1] != "gpu-shared" {
 		t.Errorf("bio = %+v", bio)
 	}
 	// An association with no partition opens every partition.
-	if che.Account != "tg-che220002" || len(che.Partitions) != 0 || len(che.QOS) != 2 {
+	if che.Account != "tg-xyz654321" || len(che.Partitions) != 0 || len(che.QOS) != 2 {
 		t.Errorf("che = %+v, want no partition limit", che)
 	}
 
-	applyDescriptions(got, "TG-BIO210001|Protein folding\ntg-che220002|tg-che220002\n")
+	applyDescriptions(got, "TG-ABC123456|Protein folding\ntg-xyz654321|tg-xyz654321\n")
 	if got[0].Description == nil || *got[0].Description != "Protein folding" {
 		t.Errorf("bio description = %v", got[0].Description)
 	}
