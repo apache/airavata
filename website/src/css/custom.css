@@ -1,0 +1,33 @@
+:root {
+  --ifm-color-primary: #1f5fa8;
+  --ifm-color-primary-dark: #1c5697;
+  --ifm-color-primary-darker: #1a518f;
+  --ifm-color-primary-darkest: #154376;
+  --ifm-color-primary-light: #2268b9;
+  --ifm-color-primary-lighter: #246dc1;
+  --ifm-color-primary-lightest: #3a7fd0;
+  --ifm-code-font-size: 92%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #6aa5e8;
+  --ifm-color-primary-dark: #4f95e4;
+  --ifm-color-primary-darker: #418ce2;
+  --ifm-color-primary-darkest: #2073d1;
+  --ifm-color-primary-light: #85b5ec;
+  --ifm-color-primary-lighter: #93beee;
+  --ifm-color-primary-lightest: #bad5f4;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Diagrams drawn with box-drawing characters need to keep their alignment. */
+.markdown pre code {
+  white-space: pre;
+}
+
+/* The reference tables are wide; let them scroll rather than squeeze. */
+.markdown table {
+  display: block;
+  overflow-x: auto;
+}

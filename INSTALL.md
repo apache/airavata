@@ -246,7 +246,7 @@ TOKEN='<the token printed at startup>'
 curl -s -X POST localhost:9095/api/v1/slurm-clusters \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
-  -d '{"clusterName":"expanse","headnodeHost":"login.expanse.sdsc.edu","headnodePort":22}'
+  -d '{"clusterName":"hpc","headnodeHost":"login.hpc.example.edu","headnodePort":22}'
 ```
 
 ### Owning resources requires a matching `users` row

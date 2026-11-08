@@ -88,7 +88,7 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 		},
 	}
 
-	clusterConfig := &computemodel.SlurmClusterConfig{ID: "cfg-1", WorkRoot: "/scratch/airavata", LoginUser: "dimuthu"}
+	clusterConfig := &computemodel.SlurmClusterConfig{ID: "cfg-1", WorkRoot: "/scratch/airavata", LoginUser: "jdoe"}
 
 	return process, deployment, template, clusterConfig
 }
