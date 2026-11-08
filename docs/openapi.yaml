@@ -77,6 +77,10 @@ tags:
     description: User accounts.
   - name: Groups
     description: Groups and their membership; the subject of a group share.
+  - name: Service Accounts
+    description: >-
+      Non-human users that authenticate with an Airavata-issued, expiring token.
+      Admin only. See docs/auth.md.
   - name: SSH Credentials
     description: Registered keypairs. Private material is write-only.
   - name: Slurm Clusters
@@ -210,6 +214,177 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/UserResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------------ Service accounts
+
+  /api/v1/service-accounts:
+    get:
+      tags: [Service Accounts]
+      summary: List service accounts
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: listServiceAccounts
+      responses:
+        "200":
+          description: Every service account. Tokens are never included.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ServiceAccountResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Service Accounts]
+      summary: Create a service account
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+        `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+
+        **The token is returned only in this response.** Only its digest is stored.
+
+        A service account always authenticates with `USER` authority, whatever
+        `user_roles` says, so it can never administer anything — including creating
+        other service accounts. Otherwise it is an ordinary user: it owns what it
+        creates, can be shared with and can join groups.
+      operationId: createServiceAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ServiceAccountCreate" }
+      responses:
+        "201":
+          description: "The new account and its token. Sent with `Cache-Control: no-store`."
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServiceAccountTokenResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/service-accounts/{serviceAccountId}:
+    parameters:
+      - $ref: "#/components/parameters/ServiceAccountId"
+    get:
+      tags: [Service Accounts]
+      summary: Read a service account
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: getServiceAccount
+      responses:
+        "200":
+          description: The service account.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServiceAccountResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [Service Accounts]
+      summary: Update a service account
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+        Setting `status` to anything but `ACTIVE` stops the token working at once
+        without discarding it; setting it back to `ACTIVE` restores it.
+      operationId: updateServiceAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ServiceAccountUpdate" }
+      responses:
+        "200":
+          description: The updated service account.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServiceAccountResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Service Accounts]
+      summary: Delete a service account
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Removes the account, its token,
+        its group memberships and every share granted to it. An account that still
+        owns records gets `409`; set its status to `INACTIVE` instead.
+      operationId: deleteServiceAccount
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/service-accounts/{serviceAccountId}/token/renew:
+    parameters:
+      - $ref: "#/components/parameters/ServiceAccountId"
+    post:
+      tags: [Service Accounts]
+      summary: Renew a service account token
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+        to `validityDays` from now. The token itself does not change, so whatever
+        holds it keeps working. An expired token can be renewed. The body is optional.
+      operationId: renewServiceAccountToken
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ServiceAccountTokenRequest" }
+      responses:
+        "200":
+          description: The service account with its new expiry.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServiceAccountResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/service-accounts/{serviceAccountId}/token/regenerate:
+    parameters:
+      - $ref: "#/components/parameters/ServiceAccountId"
+    post:
+      tags: [Service Accounts]
+      summary: Regenerate a service account token
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+        one; the old token stops working immediately. Use this to revoke a leaked
+        token. The new token is returned only in this response. The body is optional.
+      operationId: regenerateServiceAccountToken
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ServiceAccountTokenRequest" }
+      responses:
+        "200":
+          description: "The account and its new token. Sent with `Cache-Control: no-store`."
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ServiceAccountTokenResponse" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
@@ -2705,6 +2880,12 @@ components:
       in: path
       required: true
       schema: { type: string }
+    ServiceAccountId:
+      name: serviceAccountId
+      in: path
+      required: true
+      description: The service account's user id, `sa:<name>`.
+      schema: { type: string }
     GroupId:
       name: groupId
       in: path
@@ -2821,7 +3002,8 @@ components:
     Conflict:
       description: |
         The request collides with existing state — deleting an SSH credential still
-        in use, or a template that still has deployments.
+        in use, a template that still has deployments, or a service account that
+        still owns records; or creating a service account whose name is taken.
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -2935,7 +3117,7 @@ components:
 
     AuthMethod:
       type: string
-      enum: [CILOGON, SYSTEM]
+      enum: [CILOGON, SYSTEM, SERVICE_ACCOUNT]
     UserStatus:
       type: string
       enum: [ACTIVE, INACTIVE, SUSPENDED]
@@ -3046,6 +3228,73 @@ components:
           format: int64
           description: Milliseconds since the epoch.
       required: [userId, status, firstName, lastName, createdAt]
+
+    ServiceAccountCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: "^[a-z0-9][a-z0-9._-]{1,63}$"
+          description: Becomes the account's user id as `sa:<name>`.
+        displayName: { type: [string, "null"] }
+        description: { type: [string, "null"], maxLength: 1024 }
+        email: { type: [string, "null"], format: email }
+        validityDays:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 365
+          description: How long the first token lives. Defaults to 90.
+      required: [name]
+
+    ServiceAccountUpdate:
+      type: object
+      description: Absent fields are left unchanged.
+      properties:
+        displayName: { type: [string, "null"] }
+        description: { type: [string, "null"], maxLength: 1024 }
+        email: { type: [string, "null"], format: email }
+        status:
+          oneOf:
+            - { $ref: "#/components/schemas/UserStatus" }
+            - { type: "null" }
+
+    ServiceAccountTokenRequest:
+      type: object
+      properties:
+        validityDays:
+          type: [integer, "null"]
+          minimum: 1
+          maximum: 365
+          description: How long the token lives from now. Defaults to 90.
+
+    ServiceAccountResponse:
+      type: object
+      description: The read model for a service account. It never carries the token.
+      properties:
+        serviceAccountId: { type: string, description: "`sa:<name>`" }
+        name: { type: string }
+        displayName: { type: [string, "null"] }
+        description: { type: [string, "null"] }
+        email: { type: [string, "null"] }
+        status:
+          oneOf:
+            - { $ref: "#/components/schemas/UserStatus" }
+            - { type: "null" }
+        createdBy: { type: string, description: The admin who created the account. }
+        createdAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
+        tokenIssuedAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
+        tokenExpiresAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
+      required: [serviceAccountId, name, displayName, description, email, status, createdBy, createdAt, tokenIssuedAt, tokenExpiresAt]
+
+    ServiceAccountTokenResponse:
+      type: object
+      description: Returned on create and regenerate — the only times a token is sent.
+      properties:
+        serviceAccount: { $ref: "#/components/schemas/ServiceAccountResponse" }
+        token:
+          type: string
+          description: The bearer token, prefixed `airavata_sa_`. Store it securely; it cannot be read back.
+      required: [serviceAccount, token]
 
     GroupRequest:
       type: object

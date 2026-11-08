@@ -20,14 +20,17 @@ import (
 
 // Defines values for AuthMethod.
 const (
-	CILOGON AuthMethod = "CILOGON"
-	SYSTEM  AuthMethod = "SYSTEM"
+	CILOGON        AuthMethod = "CILOGON"
+	SERVICEACCOUNT AuthMethod = "SERVICE_ACCOUNT"
+	SYSTEM         AuthMethod = "SYSTEM"
 )
 
 // Valid indicates whether the value is a known member of the AuthMethod enum.
 func (e AuthMethod) Valid() bool {
 	switch e {
 	case CILOGON:
+		return true
+	case SERVICEACCOUNT:
 		return true
 	case SYSTEM:
 		return true
@@ -1066,6 +1069,65 @@ type SSHCredentialResponse struct {
 	SshCredentialName string             `json:"sshCredentialName"`
 }
 
+// ServiceAccountCreate defines model for ServiceAccountCreate.
+type ServiceAccountCreate struct {
+	Description *string              `json:"description,omitempty"`
+	DisplayName *string              `json:"displayName,omitempty"`
+	Email       *openapi_types.Email `json:"email,omitempty"`
+
+	// Name Becomes the account's user id as `sa:<name>`.
+	Name string `json:"name"`
+
+	// ValidityDays How long the first token lives. Defaults to 90.
+	ValidityDays *int `json:"validityDays,omitempty"`
+}
+
+// ServiceAccountResponse The read model for a service account. It never carries the token.
+type ServiceAccountResponse struct {
+	// CreatedAt Milliseconds since the epoch.
+	CreatedAt int64 `json:"createdAt"`
+
+	// CreatedBy The admin who created the account.
+	CreatedBy   string  `json:"createdBy"`
+	Description *string `json:"description"`
+	DisplayName *string `json:"displayName"`
+	Email       *string `json:"email"`
+	Name        string  `json:"name"`
+
+	// ServiceAccountId `sa:<name>`
+	ServiceAccountId string      `json:"serviceAccountId"`
+	Status           *UserStatus `json:"status"`
+
+	// TokenExpiresAt Milliseconds since the epoch.
+	TokenExpiresAt int64 `json:"tokenExpiresAt"`
+
+	// TokenIssuedAt Milliseconds since the epoch.
+	TokenIssuedAt int64 `json:"tokenIssuedAt"`
+}
+
+// ServiceAccountTokenRequest defines model for ServiceAccountTokenRequest.
+type ServiceAccountTokenRequest struct {
+	// ValidityDays How long the token lives from now. Defaults to 90.
+	ValidityDays *int `json:"validityDays,omitempty"`
+}
+
+// ServiceAccountTokenResponse Returned on create and regenerate — the only times a token is sent.
+type ServiceAccountTokenResponse struct {
+	// ServiceAccount The read model for a service account. It never carries the token.
+	ServiceAccount ServiceAccountResponse `json:"serviceAccount"`
+
+	// Token The bearer token, prefixed `airavata_sa_`. Store it securely; it cannot be read back.
+	Token string `json:"token"`
+}
+
+// ServiceAccountUpdate Absent fields are left unchanged.
+type ServiceAccountUpdate struct {
+	Description *string              `json:"description,omitempty"`
+	DisplayName *string              `json:"displayName,omitempty"`
+	Email       *openapi_types.Email `json:"email,omitempty"`
+	Status      *UserStatus          `json:"status,omitempty"`
+}
+
 // ShareRequest A grant. The same body for every shareable record: the record is named by the path, and the subject's kind is principalType rather than a separate endpoint.
 type ShareRequest struct {
 	// Permission Defaults to READ when omitted; widening is a deliberate act. WRITE implies READ. Neither reaches deleting the record or managing its share list.
@@ -1303,6 +1365,9 @@ type ProcessId = openapi_types.UUID
 // SSHCredentialId defines model for SSHCredentialId.
 type SSHCredentialId = openapi_types.UUID
 
+// ServiceAccountId defines model for ServiceAccountId.
+type ServiceAccountId = string
+
 // SharingId defines model for SharingId.
 type SharingId = openapi_types.UUID
 
@@ -1448,6 +1513,18 @@ type PostApiV1ScpDataStoragesDataStorageIdSharesJSONRequestBody = ShareRequest
 
 // PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdJSONRequestBody defines body for PutApiV1ScpDataStoragesDataStorageIdSharesSharingId for application/json ContentType.
 type PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdJSONRequestBody = ShareUpdate
+
+// CreateServiceAccountJSONRequestBody defines body for CreateServiceAccount for application/json ContentType.
+type CreateServiceAccountJSONRequestBody = ServiceAccountCreate
+
+// UpdateServiceAccountJSONRequestBody defines body for UpdateServiceAccount for application/json ContentType.
+type UpdateServiceAccountJSONRequestBody = ServiceAccountUpdate
+
+// RegenerateServiceAccountTokenJSONRequestBody defines body for RegenerateServiceAccountToken for application/json ContentType.
+type RegenerateServiceAccountTokenJSONRequestBody = ServiceAccountTokenRequest
+
+// RenewServiceAccountTokenJSONRequestBody defines body for RenewServiceAccountToken for application/json ContentType.
+type RenewServiceAccountTokenJSONRequestBody = ServiceAccountTokenRequest
 
 // CreateSlurmClusterConfigJSONRequestBody defines body for CreateSlurmClusterConfig for application/json ContentType.
 type CreateSlurmClusterConfigJSONRequestBody = SlurmClusterConfigRequest
@@ -2330,6 +2407,129 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1ScpDataStoragesDataStorageIdSharesSharingId` operationId).
 	PutApiV1ScpDataStoragesDataStorageIdSharesSharingId(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListServiceAccounts List service accounts
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	//
+	// Corresponds with GET /api/v1/service-accounts (the `ListServiceAccounts` operationId).
+	ListServiceAccounts(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateServiceAccountWithBody Create a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+	// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+	//
+	// **The token is returned only in this response.** Only its digest is stored.
+	//
+	// A service account always authenticates with `USER` authority, whatever
+	// `user_roles` says, so it can never administer anything — including creating
+	// other service accounts. Otherwise it is an ordinary user: it owns what it
+	// creates, can be shared with and can join groups.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+	CreateServiceAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateServiceAccount Create a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+	// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+	//
+	// **The token is returned only in this response.** Only its digest is stored.
+	//
+	// A service account always authenticates with `USER` authority, whatever
+	// `user_roles` says, so it can never administer anything — including creating
+	// other service accounts. Otherwise it is an ordinary user: it owns what it
+	// creates, can be shared with and can join groups.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+	CreateServiceAccount(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteServiceAccount Delete a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Removes the account, its token,
+	// its group memberships and every share granted to it. An account that still
+	// owns records gets `409`; set its status to `INACTIVE` instead.
+	//
+	// Corresponds with DELETE /api/v1/service-accounts/{serviceAccountId} (the `DeleteServiceAccount` operationId).
+	DeleteServiceAccount(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetServiceAccount Read a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	//
+	// Corresponds with GET /api/v1/service-accounts/{serviceAccountId} (the `GetServiceAccount` operationId).
+	GetServiceAccount(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateServiceAccountWithBody Update a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+	// Setting `status` to anything but `ACTIVE` stops the token working at once
+	// without discarding it; setting it back to `ACTIVE` restores it.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+	UpdateServiceAccountWithBody(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateServiceAccount Update a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+	// Setting `status` to anything but `ACTIVE` stops the token working at once
+	// without discarding it; setting it back to `ACTIVE` restores it.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+	UpdateServiceAccount(ctx context.Context, serviceAccountId ServiceAccountId, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RegenerateServiceAccountTokenWithBody Regenerate a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+	// one; the old token stops working immediately. Use this to revoke a leaked
+	// token. The new token is returned only in this response. The body is optional.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+	RegenerateServiceAccountTokenWithBody(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RegenerateServiceAccountToken Regenerate a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+	// one; the old token stops working immediately. Use this to revoke a leaked
+	// token. The new token is returned only in this response. The body is optional.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+	RegenerateServiceAccountToken(ctx context.Context, serviceAccountId ServiceAccountId, body RegenerateServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RenewServiceAccountTokenWithBody Renew a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+	// to `validityDays` from now. The token itself does not change, so whatever
+	// holds it keeps working. An expired token can be renewed. The body is optional.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+	RenewServiceAccountTokenWithBody(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RenewServiceAccountToken Renew a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+	// to `validityDays` from now. The token itself does not change, so whatever
+	// holds it keeps working. An expired token can be renewed. The body is optional.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+	RenewServiceAccountToken(ctx context.Context, serviceAccountId ServiceAccountId, body RenewServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListSlurmClusterConfigs List all cluster configs
 	//
@@ -4602,6 +4802,239 @@ func (c *Client) PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdWithBody(ctx
 // Corresponds with PUT /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1ScpDataStoragesDataStorageIdSharesSharingId` operationId).
 func (c *Client) PutApiV1ScpDataStoragesDataStorageIdSharesSharingId(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutApiV1ScpDataStoragesDataStorageIdSharesSharingIdRequest(c.Server, dataStorageId, sharingId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListServiceAccounts List service accounts
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority.
+//
+// Corresponds with GET /api/v1/service-accounts (the `ListServiceAccounts` operationId).
+func (c *Client) ListServiceAccounts(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListServiceAccountsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateServiceAccountWithBody Create a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+//
+// **The token is returned only in this response.** Only its digest is stored.
+//
+// A service account always authenticates with `USER` authority, whatever
+// `user_roles` says, so it can never administer anything — including creating
+// other service accounts. Otherwise it is an ordinary user: it owns what it
+// creates, can be shared with and can join groups.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+func (c *Client) CreateServiceAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateServiceAccountRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateServiceAccount Create a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+//
+// **The token is returned only in this response.** Only its digest is stored.
+//
+// A service account always authenticates with `USER` authority, whatever
+// `user_roles` says, so it can never administer anything — including creating
+// other service accounts. Otherwise it is an ordinary user: it owns what it
+// creates, can be shared with and can join groups.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+func (c *Client) CreateServiceAccount(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateServiceAccountRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteServiceAccount Delete a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Removes the account, its token,
+// its group memberships and every share granted to it. An account that still
+// owns records gets `409`; set its status to `INACTIVE` instead.
+//
+// Corresponds with DELETE /api/v1/service-accounts/{serviceAccountId} (the `DeleteServiceAccount` operationId).
+func (c *Client) DeleteServiceAccount(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteServiceAccountRequest(c.Server, serviceAccountId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetServiceAccount Read a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority.
+//
+// Corresponds with GET /api/v1/service-accounts/{serviceAccountId} (the `GetServiceAccount` operationId).
+func (c *Client) GetServiceAccount(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetServiceAccountRequest(c.Server, serviceAccountId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateServiceAccountWithBody Update a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+// Setting `status` to anything but `ACTIVE` stops the token working at once
+// without discarding it; setting it back to `ACTIVE` restores it.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+func (c *Client) UpdateServiceAccountWithBody(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateServiceAccountRequestWithBody(c.Server, serviceAccountId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateServiceAccount Update a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+// Setting `status` to anything but `ACTIVE` stops the token working at once
+// without discarding it; setting it back to `ACTIVE` restores it.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+func (c *Client) UpdateServiceAccount(ctx context.Context, serviceAccountId ServiceAccountId, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateServiceAccountRequest(c.Server, serviceAccountId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RegenerateServiceAccountTokenWithBody Regenerate a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+// one; the old token stops working immediately. Use this to revoke a leaked
+// token. The new token is returned only in this response. The body is optional.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+func (c *Client) RegenerateServiceAccountTokenWithBody(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRegenerateServiceAccountTokenRequestWithBody(c.Server, serviceAccountId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RegenerateServiceAccountToken Regenerate a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+// one; the old token stops working immediately. Use this to revoke a leaked
+// token. The new token is returned only in this response. The body is optional.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+func (c *Client) RegenerateServiceAccountToken(ctx context.Context, serviceAccountId ServiceAccountId, body RegenerateServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRegenerateServiceAccountTokenRequest(c.Server, serviceAccountId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RenewServiceAccountTokenWithBody Renew a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+// to `validityDays` from now. The token itself does not change, so whatever
+// holds it keeps working. An expired token can be renewed. The body is optional.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+func (c *Client) RenewServiceAccountTokenWithBody(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRenewServiceAccountTokenRequestWithBody(c.Server, serviceAccountId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RenewServiceAccountToken Renew a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+// to `validityDays` from now. The token itself does not change, so whatever
+// holds it keeps working. An expired token can be renewed. The body is optional.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+func (c *Client) RenewServiceAccountToken(ctx context.Context, serviceAccountId ServiceAccountId, body RenewServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRenewServiceAccountTokenRequest(c.Server, serviceAccountId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -8642,6 +9075,282 @@ func NewPutApiV1ScpDataStoragesDataStorageIdSharesSharingIdRequestWithBody(serve
 	return req, nil
 }
 
+// NewListServiceAccountsRequest constructs an http.Request for the ListServiceAccounts method
+func NewListServiceAccountsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/service-accounts")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateServiceAccountRequest calls the generic CreateServiceAccount builder with application/json body
+func NewCreateServiceAccountRequest(server string, body CreateServiceAccountJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateServiceAccountRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateServiceAccountRequestWithBody constructs an http.Request for the CreateServiceAccount method, with any body, and a specified content type
+func NewCreateServiceAccountRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/service-accounts")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteServiceAccountRequest constructs an http.Request for the DeleteServiceAccount method
+func NewDeleteServiceAccountRequest(server string, serviceAccountId ServiceAccountId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "serviceAccountId", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/service-accounts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetServiceAccountRequest constructs an http.Request for the GetServiceAccount method
+func NewGetServiceAccountRequest(server string, serviceAccountId ServiceAccountId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "serviceAccountId", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/service-accounts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateServiceAccountRequest calls the generic UpdateServiceAccount builder with application/json body
+func NewUpdateServiceAccountRequest(server string, serviceAccountId ServiceAccountId, body UpdateServiceAccountJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateServiceAccountRequestWithBody(server, serviceAccountId, "application/json", bodyReader)
+}
+
+// NewUpdateServiceAccountRequestWithBody constructs an http.Request for the UpdateServiceAccount method, with any body, and a specified content type
+func NewUpdateServiceAccountRequestWithBody(server string, serviceAccountId ServiceAccountId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "serviceAccountId", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/service-accounts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRegenerateServiceAccountTokenRequest calls the generic RegenerateServiceAccountToken builder with application/json body
+func NewRegenerateServiceAccountTokenRequest(server string, serviceAccountId ServiceAccountId, body RegenerateServiceAccountTokenJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRegenerateServiceAccountTokenRequestWithBody(server, serviceAccountId, "application/json", bodyReader)
+}
+
+// NewRegenerateServiceAccountTokenRequestWithBody constructs an http.Request for the RegenerateServiceAccountToken method, with any body, and a specified content type
+func NewRegenerateServiceAccountTokenRequestWithBody(server string, serviceAccountId ServiceAccountId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "serviceAccountId", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/service-accounts/%s/token/regenerate", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRenewServiceAccountTokenRequest calls the generic RenewServiceAccountToken builder with application/json body
+func NewRenewServiceAccountTokenRequest(server string, serviceAccountId ServiceAccountId, body RenewServiceAccountTokenJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewRenewServiceAccountTokenRequestWithBody(server, serviceAccountId, "application/json", bodyReader)
+}
+
+// NewRenewServiceAccountTokenRequestWithBody constructs an http.Request for the RenewServiceAccountToken method, with any body, and a specified content type
+func NewRenewServiceAccountTokenRequestWithBody(server string, serviceAccountId ServiceAccountId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "serviceAccountId", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/service-accounts/%s/token/renew", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewListSlurmClusterConfigsRequest constructs an http.Request for the ListSlurmClusterConfigs method
 func NewListSlurmClusterConfigsRequest(server string) (*http.Request, error) {
 	var err error
@@ -11302,6 +12011,135 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /api/v1/scp-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1ScpDataStoragesDataStorageIdSharesSharingId` operationId).
 	PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdWithResponse(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdResponse, error)
+
+	// ListServiceAccountsWithResponse List service accounts
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/service-accounts (the `ListServiceAccounts` operationId).
+	ListServiceAccountsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListServiceAccountsResponse, error)
+
+	// CreateServiceAccountWithBodyWithResponse Create a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+	// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+	//
+	// **The token is returned only in this response.** Only its digest is stored.
+	//
+	// A service account always authenticates with `USER` authority, whatever
+	// `user_roles` says, so it can never administer anything — including creating
+	// other service accounts. Otherwise it is an ordinary user: it owns what it
+	// creates, can be shared with and can join groups.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+	CreateServiceAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error)
+
+	// CreateServiceAccountWithResponse Create a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+	// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+	//
+	// **The token is returned only in this response.** Only its digest is stored.
+	//
+	// A service account always authenticates with `USER` authority, whatever
+	// `user_roles` says, so it can never administer anything — including creating
+	// other service accounts. Otherwise it is an ordinary user: it owns what it
+	// creates, can be shared with and can join groups.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+	CreateServiceAccountWithResponse(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error)
+
+	// DeleteServiceAccountWithResponse Delete a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Removes the account, its token,
+	// its group memberships and every share granted to it. An account that still
+	// owns records gets `409`; set its status to `INACTIVE` instead.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/v1/service-accounts/{serviceAccountId} (the `DeleteServiceAccount` operationId).
+	DeleteServiceAccountWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*DeleteServiceAccountResponse, error)
+
+	// GetServiceAccountWithResponse Read a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/service-accounts/{serviceAccountId} (the `GetServiceAccount` operationId).
+	GetServiceAccountWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*GetServiceAccountResponse, error)
+
+	// UpdateServiceAccountWithBodyWithResponse Update a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+	// Setting `status` to anything but `ACTIVE` stops the token working at once
+	// without discarding it; setting it back to `ACTIVE` restores it.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+	UpdateServiceAccountWithBodyWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error)
+
+	// UpdateServiceAccountWithResponse Update a service account
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+	// Setting `status` to anything but `ACTIVE` stops the token working at once
+	// without discarding it; setting it back to `ACTIVE` restores it.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+	UpdateServiceAccountWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error)
+
+	// RegenerateServiceAccountTokenWithBodyWithResponse Regenerate a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+	// one; the old token stops working immediately. Use this to revoke a leaked
+	// token. The new token is returned only in this response. The body is optional.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+	RegenerateServiceAccountTokenWithBodyWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RegenerateServiceAccountTokenResponse, error)
+
+	// RegenerateServiceAccountTokenWithResponse Regenerate a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+	// one; the old token stops working immediately. Use this to revoke a leaked
+	// token. The new token is returned only in this response. The body is optional.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+	RegenerateServiceAccountTokenWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, body RegenerateServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RegenerateServiceAccountTokenResponse, error)
+
+	// RenewServiceAccountTokenWithBodyWithResponse Renew a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+	// to `validityDays` from now. The token itself does not change, so whatever
+	// holds it keeps working. An expired token can be renewed. The body is optional.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+	RenewServiceAccountTokenWithBodyWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RenewServiceAccountTokenResponse, error)
+
+	// RenewServiceAccountTokenWithResponse Renew a service account token
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+	// to `validityDays` from now. The token itself does not change, so whatever
+	// holds it keeps working. An expired token can be renewed. The body is optional.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+	RenewServiceAccountTokenWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, body RenewServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RenewServiceAccountTokenResponse, error)
 
 	// ListSlurmClusterConfigsWithResponse List all cluster configs
 	//
@@ -17951,6 +18789,608 @@ func (r PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdResponse) ContentType
 	return ""
 }
 
+// ListServiceAccountsResponse401Headers the declared response headers of an HTTP 401 response for ListServiceAccounts
+type ListServiceAccountsResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListServiceAccountsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]ServiceAccountResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListServiceAccountsResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListServiceAccountsResponse) GetJSON200() *[]ServiceAccountResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListServiceAccountsResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListServiceAccountsResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListServiceAccountsResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListServiceAccountsResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListServiceAccountsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListServiceAccountsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListServiceAccountsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListServiceAccountsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// CreateServiceAccountResponse401Headers the declared response headers of an HTTP 401 response for CreateServiceAccount
+type CreateServiceAccountResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type CreateServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *ServiceAccountTokenResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *CreateServiceAccountResponse401Headers
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateServiceAccountResponse) GetJSON201() *ServiceAccountTokenResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateServiceAccountResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateServiceAccountResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateServiceAccountResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r CreateServiceAccountResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateServiceAccountResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r CreateServiceAccountResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateServiceAccountResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateServiceAccountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateServiceAccountResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// DeleteServiceAccountResponse401Headers the declared response headers of an HTTP 401 response for DeleteServiceAccount
+type DeleteServiceAccountResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type DeleteServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *DeleteServiceAccountResponse401Headers
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteServiceAccountResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteServiceAccountResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteServiceAccountResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteServiceAccountResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteServiceAccountResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r DeleteServiceAccountResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteServiceAccountResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteServiceAccountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteServiceAccountResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetServiceAccountResponse401Headers the declared response headers of an HTTP 401 response for GetServiceAccount
+type GetServiceAccountResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type GetServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceAccountResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *GetServiceAccountResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetServiceAccountResponse) GetJSON200() *ServiceAccountResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetServiceAccountResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetServiceAccountResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetServiceAccountResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetServiceAccountResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r GetServiceAccountResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r GetServiceAccountResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetServiceAccountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetServiceAccountResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// UpdateServiceAccountResponse401Headers the declared response headers of an HTTP 401 response for UpdateServiceAccount
+type UpdateServiceAccountResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type UpdateServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceAccountResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *UpdateServiceAccountResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateServiceAccountResponse) GetJSON200() *ServiceAccountResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateServiceAccountResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateServiceAccountResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateServiceAccountResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateServiceAccountResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateServiceAccountResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r UpdateServiceAccountResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateServiceAccountResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateServiceAccountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateServiceAccountResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// RegenerateServiceAccountTokenResponse401Headers the declared response headers of an HTTP 401 response for RegenerateServiceAccountToken
+type RegenerateServiceAccountTokenResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type RegenerateServiceAccountTokenResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceAccountTokenResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *RegenerateServiceAccountTokenResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r RegenerateServiceAccountTokenResponse) GetJSON200() *ServiceAccountTokenResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r RegenerateServiceAccountTokenResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RegenerateServiceAccountTokenResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r RegenerateServiceAccountTokenResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RegenerateServiceAccountTokenResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r RegenerateServiceAccountTokenResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r RegenerateServiceAccountTokenResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r RegenerateServiceAccountTokenResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RegenerateServiceAccountTokenResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RegenerateServiceAccountTokenResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RegenerateServiceAccountTokenResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// RenewServiceAccountTokenResponse401Headers the declared response headers of an HTTP 401 response for RenewServiceAccountToken
+type RenewServiceAccountTokenResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type RenewServiceAccountTokenResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ServiceAccountResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *RenewServiceAccountTokenResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r RenewServiceAccountTokenResponse) GetJSON200() *ServiceAccountResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r RenewServiceAccountTokenResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RenewServiceAccountTokenResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r RenewServiceAccountTokenResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RenewServiceAccountTokenResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r RenewServiceAccountTokenResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r RenewServiceAccountTokenResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r RenewServiceAccountTokenResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RenewServiceAccountTokenResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RenewServiceAccountTokenResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RenewServiceAccountTokenResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // ListSlurmClusterConfigsResponse401Headers the declared response headers of an HTTP 401 response for ListSlurmClusterConfigs
 type ListSlurmClusterConfigsResponse401Headers struct {
 	WWWAuthenticate *string
@@ -23147,6 +24587,201 @@ func (c *ClientWithResponses) PutApiV1ScpDataStoragesDataStorageIdSharesSharingI
 		return nil, err
 	}
 	return ParsePutApiV1ScpDataStoragesDataStorageIdSharesSharingIdResponse(rsp)
+}
+
+// ListServiceAccountsWithResponse List service accounts
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/service-accounts (the `ListServiceAccounts` operationId).
+func (c *ClientWithResponses) ListServiceAccountsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListServiceAccountsResponse, error) {
+	rsp, err := c.ListServiceAccounts(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListServiceAccountsResponse(rsp)
+}
+
+// CreateServiceAccountWithBodyWithResponse Create a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+//
+// **The token is returned only in this response.** Only its digest is stored.
+//
+// A service account always authenticates with `USER` authority, whatever
+// `user_roles` says, so it can never administer anything — including creating
+// other service accounts. Otherwise it is an ordinary user: it owns what it
+// creates, can be shared with and can join groups.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+func (c *ClientWithResponses) CreateServiceAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error) {
+	rsp, err := c.CreateServiceAccountWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateServiceAccountResponse(rsp)
+}
+
+// CreateServiceAccountWithResponse Create a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Creates a user with id
+// `sa:<name>` and auth method `SERVICE_ACCOUNT`, and mints its first token.
+//
+// **The token is returned only in this response.** Only its digest is stored.
+//
+// A service account always authenticates with `USER` authority, whatever
+// `user_roles` says, so it can never administer anything — including creating
+// other service accounts. Otherwise it is an ordinary user: it owns what it
+// creates, can be shared with and can join groups.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/service-accounts (the `CreateServiceAccount` operationId).
+func (c *ClientWithResponses) CreateServiceAccountWithResponse(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error) {
+	rsp, err := c.CreateServiceAccount(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateServiceAccountResponse(rsp)
+}
+
+// DeleteServiceAccountWithResponse Delete a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Removes the account, its token,
+// its group memberships and every share granted to it. An account that still
+// owns records gets `409`; set its status to `INACTIVE` instead.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/v1/service-accounts/{serviceAccountId} (the `DeleteServiceAccount` operationId).
+func (c *ClientWithResponses) DeleteServiceAccountWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*DeleteServiceAccountResponse, error) {
+	rsp, err := c.DeleteServiceAccount(ctx, serviceAccountId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteServiceAccountResponse(rsp)
+}
+
+// GetServiceAccountWithResponse Read a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/service-accounts/{serviceAccountId} (the `GetServiceAccount` operationId).
+func (c *ClientWithResponses) GetServiceAccountWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, reqEditors ...RequestEditorFn) (*GetServiceAccountResponse, error) {
+	rsp, err := c.GetServiceAccount(ctx, serviceAccountId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetServiceAccountResponse(rsp)
+}
+
+// UpdateServiceAccountWithBodyWithResponse Update a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+// Setting `status` to anything but `ACTIVE` stops the token working at once
+// without discarding it; setting it back to `ACTIVE` restores it.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+func (c *ClientWithResponses) UpdateServiceAccountWithBodyWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error) {
+	rsp, err := c.UpdateServiceAccountWithBody(ctx, serviceAccountId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateServiceAccountResponse(rsp)
+}
+
+// UpdateServiceAccountWithResponse Update a service account
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Absent fields are unchanged.
+// Setting `status` to anything but `ACTIVE` stops the token working at once
+// without discarding it; setting it back to `ACTIVE` restores it.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/service-accounts/{serviceAccountId} (the `UpdateServiceAccount` operationId).
+func (c *ClientWithResponses) UpdateServiceAccountWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error) {
+	rsp, err := c.UpdateServiceAccount(ctx, serviceAccountId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateServiceAccountResponse(rsp)
+}
+
+// RegenerateServiceAccountTokenWithBodyWithResponse Regenerate a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+// one; the old token stops working immediately. Use this to revoke a leaked
+// token. The new token is returned only in this response. The body is optional.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+func (c *ClientWithResponses) RegenerateServiceAccountTokenWithBodyWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RegenerateServiceAccountTokenResponse, error) {
+	rsp, err := c.RegenerateServiceAccountTokenWithBody(ctx, serviceAccountId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRegenerateServiceAccountTokenResponse(rsp)
+}
+
+// RegenerateServiceAccountTokenWithResponse Regenerate a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Replaces the token with a new
+// one; the old token stops working immediately. Use this to revoke a leaked
+// token. The new token is returned only in this response. The body is optional.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate (the `RegenerateServiceAccountToken` operationId).
+func (c *ClientWithResponses) RegenerateServiceAccountTokenWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, body RegenerateServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RegenerateServiceAccountTokenResponse, error) {
+	rsp, err := c.RegenerateServiceAccountToken(ctx, serviceAccountId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRegenerateServiceAccountTokenResponse(rsp)
+}
+
+// RenewServiceAccountTokenWithBodyWithResponse Renew a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+// to `validityDays` from now. The token itself does not change, so whatever
+// holds it keeps working. An expired token can be renewed. The body is optional.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+func (c *ClientWithResponses) RenewServiceAccountTokenWithBodyWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*RenewServiceAccountTokenResponse, error) {
+	rsp, err := c.RenewServiceAccountTokenWithBody(ctx, serviceAccountId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRenewServiceAccountTokenResponse(rsp)
+}
+
+// RenewServiceAccountTokenWithResponse Renew a service account token
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Moves the current token's expiry
+// to `validityDays` from now. The token itself does not change, so whatever
+// holds it keeps working. An expired token can be renewed. The body is optional.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/service-accounts/{serviceAccountId}/token/renew (the `RenewServiceAccountToken` operationId).
+func (c *ClientWithResponses) RenewServiceAccountTokenWithResponse(ctx context.Context, serviceAccountId ServiceAccountId, body RenewServiceAccountTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*RenewServiceAccountTokenResponse, error) {
+	rsp, err := c.RenewServiceAccountToken(ctx, serviceAccountId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRenewServiceAccountTokenResponse(rsp)
 }
 
 // ListSlurmClusterConfigsWithResponse List all cluster configs
@@ -29558,6 +31193,548 @@ func ParsePutApiV1ScpDataStoragesDataStorageIdSharesSharingIdResponse(rsp *http.
 	switch {
 	case rsp.StatusCode == 401:
 		var headers PutApiV1ScpDataStoragesDataStorageIdSharesSharingIdResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListServiceAccountsResponse parses an HTTP response from a ListServiceAccountsWithResponse call
+func ParseListServiceAccountsResponse(rsp *http.Response) (*ListServiceAccountsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListServiceAccountsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ServiceAccountResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListServiceAccountsResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseCreateServiceAccountResponse parses an HTTP response from a CreateServiceAccountWithResponse call
+func ParseCreateServiceAccountResponse(rsp *http.Response) (*CreateServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ServiceAccountTokenResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers CreateServiceAccountResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseDeleteServiceAccountResponse parses an HTTP response from a DeleteServiceAccountWithResponse call
+func ParseDeleteServiceAccountResponse(rsp *http.Response) (*DeleteServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers DeleteServiceAccountResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetServiceAccountResponse parses an HTTP response from a GetServiceAccountWithResponse call
+func ParseGetServiceAccountResponse(rsp *http.Response) (*GetServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccountResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers GetServiceAccountResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseUpdateServiceAccountResponse parses an HTTP response from a UpdateServiceAccountWithResponse call
+func ParseUpdateServiceAccountResponse(rsp *http.Response) (*UpdateServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccountResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers UpdateServiceAccountResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseRegenerateServiceAccountTokenResponse parses an HTTP response from a RegenerateServiceAccountTokenWithResponse call
+func ParseRegenerateServiceAccountTokenResponse(rsp *http.Response) (*RegenerateServiceAccountTokenResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RegenerateServiceAccountTokenResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccountTokenResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers RegenerateServiceAccountTokenResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseRenewServiceAccountTokenResponse parses an HTTP response from a RenewServiceAccountTokenWithResponse call
+func ParseRenewServiceAccountTokenResponse(rsp *http.Response) (*RenewServiceAccountTokenResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RenewServiceAccountTokenResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccountResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers RenewServiceAccountTokenResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {

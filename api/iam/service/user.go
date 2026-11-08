@@ -59,6 +59,17 @@ func (s *UserService) Register(ctx context.Context, req *dto.UserRegistration) (
 	if _, err := auth.RequireSuperAdmin(ctx); err != nil {
 		return nil, err
 	}
+	// Service accounts have their own API, which is what issues their token. One
+	// registered here would be a service account with no way to authenticate, in a
+	// namespace the introspector refuses to hand to any identity provider.
+	if req.AuthMethod != nil && *req.AuthMethod == model.AuthMethodServiceAccount {
+		return nil, httpx.Invalid([]httpx.FieldError{{Field: "authMethod",
+			Message: "Service accounts are created through /api/v1/service-accounts"}})
+	}
+	if auth.IsServiceAccountID(req.UserID) {
+		return nil, httpx.Invalid([]httpx.FieldError{{Field: "userId",
+			Message: "User IDs starting with \"" + auth.ServiceAccountIDPrefix + "\" are reserved for service accounts"}})
+	}
 
 	status := model.UserStatusActive
 	user := &model.User{

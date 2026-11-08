@@ -6,11 +6,12 @@ Every Airavata API call that reads private data or changes anything carries a be
 Authorization: Bearer <token>
 ```
 
-Two kinds of token are accepted:
+Three kinds of token are accepted:
 
 | Token | Who it identifies | Meant for |
 |---|---|---|
 | **CILogon access token** | a real user, signed in through their home institution, ORCID, Google or another identity provider that CILogon federates | all normal use |
+| **Service account token** | a non-human account created by an admin, always with `USER` authority | automation: CI pipelines, gateways, scheduled jobs |
 | **Root token** | the built-in `root` account, with `SUPER_ADMIN` authority | first-time setup and testing only |
 
 **Authentication** establishes who the caller is, from the token. **Authorization** determines what they may do: their role, what they own, and what has been shared with them.
@@ -31,6 +32,72 @@ CILogon access tokens are opaque strings, not JWTs, so Airavata cannot check the
 4. looks up the user's roles in Airavata's own database. **A token never grants its own privileges.**
 
 If CILogon cannot be reached, the request fails with `502 Unable to validate bearer token` rather than `401`, because the failure is not the caller's fault.
+
+### Service accounts
+
+A service account is an identity for software rather than a person. An admin creates it, and Airavata issues it a token. The token expires, and an admin can renew or regenerate it.
+
+A service account is an ordinary user in every way but two:
+
+- **It is never an admin.** Its token always authenticates with `USER` authority. Rows in `user_roles` are ignored for service accounts, so it can't be promoted. Because of this, a service account can't create or manage other service accounts.
+- **Only admins create and manage it.** Every `/api/v1/service-accounts` endpoint requires `ADMIN` or `SUPER_ADMIN`.
+
+Apart from that, it does what a user does. It owns the SSH credentials, cluster configs, storages and runs it creates. Other users can share records with it, by user id or through a group, and add it to groups.
+
+Its user id is `sa:<name>`, for example `sa:nightly-ci`. The `sa:` prefix is reserved: the user registration endpoint refuses ids that start with it, and the server rejects a CILogon login that would map to one.
+
+#### Create a service account
+
+```bash
+curl -s -X POST localhost:9095/api/v1/service-accounts \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H 'Content-Type: application/json' \
+  -d '{"name":"nightly-ci","displayName":"Nightly CI","description":"Runs regression jobs","validityDays":90}'
+```
+
+```json
+{
+  "serviceAccount": {
+    "serviceAccountId": "sa:nightly-ci",
+    "name": "nightly-ci",
+    "status": "ACTIVE",
+    "createdBy": "cilogon:12345",
+    "tokenIssuedAt": 1767225600000,
+    "tokenExpiresAt": 1774998000000
+  },
+  "token": "airavata_sa_3q2-7wEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLE"
+}
+```
+
+**The token is shown once.** Airavata stores only its SHA-256 digest, so the token can't be read back later. Store it in your CI system's secret store. If you lose it, regenerate it.
+
+`name` must be 2–64 characters: lower-case letters, digits, `.`, `_` or `-`, starting with a letter or digit. `validityDays` is between 1 and 365 and defaults to 90.
+
+Use the token like any other bearer token:
+
+```bash
+curl -s localhost:9095/api/v1/ssh-credentials -H "Authorization: Bearer $SA_TOKEN"
+```
+
+Service account tokens start with `airavata_sa_`. The server checks them against its own database and never sends them to CILogon. The `airavata_sa_` prefix also helps secret scanners recognise a leaked token.
+
+#### Manage the token
+
+Each service account has one token at a time.
+
+| Action | Endpoint | Effect |
+|---|---|---|
+| **Renew** | `POST /api/v1/service-accounts/{id}/token/renew` | Moves the expiry to `validityDays` from now (default 90). The token stays the same, so clients keep working. Also works on an expired token. |
+| **Regenerate** | `POST /api/v1/service-accounts/{id}/token/regenerate` | Issues a new token and returns it once. The old token stops working immediately. Use this when a token may have leaked. |
+| **Disable** | `PUT /api/v1/service-accounts/{id}` with `{"status":"INACTIVE"}` | The token stops working but is kept. Set `"status":"ACTIVE"` to turn it back on. |
+| **Delete** | `DELETE /api/v1/service-accounts/{id}` | Removes the account, its token, its group memberships and every share granted to it. Returns `409` if the account still owns records; disable it instead. |
+
+The renew and regenerate request bodies are optional (`{"validityDays": 30}`).
+
+An expired, regenerated-away or disabled token gets `401` with `WWW-Authenticate: Bearer error="invalid_token"`, the same as any invalid token.
+
+`GET /api/v1/service-accounts` lists all service accounts and `GET /api/v1/service-accounts/{id}` reads one. Neither returns a token. Use `tokenExpiresAt` (milliseconds since the epoch) to find tokens that need renewing.
+
+[airavata-mcp](mcp.md) signs in through CILogon only, so service account tokens can't be used with it.
 
 ### Root account
 
@@ -196,7 +263,7 @@ Roles are stored in Airavata's `user_roles` table and looked up on every request
 
 | Role | Adds |
 |---|---|
-| `USER` | The default for anyone with no role row. Self-service: register SSH credentials, cluster configs, storages, data products, templates, deployments and runs; manage and share what you own. |
+| `USER` | The default for anyone with no role row, and the only role a service account ever has. Self-service: register SSH credentials, cluster configs, storages, data products, templates, deployments and runs; manage and share what you own. |
 | `ADMIN` | Platform-wide listings (every process, config, storage and user) and administration of other users' records. |
 | `SUPER_ADMIN` | Everything `ADMIN` can do, plus registering users. The root account has this role. |
 
@@ -212,7 +279,7 @@ Owners grant other users or groups `READ` or `WRITE` on their records, such as c
 
 | Status | Meaning |
 |---|---|
-| `401 Unauthorized` | No token, or a token that is invalid, expired, or an old root token from before a restart. |
+| `401 Unauthorized` | No token, or a token that is invalid, expired, or an old root token from before a restart. A service account token also gets `401` once it has been regenerated, or when its account is disabled. |
 | `403 Forbidden` | Authenticated, but not allowed: missing role, not the owner, or no share. |
 | `404 Not Found` | The record doesn't exist. Also returned when the caller has no user record and tries to create something they would own. |
 | `502 Bad Gateway` | CILogon could not be reached to validate the token. |
@@ -226,3 +293,4 @@ Owners grant other users or groups `READ` or `WRITE` on their records, such as c
 - [ ] **`AIRAVATA_ROOT_ACCOUNT_ENABLED=false`**, with any `AIRAVATA_ROOT_ACCOUNT_TOKEN` removed from the environment
 - [ ] TLS terminated in front of the server
 - [ ] CORS narrowed to the portal origins that need it
+- [ ] Service account tokens kept in a secret store, with `validityDays` no longer than your rotation policy allows
