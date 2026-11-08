@@ -243,9 +243,14 @@ const STATUS_TONE: Record<string, string> = {
   SUSPENDED: "danger",
 };
 
+// statusTone names the colour family for a status: ok, info, warn, danger, or "".
+export function statusTone(status: string | null | undefined): string {
+  return (status && STATUS_TONE[status]) || "";
+}
+
 export function StatusBadge({ status }: { status: string | null | undefined }) {
   if (!status) return <span className="badge">—</span>;
-  return <span className={`badge ${STATUS_TONE[status] ?? ""}`}>{status}</span>;
+  return <span className={`badge ${statusTone(status)}`}>{status}</span>;
 }
 
 export function Id({ value }: { value: string | null | undefined }) {

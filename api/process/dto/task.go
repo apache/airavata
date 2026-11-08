@@ -175,6 +175,7 @@ type JobSubmissionTaskResponse struct {
 
 	JobID      *string                `json:"jobId"`
 	WorkingDir *string                `json:"workingDir"`
+	Script     *string                `json:"script"`
 	OnFailure  *model.OnFailureAction `json:"onFailure"`
 	RetryCount *int                   `json:"retryCount"`
 	TaskOrder  *int                   `json:"taskOrder"`
@@ -186,6 +187,7 @@ func ToJobSubmissionTaskResponse(t *model.JobSubmissionTask) JobSubmissionTaskRe
 		ProcessID:  t.ProcessID,
 		JobID:      t.JobId,
 		WorkingDir: t.WorkingDir,
+		Script:     t.Script,
 		OnFailure:  t.OnFailure,
 		RetryCount: t.RetryCount,
 		TaskOrder:  t.TaskOrder,
