@@ -25,8 +25,8 @@ by the build.
 From a clean checkout, this brings up a database and a running API:
 
 ```bash
-# 1. Start PostgreSQL (listens on host port 15432)
-docker compose -f dev-tools/compose/compose.yml up -d postgres
+# 1. Start PostgreSQL and mock SSH/Slurm cluster (listens on 15432 and 12222)
+docker compose -f dev-tools/compose/compose.yml up -d
 
 # 2. Build
 gofmt -w .
@@ -161,12 +161,13 @@ is configured. It is intended for initial setup and testing.
 ### With Docker
 
 ```bash
-docker compose -f dev-tools/compose/compose.yml up -d postgres
+docker compose -f dev-tools/compose/compose.yml up -d
 ```
 
-This starts PostgreSQL 17 on host port `15432` with the database, user and password
-matching the defaults above. Adminer is also available (`up -d adminer`,
-`http://localhost:18080`) for browsing the schema.
+This starts:
+- PostgreSQL 17 on host port `15432` with database, user and password matching defaults.
+- Adminer on host port `18080` (`http://localhost:18080`) for browsing the schema.
+- Mock SSH/Slurm cluster on host port `12222` (`dev-tools/compose/mock-slurm/`) for local process launch and cluster discovery.
 
 ### Without Docker
 

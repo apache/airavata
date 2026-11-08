@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+set -e
+
+STATE_DIR="/var/run/mock-slurm"
+JOBS_DIR="$STATE_DIR/jobs"
+mkdir -p "$JOBS_DIR"
+
+# Allocate next job ID atomically
+JOB_ID_FILE="$STATE_DIR/next_job_id"
+if [ ! -f "$JOB_ID_FILE" ]; then
+    echo 1001 > "$JOB_ID_FILE"
+fi
+
+JOB_ID=$(cat "$JOB_ID_FILE")
+NEXT_ID=$((JOB_ID + 1))
+echo "$NEXT_ID" > "$JOB_ID_FILE"
+
+JOB_DIR="$JOBS_DIR/$JOB_ID"
+mkdir -p "$JOB_DIR"
+
+SCRIPT_PATH=""
+JOB_NAME="job-$JOB_ID"
+WORK_DIR="$(pwd)"
+STDOUT_FILE=""
+STDERR_FILE=""
+PARTITION="debug"
+MAIL_USER=""
+MAIL_TYPE=""
+
+# Parse command line options
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --job-name=*)
+            JOB_NAME="${1#*=}"
+            shift
+            ;;
+        -J|--job-name)
+            JOB_NAME="$2"
+            shift 2
+            ;;
+        --chdir=*)
+            WORK_DIR="${1#*=}"
+            shift
+            ;;
+        -D|--chdir)
+            WORK_DIR="$2"
+            shift 2
+            ;;
+        --output=*)
+            STDOUT_FILE="${1#*=}"
+            shift
+            ;;
+        -o|--output)
+            STDOUT_FILE="$2"
+            shift 2
+            ;;
+        --error=*)
+            STDERR_FILE="${1#*=}"
+            shift
+            ;;
+        -e|--error)
+            STDERR_FILE="$2"
+            shift 2
+            ;;
+        --partition=*)
+            PARTITION="${1#*=}"
+            shift
+            ;;
+        -p|--partition)
+            PARTITION="$2"
+            shift 2
+            ;;
+        --mail-user=*)
+            MAIL_USER="${1#*=}"
+            shift
+            ;;
+        --mail-type=*)
+            MAIL_TYPE="${1#*=}"
+            shift
+            ;;
+        --wrap=*)
+            WRAP_CMD="${1#*=}"
+            SCRIPT_PATH="$JOB_DIR/wrap.sh"
+            echo "#!/bin/bash" > "$SCRIPT_PATH"
+            echo "$WRAP_CMD" >> "$SCRIPT_PATH"
+            chmod +x "$SCRIPT_PATH"
+            shift
+            ;;
+        --wrap)
+            WRAP_CMD="$2"
+            SCRIPT_PATH="$JOB_DIR/wrap.sh"
+            echo "#!/bin/bash" > "$SCRIPT_PATH"
+            echo "$WRAP_CMD" >> "$SCRIPT_PATH"
+            chmod +x "$SCRIPT_PATH"
+            shift 2
+            ;;
+        -*)
+            shift
+            ;;
+        *)
+            if [ -z "$SCRIPT_PATH" ]; then
+                SCRIPT_PATH="$1"
+            fi
+            shift
+            ;;
+    esac
+done
+
+if [ -z "$SCRIPT_PATH" ] || [ ! -f "$SCRIPT_PATH" ]; then
+    echo "sbatch: error: script file not found or not provided: $SCRIPT_PATH" >&2
+    exit 1
+fi
+
+# Parse #SBATCH directives from script
+while IFS= read -r line; do
+    if [[ "$line" =~ ^#SBATCH[[:space:]]+(.*) ]]; then
+        directive="${BASH_REMATCH[1]}"
+        if [[ "$directive" =~ --job-name=([^[:space:]]+) ]]; then
+            JOB_NAME="${BASH_REMATCH[1]}"
+        elif [[ "$directive" =~ --chdir=([^[:space:]]+) ]]; then
+            WORK_DIR="${BASH_REMATCH[1]}"
+        elif [[ "$directive" =~ --output=([^[:space:]]+) ]]; then
+            STDOUT_FILE="${BASH_REMATCH[1]}"
+        elif [[ "$directive" =~ --error=([^[:space:]]+) ]]; then
+            STDERR_FILE="${BASH_REMATCH[1]}"
+        elif [[ "$directive" =~ --partition=([^[:space:]]+) ]]; then
+            PARTITION="${BASH_REMATCH[1]}"
+        elif [[ "$directive" =~ --mail-user=([^[:space:]]+) ]]; then
+            MAIL_USER="${BASH_REMATCH[1]}"
+        elif [[ "$directive" =~ --mail-type=([^[:space:]]+) ]]; then
+            MAIL_TYPE="${BASH_REMATCH[1]}"
+        fi
+    fi
+done < "$SCRIPT_PATH"
+
+# Resolve stdout and stderr paths
+if [ -z "$STDOUT_FILE" ]; then
+    STDOUT_FILE="$WORK_DIR/slurm-$JOB_ID.out"
+elif [[ "$STDOUT_FILE" != /* ]]; then
+    STDOUT_FILE="$WORK_DIR/$STDOUT_FILE"
+fi
+
+if [ -z "$STDERR_FILE" ]; then
+    STDERR_FILE="$WORK_DIR/slurm-$JOB_ID.err"
+elif [[ "$STDERR_FILE" != /* ]]; then
+    STDERR_FILE="$WORK_DIR/$STDERR_FILE"
+fi
+
+cp "$SCRIPT_PATH" "$JOB_DIR/script.slurm"
+SUBMIT_TIME=$(date +%s)
+
+cat <<EOF > "$JOB_DIR/metadata"
+JOB_ID=$JOB_ID
+JOB_NAME=$JOB_NAME
+USER=${USER:-slurmuser}
+PARTITION=$PARTITION
+WORK_DIR=$WORK_DIR
+STDOUT_FILE=$STDOUT_FILE
+STDERR_FILE=$STDERR_FILE
+SUBMIT_TIME=$SUBMIT_TIME
+START_TIME=$SUBMIT_TIME
+STATUS=RUNNING
+EOF
+
+# Execute script in background subshell
+(
+    cd "$WORK_DIR" || exit 1
+    mkdir -p "$(dirname "$STDOUT_FILE")" "$(dirname "$STDERR_FILE")"
+    bash "$SCRIPT_PATH" > "$STDOUT_FILE" 2> "$STDERR_FILE"
+    RET=$?
+    if [ $RET -eq 0 ]; then
+        echo "STATUS=COMPLETED" >> "$JOB_DIR/metadata"
+    else
+        echo "STATUS=FAILED" >> "$JOB_DIR/metadata"
+    fi
+    echo "EXIT_CODE=$RET" >> "$JOB_DIR/metadata"
+    echo "END_TIME=$(date +%s)" >> "$JOB_DIR/metadata"
+) &
+PID=$!
+echo "PID=$PID" >> "$JOB_DIR/metadata"
+
+# Required format parsed by Airavata regexp: Submitted batch job (\d+)
+echo "Submitted batch job $JOB_ID"
+exit 0
