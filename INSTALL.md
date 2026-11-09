@@ -100,6 +100,7 @@ compose database.
 | `SERVER_PORT` | `9095` | Port the HTTP API listens on. |
 | `AIRAVATA_DASHBOARD_ENABLED` | `true` | Serve the [dashboard](#dashboard) under `/dashboard/`. |
 | `AIRAVATA_DASHBOARD_DIR` | `dashboard/out` | The dashboard's built static export, relative to the working directory. |
+| `AIRAVATA_DOCS_ENABLED` | `false` | Serve Swagger UI under `/docs/`. Disabled by default for security. |
 | `AIRAVATA_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origins. The server echoes the caller's origin rather than sending `*`, because every authenticated call carries an `Authorization` header and browsers reject the wildcard for credentialed requests. |
 
 ### Database
@@ -246,6 +247,7 @@ airavata-server seed
 
 This seeds:
 - **Users & Roles**: `root` (`SUPER_ADMIN`) and `dev-user` (`ADMIN`)
+- **Service Account**: `sa:dev-agent` with static token `airavata_sa_dev_secret_token_for_local_testing_only` (`USER` role)
 - **SSH Credential**: `mock-slurm-key` using the pre-seeded development ed25519 key pair
 - **Slurm Cluster**: `local-mock-cluster` on `localhost:12222` (configurable via `MOCK_SLURM_HOST` and `MOCK_SLURM_PORT`)
 - **Partitions**: `debug` (default queue, 1 node, 4 CPUs) and `compute` (4 nodes, 16 CPUs, gpu:1)
@@ -253,7 +255,7 @@ This seeds:
 - **Application Template**: `Echo App` with default input message and output file
 - **Batch Deployment**: `Echo App` deployed to `local-mock-cluster` on partition `debug`
 - **Data Storage**: `mock-slurm-storage` (SCP storage on `localhost:12222`)
-- **Sharing**: Grants write permission on the cluster config and storage to `dev-user`
+- **Sharing**: Grants write permission on the cluster config and storage to `dev-user` and `sa:dev-agent`
 
 Seeding is safe to re-run at any time — existing rows are reused or updated rather than
 duplicated. Alternatively, set `AIRAVATA_DB_AUTO_SEED=true` to seed automatically whenever
@@ -397,6 +399,8 @@ NEXT_PUBLIC_AIRAVATA_API_URL=http://localhost:9095 npm run dev   # http://localh
   management" above.
 - **Terminate TLS in front of the server.** It speaks plain HTTP; bearer tokens must
   not cross an untrusted network unencrypted.
+- **Swagger UI (`/docs/`) is disabled by default.** Set `AIRAVATA_DOCS_ENABLED=true`
+  when running in development or when API documentation should be exposed.
 
 ---
 

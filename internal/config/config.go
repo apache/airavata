@@ -68,6 +68,9 @@ type Config struct {
 	// DashboardDir is the dashboard's static export (dashboard/out after "npm run
 	// build"), served under /dashboard/ alongside the API. Empty disables it.
 	DashboardDir string
+
+	// DocsEnabled serves Swagger UI under /docs/. Defaults to false.
+	DocsEnabled bool
 }
 
 // Load reads configuration from the environment, applying the same defaults the Java
@@ -93,6 +96,7 @@ func load() (Config, error) {
 		WorkflowBackendType:       env("AIRAVATA_WORKFLOW_BACKEND_TYPE", "sqlite"),
 		WorkflowBackendSqlitePath: env("AIRAVATA_WORKFLOW_BACKEND_SQLITE_PATH", "/tmp/airavataorchestrator.sqlite"),
 		DashboardDir:              dashboardDir(),
+		DocsEnabled:               envBool("AIRAVATA_DOCS_ENABLED", false),
 	}
 
 	// Without a root account and without CILogon credentials there is no way to

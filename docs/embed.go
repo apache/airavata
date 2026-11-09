@@ -28,3 +28,6 @@ var API string
 
 //go:embed sharing.md
 var Sharing string
+
+//go:embed openapi.yaml
+var OpenAPI []byte

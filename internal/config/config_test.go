@@ -47,6 +47,7 @@ func isolate(t *testing.T) {
 		"CILOGON_INTROSPECTION_URI", "CILOGON_USERINFO_URI",
 		"AIRAVATA_ROOT_ACCOUNT_ENABLED", "AIRAVATA_ROOT_ACCOUNT_TOKEN",
 		"AIRAVATA_DASHBOARD_ENABLED", "AIRAVATA_DASHBOARD_DIR",
+		"AIRAVATA_DOCS_ENABLED",
 	} {
 		t.Setenv(key, "")
 	}
@@ -188,5 +189,22 @@ func TestDashboardDir(t *testing.T) {
 	t.Setenv("AIRAVATA_DASHBOARD_ENABLED", "false")
 	if cfg, _ := load(); cfg.DashboardDir != "" {
 		t.Errorf("DashboardDir = %q, want empty when disabled", cfg.DashboardDir)
+	}
+}
+
+func TestDocsConfig(t *testing.T) {
+	isolate(t)
+	if cfg, _ := load(); cfg.DocsEnabled {
+		t.Error("DocsEnabled = true, want false by default")
+	}
+
+	t.Setenv("AIRAVATA_DOCS_ENABLED", "true")
+	if cfg, _ := load(); !cfg.DocsEnabled {
+		t.Error("DocsEnabled = false, want true when AIRAVATA_DOCS_ENABLED=true")
+	}
+
+	t.Setenv("AIRAVATA_DOCS_ENABLED", "false")
+	if cfg, _ := load(); cfg.DocsEnabled {
+		t.Error("DocsEnabled = true, want false when AIRAVATA_DOCS_ENABLED=false")
 	}
 }
