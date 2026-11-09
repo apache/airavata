@@ -35,6 +35,7 @@ import (
 	datastorerepo "github.com/apache/airavata/api/data/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
@@ -83,6 +84,7 @@ func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Contex
 		slog.Error("Failed to retrieve process for submitting batch job", "taskId", dataStagingTaskId, "processId", processId, "error", err)
 		return nil, err
 	}
+	ctx = auth.WithClient(ctx, process.BatchProcess.Origin)
 
 	dataStagingTask, err := a.dataStagingTasks.FindByIDAndProcessID(ctx, dataStagingTaskId, processId)
 	if err != nil {

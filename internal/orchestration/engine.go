@@ -41,6 +41,7 @@ import (
 	datastorerepo "github.com/apache/airavata/api/data/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	"github.com/apache/airavata/internal/orchestration/tasks/batch"
 	"github.com/apache/airavata/internal/orchestration/tasks/data"
@@ -219,6 +220,11 @@ func (w *ExecutionEngine) LaunchWorkflow(ctx context.Context, workflowID, proces
 
 	if w.orchestrator == nil {
 		return ErrNoWorkflowBackend
+	}
+	if client := auth.Client(ctx); client != "" {
+		if err := w.processes.SetBatchProcessOrigin(ctx, processID, client); err != nil {
+			return err
+		}
 	}
 	var wf workflow.Workflow
 	switch workflowType {

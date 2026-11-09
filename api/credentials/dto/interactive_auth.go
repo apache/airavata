@@ -41,6 +41,7 @@ type InteractiveAuthResponse struct {
 	Name            string       `json:"name"`
 	Instruction     string       `json:"instruction"`
 	Prompts         []ssh.Prompt `json:"prompts"`
+	Origin          string       `json:"origin"`
 	CreatedAt       time.Time    `json:"createdAt"`
 }
 
@@ -60,6 +61,7 @@ func ToInteractiveAuthResponse(s *ssh.SSHInteractiveAuth) InteractiveAuthRespons
 		Name:            s.Name(),
 		Instruction:     instruction,
 		Prompts:         prompts,
+		Origin:          s.Origin(),
 		CreatedAt:       s.CreatedAt,
 	}
 }
@@ -71,12 +73,14 @@ func ToInteractiveAuthResponse(s *ssh.SSHInteractiveAuth) InteractiveAuthRespons
 //   - "accepted":  the answer was handed to the SSH handshake; the socket then closes
 //   - "error":     Message says what was wrong; a bad answer can be resent
 //   - "idle":      (subscribe socket only) nothing is waiting for an answer
+//   - "answered":  (subscribe socket only) another socket or request answered the current challenge
 //
 // On the subscribe socket "accepted" carries AuthID and the socket stays open.
 type InteractiveAuthMessage struct {
 	Type    string                   `json:"type"`
 	Auth    *InteractiveAuthResponse `json:"auth,omitempty"`
 	AuthID  string                   `json:"authId,omitempty"`
+	By      string                   `json:"by,omitempty"`
 	Message string                   `json:"message,omitempty"`
 }
 

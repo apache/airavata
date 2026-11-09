@@ -63,6 +63,7 @@ An authenticated connection is kept and reused by every operation that logs in w
   "name": "",
   "instruction": "",
   "prompts": [ { "text": "Password: ", "echo": false } ],
+  "origin": "VS Code · my-project",
   "createdAt": "2026-10-30T14:02:11.482Z"
 }
 ```
@@ -73,12 +74,21 @@ An authenticated connection is kept and reused by every operation that logs in w
 | `banner` | The host's pre-login message, as a terminal would print it. |
 | `name`, `instruction` | Any heading the host sent with the prompts. |
 | `prompts[]` | The questions. `echo: false` means the answer is secret (a password or OTP) and should be masked. |
+| `origin` | The client that started the login. See [Which client is asking](#which-client-is-asking). |
 
 The answer is one response per prompt, in order: `{"responses": ["<password>"]}`. You can instead send `{"cancel": true}` to fail the login immediately rather than leave it waiting.
 
 Answers go straight to the SSH handshake. They are **not logged or stored**. A credential's `password` is stored, write-only, and never returned; see [api.md](api.md#ssh-credentials).
 
 An auth exists only while its login is waiting. It disappears once it is answered or the login gives up. Only the user it was raised for can see or answer it. Admins cannot see other users' auths either.
+
+### Which client is asking
+
+A client names itself in an `X-Client` header, such as `X-Client: VS Code · my-project`.
+
+The client of the request that starts a login becomes the auth's `origin`. A run keeps the client that last launched or retried it, so the logins of its later steps carry that name. A launch or retry that names no client keeps the previous one. Any other request that names no client leaves `origin` empty.
+
+The name only labels a login. Every client signed in as you sees every waiting login, whatever its `origin`. When one client answers, the others hear which one did.
 
 ---
 
@@ -126,10 +136,13 @@ The socket sends your oldest waiting auth as a challenge, or `idle` when nothing
 ▶ {"authId":"3f2c…","responses":["<password>"]}
 ◀ {"type":"accepted","authId":"3f2c…"}
 ◀ {"type":"challenge","auth":{"authId":"9a1b…","prompts":[{"text":"Duo passcode: ","echo":true}], …}}
-▶ {"authId":"9a1b…","responses":["<passcode>"]}
-◀ {"type":"accepted","authId":"9a1b…"}
+◀ {"type":"answered","authId":"9a1b…","by":"VS Code · my-project"}
 ◀ {"type":"idle"}
 ```
+
+Here another client answered the Duo prompt, so this socket heard `answered`, with that client's name in `by`.
+
+A client that leaves a prompt to another client sends `{"authId":"3f2c…","skip":true}`. The socket then offers the next waiting auth, or `idle`, and never offers the skipped one again. The login keeps waiting for any other client to answer it. The messages are listed in [api.md](api.md#subscribe-to-interactive-ssh-auths).
 
 Authentication works as it does for any other route. Send `Authorization: Bearer $TOKEN` on the upgrade request. A browser, which cannot set that header, offers the token as a subprotocol instead (`base64url.bearer.<token>` alongside `airavata.v1`).
 

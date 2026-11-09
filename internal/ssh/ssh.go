@@ -37,6 +37,7 @@ import (
 	"time"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
+	"github.com/apache/airavata/internal/auth"
 	"github.com/google/uuid"
 	gossh "golang.org/x/crypto/ssh"
 )
@@ -79,6 +80,8 @@ type SSHDialConfig struct {
 	sshUsername string
 	cred        credmodel.SSHCredential
 	userId      string
+
+	origin string
 }
 
 func NewSSHDialConfig(host string, port int, sshUsername string, cred credmodel.SSHCredential, userId string) SSHDialConfig {
@@ -121,6 +124,7 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 	// banner collects the server's pre-login text for the prompts that follow. The
 	// banner and auth callbacks both run on the handshake goroutine, so no lock.
 	var banner string
+	dialConfig.origin = auth.Client(ctx)
 
 	authMethods := []gossh.AuthMethod{}
 	if dialConfig.cred.PrivateKey != "" {

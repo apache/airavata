@@ -2515,6 +2515,24 @@ func TestTaskStatusesAreReadThroughTheirProcess(t *testing.T) {
 	}
 }
 
+// An update keeps the client that launched a batch process.
+func TestABatchProcessKeepsTheClientThatLaunchedIt(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("origin", tokenAlice)
+	if err := h.db.Table("batch_processes").Where("parent_process_id = ?", processID).Update("origin", "Dashboard").Error; err != nil {
+		t.Fatal(err)
+	}
+	batch := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID, tokenAlice, nil, http.StatusOK)["batchProcess"].(map[string]any)
+	h.mustDo(http.MethodPut, "/api/v1/processes/"+processID, tokenAdmin, map[string]any{
+		"processType":  "BATCH_JOB",
+		"batchProcess": map[string]any{"deploymentId": batch["deploymentId"], "slurmClusterConfigId": batch["slurmClusterConfigId"], "batchJobConfig": map[string]any{"wallTimeMinutes": 30, "allocation": "ALLOC"}},
+	}, http.StatusOK)
+	var origins []string
+	if err := h.db.Table("batch_processes").Where("parent_process_id = ?", processID).Pluck("origin", &origins).Error; err != nil || len(origins) != 1 || origins[0] != "Dashboard" {
+		t.Errorf("origin = %q %v, want the launching client", origins, err)
+	}
+}
+
 // Process workflows are recorded by the engine, read through the process they belong
 // to, and owner-scoped like task statuses. Recording one repoints the process's
 // lastWorkflowId.

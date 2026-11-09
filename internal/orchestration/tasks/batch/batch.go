@@ -37,6 +37,7 @@ import (
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
@@ -103,6 +104,7 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 		slog.Error("Failed to retrieve job submission task for submitting batch job", "taskId", taskID, "processId", processID, "error", err)
 		return nil, err
 	}
+	ctx = auth.WithClient(ctx, process.BatchProcess.Origin)
 
 	script, err := a.slurmScript(ctx, process, executionContext.GlobalJobConfigs)
 	if err != nil {

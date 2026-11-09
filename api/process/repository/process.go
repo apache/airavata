@@ -111,6 +111,10 @@ func (r *ProcessRepository) SaveBatchProcess(ctx context.Context, b *model.Batch
 	return r.db.WithContext(ctx).Omit(clause.Associations).Save(b).Error
 }
 
+func (r *ProcessRepository) SetBatchProcessOrigin(ctx context.Context, processID, origin string) error {
+	return r.db.WithContext(ctx).Model(&model.BatchJobProcess{}).Where("parent_process_id = ?", processID).Update("origin", origin).Error
+}
+
 // SaveBatchJobConfig inserts or updates the resource request the section owns.
 func (r *ProcessRepository) SaveBatchJobConfig(ctx context.Context, c *applicationmodel.BatchJobConfig) error {
 	return r.db.WithContext(ctx).Save(c).Error

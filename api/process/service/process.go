@@ -271,6 +271,7 @@ func (s *ProcessService) saveBatchProcess(
 	if existing != nil {
 		batch.ID = existing.ID
 		batch.BatchJobConfigID = existing.BatchJobConfigID
+		batch.Origin = existing.Origin
 		if existing.BatchJobConfig != nil {
 			config = existing.BatchJobConfig
 		} else {

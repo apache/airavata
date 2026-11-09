@@ -34,6 +34,7 @@ type SSHInteractiveAuth struct {
 	response    []string
 	authErr     error
 	answered    bool // Whether the auth has been answered
+	answeredBy  string
 
 	// Holds challenge until a response is set. Closed when SetResponse is called.
 	authWaitSignal chan struct{}
@@ -53,7 +54,6 @@ func (s *SSHInteractiveAuth) Challenge(ctx context.Context, name, instruction st
 	s.name = name
 	s.instruction = instruction
 	s.prompts = prompts
-	s.authErr = nil
 	s.mu.Unlock()
 
 	// Give up when the dial is abandoned, or the goroutine waits forever for an
@@ -76,13 +76,14 @@ var ErrAuthAnswered = errors.New("interactive auth has already been answered")
 
 // Should be set from the websocket server. Only the first call wins: closing
 // authWaitSignal twice would panic.
-func (s *SSHInteractiveAuth) SetResponse(response []string, err error) error {
+func (s *SSHInteractiveAuth) SetResponse(by string, response []string, err error) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.answered {
 		return ErrAuthAnswered
 	}
 	s.answered = true
+	s.answeredBy = by
 	s.response = response
 	s.authErr = err
 	close(s.authWaitSignal)
@@ -111,8 +112,19 @@ func (s *SSHInteractiveAuth) Target() (host string, port int, loginUser, credent
 	return c.host, c.port, c.sshUsername, c.cred.ID
 }
 
+func (s *SSHInteractiveAuth) Origin() string {
+	return s.dialConfig.origin
+}
+
 func (s *SSHInteractiveAuth) Answered() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.answered
+}
+
+// AnsweredBy reports who answered; false until then, and for a cancelled or withdrawn auth.
+func (s *SSHInteractiveAuth) AnsweredBy() (string, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.answeredBy, s.answered && s.authErr == nil
 }

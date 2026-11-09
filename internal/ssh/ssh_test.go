@@ -31,6 +31,7 @@ import (
 	"time"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
+	"github.com/apache/airavata/internal/auth"
 	gossh "golang.org/x/crypto/ssh"
 )
 
@@ -194,16 +195,19 @@ func TestStoredPasswordLeavesOnlyFurtherPromptsToTheUser(t *testing.T) {
 	t.Cleanup(sshContext.ConnectionPool.Close)
 	done := make(chan error, 1)
 	go func() {
-		_, err := dialSSH(context.Background(), dial, sshContext)
+		_, err := dialSSH(auth.WithClient(context.Background(), "VS Code · ws"), dial, sshContext)
 		done <- err
 	}()
 
 	var asked []string
-	for pending, changed := sshContext.InteractiveAuthStore.NextAuthForUser("alice"); ; pending, changed = sshContext.InteractiveAuthStore.NextAuthForUser("alice") {
+	for pending, changed := sshContext.InteractiveAuthStore.NextAuthForUser("alice", nil); ; pending, changed = sshContext.InteractiveAuthStore.NextAuthForUser("alice", nil) {
 		if pending != nil {
 			prompts, _ := pending.Read()
 			asked = append(asked, prompts[0].Text)
-			_ = pending.SetResponse([]string{answers[prompts[0].Text]}, nil)
+			if origin := pending.Origin(); origin != "VS Code · ws" {
+				t.Errorf("prompt %q: origin %q, want the dialling client", prompts[0].Text, origin)
+			}
+			_ = pending.SetResponse("", []string{answers[prompts[0].Text]}, nil)
 			continue
 		}
 		select {
@@ -216,5 +220,17 @@ func TestStoredPasswordLeavesOnlyFurtherPromptsToTheUser(t *testing.T) {
 		case <-time.After(5 * time.Second):
 			t.Fatal("the login neither prompted nor finished")
 		}
+	}
+}
+
+// A cancel that lands before the handshake waits stays a cancel.
+func TestAnswerBeforeChallengeIsKept(t *testing.T) {
+	pending := NewSSHInteractiveAuth("a", testDialConfig())
+	_ = pending.SetResponse("Dashboard", nil, errAuthWithdrawn)
+	if _, err := pending.Challenge(t.Context(), "", "", nil); err == nil {
+		t.Error("challenge succeeded after a cancel")
+	}
+	if _, answered := pending.AnsweredBy(); answered {
+		t.Error("a cancel reported as answered")
 	}
 }

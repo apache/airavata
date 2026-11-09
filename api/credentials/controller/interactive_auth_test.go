@@ -85,6 +85,7 @@ func newServer(t *testing.T, sshCtx *ssh.GlobalSSHContext) string {
 		if user := r.Header.Get("X-Test-User"); user != "" {
 			r = r.WithContext(auth.WithPrincipal(r.Context(), &auth.Principal{Name: user}))
 		}
+		r = r.WithContext(auth.WithClient(r.Context(), auth.ClientOf(r)))
 		mux.ServeHTTP(w, r)
 	}))
 	t.Cleanup(srv.Close)
@@ -151,7 +152,7 @@ func TestInteractiveAuthSocketAnswersChallenge(t *testing.T) {
 func TestInteractiveAuthSocketRefusesOthers(t *testing.T) {
 	sshCtx := ssh.NewGlobalSSHContext()
 	pending, _ := pendingAuth(t, sshCtx, "cilogon:alice", []ssh.Prompt{{Text: "OTP: "}})
-	t.Cleanup(func() { _ = pending.SetResponse(nil, context.Canceled) })
+	t.Cleanup(func() { _ = pending.SetResponse("", nil, context.Canceled) })
 	url := newServer(t, sshCtx)
 
 	for _, tc := range []struct {
@@ -173,10 +174,10 @@ func TestInteractiveAuthSocketRefusesOthers(t *testing.T) {
 
 func TestSetResponseOnlyOnce(t *testing.T) {
 	pending := ssh.NewSSHInteractiveAuth("s", ssh.NewSSHDialConfig("h", 22, "u", credmodel.SSHCredential{}, "o"))
-	if err := pending.SetResponse([]string{"a"}, nil); err != nil {
+	if err := pending.SetResponse("", []string{"a"}, nil); err != nil {
 		t.Fatal(err)
 	}
-	if err := pending.SetResponse([]string{"b"}, nil); err != ssh.ErrAuthAnswered {
+	if err := pending.SetResponse("", []string{"b"}, nil); err != ssh.ErrAuthAnswered {
 		t.Fatalf("second answer: want ErrAuthAnswered, got %v", err)
 	}
 }
@@ -282,7 +283,7 @@ func TestSubscribeSocketServesAuthsInTurn(t *testing.T) {
 	time.Sleep(2 * time.Millisecond) // distinct CreatedAt, so the order is fixed
 	_, secondAnswers := pendingAuthWithID(t, sshCtx, "second", "cilogon:alice", prompt)
 	other, _ := pendingAuthWithID(t, sshCtx, "mallorys", "cilogon:mallory", prompt)
-	t.Cleanup(func() { _ = other.SetResponse(nil, context.Canceled) })
+	t.Cleanup(func() { _ = other.SetResponse("", nil, context.Canceled) })
 
 	conn, _, err := dial(t, subscribeURL(newServer(t, sshCtx)), "cilogon:alice")
 	if err != nil {
@@ -323,11 +324,77 @@ func TestSubscribeSocketServesAuthsInTurn(t *testing.T) {
 	wantMessage(t, conn, "challenge", "third")
 
 	// Answered elsewhere and removed: the socket moves on without being asked.
-	if err := third.SetResponse([]string{"333"}, nil); err != nil {
+	if err := third.SetResponse("", []string{"333"}, nil); err != nil {
 		t.Fatal(err)
 	}
 	sshCtx.InteractiveAuthStore.RemoveAuth("cilogon:alice", "third")
+	wantMessage(t, conn, "answered", "third")
 	wantMessage(t, conn, "idle", "")
+}
+
+// A socket hears who answered a challenge it did not answer or cancel itself.
+func TestSubscribeSocketsHearWhoAnswered(t *testing.T) {
+	sshCtx := ssh.NewGlobalSSHContext()
+	prompt := []ssh.Prompt{{Text: "OTP: "}}
+	_, firstAnswers := pendingAuthWithID(t, sshCtx, "first", "cilogon:alice", prompt)
+	url := subscribeURL(newServer(t, sshCtx))
+	var sockets []*websocket.Conn
+	for _, client := range []string{"Dashboard", ""} {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		conn, _, err := websocket.Dial(ctx, url, &websocket.DialOptions{HTTPHeader: http.Header{"X-Test-User": {"cilogon:alice"}, auth.ClientHeader: {client}}})
+		if err != nil {
+			t.Fatalf("dial: %v", err)
+		}
+		defer conn.CloseNow()
+		wantMessage(t, conn, "challenge", "first")
+		sockets = append(sockets, conn)
+	}
+	ours, theirs := sockets[0], sockets[1]
+
+	if err := wsjson.Write(context.Background(), ours, dto.InteractiveAuthAnswer{Responses: []string{"111"}}); err != nil {
+		t.Fatal(err)
+	}
+	wantMessage(t, ours, "accepted", "first")
+	<-firstAnswers
+	sshCtx.InteractiveAuthStore.RemoveAuth("cilogon:alice", "first")
+	wantMessage(t, ours, "idle", "")
+	if msg := readMessage(t, theirs); msg.Type != "answered" || msg.AuthID != "first" || msg.By != "Dashboard" {
+		t.Fatalf("want first answered by the dashboard, got %+v", msg)
+	}
+	wantMessage(t, theirs, "idle", "")
+
+	_, _ = pendingAuthWithID(t, sshCtx, "second", "cilogon:alice", prompt)
+	for _, conn := range sockets {
+		wantMessage(t, conn, "challenge", "second")
+	}
+	if err := wsjson.Write(context.Background(), ours, dto.InteractiveAuthAnswer{Cancel: true}); err != nil {
+		t.Fatal(err)
+	}
+	wantMessage(t, ours, "accepted", "second")
+	sshCtx.InteractiveAuthStore.RemoveAuth("cilogon:alice", "second")
+	wantMessage(t, theirs, "idle", "")
+}
+
+// A skipped auth stays pending but no longer holds back the next one on that socket.
+func TestSubscribeSocketSkipsAnAuth(t *testing.T) {
+	sshCtx := ssh.NewGlobalSSHContext()
+	prompt := []ssh.Prompt{{Text: "OTP: "}}
+	_, _ = pendingAuthWithID(t, sshCtx, "a1", "cilogon:alice", prompt)
+	_, _ = pendingAuthWithID(t, sshCtx, "a2", "cilogon:alice", prompt)
+	conn, _, err := dial(t, subscribeURL(newServer(t, sshCtx)), "cilogon:alice")
+	if err != nil {
+		t.Fatalf("dial: %v", err)
+	}
+	defer conn.CloseNow()
+	wantMessage(t, conn, "challenge", "a1")
+	if err := wsjson.Write(context.Background(), conn, map[string]any{"authId": "a1", "skip": true}); err != nil {
+		t.Fatal(err)
+	}
+	wantMessage(t, conn, "challenge", "a2")
+	if _, ok := sshCtx.InteractiveAuthStore.GetAuth("cilogon:alice", "a1"); !ok {
+		t.Error("skipping removed a1")
+	}
 }
 
 func TestSubscribeSocketNeedsCaller(t *testing.T) {

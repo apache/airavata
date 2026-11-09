@@ -878,12 +878,15 @@ type InteractiveAuthResponse struct {
 	AuthId openapi_types.UUID `json:"authId"`
 
 	// Banner Text the server sent before login, as a terminal would print it.
-	Banner          string              `json:"banner"`
-	CreatedAt       time.Time           `json:"createdAt"`
-	HostName        string              `json:"hostName"`
-	Instruction     string              `json:"instruction"`
-	LoginUser       string              `json:"loginUser"`
-	Name            string              `json:"name"`
+	Banner      string    `json:"banner"`
+	CreatedAt   time.Time `json:"createdAt"`
+	HostName    string    `json:"hostName"`
+	Instruction string    `json:"instruction"`
+	LoginUser   string    `json:"loginUser"`
+	Name        string    `json:"name"`
+
+	// Origin The client that started the login.
+	Origin          string              `json:"origin"`
 	Port            int                 `json:"port"`
 	Prompts         []InteractivePrompt `json:"prompts"`
 	SshCredentialId openapi_types.UUID  `json:"sshCredentialId"`

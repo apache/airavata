@@ -62,14 +62,14 @@ func (s *InteractiveAuthService) List(ctx context.Context) ([]dto.InteractiveAut
 	return out, nil
 }
 
-// Next returns the caller's oldest unanswered interactive auth (nil if none) without
-// blocking, and a channel closed the next time the caller's auths change.
-func (s *InteractiveAuthService) Next(ctx context.Context) (*ssh.SSHInteractiveAuth, <-chan struct{}, error) {
+// Next returns the caller's oldest unanswered interactive auth not in skipped (nil if
+// none) without blocking, and a channel closed the next time the caller's auths change.
+func (s *InteractiveAuthService) Next(ctx context.Context, skipped map[string]bool) (*ssh.SSHInteractiveAuth, <-chan struct{}, error) {
 	p, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
-	auth, changed := s.store.NextAuthForUser(p.Name)
+	auth, changed := s.store.NextAuthForUser(p.Name, skipped)
 	return auth, changed, nil
 }
 
@@ -94,19 +94,19 @@ var errLoginCancelled = errors.New("interactive login cancelled by user")
 //
 // The responses are never logged or kept beyond the interactive auth: they are passwords and
 // one-time codes.
-func (s *InteractiveAuthService) Answer(pending *ssh.SSHInteractiveAuth, answer *dto.InteractiveAuthAnswer) error {
+func (s *InteractiveAuthService) Answer(ctx context.Context, pending *ssh.SSHInteractiveAuth, answer *dto.InteractiveAuthAnswer) error {
 	if answer.Cancel {
-		return s.set(pending, nil, errLoginCancelled)
+		return s.set(ctx, pending, nil, errLoginCancelled)
 	}
 	prompts, _ := pending.Read()
 	if len(answer.Responses) != len(prompts) {
 		return httpx.BadRequest("Expected %d responses, got %d", len(prompts), len(answer.Responses))
 	}
-	return s.set(pending, answer.Responses, nil)
+	return s.set(ctx, pending, answer.Responses, nil)
 }
 
-func (s *InteractiveAuthService) set(pending *ssh.SSHInteractiveAuth, responses []string, err error) error {
-	if errors.Is(pending.SetResponse(responses, err), ssh.ErrAuthAnswered) {
+func (s *InteractiveAuthService) set(ctx context.Context, pending *ssh.SSHInteractiveAuth, responses []string, err error) error {
+	if errors.Is(pending.SetResponse(auth.Client(ctx), responses, err), ssh.ErrAuthAnswered) {
 		return httpx.Conflict("Interactive auth %s has already been answered", pending.AuthId)
 	}
 	return nil

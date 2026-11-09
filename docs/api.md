@@ -47,6 +47,8 @@ The statuses in use:
 
 Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
+A request may [name its client](interactive-auth.md#which-client-is-asking), which interactive auths show.
+
 ## SSH Credentials
 
 An SSH credential is a registered keypair, and it belongs to whoever registered it. Registering one is self-service — any authenticated caller may — but nothing about it is reachable by anyone else: reading, updating and deleting a credential are the owner's alone, and the listing returns only the caller's own.
@@ -161,6 +163,7 @@ curl -s localhost:9095/api/v1/ssh-interactive-auths \
 **Response — `200 OK`**
 
 `banner` is the text the server sent before login, which a terminal would print above the prompt. `echo: false` marks a secret answer that a client should mask.
+`origin` names the [client](interactive-auth.md#which-client-is-asking) that started the login.
 
 ```json
 [
@@ -176,6 +179,7 @@ curl -s localhost:9095/api/v1/ssh-interactive-auths \
     "prompts": [
       { "text": "Password: ", "echo": false }
     ],
+    "origin": "VS Code · my-project",
     "createdAt": "2026-10-28T14:02:11.482Z"
   }
 ]
@@ -210,6 +214,7 @@ curl -s "localhost:9095/api/v1/ssh-interactive-auths/$AUTH_ID" \
   "prompts": [
     { "text": "jdoe@login.cluster.example.edu's password: ", "echo": false }
   ],
+  "origin": "VS Code · my-project",
   "createdAt": "2026-10-30T14:02:11.482Z"
 }
 ```
@@ -258,7 +263,8 @@ websocat -H="Authorization: Bearer $TOKEN" \
 
 `GET /api/v1/ssh-interactive-auths/ws` — a WebSocket serving all of the caller's auths, one at a time, for as long as it stays open.
 
-The server sends the oldest pending auth as a `challenge` (same shape as above), or `{"type": "idle"}` when nothing is waiting. The next challenge — or `idle` — follows once the current auth is answered on this socket, answered elsewhere (another socket or [REST](#answer-an-interactive-ssh-auth-over-rest)), or abandoned. Answers take the same body as the single-auth socket, optionally naming the auth they are for; one naming any other auth than the current challenge is an `error`. An accepted answer is acknowledged with `{"type": "accepted", "authId": "…"}` and the socket stays open.
+The server sends the oldest pending auth as a `challenge` (same shape as above), or `{"type": "idle"}` when nothing is waiting. The next challenge — or `idle` — follows once the current auth is answered on this socket, answered elsewhere (another socket or [REST](#answer-an-interactive-ssh-auth-over-rest)), or abandoned. Answers take the same body as the single-auth socket, optionally naming the auth they are for; one naming any other auth than the current challenge is an `error`. An accepted answer is acknowledged with `{"type": "accepted", "authId": "…"}` and the socket stays open. `{"authId": "…", "skip": true}` stops this socket offering that auth and leaves it pending.
+A challenge answered elsewhere is first reported as `{"type": "answered", "authId": "…", "by": "…"}`, where `by` names the [answering client](interactive-auth.md#which-client-is-asking), and is left out when it named none; one cancelled or abandoned is not.
 
 ```bash
 websocat -H="Authorization: Bearer $TOKEN" "ws://localhost:9095/api/v1/ssh-interactive-auths/ws"

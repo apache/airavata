@@ -3423,8 +3423,9 @@ components:
         prompts:
           type: array
           items: { $ref: "#/components/schemas/InteractivePrompt" }
+        origin: { type: string, description: The client that started the login. }
         createdAt: { type: string, format: date-time }
-      required: [authId, hostName, port, loginUser, sshCredentialId, banner, name, instruction, prompts, createdAt]
+      required: [authId, hostName, port, loginUser, sshCredentialId, banner, name, instruction, prompts, origin, createdAt]
 
     InteractiveAuthAnswer:
       type: object

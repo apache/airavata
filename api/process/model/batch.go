@@ -59,6 +59,8 @@ type BatchJobProcess struct {
 
 	JobID *string `gorm:"column:job_id;type:varchar(255)" json:"jobId,omitempty"`
 
+	Origin string `gorm:"column:origin;type:varchar(255)" json:"-"`
+
 	// The values this run supplies for the deployment template's declared inputs and
 	// outputs. They hang off the batch process rather than off the process because the
 	// declarations they name belong to the deployment, which only a BATCH_JOB has.

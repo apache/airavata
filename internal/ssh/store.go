@@ -68,7 +68,7 @@ func (store *SSHInteractiveAuthStore) RemoveAuth(userId, authId string) {
 
 	if auth, ok := userAuths[authId]; ok {
 		if !auth.Answered() {
-			_ = auth.SetResponse(nil, errAuthWithdrawn) // Mark as answered (true) to unblock subscribers waiting for this auth
+			_ = auth.SetResponse("", nil, errAuthWithdrawn) // Mark as answered (true) to unblock subscribers waiting for this auth
 		}
 		delete(userAuths, authId)
 	}
@@ -110,7 +110,7 @@ var errAuthWithdrawn = errors.New("interactive auth withdrawn")
 // It only returns auths that have not been answered yet, or nil if there are none.
 // The returned channel closes the next time the user's auths are added or removed.
 // Both are taken under one lock, so a change right after the call is never missed.
-func (store *SSHInteractiveAuthStore) NextAuthForUser(userId string) (*SSHInteractiveAuth, <-chan struct{}) {
+func (store *SSHInteractiveAuthStore) NextAuthForUser(userId string, skipped map[string]bool) (*SSHInteractiveAuth, <-chan struct{}) {
 	store.lock.Lock()
 	defer store.lock.Unlock()
 
@@ -122,7 +122,7 @@ func (store *SSHInteractiveAuthStore) NextAuthForUser(userId string) (*SSHIntera
 
 	earliest := (*SSHInteractiveAuth)(nil)
 	for _, auth := range store.Auths[userId] {
-		if (earliest == nil || auth.CreatedAt.Before(earliest.CreatedAt)) && auth.Answered() == false {
+		if (earliest == nil || auth.CreatedAt.Before(earliest.CreatedAt)) && auth.Answered() == false && !skipped[auth.AuthId] {
 			earliest = auth
 		}
 	}

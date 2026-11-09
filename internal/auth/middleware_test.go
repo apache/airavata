@@ -25,6 +25,7 @@ import (
 	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/apache/airavata/internal/auth"
@@ -52,6 +53,31 @@ func caller(t *testing.T, req *http.Request) (string, int) {
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
 	return name, rec.Code
+}
+
+func TestMiddlewareCarriesTheClient(t *testing.T) {
+	var client string
+	h := auth.Middleware(tokenIntrospector{})(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) { client = auth.Client(r.Context()) }))
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/ssh-interactive-auths/ws?client=Dashboard", nil)
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	if client != "" {
+		t.Errorf("client = %q, want the query ignored", client)
+	}
+	req.Header.Set(auth.ClientHeader, "VS Code · ws")
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	if client != "VS Code · ws" {
+		t.Errorf("client = %q, want the X-Client header", client)
+	}
+	req.Header.Set(auth.ClientHeader, "VS Code \xb7 ws")
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	if client != "VS Code · ws" {
+		t.Errorf("client = %q, want a Latin-1 header decoded", client)
+	}
+	req.Header.Set(auth.ClientHeader, "VS\tCode"+strings.Repeat("·", 100))
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	if client != "VSCode"+strings.Repeat("·", 61) {
+		t.Errorf("client = %q, want control characters dropped and 128 bytes kept", client)
+	}
 }
 
 func TestWebSocketTokenFromSubprotocol(t *testing.T) {

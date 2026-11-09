@@ -25,6 +25,8 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/apache/airavata/internal/httpx"
 )
@@ -40,6 +42,7 @@ import (
 func Middleware(introspector Introspector) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r = r.WithContext(WithClient(r.Context(), ClientOf(r)))
 			token := bearerToken(r)
 			if token == "" {
 				next.ServeHTTP(w, r)
@@ -72,6 +75,35 @@ func Middleware(introspector Introspector) func(http.Handler) http.Handler {
 // a websocket handler must accept: a browser fails the upgrade when it offered
 // subprotocols and the server selected none.
 const WebSocketProtocol = "airavata.v1"
+
+// ClientHeader names the caller's client, e.g. "VS Code · <workspace>".
+const ClientHeader = "X-Client"
+
+// maxClientBytes keeps a client's name within the varchar(255) origin column.
+const maxClientBytes = 128
+
+// ClientOf reads the client's name; browsers, Node and Python send a header's
+// non-ASCII characters (the "·" in "VS Code · ws") as Latin-1 bytes.
+func ClientOf(r *http.Request) string {
+	client := r.Header.Get(ClientHeader)
+	if !utf8.ValidString(client) {
+		latin1 := make([]rune, len(client))
+		for i := range len(client) {
+			latin1[i] = rune(client[i])
+		}
+		client = string(latin1)
+	}
+	client = strings.Map(func(c rune) rune {
+		if unicode.IsControl(c) {
+			return -1
+		}
+		return c
+	}, client)
+	if len(client) > maxClientBytes {
+		client = strings.ToValidUTF8(client[:maxClientBytes], "")
+	}
+	return client
+}
 
 // webSocketTokenPrefix marks the subprotocol carrying the bearer token, base64url
 // encoded without padding since a subprotocol may not contain the ":" and "/" a CILogon

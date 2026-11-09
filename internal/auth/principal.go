@@ -77,6 +77,17 @@ func FromContext(ctx context.Context) *Principal {
 	return p
 }
 
+type clientKey struct{}
+
+func WithClient(ctx context.Context, client string) context.Context {
+	return context.WithValue(ctx, clientKey{}, client)
+}
+
+func Client(ctx context.Context) string {
+	client, _ := ctx.Value(clientKey{}).(string)
+	return client
+}
+
 // RequireAuthenticated is the @PreAuthorize("isAuthenticated()") guard.
 //
 // An anonymous caller gets 401 rather than 403: Spring's ExceptionTranslationFilter

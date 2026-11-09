@@ -92,7 +92,7 @@ func (h *InteractiveAuthController) respond(w http.ResponseWriter, r *http.Reque
 		httpx.WriteError(w, r, err)
 		return
 	}
-	if err := h.svc.Answer(auth, &answer); err != nil {
+	if err := h.svc.Answer(r.Context(), auth, &answer); err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
@@ -101,10 +101,10 @@ func (h *InteractiveAuthController) respond(w http.ResponseWriter, r *http.Reque
 
 // subscribe serves all of the caller's auths over one websocket, oldest first and
 // one at a time. The next challenge (or "idle") is sent once the current auth is
-// answered here, answered elsewhere, or abandoned.
+// answered here, answered elsewhere, abandoned, or skipped by this socket.
 func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Request) {
 	// Resolve the caller before the upgrade, so a missing token is a plain 401.
-	if _, _, err := h.svc.Next(r.Context()); err != nil {
+	if _, _, err := h.svc.Next(r.Context(), nil); err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
@@ -118,11 +118,15 @@ func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Req
 
 	// Read on a separate goroutine so the loop below can also wake on store changes.
 	// The read failing (client gone, or not JSON) cancels ctx and ends the loop.
-	answers := make(chan dto.InteractiveAuthAnswer)
+	type message struct {
+		dto.InteractiveAuthAnswer
+		Skip bool `json:"skip"`
+	}
+	answers := make(chan message)
 	go func() {
 		defer cancel()
 		for {
-			var answer dto.InteractiveAuthAnswer
+			var answer message
 			if err := wsjson.Read(ctx, conn, &answer); err != nil {
 				return
 			}
@@ -135,13 +139,23 @@ func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Req
 	}()
 
 	var current *ssh.SSHInteractiveAuth
+	// The auth this socket answered, so it is not told of its own answer.
+	var ours *ssh.SSHInteractiveAuth
+	skipped := map[string]bool{}
 	idleSent := false
 	for {
-		next, changed, err := h.svc.Next(ctx)
+		next, changed, err := h.svc.Next(ctx, skipped)
 		if err != nil {
 			return
 		}
 		if next != current || (next == nil && !idleSent) {
+			if current != nil && current != ours {
+				if by, answered := current.AnsweredBy(); answered {
+					if err := wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "answered", AuthID: current.AuthId, By: by}); err != nil {
+						return
+					}
+				}
+			}
 			current = next
 			msg := dto.InteractiveAuthMessage{Type: "idle"}
 			if current != nil {
@@ -160,17 +174,22 @@ func (h *InteractiveAuthController) subscribe(w http.ResponseWriter, r *http.Req
 		case <-changed:
 			// An auth was added, or one was answered elsewhere or abandoned: look again.
 		case answer := <-answers:
+			if answer.Skip {
+				skipped[answer.AuthID] = true
+				continue
+			}
 			switch {
 			case current == nil:
 				err = httpx.BadRequest("No pending interactive auth to answer")
 			case answer.AuthID != "" && answer.AuthID != current.AuthId:
 				err = httpx.Conflict("Interactive auth %s is not the current challenge", answer.AuthID)
 			default:
-				err = h.svc.Answer(current, &answer)
+				err = h.svc.Answer(ctx, current, &answer.InteractiveAuthAnswer)
 			}
 			if err == nil {
 				// Answered auths are skipped by Next, so the loop moves on. A 409 below
 				// (answered elsewhere) moves on the same way.
+				ours = current
 				err = wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "accepted", AuthID: current.AuthId})
 			} else {
 				err = writeSocketError(ctx, conn, err)
@@ -215,7 +234,7 @@ func (h *InteractiveAuthController) answer(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		err := h.svc.Answer(auth, &answer)
+		err := h.svc.Answer(ctx, auth, &answer)
 		if err == nil {
 			_ = wsjson.Write(ctx, conn, dto.InteractiveAuthMessage{Type: "accepted"})
 			conn.Close(websocket.StatusNormalClosure, "")
