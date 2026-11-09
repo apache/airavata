@@ -112,6 +112,14 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 
 	slog.Info("Built slurm script for batch job", "taskId", taskID, "processId", processID, "script", script)
 
+	// Recorded before submitting, so the script can be inspected even when the
+	// submission fails. A retry builds and records it afresh.
+	jst.Script = &script
+	if err := a.jobSubmissionTasks.Save(ctx, jst); err != nil {
+		slog.Error("Failed to record slurm script on job submission task", "taskId", taskID, "processId", processID, "error", err)
+		return nil, err
+	}
+
 	// save script to a temporary location or a known path before uploading
 	scriptPath := fmt.Sprintf("/tmp/%s.slurm", processID)
 	err = os.WriteFile(scriptPath, []byte(script), 0644)

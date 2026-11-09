@@ -954,9 +954,13 @@ type JobSubmissionTaskResponse struct {
 	OnFailure  *OnFailureAction    `json:"onFailure,omitempty"`
 	ProcessId  *openapi_types.UUID `json:"processId,omitempty"`
 	RetryCount *int                `json:"retryCount,omitempty"`
-	TaskId     openapi_types.UUID  `json:"taskId"`
-	TaskOrder  *int                `json:"taskOrder,omitempty"`
-	WorkingDir *string             `json:"workingDir,omitempty"`
+
+	// Script The batch script the task last built and submitted. Server-set and
+	// read-only: null until the task first runs, replaced on each retry.
+	Script     *string            `json:"script,omitempty"`
+	TaskId     openapi_types.UUID `json:"taskId"`
+	TaskOrder  *int               `json:"taskOrder,omitempty"`
+	WorkingDir *string            `json:"workingDir,omitempty"`
 }
 
 // OnFailureAction defines model for OnFailureAction.

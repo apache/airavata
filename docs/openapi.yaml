@@ -4067,6 +4067,11 @@ components:
         processId: { type: [string, "null"], format: uuid }
         jobId: { type: [string, "null"] }
         workingDir: { type: [string, "null"] }
+        script:
+          type: [string, "null"]
+          description: |
+            The batch script the task last built and submitted. Server-set and
+            read-only: null until the task first runs, replaced on each retry.
         onFailure:
           oneOf:
             - { $ref: "#/components/schemas/OnFailureAction" }
