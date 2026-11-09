@@ -23,6 +23,7 @@ package db_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"gorm.io/gorm"
 
@@ -49,6 +50,9 @@ func TestSeedPopulatesAllResources(t *testing.T) {
 
 	if len(res.Users) < 2 {
 		t.Errorf("got %d users, want at least 2", len(res.Users))
+	}
+	if len(res.ServiceAccounts) != 1 {
+		t.Errorf("got %d service accounts, want 1", len(res.ServiceAccounts))
 	}
 	if len(res.Credentials) != 1 {
 		t.Errorf("got %d credentials, want 1", len(res.Credentials))
@@ -85,6 +89,26 @@ func TestSeedPopulatesAllResources(t *testing.T) {
 	var devUser iammodel.User
 	if err := gdb.Where("user_id = ?", "dev-user").First(&devUser).Error; err != nil {
 		t.Fatalf("find dev user: %v", err)
+	}
+
+	// Verify Service Account
+	saID := auth.ServiceAccountIDPrefix + db.DefaultDevServiceAccountName
+	var saUser iammodel.User
+	if err := gdb.Where("user_id = ?", saID).First(&saUser).Error; err != nil {
+		t.Fatalf("find service account user: %v", err)
+	}
+	if !saUser.IsServiceAccount() {
+		t.Errorf("saUser.IsServiceAccount() = false, want true")
+	}
+	var sa iammodel.ServiceAccount
+	if err := gdb.Where("user_id = ?", saID).First(&sa).Error; err != nil {
+		t.Fatalf("find service account: %v", err)
+	}
+	if sa.TokenHash != auth.HashServiceAccountToken(db.DefaultDevServiceAccountToken) {
+		t.Errorf("token hash mismatch for service account")
+	}
+	if sa.ExpiredAt(time.Now().UnixMilli()) {
+		t.Errorf("service account token should not be expired")
 	}
 
 	// Verify Slurm Cluster
@@ -202,6 +226,15 @@ func TestSeedIsIdempotent(t *testing.T) {
 	}
 	if tmplCount != 1 {
 		t.Errorf("template count = %d, want 1", tmplCount)
+	}
+
+	// Verify no duplicate service accounts
+	var saCount int64
+	if err := gdb.Model(&iammodel.ServiceAccount{}).Count(&saCount).Error; err != nil {
+		t.Fatalf("count service accounts: %v", err)
+	}
+	if saCount != 1 {
+		t.Errorf("service account count = %d, want 1", saCount)
 	}
 }
 

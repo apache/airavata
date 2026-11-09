@@ -65,23 +65,31 @@ FKBBdM+jLcLzDIjRT6eBAAAAF2FpcmF2YXRhLW1vY2stc2x1cm0tZGV2AQIDBAUG
 
 	// DefaultStorageName is the local mock storage name.
 	DefaultStorageName = "mock-slurm-storage"
+
+	// DefaultDevServiceAccountName is the default service account name for development.
+	DefaultDevServiceAccountName = "dev-agent"
+
+	// DefaultDevServiceAccountToken is the static token for the development service account.
+	DefaultDevServiceAccountToken = "airavata_sa_dev_secret_token_for_local_testing_only"
 )
 
 // SeedResult summarizes the records created or verified during seeding.
 type SeedResult struct {
-	Users       []string
-	Groups      []string
-	Credentials []string
-	Clusters    []string
-	Partitions  []string
-	Configs     []string
-	Templates   []string
-	Deployments []string
-	Storages    []string
+	Users           []string
+	ServiceAccounts []string
+	Groups          []string
+	Credentials     []string
+	Clusters        []string
+	Partitions      []string
+	Configs         []string
+	Templates       []string
+	Deployments     []string
+	Storages        []string
 }
 
 // Seed idempotently populates the database with initial development resources:
 // - Root and dev admin users with corresponding roles
+// - Default development service account (sa:dev-agent) and static bearer token
 // - Default development group with memberships
 // - Mock Slurm SSH credential (ed25519)
 // - Slurm cluster pointing to the mock Slurm container
@@ -90,7 +98,7 @@ type SeedResult struct {
 // - Demonstration application template ("Echo App") with default input and output
 // - Batch deployment for the template on the mock cluster
 // - SCP data storage configuration
-// - Resource sharing grants for the dev user
+// - Resource sharing grants for the dev user and service account
 func Seed(ctx context.Context, gdb *gorm.DB) (*SeedResult, error) {
 	result := &SeedResult{}
 
@@ -99,52 +107,57 @@ func Seed(ctx context.Context, gdb *gorm.DB) (*SeedResult, error) {
 		return nil, fmt.Errorf("seed users: %w", err)
 	}
 
-	// 2. Groups & Memberships
+	// 2. Service Accounts
+	if err := seedServiceAccount(ctx, gdb, result); err != nil {
+		return nil, fmt.Errorf("seed service account: %w", err)
+	}
+
+	// 3. Groups & Memberships
 	if err := seedGroups(ctx, gdb, result); err != nil {
 		return nil, fmt.Errorf("seed groups: %w", err)
 	}
 
-	// 3. SSH Credential
+	// 4. SSH Credential
 	cred, err := seedSSHCredential(ctx, gdb, result)
 	if err != nil {
 		return nil, fmt.Errorf("seed ssh credential: %w", err)
 	}
 
-	// 3. Slurm Cluster
+	// 5. Slurm Cluster
 	cluster, err := seedSlurmCluster(ctx, gdb, result)
 	if err != nil {
 		return nil, fmt.Errorf("seed slurm cluster: %w", err)
 	}
 
-	// 4. Cluster Partitions
+	// 6. Cluster Partitions
 	if err := seedPartitions(ctx, gdb, cluster, result); err != nil {
 		return nil, fmt.Errorf("seed cluster partitions: %w", err)
 	}
 
-	// 5. Cluster Configuration
+	// 7. Cluster Configuration
 	config, err := seedClusterConfig(ctx, gdb, cluster, cred, result)
 	if err != nil {
 		return nil, fmt.Errorf("seed cluster config: %w", err)
 	}
 
-	// 6. Application Template
+	// 8. Application Template
 	tmpl, err := seedTemplate(ctx, gdb, result)
 	if err != nil {
 		return nil, fmt.Errorf("seed template: %w", err)
 	}
 
-	// 7. Batch Deployment
+	// 9. Batch Deployment
 	if _, err := seedDeployment(ctx, gdb, tmpl, cluster, result); err != nil {
 		return nil, fmt.Errorf("seed deployment: %w", err)
 	}
 
-	// 8. Data Storage
+	// 10. Data Storage
 	storage, err := seedDataStorage(ctx, gdb, cred, result)
 	if err != nil {
 		return nil, fmt.Errorf("seed data storage: %w", err)
 	}
 
-	// 9. Grant sharing permissions to dev-user
+	// 11. Grant sharing permissions to dev-user and service account
 	if err := seedSharing(ctx, gdb, config, storage); err != nil {
 		return nil, fmt.Errorf("seed sharing: %w", err)
 	}
@@ -228,6 +241,54 @@ func seedUsers(ctx context.Context, gdb *gorm.DB, res *SeedResult) error {
 	return nil
 }
 
+func seedServiceAccount(ctx context.Context, gdb *gorm.DB, res *SeedResult) error {
+	now := time.Now().UnixMilli()
+	saID := auth.ServiceAccountIDPrefix + DefaultDevServiceAccountName
+
+	var user iammodel.User
+	err := gdb.WithContext(ctx).Where("user_id = ?", saID).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		user = iammodel.User{
+			ID:         saID,
+			Email:      ptr.To("dev-agent@example.edu"),
+			AuthMethod: ptr.To(iammodel.AuthMethodServiceAccount),
+			FirstName:  ptr.To("Dev"),
+			LastName:   ptr.To("Agent"),
+			Status:     ptr.To(iammodel.UserStatusActive),
+			CreatedAt:  now,
+		}
+		if err := gdb.WithContext(ctx).Create(&user).Error; err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	tokenHash := auth.HashServiceAccountToken(DefaultDevServiceAccountToken)
+	expiresAt := now + 365*24*time.Hour.Milliseconds()
+
+	var sa iammodel.ServiceAccount
+	err = gdb.WithContext(ctx).Where("user_id = ?", saID).First(&sa).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		sa = iammodel.ServiceAccount{
+			UserID:         saID,
+			Description:    ptr.To("Default development service account"),
+			CreatedBy:      auth.RootUsername,
+			TokenHash:      tokenHash,
+			TokenIssuedAt:  now,
+			TokenExpiresAt: expiresAt,
+		}
+		if err := gdb.WithContext(ctx).Create(&sa).Error; err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	res.ServiceAccounts = append(res.ServiceAccounts, fmt.Sprintf("%s (%s)", saID, DefaultDevServiceAccountToken))
+	return nil
+}
+
 func seedGroups(ctx context.Context, gdb *gorm.DB, res *SeedResult) error {
 	now := time.Now().UnixMilli()
 	const defaultGroupName = "default-group"
@@ -275,6 +336,24 @@ func seedGroups(ctx context.Context, gdb *gorm.DB, res *SeedResult) error {
 			GroupMemberStatus: iammodel.GroupMemberStatusActive,
 		}
 		if err := gdb.WithContext(ctx).Create(&devMember).Error; err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	// sa:dev-agent is a member of the group
+	saID := auth.ServiceAccountIDPrefix + DefaultDevServiceAccountName
+	var saMember iammodel.GroupMember
+	err = gdb.WithContext(ctx).Where("group_id = ? AND user_id = ?", group.ID, saID).First(&saMember).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		saMember = iammodel.GroupMember{
+			GroupID:           group.ID,
+			UserID:            saID,
+			GroupRole:         iammodel.GroupRoleMember,
+			GroupMemberStatus: iammodel.GroupMemberStatusActive,
+		}
+		if err := gdb.WithContext(ctx).Create(&saMember).Error; err != nil {
 			return err
 		}
 	} else if err != nil {
@@ -603,6 +682,49 @@ func seedSharing(
 			Permission:    sharingmodel.AccessPermissionWrite,
 		}
 		if err := gdb.WithContext(ctx).Create(&storageShare).Error; err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	// Share cluster config with sa:dev-agent
+	saID := auth.ServiceAccountIDPrefix + DefaultDevServiceAccountName
+	var saCfgShare sharingmodel.Sharing
+	err = gdb.WithContext(ctx).Where(
+		"resource_type = ? AND resource_id = ? AND principal_type = ? AND principal_id = ?",
+		sharingmodel.ResourceTypeSlurmClusterConfig, config.ID, sharingmodel.PrincipalTypeUser, saID,
+	).First(&saCfgShare).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		saCfgShare = sharingmodel.Sharing{
+			ResourceType:  sharingmodel.ResourceTypeSlurmClusterConfig,
+			ResourceID:    config.ID,
+			PrincipalType: sharingmodel.PrincipalTypeUser,
+			PrincipalID:   saID,
+			Permission:    sharingmodel.AccessPermissionWrite,
+		}
+		if err := gdb.WithContext(ctx).Create(&saCfgShare).Error; err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	// Share data storage with sa:dev-agent
+	var saStorageShare sharingmodel.Sharing
+	err = gdb.WithContext(ctx).Where(
+		"resource_type = ? AND resource_id = ? AND principal_type = ? AND principal_id = ?",
+		sharingmodel.ResourceTypeSCPDataStorage, storage.ID, sharingmodel.PrincipalTypeUser, saID,
+	).First(&saStorageShare).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		saStorageShare = sharingmodel.Sharing{
+			ResourceType:  sharingmodel.ResourceTypeSCPDataStorage,
+			ResourceID:    storage.ID,
+			PrincipalType: sharingmodel.PrincipalTypeUser,
+			PrincipalID:   saID,
+			Permission:    sharingmodel.AccessPermissionWrite,
+		}
+		if err := gdb.WithContext(ctx).Create(&saStorageShare).Error; err != nil {
 			return err
 		}
 	} else if err != nil {

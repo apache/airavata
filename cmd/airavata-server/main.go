@@ -113,6 +113,10 @@ Environment variables:
 	for _, u := range result.Users {
 		fmt.Printf("  ✓ %s\n", u)
 	}
+	fmt.Println("Service Accounts:")
+	for _, sa := range result.ServiceAccounts {
+		fmt.Printf("  ✓ %s\n", sa)
+	}
 	fmt.Println("Groups:")
 	for _, g := range result.Groups {
 		fmt.Printf("  ✓ %s\n", g)
