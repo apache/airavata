@@ -21,11 +21,17 @@
 package ssh
 
 import (
+	"context"
+	"crypto/ed25519"
+	"crypto/rand"
+	"errors"
+	"net"
 	"os"
 	"testing"
 	"time"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
+	gossh "golang.org/x/crypto/ssh"
 )
 
 // Test this individually
@@ -152,4 +158,63 @@ func TestSCPUpload(t *testing.T) {
 		t.Fatalf("SCP file mode mismatch: expected a regular file")
 	}
 	t.Logf("SCP file metadata: %+v", metadata)
+}
+
+// sshServer serves config and closes each connection after grace, like sshd's LoginGraceTime.
+func sshServer(t *testing.T, config *gossh.ServerConfig, grace time.Duration) SSHDialConfig {
+	_, private, _ := ed25519.GenerateKey(rand.Reader)
+	signer, _ := gossh.NewSignerFromKey(private)
+	config.AddHostKey(signer)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { listener.Close() })
+	go func() {
+		for conn, err := listener.Accept(); err == nil; conn, err = listener.Accept() {
+			time.AfterFunc(grace, func() { conn.Close() })
+			go serveNoChannels(conn, config)
+		}
+	}()
+	return NewSSHDialConfig("127.0.0.1", listener.Addr().(*net.TCPAddr).Port, "alice", credmodel.SSHCredential{ID: "c1", FullInteractive: true}, "alice")
+}
+
+func TestStoredPasswordLeavesOnlyFurtherPromptsToTheUser(t *testing.T) {
+	password := "stored-pw"
+	answers := map[string]string{"One-time password: ": "654321", "Password: ": password, "Passcode: ": "123456"}
+	dial, sshContext := sshServer(t, &gossh.ServerConfig{KeyboardInteractiveCallback: func(_ gossh.ConnMetadata, ask gossh.KeyboardInteractiveChallenge) (*gossh.Permissions, error) {
+		for _, prompt := range []string{"One-time password: ", "Password: ", "Passcode: "} {
+			if got, err := ask("", "", []string{prompt}, []bool{false}); err != nil || got[0] != answers[prompt] {
+				return nil, errors.New("refused")
+			}
+		}
+		return nil, nil
+	}}, time.Minute), NewGlobalSSHContext()
+	dial.cred.Password = &password
+	t.Cleanup(sshContext.ConnectionPool.Close)
+	done := make(chan error, 1)
+	go func() {
+		_, err := dialSSH(context.Background(), dial, sshContext)
+		done <- err
+	}()
+
+	var asked []string
+	for pending, changed := sshContext.InteractiveAuthStore.NextAuthForUser("alice"); ; pending, changed = sshContext.InteractiveAuthStore.NextAuthForUser("alice") {
+		if pending != nil {
+			prompts, _ := pending.Read()
+			asked = append(asked, prompts[0].Text)
+			_ = pending.SetResponse([]string{answers[prompts[0].Text]}, nil)
+			continue
+		}
+		select {
+		case <-changed:
+		case err := <-done:
+			if err != nil || len(asked) != 2 || asked[0] != "One-time password: " || asked[1] != "Passcode: " {
+				t.Fatalf("login: %v; the user was asked %q, want only the one-time password and the passcode", err, asked)
+			}
+			return
+		case <-time.After(5 * time.Second):
+			t.Fatal("the login neither prompted nor finished")
+		}
+	}
 }

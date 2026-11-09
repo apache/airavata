@@ -38,6 +38,7 @@ type SSHCredentialRequest struct {
 	PublicKey         string  `json:"publicKey"`
 	PrivateKey        *string `json:"privateKey"`
 	Passphrase        *string `json:"passphrase"`
+	Password          *string `json:"password"`
 	FullInteractive   bool    `json:"fullInteractive"`
 }
 

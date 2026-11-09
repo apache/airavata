@@ -3375,6 +3375,9 @@ components:
         passphrase:
           type: [string, "null"]
           description: Write-only. Never returned by any read endpoint.
+        password:
+          type: [string, "null"]
+          description: Write-only. Never returned by any read endpoint.
         fullInteractive:
           type: boolean
           description: Also answer keyboard-interactive prompts (OTP, Duo) after the key.
@@ -3383,7 +3386,7 @@ components:
     SSHCredentialResponse:
       type: object
       description: |
-        The read model for a credential. It has no private key or passphrase field at all —
+        The read model for a credential. It has no private key, passphrase or password field at all —
         the secrets cannot leak through this endpoint because there is nowhere for
         them to go.
       properties:

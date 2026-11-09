@@ -97,6 +97,7 @@ echo "$SSH_CREDENTIAL_ID"
 | `publicKey` | string | required, cannot be blank |
 | `privateKey` | string \| null | required on create; omit on update to keep the stored secret |
 | `passphrase` | string \| null | optional |
+| `password` | string \| null | optional, write-only; answers the login's password prompt; ignored unless `fullInteractive` |
 | `fullInteractive` | boolean | optional, default `false`; also answer keyboard-interactive prompts (OTP, Duo) after the key |
 
 ```json

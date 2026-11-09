@@ -31,6 +31,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -51,6 +52,9 @@ const scpOK = 0x00
 // activity is retried by the workflow, so a host that is merely down should fail the
 // attempt quickly rather than hold a worker slot until the OS gives up on the socket.
 const scpDialTimeout = 30 * time.Second
+
+// The host's own password prompt, not an OTP or passcode that also says "password".
+var passwordPrompt = regexp.MustCompile(`(?i)^(\S+'s )?password:\s*$`)
 
 type FileMetadata struct {
 	Path string
@@ -127,6 +131,15 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 		authMethods = append(authMethods, gossh.PublicKeys(signer))
 	}
 
+	// The stored password answers the first lone password prompt; any other prompt goes to the user.
+	stored := dialConfig.cred.Password
+	ask := func(name, instruction string, prompts []Prompt) ([]string, error) {
+		if answer := stored; answer != nil && len(prompts) == 1 && !prompts[0].Echo && passwordPrompt.MatchString(prompts[0].Text) {
+			stored = nil
+			return []string{*answer}, nil
+		}
+		return askUserInteractive(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
+	}
 	if dialConfig.cred.FullInteractive {
 		ki := gossh.KeyboardInteractive(func(name, instruction string, questions []string, echos []bool) ([]string, error) {
 			// RFC 4256 allows an INFO_REQUEST with zero prompts (servers use it to
@@ -140,7 +153,7 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 				return []string{}, nil
 			}
 
-			answers, err := askUserInteractive(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
+			answers, err := ask(name, instruction, prompts)
 			if err != nil {
 				return nil, err
 			}
@@ -154,7 +167,7 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 		// The server only tries it if it advertises the method.
 		password := gossh.PasswordCallback(func() (string, error) {
 			prompt := fmt.Sprintf("%s@%s's password: ", dialConfig.sshUsername, dialConfig.host)
-			answers, err := askUserInteractive(ctx, dialConfig, sshContext, banner, "", "", []Prompt{{Text: prompt, Echo: false}})
+			answers, err := ask("", "", []Prompt{{Text: prompt, Echo: false}})
 			if err != nil {
 				return "", err
 			}
