@@ -29,6 +29,8 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/apache/airavata/internal/auth"
 )
 
 // Config is the resolved server configuration.
@@ -49,6 +51,7 @@ type Config struct {
 	// CILogon
 	IntrospectionURI string
 	UserInfoURI      string
+	Issuer           string
 	ClientID         string
 	ClientSecret     string
 
@@ -70,15 +73,17 @@ type Config struct {
 // Load reads configuration from the environment, applying the same defaults the Java
 // application.properties declared.
 func load() (Config, error) {
+	issuer := strings.TrimSuffix(env("CILOGON_ISSUER", auth.CILogonIssuer), "/")
 	cfg := Config{
 		HTTPAddr:    ":" + env("SERVER_PORT", "9095"),
 		DSN:         env("AIRAVATA_DB_DSN", defaultDSN()),
 		AutoMigrate: envBool("AIRAVATA_DB_AUTO_MIGRATE", true),
 
-		CORSAllowedOrigins: strings.Split(env("AIRAVATA_CORS_ALLOWED_ORIGINS", "*"), ","),
+		CORSAllowedOrigins: strings.Fields(strings.ReplaceAll(env("AIRAVATA_CORS_ALLOWED_ORIGINS", "*"), ",", " ")),
 
-		IntrospectionURI: env("CILOGON_INTROSPECTION_URI", "https://cilogon.org/oauth2/introspect"),
-		UserInfoURI:      env("CILOGON_USERINFO_URI", "https://cilogon.org/oauth2/userinfo"),
+		IntrospectionURI: env("CILOGON_INTROSPECTION_URI", issuer+"/oauth2/introspect"),
+		UserInfoURI:      env("CILOGON_USERINFO_URI", issuer+"/oauth2/userinfo"),
+		Issuer:           issuer,
 		ClientID:         env("CILOGON_CLIENT_ID", ""),
 		ClientSecret:     env("CILOGON_CLIENT_SECRET", ""),
 

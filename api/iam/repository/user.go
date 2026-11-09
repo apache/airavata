@@ -24,6 +24,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	model "github.com/apache/airavata/api/iam/model"
 )
@@ -51,6 +52,11 @@ func (r *UserRepository) FindByID(ctx context.Context, id string) (*model.User, 
 		return nil, err
 	}
 	return &out, nil
+}
+
+// CreateIfAbsent inserts a user unless one with its id exists.
+func (r *UserRepository) CreateIfAbsent(ctx context.Context, u *model.User) error {
+	return r.db.WithContext(ctx).Clauses(clause.OnConflict{DoNothing: true}).Create(u).Error
 }
 
 // Save inserts or updates a user.

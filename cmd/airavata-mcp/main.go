@@ -38,6 +38,7 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
+	srvauth "github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/mcp/auth"
 	"github.com/apache/airavata/internal/mcp/policy"
 	"github.com/apache/airavata/internal/mcp/server"
@@ -114,7 +115,7 @@ type authFlags struct {
 
 func (a *authFlags) register(fs *flag.FlagSet) {
 	fs.StringVar(&a.apiURL, "api-url", env("AIRAVATA_MCP_API_URL", "http://localhost:9095"), "airavata-server base URL (AIRAVATA_MCP_API_URL)")
-	fs.StringVar(&a.issuer, "oauth-issuer", env("AIRAVATA_MCP_OAUTH_ISSUER", auth.DefaultIssuer), "OpenID Connect issuer for sign-in (AIRAVATA_MCP_OAUTH_ISSUER)")
+	fs.StringVar(&a.issuer, "oauth-issuer", env("AIRAVATA_MCP_OAUTH_ISSUER", srvauth.CILogonIssuer), "OpenID Connect issuer for sign-in (AIRAVATA_MCP_OAUTH_ISSUER)")
 	fs.StringVar(&a.clientID, "oauth-client-id", env("AIRAVATA_MCP_OAUTH_CLIENT_ID", ""), "public OAuth client id registered for airavata-mcp (AIRAVATA_MCP_OAUTH_CLIENT_ID)")
 }
 

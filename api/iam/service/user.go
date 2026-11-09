@@ -29,6 +29,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/ptr"
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
@@ -159,6 +160,12 @@ func notFoundAs(err error, format string, args ...any) error {
 		return httpx.NotFound(format, args...)
 	}
 	return err
+}
+
+func (s *UserService) Enroll(ctx context.Context, principal *auth.Principal) error {
+	claim := func(key string) *string { value, _ := principal.Attributes[key].(string); return ptr.NonBlank(&value) }
+	return ensureUser(ctx, s.repo, &model.User{ID: principal.Name, AuthMethod: ptr.To(model.AuthMethodCILogon),
+		Email: claim("email"), FirstName: claim("given_name"), LastName: claim("family_name")})
 }
 
 // RequireCurrentUser resolves the authenticated caller to their stored user record.

@@ -6,11 +6,12 @@ Every Airavata API call that reads private data or changes anything carries a be
 Authorization: Bearer <token>
 ```
 
-Three kinds of token are accepted:
+Four kinds of token are accepted:
 
 | Token | Who it identifies | Meant for |
 |---|---|---|
 | **CILogon access token** | a real user, signed in through their home institution, ORCID, Google or another identity provider that CILogon federates | all normal use |
+| **CILogon ID token** | the same user, as a JWT issued to the server's own client | apps that sign in through the server's [sign-in routes](api.md#authentication) |
 | **Service account token** | a non-human account created by an admin, always with `USER` authority | automation: CI pipelines, gateways, scheduled jobs |
 | **Root token** | the built-in `root` account, with `SUPER_ADMIN` authority | first-time setup and testing only |
 
@@ -30,6 +31,8 @@ CILogon access tokens are opaque strings, not JWTs, so Airavata cannot check the
 2. calls CILogon's **userinfo** endpoint with the token to get profile claims (name, email). If this call fails, the request continues without them.
 3. takes the username from `username`, `preferred_username` or `sub`. CILogon URIs such as `http://cilogon.org/serverE/users/12345` are shortened to **`cilogon:12345`**. This value is the user id used everywhere in Airavata: ownership, shares, group membership and roles.
 4. looks up the user's roles in Airavata's own database. **A token never grants its own privileges.**
+
+A CILogon **ID token** is a JWT, so the server verifies it locally against the keys it discovers from `CILOGON_ISSUER` at startup, and skips steps 1 and 2. Its audience must be `CILOGON_CLIENT_ID`. Step 3 takes the username from `sub` only, because `preferred_username` is not unique. Step 4 applies unchanged.
 
 If CILogon cannot be reached, the request fails with `502 Unable to validate bearer token` rather than `401`, because the failure is not the caller's fault.
 
@@ -140,8 +143,9 @@ The server can only introspect tokens that its client is allowed to see. The sim
 |---|---|---|
 | `CILOGON_CLIENT_ID` | *(empty)* | The client id from step 1. Setting it turns on CILogon authentication. |
 | `CILOGON_CLIENT_SECRET` | *(empty)* | The client secret. Keep it in a secret store, not in a committed file. |
-| `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | Change this only for a non-production CILogon instance (e.g. `test.cilogon.org`). |
-| `CILOGON_USERINFO_URI` | `https://cilogon.org/oauth2/userinfo` | Same. |
+| `CILOGON_ISSUER` | `https://cilogon.org` | Change this only for a non-production CILogon instance (e.g. `https://test.cilogon.org`). Discovered at startup, for ID tokens and sign-in. If discovery fails, the server does not start. |
+| `CILOGON_INTROSPECTION_URI` | `$CILOGON_ISSUER/oauth2/introspect` | Override only if the issuer serves it elsewhere. |
+| `CILOGON_USERINFO_URI` | `$CILOGON_ISSUER/oauth2/userinfo` | Same. |
 | `AIRAVATA_ROOT_ACCOUNT_ENABLED` | `true` | Set to `false` in production. |
 | `AIRAVATA_ROOT_ACCOUNT_TOKEN` | *(random per start)* | Fixes the root token to a known value, for repeatable test environments. |
 
@@ -162,7 +166,7 @@ Tokens travel in every request, so put TLS in front of the server in any deploym
 
 ### 3. Bootstrap the first administrator
 
-A CILogon user needs a **user record** in Airavata before they can own anything (credentials, cluster configs, storages, runs). Without one they get `404 No user record found for authenticated principal`. Only a `SUPER_ADMIN` can create records. To give a new deployment its first real administrator:
+A CILogon user needs a **user record** in Airavata before they can own anything (credentials, cluster configs, storages, runs). Without one they get `404 No user record found for authenticated principal`. Signing in through the [sign-in routes](api.md#authentication) creates one; otherwise only a `SUPER_ADMIN` can create records. To give a new deployment its first real administrator:
 
 1. Start with the root account **enabled**.
 2. Have the administrator sign in to CILogon and find their user id (see [Find your user id](#find-your-user-id)).
@@ -192,6 +196,7 @@ How you sign in depends on how you use Airavata:
 |---|---|
 | working interactively in a browser | the **dashboard**, which has CILogon sign-in built in |
 | calling the API from scripts, `curl` or your own code | the **web-api-client**, to sign in through CILogon and get a token |
+| building your own browser app or CLI | the server's [sign-in routes](api.md#authentication), which redeem a CILogon grant for an ID token |
 | working through an AI assistant | **airavata-mcp**, which signs in and refreshes tokens itself |
 
 ### Dashboard

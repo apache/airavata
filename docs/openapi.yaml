@@ -33,6 +33,8 @@ info:
     caller is acceptable. A token that is present but invalid is always `401`, with
     `WWW-Authenticate: Bearer error="invalid_token"`. If the identity provider cannot
     be reached the call fails `502`, because that is not the caller's fault.
+    A CILogon ID token from [sign-in](#tag/Authentication) is verified against the
+    issuer's key set instead.
 
     ## Authorization
 
@@ -73,6 +75,8 @@ servers:
 tags:
   - name: Health
     description: Liveness probe.
+  - name: Authentication
+    description: CILogon sign-in.
   - name: Users
     description: User accounts.
   - name: Groups
@@ -130,6 +134,67 @@ paths:
                     const: UP
                 required: [status]
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+
+  # ------------------------------------------------------- Authentication
+
+  /api/v1/auth/config:
+    get:
+      tags: [Authentication]
+      summary: What a browser needs to start a PKCE sign-in
+      operationId: signInConfig
+      security: []
+      responses:
+        "200":
+          description: The authorization endpoint, client id and scope.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SignInConfig" }
+  /api/v1/auth/device:
+    post:
+      tags: [Authentication]
+      summary: Start a device grant
+      operationId: signInDevice
+      security: []
+      responses:
+        "200":
+          description: The code the user approves and the code to redeem.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Device" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "501": { description: The identity provider offers no device flow. }
+        "502": { $ref: "#/components/responses/BadGateway" }
+  /api/v1/auth/token:
+    post:
+      tags: [Authentication]
+      summary: Redeem a grant for tokens
+      description: |
+        One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+        `redirectUri` on an allowed origin. A caller the server has never seen is
+        enrolled as a user.
+      operationId: signInToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code: { type: string }
+                codeVerifier: { type: string }
+                redirectUri: { type: string }
+                refreshToken: { type: string }
+                deviceCode: { type: string }
+      responses:
+        "200":
+          description: The tokens.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Tokens" }
+        "202": { description: The user has not approved the device code yet; ask again. }
+        "400": { $ref: "#/components/responses/BadRequest" }
         "502": { $ref: "#/components/responses/BadGateway" }
 
   # ---------------------------------------------------------------- Users
@@ -3196,6 +3261,31 @@ components:
         - END
 
     # ------------------------------------------------------------ IAM
+
+    SignInConfig:
+      type: object
+      properties:
+        authorizationEndpoint: { type: string }
+        clientId: { type: string }
+        scope: { type: string }
+      required: [authorizationEndpoint, clientId, scope]
+
+    Tokens:
+      type: object
+      properties:
+        idToken: { type: string }
+        refreshToken: { type: string }
+        expiresIn: { type: integer, format: int64, description: Seconds until the ID token expires. }
+      required: [idToken, expiresIn]
+
+    Device:
+      type: object
+      properties:
+        deviceCode: { type: string }
+        userCode: { type: string }
+        verificationUri: { type: string }
+        interval: { type: integer, format: int64 }
+      required: [deviceCode, userCode, verificationUri, interval]
 
     UserRegistration:
       type: object

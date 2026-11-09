@@ -119,7 +119,7 @@ func TestEnvironmentOverrides(t *testing.T) {
 	isolate(t)
 	t.Setenv("SERVER_PORT", "8080")
 	t.Setenv("AIRAVATA_DB_AUTO_MIGRATE", "false")
-	t.Setenv("AIRAVATA_CORS_ALLOWED_ORIGINS", "https://a.example.edu,https://b.example.edu")
+	t.Setenv("AIRAVATA_CORS_ALLOWED_ORIGINS", "https://a.example.edu, https://b.example.edu")
 	t.Setenv("AIRAVATA_ROOT_ACCOUNT_TOKEN", "fixed-token")
 
 	cfg, err := load()
@@ -132,8 +132,8 @@ func TestEnvironmentOverrides(t *testing.T) {
 	if cfg.AutoMigrate {
 		t.Error("AutoMigrate = true, want the override to disable it")
 	}
-	if len(cfg.CORSAllowedOrigins) != 2 {
-		t.Errorf("CORSAllowedOrigins = %v, want two entries", cfg.CORSAllowedOrigins)
+	if len(cfg.CORSAllowedOrigins) != 2 || cfg.CORSAllowedOrigins[1] != "https://b.example.edu" {
+		t.Errorf("CORSAllowedOrigins = %q, want two trimmed entries", cfg.CORSAllowedOrigins)
 	}
 	if cfg.RootAccountToken != "fixed-token" {
 		t.Errorf("RootAccountToken = %q, want the pinned value", cfg.RootAccountToken)

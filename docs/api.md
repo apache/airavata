@@ -6,6 +6,36 @@ This page is the narrative reference, with a worked `curl` example per endpoint.
 
 All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
+## Authentication
+
+```
+GET  /api/v1/auth/config
+POST /api/v1/auth/device
+POST /api/v1/auth/token
+```
+
+Public routes that obtain a CILogon ID token as the bearer, present when `CILOGON_CLIENT_ID` and `CILOGON_CLIENT_SECRET` are set, subject to [`CILOGON_ISSUER`](auth.md#2-set-the-servers-environment). Call them without an `Authorization` header: an expired ID token sent as the bearer gets `401`.
+
+`GET /auth/config` returns the `authorizationEndpoint`, `clientId` and `scope` a browser needs to start an authorization-code flow with PKCE. `POST /auth/token` redeems one grant for `{idToken, refreshToken, expiresIn}`: `{code, codeVerifier, redirectUri}`, where `redirectUri` must sit on one of `AIRAVATA_CORS_ALLOWED_ORIGINS` (`*` admits none); `{refreshToken}`; or `{deviceCode}` from `POST /auth/device`, which returns `{deviceCode, userCode, verificationUri, interval}`. A device grant answers `202 Accepted` until the user approves; poll every `interval` seconds.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/auth/token \
+  -H 'Content-Type: application/json' -d "{\"refreshToken\": \"$REFRESH_TOKEN\"}"
+```
+
+```json
+{ "idToken": "eyJhbGciOiJSUzI1NiIs...", "refreshToken": "https://cilogon.org/oauth2/refreshToken/...", "expiresIn": 900 }
+```
+
+| Status | Cause |
+|---|---|
+| `202 Accepted` | the device code is not approved yet |
+| `400 Bad Request` | a missing field, a rejected grant, or a `redirectUri` outside the allowed origins |
+| `501 Not Implemented` | (`/auth/device`) the issuer offers no device flow |
+| `502 Bad Gateway` | the identity provider failed, refused the server's client, or returned no valid ID token |
+
+Redeeming a grant enrolls an unknown caller as a user.
+
 ## Error responses
 
 Every failure — validation, authorization, missing record — comes back in the same envelope:

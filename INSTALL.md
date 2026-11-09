@@ -124,20 +124,8 @@ of 20 open connections, 2 kept idle, and a 30-minute connection lifetime
 
 ### Authentication — CILogon
 
-| Variable | Default | Description |
-|---|---|---|
-| `CILOGON_CLIENT_ID` | *(empty)* | OAuth client id used to authenticate introspection calls. |
-| `CILOGON_CLIENT_SECRET` | *(empty)* | OAuth client secret. |
-| `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | RFC 7662 introspection endpoint. |
-| `CILOGON_USERINFO_URI` | `https://cilogon.org/oauth2/userinfo` | Profile claims endpoint. |
-
-CILogon access tokens for standard OAuth clients are opaque strings, not JWTs, so they
-cannot be verified locally against a key set. Each bearer token is validated by calling
-the introspection endpoint; profile claims come from a second call to userinfo, since
-introspection alone returns only a small fixed claim set.
-
-Authorities are never read from the token. They are looked up in the `user_roles` table
-by username, so a token cannot assert its own privileges.
+The `CILOGON_*` variables, and how each kind of CILogon token is verified, are in
+[docs/auth.md](docs/auth.md#2-set-the-servers-environment).
 
 ### Authentication — root account
 

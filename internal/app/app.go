@@ -31,6 +31,7 @@ package app
 import (
 	"gorm.io/gorm"
 
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
@@ -109,6 +110,8 @@ type Services struct {
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
 	Launch *processsvc.LaunchService
+
+	SignIn *auth.SignIn
 
 	ExecutionEngine *orchestration.ExecutionEngine
 }

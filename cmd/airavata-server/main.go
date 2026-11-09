@@ -40,6 +40,7 @@ import (
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/orchestration/tasks/monitoring"
 	"github.com/apache/airavata/internal/server"
+	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/backend/sqlite"
 )
@@ -154,6 +155,17 @@ func runServer() error {
 	// Service account tokens are Airavata-issued, so they are checked against the
 	// database and never forwarded to CILogon.
 	introspector.ServiceAccounts = iamrepo.ServiceAccountTokenLookup{DB: gdb}
+	var signIn *auth.SignIn
+	if cfg.ClientID != "" {
+		// A client, not a deadline: the provider fetches its key set through this context later.
+		discovery := oidc.ClientContext(context.Background(), introspector.HTTPClient)
+		provider, err := oidc.NewProvider(discovery, cfg.Issuer)
+		if err != nil {
+			return fmt.Errorf("discover OIDC issuer %s: %w", cfg.Issuer, err)
+		}
+		introspector.IDTokens = provider.Verifier(&oidc.Config{ClientID: cfg.ClientID})
+		signIn = auth.NewSignIn(provider.Endpoint(), cfg.ClientID, cfg.ClientSecret, cfg.CORSAllowedOrigins, introspector.HTTPClient)
+	}
 
 	repos := app.NewRepositories(gdb)
 	// The object graph, built once. The HTTP handler takes it, and so does the workflow
@@ -170,6 +182,7 @@ func runServer() error {
 	}
 
 	svcs := app.NewServices(cfg, gdb, repos, workflowBackend)
+	svcs.SignIn = signIn
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,

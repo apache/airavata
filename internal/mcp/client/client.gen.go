@@ -784,6 +784,14 @@ type DataStagingTaskResponse struct {
 // DataStorageType defines model for DataStorageType.
 type DataStorageType string
 
+// Device defines model for Device.
+type Device struct {
+	DeviceCode      string `json:"deviceCode"`
+	Interval        int64  `json:"interval"`
+	UserCode        string `json:"userCode"`
+	VerificationUri string `json:"verificationUri"`
+}
+
 // Error The envelope every failure response uses.
 type Error struct {
 	// Error The standard reason phrase for `status`.
@@ -1180,6 +1188,13 @@ type ShareUpdate struct {
 // ShareUpdatePermission defines model for ShareUpdate.Permission.
 type ShareUpdatePermission string
 
+// SignInConfig defines model for SignInConfig.
+type SignInConfig struct {
+	AuthorizationEndpoint string `json:"authorizationEndpoint"`
+	ClientId              string `json:"clientId"`
+	Scope                 string `json:"scope"`
+}
+
 // SlurmClusterConfigRequest The create/update payload for a cluster login config. There is no owner field.
 type SlurmClusterConfigRequest struct {
 	Description    *string            `json:"description,omitempty"`
@@ -1310,6 +1325,14 @@ type TemplateResponse struct {
 	TemplateName        *string            `json:"templateName,omitempty"`
 }
 
+// Tokens defines model for Tokens.
+type Tokens struct {
+	// ExpiresIn Seconds until the ID token expires.
+	ExpiresIn    int64   `json:"expiresIn"`
+	IdToken      string  `json:"idToken"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
+}
+
 // UserRegistration The create/update payload for a user.
 type UserRegistration struct {
 	AuthMethod *AuthMethod          `json:"authMethod,omitempty"`
@@ -1417,6 +1440,15 @@ type NotFound = Error
 // Unauthorized The envelope every failure response uses.
 type Unauthorized = Error
 
+// SignInTokenJSONBody defines parameters for SignInToken.
+type SignInTokenJSONBody struct {
+	Code         *string `json:"code,omitempty"`
+	CodeVerifier *string `json:"codeVerifier,omitempty"`
+	DeviceCode   *string `json:"deviceCode,omitempty"`
+	RedirectUri  *string `json:"redirectUri,omitempty"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
+}
+
 // UploadDataProductContentMultipartBody defines parameters for UploadDataProductContent.
 type UploadDataProductContentMultipartBody struct {
 	File openapi_types.File `json:"file"`
@@ -1451,6 +1483,9 @@ type CreateApplicationTemplateJSONRequestBody = TemplateRequest
 
 // UpdateApplicationTemplateJSONRequestBody defines body for UpdateApplicationTemplate for application/json ContentType.
 type UpdateApplicationTemplateJSONRequestBody = TemplateRequest
+
+// SignInTokenJSONRequestBody defines body for SignInToken for application/json ContentType.
+type SignInTokenJSONRequestBody SignInTokenJSONBody
 
 // CreateDataProductJSONRequestBody defines body for CreateDataProduct for application/json ContentType.
 type CreateDataProductJSONRequestBody = DataProductRequest
@@ -1724,6 +1759,38 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /api/v1/application-templates/{templateId} (the `UpdateApplicationTemplate` operationId).
 	UpdateApplicationTemplate(ctx context.Context, templateId TemplateId, body UpdateApplicationTemplateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SignInConfig What a browser needs to start a PKCE sign-in
+	//
+	// Corresponds with GET /api/v1/auth/config (the `SignInConfig` operationId).
+	SignInConfig(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SignInDevice Start a device grant
+	//
+	// Corresponds with POST /api/v1/auth/device (the `SignInDevice` operationId).
+	SignInDevice(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SignInTokenWithBody Redeem a grant for tokens
+	//
+	// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+	// `redirectUri` on an allowed origin. A caller the server has never seen is
+	// enrolled as a user.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+	SignInTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SignInToken Redeem a grant for tokens
+	//
+	// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+	// `redirectUri` on an allowed origin. A caller the server has never seen is
+	// enrolled as a user.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+	SignInToken(ctx context.Context, body SignInTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListDataProducts List all data products
 	//
@@ -3229,6 +3296,78 @@ func (c *Client) UpdateApplicationTemplateWithBody(ctx context.Context, template
 // Corresponds with PUT /api/v1/application-templates/{templateId} (the `UpdateApplicationTemplate` operationId).
 func (c *Client) UpdateApplicationTemplate(ctx context.Context, templateId TemplateId, body UpdateApplicationTemplateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateApplicationTemplateRequest(c.Server, templateId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SignInConfig What a browser needs to start a PKCE sign-in
+//
+// Corresponds with GET /api/v1/auth/config (the `SignInConfig` operationId).
+func (c *Client) SignInConfig(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSignInConfigRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SignInDevice Start a device grant
+//
+// Corresponds with POST /api/v1/auth/device (the `SignInDevice` operationId).
+func (c *Client) SignInDevice(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSignInDeviceRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SignInTokenWithBody Redeem a grant for tokens
+//
+// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+// `redirectUri` on an allowed origin. A caller the server has never seen is
+// enrolled as a user.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+func (c *Client) SignInTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSignInTokenRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SignInToken Redeem a grant for tokens
+//
+// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+// `redirectUri` on an allowed origin. A caller the server has never seen is
+// enrolled as a user.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+func (c *Client) SignInToken(ctx context.Context, body SignInTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSignInTokenRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -6431,6 +6570,100 @@ func NewUpdateApplicationTemplateRequestWithBody(server string, templateId Templ
 	}
 
 	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSignInConfigRequest constructs an http.Request for the SignInConfig method
+func NewSignInConfigRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/auth/config")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSignInDeviceRequest constructs an http.Request for the SignInDevice method
+func NewSignInDeviceRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/auth/device")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewSignInTokenRequest calls the generic SignInToken builder with application/json body
+func NewSignInTokenRequest(server string, body SignInTokenJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSignInTokenRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewSignInTokenRequestWithBody constructs an http.Request for the SignInToken method, with any body, and a specified content type
+func NewSignInTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/auth/token")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -11241,6 +11474,42 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/v1/application-templates/{templateId} (the `UpdateApplicationTemplate` operationId).
 	UpdateApplicationTemplateWithResponse(ctx context.Context, templateId TemplateId, body UpdateApplicationTemplateJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateApplicationTemplateResponse, error)
 
+	// SignInConfigWithResponse What a browser needs to start a PKCE sign-in
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/auth/config (the `SignInConfig` operationId).
+	SignInConfigWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*SignInConfigResponse, error)
+
+	// SignInDeviceWithResponse Start a device grant
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/auth/device (the `SignInDevice` operationId).
+	SignInDeviceWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*SignInDeviceResponse, error)
+
+	// SignInTokenWithBodyWithResponse Redeem a grant for tokens
+	//
+	// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+	// `redirectUri` on an allowed origin. A caller the server has never seen is
+	// enrolled as a user.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+	SignInTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SignInTokenResponse, error)
+
+	// SignInTokenWithResponse Redeem a grant for tokens
+	//
+	// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+	// `redirectUri` on an allowed origin. A caller the server has never seen is
+	// enrolled as a user.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+	SignInTokenWithResponse(ctx context.Context, body SignInTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*SignInTokenResponse, error)
+
 	// ListDataProductsWithResponse List all data products
 	//
 	// Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -13166,6 +13435,157 @@ func (r UpdateApplicationTemplateResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateApplicationTemplateResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type SignInConfigResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SignInConfig
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r SignInConfigResponse) GetJSON200() *SignInConfig {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r SignInConfigResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r SignInConfigResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SignInConfigResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r SignInConfigResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type SignInDeviceResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Device
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r SignInDeviceResponse) GetJSON200() *Device {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r SignInDeviceResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r SignInDeviceResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r SignInDeviceResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r SignInDeviceResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SignInDeviceResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r SignInDeviceResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type SignInTokenResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *Tokens
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r SignInTokenResponse) GetJSON200() *Tokens {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r SignInTokenResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r SignInTokenResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r SignInTokenResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r SignInTokenResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SignInTokenResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r SignInTokenResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -23284,6 +23704,66 @@ func (c *ClientWithResponses) UpdateApplicationTemplateWithResponse(ctx context.
 	return ParseUpdateApplicationTemplateResponse(rsp)
 }
 
+// SignInConfigWithResponse What a browser needs to start a PKCE sign-in
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/auth/config (the `SignInConfig` operationId).
+func (c *ClientWithResponses) SignInConfigWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*SignInConfigResponse, error) {
+	rsp, err := c.SignInConfig(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSignInConfigResponse(rsp)
+}
+
+// SignInDeviceWithResponse Start a device grant
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/auth/device (the `SignInDevice` operationId).
+func (c *ClientWithResponses) SignInDeviceWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*SignInDeviceResponse, error) {
+	rsp, err := c.SignInDevice(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSignInDeviceResponse(rsp)
+}
+
+// SignInTokenWithBodyWithResponse Redeem a grant for tokens
+//
+// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+// `redirectUri` on an allowed origin. A caller the server has never seen is
+// enrolled as a user.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+func (c *ClientWithResponses) SignInTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SignInTokenResponse, error) {
+	rsp, err := c.SignInTokenWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSignInTokenResponse(rsp)
+}
+
+// SignInTokenWithResponse Redeem a grant for tokens
+//
+// One of `refreshToken`, `deviceCode`, or `code` with its `codeVerifier` and a
+// `redirectUri` on an allowed origin. A caller the server has never seen is
+// enrolled as a user.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/auth/token (the `SignInToken` operationId).
+func (c *ClientWithResponses) SignInTokenWithResponse(ctx context.Context, body SignInTokenJSONRequestBody, reqEditors ...RequestEditorFn) (*SignInTokenResponse, error) {
+	rsp, err := c.SignInToken(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSignInTokenResponse(rsp)
+}
+
 // ListDataProductsWithResponse List all data products
 //
 // Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -26151,6 +26631,118 @@ func ParseUpdateApplicationTemplateResponse(rsp *http.Response) (*UpdateApplicat
 			headers.WWWAuthenticate = &value
 		}
 		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseSignInConfigResponse parses an HTTP response from a SignInConfigWithResponse call
+func ParseSignInConfigResponse(rsp *http.Response) (*SignInConfigResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SignInConfigResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SignInConfig
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSignInDeviceResponse parses an HTTP response from a SignInDeviceWithResponse call
+func ParseSignInDeviceResponse(rsp *http.Response) (*SignInDeviceResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SignInDeviceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Device
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case rsp.StatusCode == 501:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseSignInTokenResponse parses an HTTP response from a SignInTokenWithResponse call
+func ParseSignInTokenResponse(rsp *http.Response) (*SignInTokenResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SignInTokenResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Tokens
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case rsp.StatusCode == 202:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
 	}
 
 	return response, nil

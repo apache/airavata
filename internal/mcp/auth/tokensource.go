@@ -161,7 +161,7 @@ func NewTokenSource(ctx context.Context, cfg Config) (TokenSource, *Principal, e
 	if err != nil {
 		return nil, nil, err
 	}
-	base := d.oauth(cfg, "").TokenSource(cfg.ctx(context.WithoutCancel(ctx)), e.token())
+	base := oauthConfig(cfg, d, "").TokenSource(cfg.ctx(context.WithoutCancel(ctx)), e.token())
 	src := &keyringSource{cfg: cfg, base: oauth2.ReuseTokenSource(e.token(), base), last: e}
 	at, err := src.Token(ctx)
 	if err != nil {

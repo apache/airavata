@@ -32,6 +32,7 @@ import (
 	"testing"
 
 	"github.com/glebarez/sqlite"
+	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
@@ -2018,6 +2019,33 @@ func TestUserRegistrationRequiresSuperAdmin(t *testing.T) {
 	}
 	if created["createdAt"].(float64) <= 0 {
 		t.Error("createdAt was not stamped")
+	}
+}
+
+func TestSignInEnrollsANewCaller(t *testing.T) {
+	h := newHarness(t)
+	h.mustDo(http.MethodGet, "/api/v1/auth/config", "", nil, http.StatusNotFound)
+
+	issuer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"access_token":"a","id_token":"token-dave","expires_in":900}`))
+	}))
+	defer issuer.Close()
+	h.svcs.SignIn = auth.NewSignIn(oauth2.Endpoint{TokenURL: issuer.URL}, "the-client", "the-secret", nil, http.DefaultClient)
+	h.withIntrospector(stubIntrospector{"token-dave": {Name: "dave", Authorities: []string{"USER"}, Attributes: map[string]any{"email": "dave@example.org", "exp": float64(4102444800)}}})
+	if tokens := h.mustDo(http.MethodPost, "/api/v1/auth/token", "", map[string]any{"refreshToken": "r"}, http.StatusOK); tokens["idToken"] != "token-dave" || tokens["expiresIn"].(float64) <= 900 {
+		t.Errorf("tokens = %v", tokens)
+	}
+	if dave := h.mustDo(http.MethodGet, "/api/v1/users/dave", "token-dave", nil, http.StatusOK); dave["userId"] != "dave" {
+		t.Errorf("enrolled user = %v", dave)
+	}
+	if err := h.db.Model(&iammodel.User{}).Where("user_id = ?", "dave").Update("email", "edited@example.org").Error; err != nil {
+		t.Fatal(err)
+	}
+	h.mustDo(http.MethodPost, "/api/v1/auth/token", "", map[string]any{"refreshToken": "r"}, http.StatusOK)
+	var stored iammodel.User
+	if err := h.db.First(&stored, "user_id = ?", "dave").Error; err != nil || *stored.Email != "edited@example.org" {
+		t.Errorf("a second sign-in rewrote the user: %v %v", stored.Email, err)
 	}
 }
 

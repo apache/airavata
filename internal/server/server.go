@@ -23,7 +23,6 @@ package server
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/apache/airavata/internal/app"
 	"github.com/apache/airavata/internal/auth"
@@ -46,6 +45,9 @@ import (
 // over the same database.
 func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) http.Handler {
 	mux := http.NewServeMux()
+	if svcs.SignIn != nil {
+		iamctl.NewSignInController(svcs.SignIn, introspector, svcs.User).Register(mux)
+	}
 	iamctl.NewUserController(svcs.User).Register(mux)
 	iamctl.NewGroupController(svcs.Group).Register(mux)
 	iamctl.NewGroupMemberController(svcs.GroupMember).Register(mux)
@@ -95,7 +97,6 @@ func cors(allowed []string) func(http.Handler) http.Handler {
 	allowAll := false
 	origins := make(map[string]bool, len(allowed))
 	for _, o := range allowed {
-		o = strings.TrimSpace(o)
 		if o == "*" {
 			allowAll = true
 		}

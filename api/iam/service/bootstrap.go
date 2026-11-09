@@ -24,7 +24,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"gorm.io/gorm"
@@ -44,22 +43,20 @@ import (
 // to a users row and refuse if none exists. This closes that gap on startup instead of
 // requiring the manual INSERT documented in INSTALL.md.
 func EnsureRootUser(ctx context.Context, db *gorm.DB) error {
-	repo := repository.NewUserRepository(db)
-	if _, err := repo.FindByID(ctx, auth.RootUsername); err == nil {
-		return nil
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return err
-	}
-
 	authMethod := model.AuthMethodSystem
-	status := model.UserStatusActive
 	firstName, lastName := "Root", "Account"
-	return repo.Save(ctx, &model.User{
+	return ensureUser(ctx, repository.NewUserRepository(db), &model.User{
 		ID:         auth.RootUsername,
 		AuthMethod: &authMethod,
 		FirstName:  &firstName,
 		LastName:   &lastName,
-		Status:     &status,
-		CreatedAt:  time.Now().UnixMilli(),
 	})
+}
+
+// ensureUser inserts user, active and created now, unless a row with its id exists.
+func ensureUser(ctx context.Context, repo *repository.UserRepository, user *model.User) error {
+	status := model.UserStatusActive
+	user.Status = &status
+	user.CreatedAt = time.Now().UnixMilli()
+	return repo.CreateIfAbsent(ctx, user)
 }

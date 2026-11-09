@@ -21,14 +21,22 @@
 package auth
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
+
+	"github.com/coreos/go-oidc/v3/oidc"
+	"golang.org/x/oauth2"
+
+	"github.com/apache/airavata/internal/httpx"
 )
 
 // Introspector validates a bearer token and resolves it to a principal.
@@ -61,6 +69,10 @@ type CILogonIntrospector struct {
 	// carrying the service account prefix is never forwarded to CILogon, whether or
 	// not this is set.
 	ServiceAccounts ServiceAccountResolver
+
+	// IDTokens, when set, verifies ID tokens issued to this client locally, in place of
+	// introspection and userinfo.
+	IDTokens *oidc.IDTokenVerifier
 }
 
 // NewCILogonIntrospector builds an introspector with a bounded HTTP client, so a
@@ -88,6 +100,14 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 		}
 		return c.ServiceAccounts.ResolveServiceAccount(ctx, token)
 	}
+	if c.IDTokens != nil {
+		var claims map[string]any
+		if idToken, err := c.IDTokens.Verify(ctx, token); err == nil && idToken.Subject != "" && idToken.Claims(&claims) == nil {
+			// An ID token has no username claim, and preferred_username is not unique.
+			claims["username"] = idToken.Subject
+			return c.principal(ctx, claims)
+		}
+	}
 
 	attributes, err := c.introspect(ctx, token)
 	if err != nil {
@@ -100,7 +120,10 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 			attributes[k] = v
 		}
 	}
+	return c.principal(ctx, attributes)
+}
 
+func (c *CILogonIntrospector) principal(ctx context.Context, attributes map[string]any) (*Principal, error) {
 	username := NormalizeUsername(firstString(attributes, "username", "preferred_username", "sub"))
 	// The service account namespace is reserved: an identity provider that reported
 	// such a username would otherwise authenticate as that service account.
@@ -198,4 +221,115 @@ func firstString(m map[string]any, keys ...string) string {
 		}
 	}
 	return ""
+}
+
+// CILogonIssuer is the default OIDC issuer.
+const CILogonIssuer = "https://cilogon.org"
+
+// CILogonScopes are the scopes every sign-in requests.
+var CILogonScopes = []string{"openid", "email", "profile", "org.cilogon.userinfo", "offline_access"}
+
+// SignIn redeems CILogon grants with the server's client secret.
+type SignIn struct {
+	oauth   oauth2.Config
+	origins []string
+	client  *http.Client
+}
+
+// NewSignIn returns nil without a client secret.
+func NewSignIn(endpoint oauth2.Endpoint, clientID, clientSecret string, redirectOrigins []string, client *http.Client) *SignIn {
+	if clientSecret == "" {
+		return nil
+	}
+	return &SignIn{
+		oauth:   OAuthConfig(endpoint, clientID, clientSecret, CILogonScopes),
+		origins: redirectOrigins,
+		client:  client,
+	}
+}
+
+// OAuthConfig is a CILogon client's OAuth configuration.
+func OAuthConfig(endpoint oauth2.Endpoint, clientID, clientSecret string, scopes []string) oauth2.Config {
+	// One auth style, or oauth2 sends every refused grant to the issuer twice while it probes for one.
+	endpoint.AuthStyle = oauth2.AuthStyleInParams
+	return oauth2.Config{ClientID: clientID, ClientSecret: clientSecret, Endpoint: endpoint, Scopes: scopes}
+}
+
+type SignInConfig struct {
+	AuthorizationEndpoint string `json:"authorizationEndpoint"`
+	ClientID              string `json:"clientId"`
+	Scope                 string `json:"scope"`
+}
+
+func (s *SignIn) Config() SignInConfig {
+	return SignInConfig{AuthorizationEndpoint: s.oauth.Endpoint.AuthURL, ClientID: s.oauth.ClientID, Scope: strings.Join(s.oauth.Scopes, " ")}
+}
+
+type Tokens struct {
+	IDToken      string `json:"idToken"`
+	RefreshToken string `json:"refreshToken,omitempty"`
+	ExpiresIn    int64  `json:"expiresIn"`
+}
+
+type Grant struct {
+	Code         string `json:"code"`
+	CodeVerifier string `json:"codeVerifier"`
+	RedirectURI  string `json:"redirectUri"`
+	RefreshToken string `json:"refreshToken"`
+	DeviceCode   string `json:"deviceCode"`
+}
+
+func (s *SignIn) Redeem(ctx context.Context, grant Grant) (Tokens, error) {
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, s.client)
+	switch {
+	case grant.RefreshToken != "":
+		return tokens(s.oauth.TokenSource(ctx, &oauth2.Token{RefreshToken: grant.RefreshToken}).Token())
+	case grant.DeviceCode != "":
+		return tokens(s.oauth.Exchange(ctx, "", oauth2.SetAuthURLParam("grant_type", "urn:ietf:params:oauth:grant-type:device_code"), oauth2.SetAuthURLParam("device_code", grant.DeviceCode)))
+	}
+	if parsed, err := url.Parse(grant.RedirectURI); grant.CodeVerifier == "" || err != nil || !slices.Contains(s.origins, parsed.Scheme+"://"+parsed.Host) {
+		return Tokens{}, httpx.BadRequest("Send a refreshToken, a deviceCode, or a code with codeVerifier and an allowed redirectUri")
+	}
+	return tokens(s.oauth.Exchange(ctx, grant.Code, oauth2.VerifierOption(grant.CodeVerifier), oauth2.SetAuthURLParam("redirect_uri", grant.RedirectURI)))
+}
+
+type Device struct {
+	DeviceCode      string `json:"deviceCode"`
+	UserCode        string `json:"userCode"`
+	VerificationURI string `json:"verificationUri"`
+	Interval        int64  `json:"interval"`
+}
+
+func (s *SignIn) DeviceStart(ctx context.Context) (Device, error) {
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, s.client)
+	if s.oauth.Endpoint.DeviceAuthURL == "" {
+		return Device{}, &httpx.Error{Status: http.StatusNotImplemented, Message: "The identity provider offers no device flow"}
+	}
+	started, err := s.oauth.DeviceAuth(ctx, oauth2.SetAuthURLParam("client_secret", s.oauth.ClientSecret))
+	if err != nil {
+		return Device{}, classify(err)
+	}
+	return Device{DeviceCode: started.DeviceCode, UserCode: started.UserCode, VerificationURI: cmp.Or(started.VerificationURIComplete, started.VerificationURI), Interval: max(started.Interval, 5)}, nil
+}
+
+func tokens(token *oauth2.Token, err error) (Tokens, error) {
+	if err != nil {
+		return Tokens{}, classify(err)
+	}
+	idToken, _ := token.Extra("id_token").(string)
+	if idToken == "" {
+		return Tokens{}, &httpx.Error{Status: http.StatusBadGateway, Message: "The identity provider returned no ID token"}
+	}
+	return Tokens{IDToken: idToken, RefreshToken: token.RefreshToken}, nil
+}
+
+func classify(err error) error {
+	var refusal *oauth2.RetrieveError
+	switch {
+	case !errors.As(err, &refusal) || refusal.ErrorCode == "" || refusal.ErrorCode == "invalid_client":
+		return &httpx.Error{Status: http.StatusBadGateway, Message: "The identity provider refused or did not answer", Err: err}
+	case refusal.ErrorCode == "authorization_pending" || refusal.ErrorCode == "slow_down":
+		return &httpx.Error{Status: http.StatusAccepted, Message: "The device code is not approved yet"}
+	}
+	return httpx.BadRequest("The identity provider rejected the grant: %s", refusal.ErrorCode)
 }

@@ -34,6 +34,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 )
 
@@ -75,11 +76,11 @@ func Logout(cfg Config) error {
 	return deleteEntry(cfg)
 }
 
-func deviceLogin(ctx context.Context, cfg Config, d *discovery) (*oauth2.Token, error) {
-	if d.DeviceAuthorizationEndpoint == "" {
+func deviceLogin(ctx context.Context, cfg Config, d *oidc.Provider) (*oauth2.Token, error) {
+	if d.Endpoint().DeviceAuthURL == "" {
 		return nil, fmt.Errorf("auth: %s does not advertise a device_authorization_endpoint; use browser login", cfg.Issuer)
 	}
-	oc := d.oauth(cfg, "")
+	oc := oauthConfig(cfg, d, "")
 	da, err := oc.DeviceAuth(cfg.ctx(ctx))
 	if err != nil {
 		return nil, fmt.Errorf("auth: device authorization: %w", err)
@@ -101,8 +102,8 @@ type callbackResult struct {
 	err  error
 }
 
-func browserLogin(ctx context.Context, cfg Config, d *discovery) (*oauth2.Token, error) {
-	if d.AuthorizationEndpoint == "" {
+func browserLogin(ctx context.Context, cfg Config, d *oidc.Provider) (*oauth2.Token, error) {
+	if d.Endpoint().AuthURL == "" {
 		return nil, fmt.Errorf("auth: %s does not advertise an authorization_endpoint", cfg.Issuer)
 	}
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
@@ -110,7 +111,7 @@ func browserLogin(ctx context.Context, cfg Config, d *discovery) (*oauth2.Token,
 		return nil, fmt.Errorf("auth: starting loopback listener: %w", err)
 	}
 	redirect := fmt.Sprintf("http://127.0.0.1:%d/callback", ln.Addr().(*net.TCPAddr).Port)
-	oc := d.oauth(cfg, redirect)
+	oc := oauthConfig(cfg, d, redirect)
 	state, err := randomString()
 	if err != nil {
 		ln.Close()
