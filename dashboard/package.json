@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
-    "build": "next build",
+    "dev": "next dev --webpack -p 3000",
+    "build": "next build --webpack",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@datalayer/jupyter-react": "2.0.21",
+    "@jupyterlab/coreutils": "6.6.6",
+    "@jupyterlab/nbformat": "4.6.6",
+    "@jupyterlab/notebook": "4.6.6",
     "next": "16.4.4",
     "react": "19.2.9",
     "react-dom": "19.2.9"
@@ -16,6 +20,11 @@
     "@types/node": "22.20.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "svg-url-loader": "8.0.0",
     "typescript": "5.9.3"
+  },
+  "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom"
   }
 }

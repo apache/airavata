@@ -330,7 +330,12 @@ caller lacking the required role returns `403`.
 `dashboard/` is a Next.js web UI over this API: register SSH credentials, clusters,
 cluster configs and storages; manage application templates and deployments; create,
 launch and monitor processes; register, upload and download data products; and answer
-interactive SSH logins (password, OTP, Duo) as they happen.
+interactive SSH logins (password, OTP, Duo) as they happen. Its **Notebooks** page is a
+Python notebook ([jupyter-ui](https://github.com/datalayer/jupyter-ui)) whose kernel runs
+in the browser on Pyodide, with an `airavata(path)` helper that calls this API as the
+signed-in user. Notebooks are kept in each browser's storage, not on the server, and the
+kernel downloads Pyodide from the jsDelivr CDN when it first starts, so browsers using it
+need internet access.
 
 It is built as a static export and served by the API server itself under
 `/dashboard/`, so it starts and stops with the server, on the same origin — there is no
