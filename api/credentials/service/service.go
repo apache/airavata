@@ -171,6 +171,7 @@ func (s *SSHCredentialService) Create(ctx context.Context, req *dto.SSHCredentia
 		PublicKey:         req.PublicKey,
 		PrivateKey:        ptr.From(req.PrivateKey),
 		Passphrase:        ptr.NonBlank(req.Passphrase),
+		Password:          ptr.NonBlank(req.Password),
 		FullInteractive:   req.FullInteractive,
 		OwnerID:           owner.ID,
 	}
@@ -200,6 +201,9 @@ func (s *SSHCredentialService) Update(ctx context.Context, id string, req *dto.S
 	}
 	if v := ptr.NonBlank(req.Passphrase); v != nil {
 		key.Passphrase = v
+	}
+	if v := ptr.NonBlank(req.Password); v != nil {
+		key.Password = v
 	}
 
 	if err := s.keys.Save(ctx, key); err != nil {

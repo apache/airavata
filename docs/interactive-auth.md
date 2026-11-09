@@ -13,6 +13,7 @@ Interactive authentication is a property of an [SSH credential](api.md#ssh-crede
 | Field | Meaning |
 |---|---|
 | `privateKey`, `publicKey`, `passphrase` | The key pair. Airavata always offers it first. |
+| `password` | Optional, write-only. Answers the host's first lone password prompt, so you are not asked for it. Ignored unless `fullInteractive`. |
 | `fullInteractive` | `true` if the host **also** asks keyboard-interactive questions (password, OTP, Duo) after the key. Default `false`. |
 
 In the dashboard, this is the checkbox **"Host also asks keyboard-interactive questions (password, OTP, Duo) — answer them from this dashboard"** when you register a credential.
@@ -41,7 +42,7 @@ When the login starts, Airavata:
 2. If the host asks keyboard-interactive questions or a password, creates an **interactive auth**. This records the host, login user, credential, the host's banner and the prompts. The login then waits.
 3. Waits for that user to answer, sends the answers to the host, and lets the login proceed.
 
-If the host asks again, for example a Duo prompt after the password, that is a **new** interactive auth with a new id.
+If the host asks again, for example a Duo prompt after the password, that is a **new** interactive auth with a new id. A stored `password` answers the first password prompt itself; every other prompt, such as a Duo passcode, still goes to the user.
 
 ### Answer once per login
 
@@ -75,7 +76,7 @@ An authenticated connection is kept and reused by every operation that logs in w
 
 The answer is one response per prompt, in order: `{"responses": ["<password>"]}`. You can instead send `{"cancel": true}` to fail the login immediately rather than leave it waiting.
 
-Answers go straight to the SSH handshake. They are **not logged or stored**.
+Answers go straight to the SSH handshake. They are **not logged or stored**. A credential's `password` is stored, write-only, and never returned; see [api.md](api.md#ssh-credentials).
 
 An auth exists only while its login is waiting. It disappears once it is answered or the login gives up. Only the user it was raised for can see or answer it. Admins cannot see other users' auths either.
 

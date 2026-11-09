@@ -1052,13 +1052,16 @@ type SSHCredentialRequest struct {
 	// Passphrase Write-only. Never returned by any read endpoint.
 	Passphrase *string `json:"passphrase,omitempty"`
 
+	// Password Write-only. Never returned by any read endpoint.
+	Password *string `json:"password,omitempty"`
+
 	// PrivateKey Write-only. Never returned by any read endpoint.
 	PrivateKey        *string `json:"privateKey,omitempty"`
 	PublicKey         string  `json:"publicKey"`
 	SshCredentialName string  `json:"sshCredentialName"`
 }
 
-// SSHCredentialResponse The read model for a credential. It has no private key or passphrase field at all —
+// SSHCredentialResponse The read model for a credential. It has no private key, passphrase or password field at all —
 // the secrets cannot leak through this endpoint because there is nowhere for
 // them to go.
 type SSHCredentialResponse struct {
