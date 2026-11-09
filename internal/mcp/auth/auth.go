@@ -148,6 +148,9 @@ func (d *discovery) oauth(cfg Config, redirect string) *oauth2.Config {
 }
 
 func Identify(ctx context.Context, cfg Config, accessToken string) (*Principal, error) {
+	if srvauth.IsServiceAccountToken(accessToken) {
+		return identifyServiceAccount(ctx, cfg, accessToken)
+	}
 	cfg, err := cfg.withDefaults()
 	if err != nil {
 		return nil, err
@@ -157,6 +160,66 @@ func Identify(ctx context.Context, cfg Config, accessToken string) (*Principal, 
 		return nil, err
 	}
 	return identify(ctx, cfg, d, accessToken)
+}
+
+func identifyServiceAccount(ctx context.Context, cfg Config, accessToken string) (*Principal, error) {
+	if cfg.HTTPClient == nil {
+		cfg.HTTPClient = &http.Client{Timeout: 30 * time.Second}
+	}
+	apiURL := strings.TrimRight(cfg.APIURL, "/")
+	if apiURL == "" {
+		apiURL = "http://localhost:9095"
+	}
+	u := apiURL + "/api/v1/users/me"
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+	req.Header.Set("Accept", "application/json")
+	resp, err := cfg.HTTPClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("auth: validating service account with airavata-server at %s: %w", u, err)
+	}
+	defer resp.Body.Close()
+	switch {
+	case resp.StatusCode == http.StatusUnauthorized:
+		return nil, errors.New("auth: service account token was rejected by airavata-server (HTTP 401); token may be invalid, expired, or belonging to an inactive account")
+	case resp.StatusCode == http.StatusForbidden:
+		return nil, errors.New("auth: access denied by airavata-server (HTTP 403)")
+	case resp.StatusCode != http.StatusOK:
+		return nil, fmt.Errorf("auth: validating service account with airavata-server returned HTTP %d", resp.StatusCode)
+	}
+	var uResp struct {
+		UserID    string  `json:"userId"`
+		FirstName *string `json:"firstName"`
+		LastName  *string `json:"lastName"`
+		User      *struct {
+			FirstName *string `json:"firstName"`
+			LastName  *string `json:"lastName"`
+		} `json:"user"`
+	}
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(&uResp); err != nil {
+		return nil, fmt.Errorf("auth: decoding user response: %w", err)
+	}
+	if uResp.UserID == "" {
+		return nil, errors.New("auth: airavata-server returned empty userId for service account")
+	}
+	if !srvauth.IsServiceAccountID(uResp.UserID) {
+		return nil, fmt.Errorf("auth: token principal %q is not a service account", uResp.UserID)
+	}
+	name := uResp.UserID
+	switch {
+	case uResp.FirstName != nil && *uResp.FirstName != "":
+		name = *uResp.FirstName
+	case uResp.User != nil && uResp.User.FirstName != nil && *uResp.User.FirstName != "":
+		name = *uResp.User.FirstName
+	}
+	return &Principal{
+		Subject:    uResp.UserID,
+		RawSubject: uResp.UserID,
+		Name:       name,
+	}, nil
 }
 
 func identify(ctx context.Context, cfg Config, d *discovery, accessToken string) (*Principal, error) {

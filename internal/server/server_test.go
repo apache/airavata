@@ -2002,6 +2002,17 @@ func TestUserReadIsSelfOrAdmin(t *testing.T) {
 	h.mustDo(http.MethodGet, "/api/v1/users", tokenAdmin, nil, http.StatusOK)
 }
 
+func TestUserMe(t *testing.T) {
+	h := newHarness(t)
+	me := h.mustDo(http.MethodGet, "/api/v1/users/me", tokenAlice, nil, http.StatusOK)
+	if me["userId"] != "alice" {
+		t.Errorf("GET /api/v1/users/me: userId = %v, want alice", me["userId"])
+	}
+	if rec := h.do(http.MethodGet, "/api/v1/users/me", "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous /api/v1/users/me: status = %d, want 401", rec.Code)
+	}
+}
+
 // Registration is Super Admin only — a plain ADMIN is not enough.
 func TestUserRegistrationRequiresSuperAdmin(t *testing.T) {
 	h := newHarness(t)

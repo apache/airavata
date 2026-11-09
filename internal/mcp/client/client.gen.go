@@ -654,20 +654,22 @@ type BatchDeploymentResponse struct {
 
 // BatchJobConfigRequest The resource request carried by a deployment or a run.
 type BatchJobConfigRequest struct {
-	Allocation      string  `json:"allocation"`
-	Constraints     *string `json:"constraints,omitempty"`
-	Cpus            *int32  `json:"cpus,omitempty"`
-	CpusPerGpu      *string `json:"cpusPerGpu,omitempty"`
-	CpusPerTask     *int32  `json:"cpusPerTask,omitempty"`
-	Gpus            *int32  `json:"gpus,omitempty"`
-	GpusPerNode     *int32  `json:"gpusPerNode,omitempty"`
-	Gres            *string `json:"gres,omitempty"`
-	Mem             *string `json:"mem,omitempty"`
-	MemPerCpu       *string `json:"memPerCpu,omitempty"`
-	MemPerGpu       *string `json:"memPerGpu,omitempty"`
-	Nodes           *int32  `json:"nodes,omitempty"`
-	Ntasks          *int32  `json:"ntasks,omitempty"`
-	NtasksPerNode   *int32  `json:"ntasksPerNode,omitempty"`
+	Allocation    string  `json:"allocation"`
+	Constraints   *string `json:"constraints,omitempty"`
+	Cpus          *int32  `json:"cpus,omitempty"`
+	CpusPerGpu    *string `json:"cpusPerGpu,omitempty"`
+	CpusPerTask   *int32  `json:"cpusPerTask,omitempty"`
+	Gpus          *int32  `json:"gpus,omitempty"`
+	GpusPerNode   *int32  `json:"gpusPerNode,omitempty"`
+	Gres          *string `json:"gres,omitempty"`
+	Mem           *string `json:"mem,omitempty"`
+	MemPerCpu     *string `json:"memPerCpu,omitempty"`
+	MemPerGpu     *string `json:"memPerGpu,omitempty"`
+	Nodes         *int32  `json:"nodes,omitempty"`
+	Ntasks        *int32  `json:"ntasks,omitempty"`
+	NtasksPerNode *int32  `json:"ntasksPerNode,omitempty"`
+
+	// Qos Slurm quality of service (`--qos`).
 	Qos             *string `json:"qos,omitempty"`
 	WallTimeMinutes int64   `json:"wallTimeMinutes"`
 }
@@ -689,8 +691,10 @@ type BatchJobConfigResponse struct {
 	Nodes            *int32             `json:"nodes,omitempty"`
 	Ntasks           *int32             `json:"ntasks,omitempty"`
 	NtasksPerNode    *int32             `json:"ntasksPerNode,omitempty"`
-	Qos              *string            `json:"qos,omitempty"`
-	WallTimeMinutes  int64              `json:"wallTimeMinutes"`
+
+	// Qos Slurm quality of service (`--qos`).
+	Qos             *string `json:"qos,omitempty"`
+	WallTimeMinutes int64   `json:"wallTimeMinutes"`
 }
 
 // BatchJobStatusResponse defines model for BatchJobStatusResponse.

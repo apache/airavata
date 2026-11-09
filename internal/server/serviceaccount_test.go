@@ -213,6 +213,10 @@ func TestServiceAccountActsAsAUser(t *testing.T) {
 	id, token := h.createServiceAccount("ci")
 
 	h.mustDo(http.MethodGet, "/api/v1/users/"+id, token, nil, http.StatusOK)
+	me := h.mustDo(http.MethodGet, "/api/v1/users/me", token, nil, http.StatusOK)
+	if me["userId"] != id {
+		t.Errorf("GET /api/v1/users/me: userId = %v, want %s", me["userId"], id)
+	}
 
 	// Owns what it creates.
 	_, ownStorage := h.seedStorage("sa-owned", token)

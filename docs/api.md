@@ -47,6 +47,53 @@ The statuses in use:
 
 Internal failures return `500` with a fixed `"Internal server error"` message: the underlying detail is logged rather than returned, since it may name internal state.
 
+## Users
+
+Airavata tracks user accounts created via identity providers (CILogon), administrator registration, or service accounts.
+
+### Read Current User
+
+```
+GET /api/v1/users/me
+```
+
+Returns the authenticated caller's own identity, permissions, and user record. Available to any signed-in user or service account.
+
+**curl example**
+
+```bash
+TOKEN='<a user or service account token>'
+
+curl -s localhost:9095/api/v1/users/me \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "userId": "sa:pipeline-worker",
+  "status": "ACTIVE",
+  "authorities": [],
+  "permissions": [],
+  "admin": false,
+  "user": {
+    "userId": "sa:pipeline-worker",
+    "status": "ACTIVE",
+    "firstName": "Pipeline Worker",
+    "lastName": null,
+    "email": "worker@example.org",
+    "authMethod": "SERVICE_ACCOUNT",
+    "roles": [],
+    "createdAt": 1755043200000
+  }
+}
+```
+
+| Status | Meaning |
+|---|---|
+| `401 Unauthorized` | no token, or invalid/expired token |
+
 ## SSH Credentials
 
 An SSH credential is a registered keypair, and it belongs to whoever registered it. Registering one is self-service — any authenticated caller may — but nothing about it is reachable by anyone else: reading, updating and deleting a credential are the owner's alone, and the listing returns only the caller's own.

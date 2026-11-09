@@ -19,9 +19,10 @@ bin/airavata-mcp login --device   # on an SSH session or HPC login node
 ```
 
 The access and refresh tokens are stored in the OS keychain and refreshed automatically. `airavata-mcp logout`
-removes them. For CI you can set `AIRAVATA_MCP_TOKEN` instead; it is never a flag, so it never shows up in a
-process listing, and it cannot be refreshed. Airavata's bootstrap root token is refused: every token's identity
-is checked with the issuer's userinfo endpoint.
+removes them. For CI, automated runs, or background agents you can set `AIRAVATA_MCP_TOKEN` instead (supporting both
+personal CILogon tokens and Airavata service account tokens prefixed with `airavata_sa_`); it is never a flag, so
+it never shows up in a process listing, and it cannot be refreshed. Service account tokens are validated directly
+against `airavata-server` and run with `USER` authority. Airavata's bootstrap root token is refused.
 
 ## Connect a client
 
@@ -40,7 +41,7 @@ Every flag has an environment variable; a flag wins over its variable.
 | Flag | Environment variable | Default | |
 |---|---|---|---|
 | `--api-url` | `AIRAVATA_MCP_API_URL` | `http://localhost:9095` | `airavata-server` base URL |
-| (none) | `AIRAVATA_MCP_TOKEN` | | Overrides the keychain token |
+| (none) | `AIRAVATA_MCP_TOKEN` | | Overrides the keychain token (supports CILogon and service account tokens) |
 | `--oauth-issuer` | `AIRAVATA_MCP_OAUTH_ISSUER` | `https://cilogon.org` | OpenID Connect issuer used by `login` |
 | `--oauth-client-id` | `AIRAVATA_MCP_OAUTH_CLIENT_ID` | | Public client id used by `login` |
 | `--allow-write` / `--read-only` | `AIRAVATA_MCP_ALLOW_WRITE` | read-only | Write tools are not even listed without it |
