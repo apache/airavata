@@ -12,6 +12,7 @@
     "@jupyterlab/coreutils": "6.6.6",
     "@jupyterlab/nbformat": "4.6.6",
     "@jupyterlab/notebook": "4.6.6",
+    "@jupyterlab/services": "7.6.6",
     "next": "16.4.4",
     "react": "19.2.9",
     "react-dom": "19.2.9"

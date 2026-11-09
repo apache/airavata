@@ -333,7 +333,8 @@ launch and monitor processes; register, upload and download data products; and a
 interactive SSH logins (password, OTP, Duo) as they happen. Its **Notebooks** page is a
 Python notebook ([jupyter-ui](https://github.com/datalayer/jupyter-ui)) whose kernel runs
 in the browser on Pyodide, with an `airavata(path)` helper that calls this API as the
-signed-in user. Notebooks are kept in each browser's storage, not on the server, and the
+signed-in user, and a file browser to create, rename, upload and download notebooks and
+files. Notebooks and files are kept in each browser's storage, not on the server, and the
 kernel downloads Pyodide from the jsDelivr CDN when it first starts, so browsers using it
 need internet access.
 

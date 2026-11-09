@@ -16,7 +16,7 @@ export default function NotebooksPage() {
     <div className="stack">
       <PageHead
         title="Notebooks"
-        sub="A Python notebook that runs entirely in your browser on Pyodide. It is saved in this browser's storage, not on the server."
+        sub="Python notebooks that run entirely in your browser on Pyodide. Notebooks and files are kept in this browser, not on the server."
       />
       <NotebookView />
     </div>

@@ -953,3 +953,188 @@ dd.chips {
     justify-self: center;
   }
 }
+
+/* Notebooks: a file browser beside the open notebook. */
+.nb-workspace {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.nb-files {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 150px);
+  min-height: 360px;
+  overflow: hidden;
+}
+.nb-files.dragging {
+  outline: 2px dashed var(--accent);
+  outline-offset: -4px;
+  background: var(--accent-soft);
+}
+.nb-files-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.nb-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.nb-crumbs > span {
+  display: inline-flex;
+  gap: 4px;
+}
+.nb-crumbs button.link:disabled {
+  color: var(--text);
+  font-weight: 600;
+  opacity: 1;
+}
+.nb-files-alert {
+  padding: 8px 12px 0;
+}
+.nb-file-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+.nb-file-list li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px 0 4px;
+  position: relative;
+}
+.nb-file-list li.active {
+  background: var(--accent-soft);
+}
+.nb-file-list li:hover:not(.empty) {
+  background: var(--surface-2);
+}
+.nb-file-list li.active:hover {
+  background: var(--accent-soft);
+}
+button.nb-file-name {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  justify-content: flex-start;
+  padding: 6px 8px;
+  font-weight: 400;
+}
+button.nb-file-name:hover:not(:disabled) {
+  background: none;
+}
+button.nb-file-name:disabled {
+  cursor: default;
+  opacity: 1;
+  color: var(--muted);
+}
+button.nb-file-name .truncate {
+  max-width: 100%;
+}
+.nb-file-list li.active button.nb-file-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+/* The row menu button shows on hover, keyboard focus, or while its menu is open. */
+.nb-row-menu {
+  position: relative;
+  flex-shrink: 0;
+  visibility: hidden;
+}
+.nb-file-list li:hover .nb-row-menu,
+.nb-file-list li:focus-within .nb-row-menu,
+.nb-row-menu.open {
+  visibility: visible;
+}
+button.nb-row-menu-button {
+  border-color: transparent;
+  background: none;
+  padding: 0 8px;
+  letter-spacing: 1px;
+}
+button.nb-row-menu-button:hover:not(:disabled) {
+  border-color: var(--border);
+}
+.nb-row-menu-items {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.14);
+}
+.nb-row-menu-items button {
+  border: none;
+  background: none;
+  justify-content: flex-start;
+  font-weight: 400;
+  padding: 6px 10px;
+}
+.nb-row-menu-items button.danger {
+  color: var(--danger);
+}
+.nb-icon {
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  color: var(--muted);
+}
+.nb-icon.folder {
+  fill: var(--warn-soft);
+  stroke: var(--warn);
+}
+.nb-icon.notebook {
+  stroke: var(--accent);
+}
+.nb-editor {
+  min-width: 0;
+}
+.nb-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.nb-editor-head .truncate {
+  max-width: 70%;
+}
+.nb-save {
+  font-size: 12px;
+}
+.nb-save.error {
+  color: var(--danger);
+}
+
+@media (max-width: 900px) {
+  .nb-workspace {
+    grid-template-columns: 1fr;
+  }
+  .nb-files {
+    height: auto;
+    max-height: 320px;
+  }
+  .nb-row-menu {
+    visibility: visible;
+  }
+}

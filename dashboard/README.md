@@ -31,9 +31,10 @@ src/lib/session.tsx  the signed-in token and whether it is an admin
 src/lib/interactive-auth.tsx
                      subscription to waiting SSH logins (socket, polling fallback)
 src/lib/types.ts     wire shapes, mirroring api/*/dto
-src/components/NotebookView.tsx
-                     the Notebooks page: a @datalayer/jupyter-react notebook on an
-                     in-browser Pyodide kernel, autosaved to local storage
+src/components/NotebookView.tsx, NotebookFiles.tsx
+                     the Notebooks page: a file browser and a @datalayer/jupyter-react
+                     notebook on an in-browser Pyodide kernel; files live in the
+                     browser's IndexedDB through jupyter-react's lite contents service
 ```
 
 The build uses webpack (`next build --webpack`), not Turbopack: the JupyterLab packages
