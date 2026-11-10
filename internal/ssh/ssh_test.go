@@ -179,6 +179,65 @@ func sshServer(t *testing.T, config *gossh.ServerConfig, grace time.Duration) SS
 	return NewSSHDialConfig("127.0.0.1", listener.Addr().(*net.TCPAddr).Port, "alice", credmodel.SSHCredential{ID: "c1", FullInteractive: true}, "alice")
 }
 
+func TestLoginEndsWhenTheHostDropsIt(t *testing.T) {
+	anyPassword := &gossh.ServerConfig{PasswordCallback: func(gossh.ConnMetadata, []byte) (*gossh.Permissions, error) { return nil, nil }}
+	dial, sshContext := sshServer(t, anyPassword, 200*time.Millisecond), NewGlobalSSHContext()
+	start := time.Now()
+	_, err := dialSSH(context.Background(), dial, sshContext)
+	if !errors.Is(err, errUnanswered) || time.Since(start) > 5*time.Second {
+		t.Fatalf("after %v: %v, want the host's drop reported at once", time.Since(start), err)
+	}
+	if left := sshContext.InteractiveAuthStore.ListAuthsForUser("alice"); len(left) != 0 {
+		t.Errorf("%d prompts left pending", len(left))
+	}
+}
+
+func TestCancelledLoginEndsWithoutAnotherPrompt(t *testing.T) {
+	kiThenPassword := &gossh.ServerConfig{
+		KeyboardInteractiveCallback: func(_ gossh.ConnMetadata, ask gossh.KeyboardInteractiveChallenge) (*gossh.Permissions, error) {
+			_, err := ask("", "", []string{"OTP: "}, []bool{false})
+			return nil, err
+		},
+		PasswordCallback: func(gossh.ConnMetadata, []byte) (*gossh.Permissions, error) { return nil, nil },
+	}
+	dial, sshContext := sshServer(t, kiThenPassword, time.Minute), NewGlobalSSHContext()
+	done := make(chan error, 1)
+	go func() {
+		_, err := dialSSH(t.Context(), dial, sshContext)
+		done <- err
+	}()
+	store := sshContext.InteractiveAuthStore
+	for pending, changed := store.NextAuthForUser("alice"); ; pending, changed = store.NextAuthForUser("alice") {
+		if pending != nil {
+			// Cancelled and withdrawn under one lock, so changed can then close only for another prompt.
+			store.lock.Lock()
+			_ = pending.SetResponse(nil, errors.New("cancelled"))
+			delete(store.Auths, "alice")
+			changed = store.SubscriberQueue["alice"]
+			store.lock.Unlock()
+			select {
+			case err := <-done:
+				if err == nil {
+					t.Fatal("a cancelled login succeeded")
+				}
+			case <-time.After(5 * time.Second):
+				t.Fatal("a cancelled login did not end")
+			}
+			select {
+			case <-changed:
+				t.Fatal("a cancelled login published another prompt")
+			default:
+			}
+			return
+		}
+		select {
+		case <-changed:
+		case <-time.After(5 * time.Second):
+			t.Fatal("never prompted")
+		}
+	}
+}
+
 func TestStoredPasswordLeavesOnlyFurtherPromptsToTheUser(t *testing.T) {
 	password := "stored-pw"
 	answers := map[string]string{"One-time password: ": "654321", "Password: ": password, "Passcode: ": "123456"}

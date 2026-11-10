@@ -53,6 +53,25 @@ const scpOK = 0x00
 // attempt quickly rather than hold a worker slot until the OS gives up on the socket.
 const scpDialTimeout = 30 * time.Second
 
+// loginTimeout bounds one login, however many prompts it takes.
+const loginTimeout = 5 * time.Minute
+
+var errUnanswered = errors.New("the login was not answered")
+
+// watchedConn calls closed when the host ends the connection, not when the deadline passes.
+type watchedConn struct {
+	net.Conn
+	closed func()
+}
+
+func (c *watchedConn) Read(b []byte) (int, error) {
+	n, err := c.Conn.Read(b)
+	if err != nil && !errors.Is(err, os.ErrDeadlineExceeded) {
+		c.closed()
+	}
+	return n, err
+}
+
 // The host's own password prompt, not an OTP or passcode that also says "password".
 var passwordPrompt = regexp.MustCompile(`(?i)^(\S+'s )?password:\s*$`)
 
@@ -114,9 +133,13 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 	if err != nil {
 		return nil, fmt.Errorf("connecting to %s: %w", addr, err)
 	}
-	if deadline, ok := ctx.Deadline(); ok {
-		_ = conn.SetDeadline(deadline)
-	}
+	ctx, dropped := context.WithCancelCause(ctx)
+	defer dropped(nil)
+	ctx, cancel := context.WithTimeoutCause(ctx, loginTimeout, fmt.Errorf("%w within %v", errUnanswered, loginTimeout))
+	defer cancel()
+	conn = &watchedConn{Conn: conn, closed: func() { dropped(fmt.Errorf("%w: the host closed the connection", errUnanswered)) }}
+	deadline, _ := ctx.Deadline()
+	_ = conn.SetDeadline(deadline)
 
 	// banner collects the server's pre-login text for the prompts that follow. The
 	// banner and auth callbacks both run on the handshake goroutine, so no lock.
@@ -138,7 +161,15 @@ func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *Glo
 			stored = nil
 			return []string{*answer}, nil
 		}
-		return askUserInteractive(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
+		// x/crypto tries the next auth method after a cancel or timeout; it must not prompt again.
+		if ctx.Err() != nil {
+			return nil, context.Cause(ctx)
+		}
+		answers, err := askUserInteractive(ctx, dialConfig, sshContext, banner, name, instruction, prompts)
+		if err != nil {
+			dropped(err)
+		}
+		return answers, err
 	}
 	if dialConfig.cred.FullInteractive {
 		ki := gossh.KeyboardInteractive(func(name, instruction string, questions []string, echos []bool) ([]string, error) {

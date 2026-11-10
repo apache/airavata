@@ -61,7 +61,7 @@ func (s *SSHInteractiveAuth) Challenge(ctx context.Context, name, instruction st
 	select {
 	case <-s.authWaitSignal:
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		return nil, context.Cause(ctx)
 	}
 
 	s.mu.Lock()

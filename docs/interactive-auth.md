@@ -78,7 +78,7 @@ The answer is one response per prompt, in order: `{"responses": ["<password>"]}`
 
 Answers go straight to the SSH handshake. They are **not logged or stored**. A credential's `password` is stored, write-only, and never returned; see [api.md](api.md#ssh-credentials).
 
-An auth exists only while its login is waiting. It disappears once it is answered or the login gives up. Only the user it was raised for can see or answer it. Admins cannot see other users' auths either.
+An auth exists only while its login is waiting. It disappears once it is answered, cancelled, or the login gives up. A login gives up when the host closes the connection or five minutes after the login starts, and it then fails instead of prompting again. Only the user it was raised for can see or answer it. Admins cannot see other users' auths either.
 
 ---
 
