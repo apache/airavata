@@ -1164,3 +1164,8 @@ button.nb-row-menu-button:hover:not(:disabled) {
     visibility: visible;
   }
 }
+
+/* A count beside a tab label, such as the users waiting to be activated. */
+.tabs button .badge {
+  margin-left: 6px;
+}

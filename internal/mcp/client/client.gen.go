@@ -149,19 +149,19 @@ func (e GroupMemberStatus) Valid() bool {
 
 // Defines values for GroupRole.
 const (
-	ADMIN     GroupRole = "ADMIN"
-	MEMBER    GroupRole = "MEMBER"
-	MODERATOR GroupRole = "MODERATOR"
+	GroupRoleADMIN     GroupRole = "ADMIN"
+	GroupRoleMEMBER    GroupRole = "MEMBER"
+	GroupRoleMODERATOR GroupRole = "MODERATOR"
 )
 
 // Valid indicates whether the value is a known member of the GroupRole enum.
 func (e GroupRole) Valid() bool {
 	switch e {
-	case ADMIN:
+	case GroupRoleADMIN:
 		return true
-	case MEMBER:
+	case GroupRoleMEMBER:
 		return true
-	case MODERATOR:
+	case GroupRoleMODERATOR:
 		return true
 	default:
 		return false
@@ -513,6 +513,27 @@ func (e TemplateOutputType) Valid() bool {
 	}
 }
 
+// Defines values for UserAccountRoles.
+const (
+	UserAccountRolesADMIN      UserAccountRoles = "ADMIN"
+	UserAccountRolesSUPERADMIN UserAccountRoles = "SUPER_ADMIN"
+	UserAccountRolesUSER       UserAccountRoles = "USER"
+)
+
+// Valid indicates whether the value is a known member of the UserAccountRoles enum.
+func (e UserAccountRoles) Valid() bool {
+	switch e {
+	case UserAccountRolesADMIN:
+		return true
+	case UserAccountRolesSUPERADMIN:
+		return true
+	case UserAccountRolesUSER:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for UserStatus.
 const (
 	UserStatusACTIVE    UserStatus = "ACTIVE"
@@ -712,6 +733,17 @@ type ClusterPartitionResponse struct {
 	Name             string              `json:"name"`
 	Nodes            *string             `json:"nodes,omitempty"`
 	PartitionId      openapi_types.UUID  `json:"partitionId"`
+}
+
+// CurrentUser defines model for CurrentUser.
+type CurrentUser struct {
+	Admin       bool       `json:"admin"`
+	Authorities []string   `json:"authorities"`
+	Status      UserStatus `json:"status"`
+
+	// User The caller's user record, or null if they have none.
+	User   *UserAccount `json:"user"`
+	UserId string       `json:"userId"`
 }
 
 // DataProductRequest The create/update payload for a registered dataset. There is no owner field
@@ -1310,6 +1342,23 @@ type TemplateResponse struct {
 	TemplateName        *string            `json:"templateName,omitempty"`
 }
 
+// UserAccount A user as administrators see them in the user list, and callers see themselves.
+type UserAccount struct {
+	AuthMethod *AuthMethod `json:"authMethod"`
+
+	// CreatedAt Milliseconds since the epoch.
+	CreatedAt int64              `json:"createdAt"`
+	Email     *string            `json:"email"`
+	FirstName *string            `json:"firstName"`
+	LastName  *string            `json:"lastName"`
+	Roles     []UserAccountRoles `json:"roles"`
+	Status    *UserStatus        `json:"status"`
+	UserId    string             `json:"userId"`
+}
+
+// UserAccountRoles defines model for UserAccount.Roles.
+type UserAccountRoles string
+
 // UserRegistration The create/update payload for a user.
 type UserRegistration struct {
 	AuthMethod *AuthMethod          `json:"authMethod,omitempty"`
@@ -1331,6 +1380,11 @@ type UserResponse struct {
 
 // UserStatus defines model for UserStatus.
 type UserStatus string
+
+// UserStatusUpdate defines model for UserStatusUpdate.
+type UserStatusUpdate struct {
+	Status UserStatus `json:"status"`
+}
 
 // WorkflowResponse One workflow started for a process. There is no request counterpart:
 // workflows are recorded by the server when it starts a workflow, never created
@@ -1580,6 +1634,9 @@ type CreateUserJSONRequestBody = UserRegistration
 
 // UpdateUserJSONRequestBody defines body for UpdateUser for application/json ContentType.
 type UpdateUserJSONRequestBody = UserRegistration
+
+// SetUserStatusJSONRequestBody defines body for SetUserStatus for application/json ContentType.
+type SetUserStatusJSONRequestBody = UserStatusUpdate
 
 // PostApiV1VirtualDataDirectoriesVirtualDataDirectoryIdSharesJSONRequestBody defines body for PostApiV1VirtualDataDirectoriesVirtualDataDirectoryIdShares for application/json ContentType.
 type PostApiV1VirtualDataDirectoriesVirtualDataDirectoryIdSharesJSONRequestBody = ShareRequest
@@ -2999,15 +3056,17 @@ type ClientInterface interface {
 
 	// ListUsers List users
 	//
-	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Newest first, with the email, auth
+	// method and roles an administrator needs to decide whether to activate someone.
 	//
 	// Corresponds with GET /api/v1/users (the `ListUsers` operationId).
 	ListUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateUserWithBody Register a user
 	//
-	// Creates the `users` row an owned resource is attached to. Owning anything in
-	// this API requires such a row.
+	// Creates the `users` row an owned resource is attached to, active straight away.
+	// A CILogon user who signs in without one gets one created for them, suspended
+	// until an administrator activates it.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -3016,13 +3075,22 @@ type ClientInterface interface {
 
 	// CreateUser Register a user
 	//
-	// Creates the `users` row an owned resource is attached to. Owning anything in
-	// this API requires such a row.
+	// Creates the `users` row an owned resource is attached to, active straight away.
+	// A CILogon user who signs in without one gets one created for them, suspended
+	// until an administrator activates it.
 	//
 	// Takes a body of the `application/json` content type.
 	//
 	// Corresponds with POST /api/v1/users (the `CreateUser` operationId).
 	CreateUser(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetCurrentUser Read the caller
+	//
+	// Who the server thinks the caller is. This is the one route a suspended or
+	// inactive account may call; every other route answers it with `403`.
+	//
+	// Corresponds with GET /api/v1/users/me (the `GetCurrentUser` operationId).
+	GetCurrentUser(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetUser Read a user
 	//
@@ -3049,6 +3117,30 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /api/v1/users/{userId} (the `UpdateUser` operationId).
 	UpdateUser(ctx context.Context, userId UserId, body UpdateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SetUserStatusWithBody Set a user's status
+	//
+	// Activates, suspends or deactivates a user, from their next request. Requires
+	// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+	// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+	// under `/api/v1/service-accounts`.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+	SetUserStatusWithBody(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// SetUserStatus Set a user's status
+	//
+	// Activates, suspends or deactivates a user, from their next request. Requires
+	// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+	// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+	// under `/api/v1/service-accounts`.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+	SetUserStatus(ctx context.Context, userId UserId, body SetUserStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiV1VirtualDataDirectoriesVirtualDataDirectoryIdShares List who has access to this virtual data directory
 	//
@@ -6023,7 +6115,8 @@ func (c *Client) AnswerInteractiveAuth(ctx context.Context, authId openapi_types
 
 // ListUsers List users
 //
-// Requires `ADMIN` or `SUPER_ADMIN` authority.
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Newest first, with the email, auth
+// method and roles an administrator needs to decide whether to activate someone.
 //
 // Corresponds with GET /api/v1/users (the `ListUsers` operationId).
 func (c *Client) ListUsers(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -6040,8 +6133,9 @@ func (c *Client) ListUsers(ctx context.Context, reqEditors ...RequestEditorFn) (
 
 // CreateUserWithBody Register a user
 //
-// Creates the `users` row an owned resource is attached to. Owning anything in
-// this API requires such a row.
+// Creates the `users` row an owned resource is attached to, active straight away.
+// A CILogon user who signs in without one gets one created for them, suspended
+// until an administrator activates it.
 //
 // Takes any type of body and a specified content type.
 //
@@ -6060,14 +6154,33 @@ func (c *Client) CreateUserWithBody(ctx context.Context, contentType string, bod
 
 // CreateUser Register a user
 //
-// Creates the `users` row an owned resource is attached to. Owning anything in
-// this API requires such a row.
+// Creates the `users` row an owned resource is attached to, active straight away.
+// A CILogon user who signs in without one gets one created for them, suspended
+// until an administrator activates it.
 //
 // Takes a body of the `application/json` content type.
 //
 // Corresponds with POST /api/v1/users (the `CreateUser` operationId).
 func (c *Client) CreateUser(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateUserRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetCurrentUser Read the caller
+//
+// Who the server thinks the caller is. This is the one route a suspended or
+// inactive account may call; every other route answers it with `403`.
+//
+// Corresponds with GET /api/v1/users/me (the `GetCurrentUser` operationId).
+func (c *Client) GetCurrentUser(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetCurrentUserRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -6124,6 +6237,50 @@ func (c *Client) UpdateUserWithBody(ctx context.Context, userId UserId, contentT
 // Corresponds with POST /api/v1/users/{userId} (the `UpdateUser` operationId).
 func (c *Client) UpdateUser(ctx context.Context, userId UserId, body UpdateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateUserRequest(c.Server, userId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SetUserStatusWithBody Set a user's status
+//
+// Activates, suspends or deactivates a user, from their next request. Requires
+// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+// under `/api/v1/service-accounts`.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+func (c *Client) SetUserStatusWithBody(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetUserStatusRequestWithBody(c.Server, userId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// SetUserStatus Set a user's status
+//
+// Activates, suspends or deactivates a user, from their next request. Requires
+// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+// under `/api/v1/service-accounts`.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+func (c *Client) SetUserStatus(ctx context.Context, userId UserId, body SetUserStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetUserStatusRequest(c.Server, userId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -10843,6 +11000,33 @@ func NewCreateUserRequestWithBody(server string, contentType string, body io.Rea
 	return req, nil
 }
 
+// NewGetCurrentUserRequest constructs an http.Request for the GetCurrentUser method
+func NewGetCurrentUserRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/users/me")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetUserRequest constructs an http.Request for the GetUser method
 func NewGetUserRequest(server string, userId UserId) (*http.Request, error) {
 	var err error
@@ -10905,6 +11089,53 @@ func NewUpdateUserRequestWithBody(server string, userId UserId, contentType stri
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/users/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewSetUserStatusRequest calls the generic SetUserStatus builder with application/json body
+func NewSetUserStatusRequest(server string, userId UserId, body SetUserStatusJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewSetUserStatusRequestWithBody(server, userId, "application/json", bodyReader)
+}
+
+// NewSetUserStatusRequestWithBody constructs an http.Request for the SetUserStatus method, with any body, and a specified content type
+func NewSetUserStatusRequestWithBody(server string, userId UserId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "userId", userId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/users/%s/status", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -12655,7 +12886,8 @@ type ClientWithResponsesInterface interface {
 
 	// ListUsersWithResponse List users
 	//
-	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Newest first, with the email, auth
+	// method and roles an administrator needs to decide whether to activate someone.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -12664,8 +12896,9 @@ type ClientWithResponsesInterface interface {
 
 	// CreateUserWithBodyWithResponse Register a user
 	//
-	// Creates the `users` row an owned resource is attached to. Owning anything in
-	// this API requires such a row.
+	// Creates the `users` row an owned resource is attached to, active straight away.
+	// A CILogon user who signs in without one gets one created for them, suspended
+	// until an administrator activates it.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -12674,13 +12907,24 @@ type ClientWithResponsesInterface interface {
 
 	// CreateUserWithResponse Register a user
 	//
-	// Creates the `users` row an owned resource is attached to. Owning anything in
-	// this API requires such a row.
+	// Creates the `users` row an owned resource is attached to, active straight away.
+	// A CILogon user who signs in without one gets one created for them, suspended
+	// until an administrator activates it.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
 	// Corresponds with POST /api/v1/users (the `CreateUser` operationId).
 	CreateUserWithResponse(ctx context.Context, body CreateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateUserResponse, error)
+
+	// GetCurrentUserWithResponse Read the caller
+	//
+	// Who the server thinks the caller is. This is the one route a suspended or
+	// inactive account may call; every other route answers it with `403`.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/users/me (the `GetCurrentUser` operationId).
+	GetCurrentUserWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCurrentUserResponse, error)
 
 	// GetUserWithResponse Read a user
 	//
@@ -12709,6 +12953,30 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /api/v1/users/{userId} (the `UpdateUser` operationId).
 	UpdateUserWithResponse(ctx context.Context, userId UserId, body UpdateUserJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateUserResponse, error)
+
+	// SetUserStatusWithBodyWithResponse Set a user's status
+	//
+	// Activates, suspends or deactivates a user, from their next request. Requires
+	// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+	// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+	// under `/api/v1/service-accounts`.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+	SetUserStatusWithBodyWithResponse(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetUserStatusResponse, error)
+
+	// SetUserStatusWithResponse Set a user's status
+	//
+	// Activates, suspends or deactivates a user, from their next request. Requires
+	// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+	// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+	// under `/api/v1/service-accounts`.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+	SetUserStatusWithResponse(ctx context.Context, userId UserId, body SetUserStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*SetUserStatusResponse, error)
 
 	// GetApiV1VirtualDataDirectoriesVirtualDataDirectoryIdSharesWithResponse List who has access to this virtual data directory
 	//
@@ -22437,7 +22705,7 @@ type ListUsersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *[]UserResponse
+	JSON200 *[]UserAccount
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *Unauthorized
 	// JSON403 the response for an HTTP 403 `application/json` response
@@ -22451,7 +22719,7 @@ type ListUsersResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r ListUsersResponse) GetJSON200() *[]UserResponse {
+func (r ListUsersResponse) GetJSON200() *[]UserAccount {
 	return r.JSON200
 }
 
@@ -22581,6 +22849,75 @@ func (r CreateUserResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateUserResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetCurrentUserResponse401Headers the declared response headers of an HTTP 401 response for GetCurrentUser
+type GetCurrentUserResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type GetCurrentUserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *CurrentUser
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *GetCurrentUserResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetCurrentUserResponse) GetJSON200() *CurrentUser {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetCurrentUserResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetCurrentUserResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r GetCurrentUserResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r GetCurrentUserResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetCurrentUserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetCurrentUserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetCurrentUserResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -22754,6 +23091,96 @@ func (r UpdateUserResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateUserResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// SetUserStatusResponse401Headers the declared response headers of an HTTP 401 response for SetUserStatus
+type SetUserStatusResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type SetUserStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *UserAccount
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *SetUserStatusResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r SetUserStatusResponse) GetJSON200() *UserAccount {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r SetUserStatusResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r SetUserStatusResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r SetUserStatusResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r SetUserStatusResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r SetUserStatusResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r SetUserStatusResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r SetUserStatusResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r SetUserStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r SetUserStatusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r SetUserStatusResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -25604,7 +26031,8 @@ func (c *ClientWithResponses) AnswerInteractiveAuthWithResponse(ctx context.Cont
 
 // ListUsersWithResponse List users
 //
-// Requires `ADMIN` or `SUPER_ADMIN` authority.
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Newest first, with the email, auth
+// method and roles an administrator needs to decide whether to activate someone.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -25619,8 +26047,9 @@ func (c *ClientWithResponses) ListUsersWithResponse(ctx context.Context, reqEdit
 
 // CreateUserWithBodyWithResponse Register a user
 //
-// Creates the `users` row an owned resource is attached to. Owning anything in
-// this API requires such a row.
+// Creates the `users` row an owned resource is attached to, active straight away.
+// A CILogon user who signs in without one gets one created for them, suspended
+// until an administrator activates it.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -25635,8 +26064,9 @@ func (c *ClientWithResponses) CreateUserWithBodyWithResponse(ctx context.Context
 
 // CreateUserWithResponse Register a user
 //
-// Creates the `users` row an owned resource is attached to. Owning anything in
-// this API requires such a row.
+// Creates the `users` row an owned resource is attached to, active straight away.
+// A CILogon user who signs in without one gets one created for them, suspended
+// until an administrator activates it.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -25647,6 +26077,22 @@ func (c *ClientWithResponses) CreateUserWithResponse(ctx context.Context, body C
 		return nil, err
 	}
 	return ParseCreateUserResponse(rsp)
+}
+
+// GetCurrentUserWithResponse Read the caller
+//
+// Who the server thinks the caller is. This is the one route a suspended or
+// inactive account may call; every other route answers it with `403`.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/users/me (the `GetCurrentUser` operationId).
+func (c *ClientWithResponses) GetCurrentUserWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCurrentUserResponse, error) {
+	rsp, err := c.GetCurrentUser(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCurrentUserResponse(rsp)
 }
 
 // GetUserWithResponse Read a user
@@ -25693,6 +26139,42 @@ func (c *ClientWithResponses) UpdateUserWithResponse(ctx context.Context, userId
 		return nil, err
 	}
 	return ParseUpdateUserResponse(rsp)
+}
+
+// SetUserStatusWithBodyWithResponse Set a user's status
+//
+// Activates, suspends or deactivates a user, from their next request. Requires
+// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+// under `/api/v1/service-accounts`.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+func (c *ClientWithResponses) SetUserStatusWithBodyWithResponse(ctx context.Context, userId UserId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetUserStatusResponse, error) {
+	rsp, err := c.SetUserStatusWithBody(ctx, userId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetUserStatusResponse(rsp)
+}
+
+// SetUserStatusWithResponse Set a user's status
+//
+// Activates, suspends or deactivates a user, from their next request. Requires
+// `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+// `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+// under `/api/v1/service-accounts`.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/users/{userId}/status (the `SetUserStatus` operationId).
+func (c *ClientWithResponses) SetUserStatusWithResponse(ctx context.Context, userId UserId, body SetUserStatusJSONRequestBody, reqEditors ...RequestEditorFn) (*SetUserStatusResponse, error) {
+	rsp, err := c.SetUserStatus(ctx, userId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseSetUserStatusResponse(rsp)
 }
 
 // GetApiV1VirtualDataDirectoriesVirtualDataDirectoryIdSharesWithResponse List who has access to this virtual data directory
@@ -34480,7 +34962,7 @@ func ParseListUsersResponse(rsp *http.Response) (*ListUsersResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []UserResponse
+		var dest []UserAccount
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -34593,6 +35075,66 @@ func ParseCreateUserResponse(rsp *http.Response) (*CreateUserResponse, error) {
 	switch {
 	case rsp.StatusCode == 401:
 		var headers CreateUserResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetCurrentUserResponse parses an HTTP response from a GetCurrentUserWithResponse call
+func ParseGetCurrentUserResponse(rsp *http.Response) (*GetCurrentUserResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCurrentUserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CurrentUser
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers GetCurrentUserResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
@@ -34748,6 +35290,87 @@ func ParseUpdateUserResponse(rsp *http.Response) (*UpdateUserResponse, error) {
 	switch {
 	case rsp.StatusCode == 401:
 		var headers UpdateUserResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseSetUserStatusResponse parses an HTTP response from a SetUserStatusWithResponse call
+func ParseSetUserStatusResponse(rsp *http.Response) (*SetUserStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &SetUserStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest UserAccount
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers SetUserStatusResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {

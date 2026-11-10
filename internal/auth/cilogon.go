@@ -36,6 +36,12 @@ type Introspector interface {
 	Introspect(ctx context.Context, token string) (*Principal, error)
 }
 
+// UserProvisioner resolves a CILogon principal to its user record, creating one the
+// first time the principal is seen, and reports the record's status.
+type UserProvisioner interface {
+	ProvisionUser(ctx context.Context, p *Principal) (status string, err error)
+}
+
 // ErrInvalidToken reports a token that introspection rejected.
 var ErrInvalidToken = fmt.Errorf("invalid bearer token")
 
@@ -61,6 +67,11 @@ type CILogonIntrospector struct {
 	// carrying the service account prefix is never forwarded to CILogon, whether or
 	// not this is set.
 	ServiceAccounts ServiceAccountResolver
+
+	// Users, when set, gives every CILogon principal a user record the first time it
+	// authenticates, and sets the principal's Status from it. The root account and
+	// service accounts never reach it.
+	Users UserProvisioner
 }
 
 // NewCILogonIntrospector builds an introspector with a bounded HTTP client, so a
@@ -108,11 +119,21 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 		return nil, ErrInvalidToken
 	}
 
-	return &Principal{
+	principal := &Principal{
 		Name:        username,
 		Authorities: c.Roles.Roles(ctx, username),
 		Attributes:  attributes,
-	}, nil
+	}
+	if c.Users != nil {
+		// Without the record's status there is no telling whether the caller may come
+		// in, so a failure here fails the request rather than letting them through.
+		status, err := c.Users.ProvisionUser(ctx, principal)
+		if err != nil {
+			return nil, fmt.Errorf("resolve the user record for %s: %w", username, err)
+		}
+		principal.Status = status
+	}
+	return principal, nil
 }
 
 func (c *CILogonIntrospector) introspect(ctx context.Context, token string) (map[string]any, error) {

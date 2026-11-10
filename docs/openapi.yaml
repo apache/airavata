@@ -138,7 +138,9 @@ paths:
     get:
       tags: [Users]
       summary: List users
-      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Newest first, with the email, auth
+        method and roles an administrator needs to decide whether to activate someone.
       operationId: listUsers
       responses:
         "200":
@@ -147,7 +149,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/UserResponse" }
+                items: { $ref: "#/components/schemas/UserAccount" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "502": { $ref: "#/components/responses/BadGateway" }
@@ -156,8 +158,9 @@ paths:
       tags: [Users]
       summary: Register a user
       description: |
-        Creates the `users` row an owned resource is attached to. Owning anything in
-        this API requires such a row.
+        Creates the `users` row an owned resource is attached to, active straight away.
+        A CILogon user who signs in without one gets one created for them, suspended
+        until an administrator activates it.
       operationId: createUser
       requestBody:
         required: true
@@ -173,6 +176,54 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/users/me:
+    get:
+      tags: [Users]
+      summary: Read the caller
+      description: |
+        Who the server thinks the caller is. This is the one route a suspended or
+        inactive account may call; every other route answers it with `403`.
+      operationId: getCurrentUser
+      responses:
+        "200":
+          description: The caller.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CurrentUser" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/users/{userId}/status:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+    post:
+      tags: [Users]
+      summary: Set a user's status
+      description: |
+        Activates, suspends or deactivates a user, from their next request. Requires
+        `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+        `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+        under `/api/v1/service-accounts`.
+      operationId: setUserStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserStatusUpdate" }
+      responses:
+        "200":
+          description: The user with their new status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserAccount" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
@@ -3228,6 +3279,55 @@ components:
           format: int64
           description: Milliseconds since the epoch.
       required: [userId, status, firstName, lastName, createdAt]
+
+    UserAccount:
+      type: object
+      description: |
+        A user as administrators see them in the user list, and callers see themselves.
+      properties:
+        userId: { type: string }
+        status:
+          oneOf:
+            - { $ref: "#/components/schemas/UserStatus" }
+            - { type: "null" }
+        firstName: { type: [string, "null"] }
+        lastName: { type: [string, "null"] }
+        email: { type: [string, "null"] }
+        authMethod:
+          oneOf:
+            - { $ref: "#/components/schemas/AuthMethod" }
+            - { type: "null" }
+        roles:
+          type: array
+          items: { type: string, enum: [USER, ADMIN, SUPER_ADMIN] }
+        createdAt:
+          type: integer
+          format: int64
+          description: Milliseconds since the epoch.
+      required: [userId, status, firstName, lastName, email, authMethod, roles, createdAt]
+
+    CurrentUser:
+      type: object
+      properties:
+        userId: { type: string }
+        status:
+          $ref: "#/components/schemas/UserStatus"
+        authorities:
+          type: array
+          items: { type: string }
+        admin: { type: boolean }
+        user:
+          description: The caller's user record, or null if they have none.
+          oneOf:
+            - { $ref: "#/components/schemas/UserAccount" }
+            - { type: "null" }
+      required: [userId, status, authorities, admin, user]
+
+    UserStatusUpdate:
+      type: object
+      properties:
+        status: { $ref: "#/components/schemas/UserStatus" }
+      required: [status]
 
     ServiceAccountCreate:
       type: object

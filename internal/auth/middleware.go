@@ -63,9 +63,26 @@ func Middleware(introspector Introspector) func(http.Handler) http.Handler {
 				return
 			}
 
+			// An account an administrator has not activated, or has suspended, can only
+			// ask about itself, which is how the dashboard knows to say so.
+			if !principal.Active() && !(r.Method == http.MethodGet && r.URL.Path == CurrentUserPath) {
+				httpx.WriteError(w, r, httpx.Forbidden("%s", inactiveMessage(principal.Status)))
+				return
+			}
+
 			next.ServeHTTP(w, r.WithContext(WithPrincipal(r.Context(), principal)))
 		})
 	}
+}
+
+// CurrentUserPath is the one route an account that is not active may call.
+const CurrentUserPath = "/api/v1/users/me"
+
+func inactiveMessage(status string) string {
+	if status == "SUSPENDED" {
+		return "Your account is suspended. An administrator must activate it before you can use Airavata."
+	}
+	return "Your account is not active. An administrator must activate it before you can use Airavata."
 }
 
 // WebSocketProtocol is the subprotocol a browser offers alongside its token, and the one

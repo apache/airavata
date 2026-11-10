@@ -14,9 +14,34 @@ export interface ErrorEnvelope {
   fieldErrors?: FieldError[];
 }
 
-// Service accounts (admin only)
+// Users
 
 export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type Role = "USER" | "ADMIN" | "SUPER_ADMIN";
+export type AuthMethod = "CILOGON" | "SYSTEM" | "SERVICE_ACCOUNT";
+
+// A user record as administrators see it in the user list, and users see themselves.
+export interface UserAccount {
+  userId: string;
+  status: UserStatus | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  authMethod: AuthMethod | null;
+  roles: Role[];
+  createdAt: number;
+}
+
+// GET /api/v1/users/me: the caller, and what the server decided about them.
+export interface CurrentUser {
+  userId: string;
+  status: UserStatus;
+  authorities: string[];
+  admin: boolean;
+  user: UserAccount | null;
+}
+
+// Service accounts (admin only)
 
 export interface ServiceAccount {
   serviceAccountId: string; // "sa:<name>"

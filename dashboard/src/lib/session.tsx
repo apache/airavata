@@ -3,12 +3,20 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { api, ApiError, getToken, setSignInTokens, setToken, TOKEN_EVENT, UNAUTHORIZED_EVENT } from "./api";
 import type { SignInTokens } from "./api";
+import type { CurrentUser } from "./types";
 
 interface Session {
   // undefined until the stored token has been read, so the shell does not flash the
   // sign-in page on every load.
   token: string | null | undefined;
+  // me is the signed-in caller, null until it has been read.
+  me: CurrentUser | null;
   isAdmin: boolean;
+  // active is false for an account an administrator has not activated, or has
+  // suspended. The server refuses such an account everything but /api/v1/users/me.
+  active: boolean;
+  // refreshMe reads the caller again, for a user waiting to be activated.
+  refreshMe: () => Promise<void>;
   signIn: (token: string) => Promise<void>;
   // signInWithCILogon keeps the tokens the server's CILogon sign-in returned, refresh
   // token included, so the access token is renewed before it expires.
@@ -18,31 +26,36 @@ interface Session {
 
 const SessionContext = createContext<Session | null>(null);
 
-// probeAdmin asks a listing only admins may read — the user list, the lightest of them.
-// There is no "who am I" route, and this decides whether admin-only views are offered.
-async function probeAdmin(): Promise<boolean> {
+const ME = "/api/v1/users/me";
+
+// loadMe reads the caller, or null when the server can't say. That is never because
+// the token was refused: a refused token signs the browser out instead.
+async function loadMe(): Promise<CurrentUser | null> {
   try {
-    await api.get("/api/v1/users");
-    return true;
+    return await api.get<CurrentUser>(ME);
   } catch {
-    return false;
+    return null;
   }
 }
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [token, setTokenState] = useState<string | null | undefined>(undefined);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [me, setMe] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
     const stored = getToken();
     setTokenState(stored);
-    if (stored) void probeAdmin().then(setIsAdmin);
+    if (stored) void loadMe().then(setMe);
   }, []);
 
   const signOut = useCallback(() => {
     setToken(null);
     setTokenState(null);
-    setIsAdmin(false);
+    setMe(null);
+  }, []);
+
+  const refreshMe = useCallback(async () => {
+    setMe(await loadMe());
   }, []);
 
   useEffect(() => {
@@ -58,17 +71,18 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // verify keeps the stored token if the server accepts it, and forgets it otherwise.
+  // It reads the caller, the one route open even to an account awaiting activation.
   const verify = useCallback(async () => {
+    let caller: CurrentUser;
     try {
-      // Any authenticated-only route will do; this one needs no users row.
-      await api.get("/api/v1/processes/me");
+      caller = await api.get<CurrentUser>(ME);
     } catch (e) {
       setToken(null);
       if (e instanceof ApiError && e.status === 401) throw new ApiError(401, "That token was not accepted");
       throw e;
     }
+    setMe(caller);
     setTokenState(getToken());
-    setIsAdmin(await probeAdmin());
   }, []);
 
   const signIn = useCallback(
@@ -87,7 +101,14 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     [verify],
   );
 
-  return <SessionContext.Provider value={{ token, isAdmin, signIn, signInWithCILogon, signOut }}>{children}</SessionContext.Provider>;
+  const isAdmin = !!me?.admin;
+  const active = !me || me.status === "ACTIVE";
+
+  return (
+    <SessionContext.Provider value={{ token, me, isAdmin, active, refreshMe, signIn, signInWithCILogon, signOut }}>
+      {children}
+    </SessionContext.Provider>
+  );
 }
 
 export function useSession(): Session {

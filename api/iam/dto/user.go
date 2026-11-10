@@ -71,3 +71,60 @@ func ToUserResponse(u *model.User) UserResponse {
 		CreatedAt: u.CreatedAt,
 	}
 }
+
+// UserAccountResponse is the fuller read model administrators see when listing users,
+// and users see for themselves: unlike UserResponse it carries the email, the auth
+// method and the roles an administrator needs to decide whether to activate someone.
+type UserAccountResponse struct {
+	UserID     string            `json:"userId"`
+	Status     *model.UserStatus `json:"status"`
+	FirstName  *string           `json:"firstName"`
+	LastName   *string           `json:"lastName"`
+	Email      *string           `json:"email"`
+	AuthMethod *model.AuthMethod `json:"authMethod"`
+	Roles      []model.Role      `json:"roles"`
+	CreatedAt  int64             `json:"createdAt"`
+}
+
+func ToUserAccountResponse(u *model.User) UserAccountResponse {
+	roles := make([]model.Role, 0, len(u.Roles))
+	for _, r := range u.Roles {
+		roles = append(roles, r.Role)
+	}
+	return UserAccountResponse{
+		UserID:     u.ID,
+		Status:     u.Status,
+		FirstName:  u.FirstName,
+		LastName:   u.LastName,
+		Email:      u.Email,
+		AuthMethod: u.AuthMethod,
+		Roles:      roles,
+		CreatedAt:  u.CreatedAt,
+	}
+}
+
+// CurrentUserResponse describes the caller: their user record, if they have one, and
+// what the server decided about them on this request.
+type CurrentUserResponse struct {
+	UserID string `json:"userId"`
+	// Status is ACTIVE for the root account and service accounts, whose standing is
+	// not kept on a user record.
+	Status      string               `json:"status"`
+	Authorities []string             `json:"authorities"`
+	Admin       bool                 `json:"admin"`
+	User        *UserAccountResponse `json:"user"`
+}
+
+// UserStatusUpdate sets a user's status.
+type UserStatusUpdate struct {
+	Status model.UserStatus `json:"status"`
+}
+
+// Validate implements httpx.Validator.
+func (r *UserStatusUpdate) Validate() []httpx.FieldError {
+	var c httpx.Constraints
+	if !r.Status.Valid() {
+		c.Add("status", "Status must be ACTIVE, INACTIVE or SUSPENDED")
+	}
+	return c.Fields()
+}

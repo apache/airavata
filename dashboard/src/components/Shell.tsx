@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useInteractiveAuth } from "@/lib/interactive-auth";
 import { useSession } from "@/lib/session";
 import { InteractiveAuthDialog } from "./InteractiveAuth";
 
 // Admin-only destinations, shown below the rest once the session is known to be an admin.
-const ADMIN_NAV = [{ href: "/service-accounts/", label: "Service accounts" }];
+const ADMIN_NAV = [
+  { href: "/users/", label: "Users" },
+  { href: "/service-accounts/", label: "Service accounts" },
+];
 
 const NAV = [
   { href: "/", label: "Overview" },
@@ -33,7 +36,7 @@ const CONNECTION_LABEL = {
 // and the dialog that surfaces a waiting SSH login on any page. Signed-out visitors are
 // sent to /login.
 export function Shell({ children }: { children: React.ReactNode }) {
-  const { token, isAdmin, signOut } = useSession();
+  const { token, me, isAdmin, active, signOut } = useSession();
   const { current, connection } = useInteractiveAuth();
   const pathname = usePathname();
   const router = useRouter();
@@ -45,6 +48,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   if (onLogin) return <>{children}</>;
   if (!token) return null;
+  if (!active) return <AwaitingActivation />;
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href.replace(/\/$/, "")));
 
@@ -68,7 +72,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <span className={`dot ${connection === "live" ? "ok" : connection === "polling" ? "warn" : ""}`} />
             Auth requests: {CONNECTION_LABEL[connection]}
           </span>
-          <span>{isAdmin ? "Signed in · admin" : "Signed in"}</span>
+          <span className="truncate" title={me?.userId}>
+            {displayName(me) ?? "Signed in"}
+            {isAdmin && " · admin"}
+          </span>
           <button className="small" onClick={signOut}>
             Sign out
           </button>
@@ -76,6 +83,72 @@ export function Shell({ children }: { children: React.ReactNode }) {
       </aside>
       <main className="main">{children}</main>
       <InteractiveAuthDialog />
+    </div>
+  );
+}
+
+function displayName(me: ReturnType<typeof useSession>["me"]): string | null {
+  if (!me) return null;
+  const name = [me.user?.firstName, me.user?.lastName].filter(Boolean).join(" ");
+  return name || me.userId;
+}
+
+// AwaitingActivation stands in for the dashboard while an account is not active: the
+// server refuses it everything else until an administrator activates it.
+function AwaitingActivation() {
+  const { me, refreshMe, signOut } = useSession();
+  const [checking, setChecking] = useState(false);
+  const suspended = me?.status === "SUSPENDED";
+  const isNew = suspended && me?.user && Date.now() - me.user.createdAt < 7 * 24 * 60 * 60 * 1000;
+
+  return (
+    <div className="center">
+      <div className="card" style={{ width: "min(480px, 100%)" }}>
+        <div className="card-head">
+          <h2>{isNew ? "Waiting for approval" : suspended ? "Account suspended" : "Account inactive"}</h2>
+        </div>
+        <div className="card-body form">
+          <p style={{ margin: 0 }}>
+            {isNew
+              ? "You're signed in, and your Airavata account has been created. An administrator needs to activate it before you can use the dashboard."
+              : "An administrator needs to activate your Airavata account before you can use the dashboard."}
+          </p>
+          <dl className="kv">
+            <dt>Name</dt>
+            <dd>{displayName(me)}</dd>
+            {me?.user?.email && (
+              <>
+                <dt>Email</dt>
+                <dd>{me.user.email}</dd>
+              </>
+            )}
+            <dt>User id</dt>
+            <dd>
+              <code>{me?.userId}</code>
+            </dd>
+          </dl>
+          <p className="small muted" style={{ margin: 0 }}>
+            Send your user id to your Airavata administrator if they need it to find you.
+          </p>
+          <div className="row">
+            <button
+              className="primary"
+              disabled={checking}
+              onClick={async () => {
+                setChecking(true);
+                try {
+                  await refreshMe();
+                } finally {
+                  setChecking(false);
+                }
+              }}
+            >
+              {checking ? "Checking…" : "Check again"}
+            </button>
+            <button onClick={signOut}>Sign out</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

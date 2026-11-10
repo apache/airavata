@@ -37,11 +37,20 @@ func NewUserRepository(db *gorm.DB) *UserRepository { return &UserRepository{db:
 // WithTx returns a repository bound to tx.
 func (r *UserRepository) WithTx(tx *gorm.DB) *UserRepository { return &UserRepository{db: tx} }
 
-// FindAll returns every user.
+// FindAll returns every user with their roles, newest first.
 func (r *UserRepository) FindAll(ctx context.Context) ([]model.User, error) {
 	var out []model.User
-	err := r.db.WithContext(ctx).Find(&out).Error
+	err := r.db.WithContext(ctx).Preload("Roles").Order("created_at DESC").Find(&out).Error
 	return out, err
+}
+
+// FindByIDWithRoles returns one user with their roles, or gorm.ErrRecordNotFound.
+func (r *UserRepository) FindByIDWithRoles(ctx context.Context, id string) (*model.User, error) {
+	var out model.User
+	if err := r.db.WithContext(ctx).Preload("Roles").First(&out, "user_id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 // FindByID returns one user, or gorm.ErrRecordNotFound.

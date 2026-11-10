@@ -32,7 +32,9 @@ const RECONNECT_MS = 3000;
 // where the socket's origin check sees a different port. Answers always go over REST:
 // the socket only announces, and moves on by itself once an auth is answered anywhere.
 export function InteractiveAuthProvider({ children }: { children: React.ReactNode }) {
-  const { token } = useSession();
+  const session = useSession();
+  // An account awaiting activation can't read interactive auths, so it doesn't ask.
+  const token = session.active ? session.token : null;
   const [current, setCurrent] = useState<InteractiveAuth | null>(null);
   const [connection, setConnection] = useState<Connection>("off");
   const [revision, setRevision] = useState(0);
