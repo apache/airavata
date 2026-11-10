@@ -46,7 +46,10 @@ type Config struct {
 	// CORSAllowedOrigins is airavata.cors.allowed-origins.
 	CORSAllowedOrigins []string
 
-	// CILogon
+	// CILogon. Issuer is where the dashboard's sign-in discovers the authorization
+	// and token endpoints; the client id and secret serve both sign-in and
+	// introspection.
+	Issuer           string
 	IntrospectionURI string
 	UserInfoURI      string
 	ClientID         string
@@ -81,6 +84,7 @@ func load() (Config, error) {
 
 		CORSAllowedOrigins: strings.Split(env("AIRAVATA_CORS_ALLOWED_ORIGINS", "*"), ","),
 
+		Issuer:           env("CILOGON_ISSUER", "https://cilogon.org"),
 		IntrospectionURI: env("CILOGON_INTROSPECTION_URI", "https://cilogon.org/oauth2/introspect"),
 		UserInfoURI:      env("CILOGON_USERINFO_URI", "https://cilogon.org/oauth2/userinfo"),
 		ClientID:         env("CILOGON_CLIENT_ID", ""),

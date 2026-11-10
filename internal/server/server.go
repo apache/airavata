@@ -81,6 +81,8 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	processctl.NewInteractiveCommandTaskController(svcs.InteractiveCommandTask).Register(mux)
 	processctl.NewLinkController(svcs.Link).Register(mux)
 
+	auth.NewSignIn(cfg.Issuer, cfg.ClientID, cfg.ClientSecret).Register(mux)
+
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})
 	})

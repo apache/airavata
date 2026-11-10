@@ -127,8 +127,9 @@ of 20 open connections, 2 kept idle, and a 30-minute connection lifetime
 
 | Variable | Default | Description |
 |---|---|---|
-| `CILOGON_CLIENT_ID` | *(empty)* | OAuth client id used to authenticate introspection calls. |
-| `CILOGON_CLIENT_SECRET` | *(empty)* | OAuth client secret. |
+| `CILOGON_CLIENT_ID` | *(empty)* | OAuth client id used to authenticate introspection calls and the dashboard's CILogon sign-in. |
+| `CILOGON_CLIENT_SECRET` | *(empty)* | OAuth client secret. With the client id, it turns on **Sign in with CILogon** in the dashboard. |
+| `CILOGON_ISSUER` | `https://cilogon.org` | OIDC issuer the dashboard's sign-in discovers its authorization and token endpoints from. |
 | `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | RFC 7662 introspection endpoint. |
 | `CILOGON_USERINFO_URI` | `https://cilogon.org/oauth2/userinfo` | Profile claims endpoint. |
 

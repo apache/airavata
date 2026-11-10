@@ -766,6 +766,19 @@ dl.facts dd {
   margin-top: 2px;
   word-break: break-word;
 }
+details.login-token {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+details.login-token > summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--accent);
+  width: max-content;
+}
+details.login-token > form {
+  margin-top: 12px;
+}
 details.log {
   margin-top: 4px;
 }

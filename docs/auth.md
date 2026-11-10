@@ -127,8 +127,8 @@ The [MCP server](mcp.md) refuses the root token, because it checks every token's
 Register a client at <https://cilogon.org/oauth2/register>:
 
 - **Client type:** confidential (with a secret). The server needs the secret to call the introspection endpoint.
-- **Scopes:** `openid`, `email`, `profile`, `org.cilogon.userinfo`. Add `offline_access` if clients should get refresh tokens.
-- **Callback URLs:** the redirect URIs of the applications that will sign users in: the dashboard's CILogon callback, and `http://localhost:8082/callback` if you will use the [web-api-client](#programmatic-access-web-api-client).
+- **Scopes:** `openid`, `email`, `profile`, `org.cilogon.userinfo` and `offline_access`. The dashboard asks for `offline_access` so it gets a refresh token and can renew a user's access token without another sign-in.
+- **Callback URLs:** the redirect URIs of the applications that will sign users in: the dashboard's CILogon callback, `https://<dashboard host>/dashboard/login/callback/` (and `http://localhost:9095/dashboard/login/callback/` for a local server), and `http://localhost:8082/callback` if you will use the [web-api-client](#programmatic-access-web-api-client).
 
 CILogon approves new clients manually. Once your client is approved, you will have a **client id** (`cilogon:/client_id/…`) and a **client secret**.
 
@@ -140,7 +140,8 @@ The server can only introspect tokens that its client is allowed to see. The sim
 |---|---|---|
 | `CILOGON_CLIENT_ID` | *(empty)* | The client id from step 1. Setting it turns on CILogon authentication. |
 | `CILOGON_CLIENT_SECRET` | *(empty)* | The client secret. Keep it in a secret store, not in a committed file. |
-| `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | Change this only for a non-production CILogon instance (e.g. `test.cilogon.org`). |
+| `CILOGON_ISSUER` | `https://cilogon.org` | Where the dashboard's sign-in finds CILogon's authorization and token endpoints, through OIDC discovery. Change this only for a non-production CILogon instance (e.g. `test.cilogon.org`). |
+| `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | Same. |
 | `CILOGON_USERINFO_URI` | `https://cilogon.org/oauth2/userinfo` | Same. |
 | `AIRAVATA_ROOT_ACCOUNT_ENABLED` | `true` | Set to `false` in production. |
 | `AIRAVATA_ROOT_ACCOUNT_TOKEN` | *(random per start)* | Fixes the root token to a known value, for repeatable test environments. |
@@ -196,7 +197,19 @@ How you sign in depends on how you use Airavata:
 
 ### Dashboard
 
-The dashboard signs users in with CILogon directly. Open it and choose CILogon sign-in, pick your identity provider, and you are signed in. You don't need to handle a token. During initial setup, before CILogon is configured, you can sign in with the root token instead.
+The dashboard signs users in with CILogon directly. Open it and choose **Sign in with CILogon**, pick your identity provider, and you are signed in. You don't need to handle a token. During initial setup, before CILogon is configured, you can sign in with the root token instead. The token form stays available under **Sign in with a token instead**.
+
+Sign-in is the authorization code flow with PKCE. The browser goes to CILogon and returns to `/dashboard/login/callback/` with a code. The Airavata server redeems the code using its client secret, which never reaches the browser, and returns the access and refresh tokens. The dashboard keeps both in the browser's local storage and renews the access token shortly before it expires, so a session lasts as long as CILogon honours the refresh token. Signing out forgets both.
+
+The server's sign-in routes take no bearer token:
+
+| Route | Purpose |
+|---|---|
+| `GET /api/v1/auth/cilogon` | `{enabled, authorizationEndpoint, clientId, scope}`. `enabled` is `false` unless both `CILOGON_CLIENT_ID` and `CILOGON_CLIENT_SECRET` are set. |
+| `POST /api/v1/auth/cilogon/token` | `{code, codeVerifier, redirectUri}` → `{accessToken, refreshToken, expiresIn}`. `redirectUri` must be a `/dashboard/login/callback/` URL. |
+| `POST /api/v1/auth/cilogon/refresh` | `{refreshToken}` → new tokens |
+
+Signing in doesn't create a user record. A new user can browse right away, but needs to be registered before they can own anything (see [Bootstrap the first administrator](#3-bootstrap-the-first-administrator)).
 
 ### Programmatic access: web-api-client
 

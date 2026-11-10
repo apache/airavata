@@ -1,7 +1,8 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { api, ApiError, getToken, setToken, UNAUTHORIZED_EVENT } from "./api";
+import { api, ApiError, getToken, setSignInTokens, setToken, TOKEN_EVENT, UNAUTHORIZED_EVENT } from "./api";
+import type { SignInTokens } from "./api";
 
 interface Session {
   // undefined until the stored token has been read, so the shell does not flash the
@@ -9,6 +10,9 @@ interface Session {
   token: string | null | undefined;
   isAdmin: boolean;
   signIn: (token: string) => Promise<void>;
+  // signInWithCILogon keeps the tokens the server's CILogon sign-in returned, refresh
+  // token included, so the access token is renewed before it expires.
+  signInWithCILogon: (tokens: SignInTokens) => Promise<void>;
   signOut: () => void;
 }
 
@@ -46,9 +50,15 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener(UNAUTHORIZED_EVENT, signOut);
   }, [signOut]);
 
-  const signIn = useCallback(async (candidate: string) => {
-    const trimmed = candidate.trim();
-    setToken(trimmed);
+  // A renewal replaced the access token: hold the new one.
+  useEffect(() => {
+    const onRenewed = () => setTokenState(getToken());
+    window.addEventListener(TOKEN_EVENT, onRenewed);
+    return () => window.removeEventListener(TOKEN_EVENT, onRenewed);
+  }, []);
+
+  // verify keeps the stored token if the server accepts it, and forgets it otherwise.
+  const verify = useCallback(async () => {
     try {
       // Any authenticated-only route will do; this one needs no users row.
       await api.get("/api/v1/processes/me");
@@ -57,11 +67,27 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       if (e instanceof ApiError && e.status === 401) throw new ApiError(401, "That token was not accepted");
       throw e;
     }
-    setTokenState(trimmed);
+    setTokenState(getToken());
     setIsAdmin(await probeAdmin());
   }, []);
 
-  return <SessionContext.Provider value={{ token, isAdmin, signIn, signOut }}>{children}</SessionContext.Provider>;
+  const signIn = useCallback(
+    async (candidate: string) => {
+      setToken(candidate.trim());
+      await verify();
+    },
+    [verify],
+  );
+
+  const signInWithCILogon = useCallback(
+    async (tokens: SignInTokens) => {
+      setSignInTokens(tokens);
+      await verify();
+    },
+    [verify],
+  );
+
+  return <SessionContext.Provider value={{ token, isAdmin, signIn, signInWithCILogon, signOut }}>{children}</SessionContext.Provider>;
 }
 
 export function useSession(): Session {
