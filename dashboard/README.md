@@ -33,8 +33,9 @@ src/lib/interactive-auth.tsx
 src/lib/types.ts     wire shapes, mirroring api/*/dto
 src/components/NotebookView.tsx, NotebookFiles.tsx
                      the Notebooks page: a file browser and a @datalayer/jupyter-react
-                     notebook on an in-browser Pyodide kernel; files live in the
-                     browser's IndexedDB through jupyter-react's lite contents service
+                     notebook, either on an in-browser Pyodide kernel with files in
+                     the browser's IndexedDB, or on the Jupyter Server of a process's
+                     Linkspan job, through the API's /processes/{id}/jupyter/ proxy
 ```
 
 The build uses webpack (`next build --webpack`), not Turbopack: the JupyterLab packages

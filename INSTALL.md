@@ -98,6 +98,7 @@ compose database.
 | `AIRAVATA_DASHBOARD_ENABLED` | `true` | Serve the [dashboard](#dashboard) under `/dashboard/`. |
 | `AIRAVATA_DASHBOARD_DIR` | `dashboard/out` | The dashboard's built static export, relative to the working directory. |
 | `AIRAVATA_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origins. The server echoes the caller's origin rather than sending `*`, because every authenticated call carries an `Authorization` header and browsers reject the wildcard for credentialed requests. |
+| `AIRAVATA_PUBLIC_URL` | `http://localhost:<SERVER_PORT>` | Where compute nodes reach this server. A job running [Linkspan](https://github.com/cyber-shuttle/linkspan) links back to its `ws(s)` form so the dashboard can open the job's Jupyter Server ([docs/notebooks.md](docs/notebooks.md)). Set it to the public `https://` URL in production. |
 
 ### Database
 
@@ -336,7 +337,9 @@ in the browser on Pyodide, with an `airavata(path)` helper that calls this API a
 signed-in user, and a file browser to create, rename, upload and download notebooks and
 files. Notebooks and files are kept in each browser's storage, not on the server, and the
 kernel downloads Pyodide from the jsDelivr CDN when it first starts, so browsers using it
-need internet access.
+need internet access. The page can instead run notebooks on a cluster, in the Jupyter
+Server of a running process whose job runs Linkspan, reached through this server over
+Linkspan's link ([docs/notebooks.md](docs/notebooks.md)).
 
 It is built as a static export and served by the API server itself under
 `/dashboard/`, so it starts and stops with the server, on the same origin — there is no

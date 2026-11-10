@@ -79,6 +79,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	processctl.NewJobSubmissionTaskController(svcs.JobSubmissionTask).Register(mux)
 	processctl.NewJobMonitoringTaskController(svcs.JobMonitoringTask).Register(mux)
 	processctl.NewInteractiveCommandTaskController(svcs.InteractiveCommandTask).Register(mux)
+	processctl.NewLinkController(svcs.Link).Register(mux)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})
@@ -124,7 +125,7 @@ func cors(allowed []string) func(http.Handler) http.Handler {
 			if origin != "" && (allowAll || origins[origin]) {
 				w.Header().Set("Access-Control-Allow-Credentials", "true")
 				w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			}
 
 			if r.Method == http.MethodOptions {

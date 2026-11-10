@@ -16,7 +16,7 @@ export default function NotebooksPage() {
     <div className="stack">
       <PageHead
         title="Notebooks"
-        sub="Python notebooks that run entirely in your browser on Pyodide. Notebooks and files are kept in this browser, not on the server."
+        sub="Python notebooks that run in your browser on Pyodide, or on a cluster in the Jupyter Server of a running process whose job runs Linkspan."
       />
       <NotebookView />
     </div>

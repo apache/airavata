@@ -292,6 +292,16 @@ export interface Process {
   batchProcess: BatchProcess | null;
 }
 
+// How the dashboard opens a process's Jupyter Server: Airavata's proxy at baseUrl (a
+// path under the API root), with token as the Jupyter token. linked says whether the
+// job's Linkspan holds its link to Airavata right now.
+export interface JupyterServer {
+  processId: string;
+  linked: boolean;
+  baseUrl: string;
+  token: string;
+}
+
 export interface ProcessStatus {
   processStatusId: string;
   processId: string | null;

@@ -107,6 +107,9 @@ func Entities() []any {
 		// The workflow runs started for a process. Like ProcessStatus it is referenced
 		// back from Process, through LastWorkflowID, which carries no constraint.
 		&processmodel.ProcessWorkflow{},
+
+		// The secrets a process's job is handed so its Linkspan can link back.
+		&processmodel.ProcessLink{},
 	}
 }
 

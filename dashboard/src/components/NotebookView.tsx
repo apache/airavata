@@ -1,14 +1,18 @@
 "use client";
 
-import { JupyterReactTheme, Notebook, NotebookToolbar, useJupyter } from "@datalayer/jupyter-react";
-import type { Kernel } from "@datalayer/jupyter-react";
+import { createLiteServiceManager, JupyterReactTheme, Kernel, Notebook, NotebookToolbar } from "@datalayer/jupyter-react";
 import { PageConfig } from "@jupyterlab/coreutils";
 import type { INotebookContent } from "@jupyterlab/nbformat";
 import type { NotebookModel } from "@jupyterlab/notebook";
-import type { Contents, ServiceManager } from "@jupyterlab/services";
+import { ServerConnection, ServiceManager } from "@jupyterlab/services";
+import type { Contents } from "@jupyterlab/services";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { API_BASE, getToken } from "@/lib/api";
+import { API_BASE, api, ApiError, errorText, getToken } from "@/lib/api";
+import { latestStatus, useDeploymentNames, withStatuses } from "@/lib/catalog";
+import { useResource } from "@/lib/hooks";
+import type { JupyterServer, Process } from "@/lib/types";
 import { isNotebook, NotebookFiles } from "./NotebookFiles";
+import { Alert } from "./ui";
 
 // jupyter-react's lite server registers a service worker at the origin root, which would
 // sit in front of every request to the API server. It only syncs files between the
@@ -16,10 +20,16 @@ import { isNotebook, NotebookFiles } from "./NotebookFiles";
 // treats it as optional. Disable it before the lite server starts.
 PageConfig.Extension.disabled.push("@jupyterlite/server-extension:service-worker");
 
-// The last notebook opened, reopened on the next visit (a per-browser convenience).
+// Where notebooks run: in this browser on Pyodide, or on the Jupyter Server a
+// process's job started, reached through Airavata over the job's Linkspan link.
+type Source = { kind: "browser" } | { kind: "process"; processId: string };
+
+// The source chosen last, and the notebook open last in each (per-browser conveniences).
+const SOURCE_KEY = "airavata.notebook.source";
 const LAST_OPEN_KEY = "airavata.notebook.open";
 const WELCOME_PATH = "Welcome.ipynb";
 const SAVE_DELAY_MS = 1000;
+const LINK_POLL_MS = 5000;
 
 // Run in the kernel when it starts, so cells can call the Airavata API as the signed-in
 // user: `await airavata("/api/v1/...")`. The kernel is a Pyodide web worker on this
@@ -76,19 +86,28 @@ const WELCOME: INotebookContent = {
   ],
 };
 
-function readLastOpen(): string | null {
+function readStored(key: string): string | null {
   try {
-    return window.localStorage.getItem(LAST_OPEN_KEY);
+    return window.localStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-function writeLastOpen(path: string | null) {
+function writeStored(key: string, value: string | null) {
   try {
-    if (path) window.localStorage.setItem(LAST_OPEN_KEY, path);
-    else window.localStorage.removeItem(LAST_OPEN_KEY);
+    if (value) window.localStorage.setItem(key, value);
+    else window.localStorage.removeItem(key);
   } catch {}
+}
+
+function readSource(): Source {
+  const id = readStored(SOURCE_KEY);
+  return id ? { kind: "process", processId: id } : { kind: "browser" };
+}
+
+function lastOpenKey(source: Source) {
+  return source.kind === "browser" ? LAST_OPEN_KEY : `${LAST_OPEN_KEY}.${source.processId}`;
 }
 
 function useColorMode(): "light" | "dark" {
@@ -102,12 +121,224 @@ function useColorMode(): "light" | "dark" {
   return dark ? "dark" : "light";
 }
 
-// NotebookView is the Notebooks page: a file browser over the in-browser contents store
-// beside the open notebook, all on jupyter-react's "lite" mode (a Pyodide kernel and
-// IndexedDB-backed contents, no Jupyter server).
+// The in-browser service manager is made once per page load: switching sources and
+// back reuses it, and with it the files kept in this browser.
+let liteManager: Promise<ServiceManager.IManager> | null = null;
+function getLiteManager() {
+  liteManager ??= createLiteServiceManager(true);
+  return liteManager;
+}
+
+// A manager for the Jupyter Server behind Airavata's proxy. Jupyter clients send the
+// token as "Authorization: token …" on requests and, with appendToken, as ?token= on
+// WebSockets, which cannot carry headers; Airavata's proxy accepts either.
+function remoteManager(access: JupyterServer): ServiceManager.IManager {
+  const baseUrl = (API_BASE || window.location.origin) + access.baseUrl;
+  const serverSettings = ServerConnection.makeSettings({
+    baseUrl,
+    wsUrl: baseUrl.replace(/^http/, "ws"),
+    token: access.token,
+    appendToken: true,
+  });
+  return new ServiceManager({ serverSettings });
+}
+
+// useKernel starts the default kernel of a service manager, runs initCode in it, and
+// shuts it down when the manager changes or the page is left, so a remote job is not
+// left holding kernels nobody can reach.
+function useKernel(serviceManager: ServiceManager.IManager | null, initCode: string) {
+  const [kernel, setKernel] = useState<Kernel | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!serviceManager) return;
+    let cancelled = false;
+    let started: Kernel | null = null;
+    (async () => {
+      await serviceManager.kernelspecs.ready;
+      const name = serviceManager.kernelspecs.specs?.default || "python3";
+      await serviceManager.kernels.ready;
+      if (cancelled) return;
+      started = new Kernel({
+        kernelName: name,
+        kernelSpecName: name,
+        kernelManager: serviceManager.kernels,
+        kernelspecsManager: serviceManager.kernelspecs,
+        sessionManager: serviceManager.sessions,
+      });
+      await started.ready;
+      if (initCode) {
+        try {
+          await started.execute(initCode)?.done;
+        } catch (e) {
+          console.error("Failed to run the kernel's initial code", e);
+        }
+      }
+      if (!cancelled) setKernel(started);
+    })().catch((e) => !cancelled && setError(errorText(e)));
+    return () => {
+      cancelled = true;
+      setKernel(null);
+      setError(null);
+      void started?.shutdown().catch(() => {});
+    };
+  }, [serviceManager, initCode]);
+  return { kernel, error };
+}
+
+// NotebookView is the Notebooks page: a choice of where notebooks run, then a file
+// browser over that place's files beside the open notebook.
 export default function NotebookView() {
+  const [source, setSourceState] = useState<Source>(readSource);
+  const setSource = (next: Source) => {
+    writeStored(SOURCE_KEY, next.kind === "process" ? next.processId : null);
+    setSourceState(next);
+  };
+  return (
+    <div className="stack">
+      <SourcePicker source={source} onChange={setSource} />
+      {source.kind === "browser" ? (
+        <BrowserWorkspace key="browser" />
+      ) : (
+        <ProcessWorkspace key={source.processId} processId={source.processId} />
+      )}
+    </div>
+  );
+}
+
+// Processes that may be running a job, which is when a Linkspan in it can link.
+const LIVE = new Set(["SUBMITTED", "RUNNING"]);
+
+function SourcePicker({ source, onChange }: { source: Source; onChange: (s: Source) => void }) {
+  const names = useDeploymentNames();
+  const rows = useResource(async () => withStatuses(await api.get<Process[]>("/api/v1/processes/me")), [], 30_000);
+  const live = (rows.data ?? []).filter(
+    (r) => r.process.processType === "BATCH_JOB" && LIVE.has(latestStatus(r)?.status ?? ""),
+  );
+  const selected = source.kind === "process" ? source.processId : "";
+  const listed = live.some((r) => r.process.processId === selected);
+  const label = (p: Process) =>
+    `${names.appName(p.batchProcess?.deploymentId) ?? "Process"} · ${p.processId.slice(0, 8)}`;
+
+  return (
+    <div className="nb-source">
+      <label htmlFor="nb-source">Run notebooks</label>
+      <select
+        id="nb-source"
+        value={selected}
+        onChange={(e) => onChange(e.target.value ? { kind: "process", processId: e.target.value } : { kind: "browser" })}
+      >
+        <option value="">In this browser (Pyodide)</option>
+        {live.map((r) => (
+          <option key={r.process.processId} value={r.process.processId}>
+            On {label(r.process)} ({latestStatus(r)?.status?.toLowerCase()})
+          </option>
+        ))}
+        {selected && !listed && <option value={selected}>On process {selected.slice(0, 8)}</option>}
+      </select>
+      <span className="muted">
+        {source.kind === "browser"
+          ? "Files are kept in this browser."
+          : "Files and kernels are on the cluster, in the Jupyter Server the process's job started."}
+      </span>
+    </div>
+  );
+}
+
+function BrowserWorkspace() {
+  const [serviceManager, setServiceManager] = useState<ServiceManager.IManager | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void getLiteManager().then((m) => !cancelled && setServiceManager(m));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const code = useMemo(() => initCode(API_BASE || window.location.origin, getToken()), []);
-  const { serviceManager, defaultKernel } = useJupyter({ lite: true, startDefaultKernel: true, initCode: code });
+  const { kernel, error } = useKernel(serviceManager, code);
+  if (error) return <Alert>The Python kernel did not start: {error}</Alert>;
+  if (!serviceManager || !kernel) return <p className="muted">Starting the Python kernel…</p>;
+  return <Workspace serviceManager={serviceManager} kernel={kernel} storeKey={LAST_OPEN_KEY} welcome />;
+}
+
+// ProcessWorkspace opens the Jupyter Server of a process's job once its Linkspan has
+// linked to Airavata, polling until then; the job may still be queued or building its
+// Python environment.
+function ProcessWorkspace({ processId }: { processId: string }) {
+  const [access, setAccess] = useState<JupyterServer | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      try {
+        const next = await api.get<JupyterServer>(`/api/v1/processes/${processId}/jupyter-server`);
+        if (cancelled) return;
+        setError(null);
+        // Keep the object while nothing changed, so the service manager is not rebuilt.
+        setAccess((prev) => (prev && prev.token === next.token && prev.linked === next.linked ? prev : next));
+      } catch (e) {
+        if (cancelled) return;
+        setError(e instanceof ApiError && e.status === 404 ? "This process has not been submitted yet." : errorText(e));
+      }
+      timer = setTimeout(poll, LINK_POLL_MS);
+    };
+    void poll();
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [processId]);
+
+  // One manager per issued token: a resubmitted job's server is a new server. It
+  // outlives a dropped link, so the page recovers when Linkspan redials.
+  const token = access?.linked ? access.token : null;
+  const [serviceManager, setServiceManager] = useState<ServiceManager.IManager | null>(null);
+  useEffect(() => {
+    if (!token || !access) return;
+    const manager = remoteManager(access);
+    setServiceManager(manager);
+    return () => {
+      setServiceManager(null);
+      manager.dispose();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+  const { kernel, error: kernelError } = useKernel(serviceManager, "");
+
+  if (error) return <Alert>{error}</Alert>;
+  if (!access) return <p className="muted">Looking up the process…</p>;
+  if (!serviceManager) {
+    return (
+      <Alert kind="info">
+        Waiting for the job&apos;s Linkspan to link to Airavata. This happens once the job is running; the first time,
+        it also builds the Jupyter environment, which takes a few minutes.
+      </Alert>
+    );
+  }
+  if (kernelError) return <Alert>The job&apos;s Jupyter Server did not start a kernel: {kernelError}</Alert>;
+  if (!kernel) return <p className="muted">Starting a kernel on the cluster…</p>;
+  return (
+    <>
+      {!access.linked && <Alert kind="warn">The job&apos;s link to Airavata dropped; waiting for Linkspan to redial.</Alert>}
+      <Workspace serviceManager={serviceManager} kernel={kernel} storeKey={lastOpenKey({ kind: "process", processId })} />
+    </>
+  );
+}
+
+// Workspace is the file browser beside the open notebook, over one service manager's
+// contents and one kernel all its notebooks share. welcome creates the welcome notebook
+// in an empty store, which only the browser's own store gets.
+function Workspace({
+  serviceManager,
+  kernel,
+  storeKey,
+  welcome = false,
+}: {
+  serviceManager: ServiceManager.IManager;
+  kernel: Kernel;
+  storeKey: string;
+  welcome?: boolean;
+}) {
   const [openPath, setOpenPathState] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   // Changes only when a different file is opened, not when the open one is renamed, so a
@@ -117,18 +348,17 @@ export default function NotebookView() {
 
   const setOpenPath = (path: string | null, newDoc: boolean) => {
     setOpenPathState(path);
-    writeLastOpen(path);
+    writeStored(storeKey, path);
     if (newDoc) setDocId((d) => d + 1);
   };
 
   // Pick the notebook to show first: the last one opened if it is still there, else the
   // welcome notebook, created on the very first visit.
   useEffect(() => {
-    if (!serviceManager) return;
     const contents = serviceManager.contents;
     let cancelled = false;
     (async () => {
-      const last = readLastOpen();
+      const last = readStored(storeKey);
       let path: string | null = null;
       if (last) {
         try {
@@ -136,7 +366,7 @@ export default function NotebookView() {
           path = last;
         } catch {}
       }
-      if (!path) {
+      if (!path && welcome) {
         const root = await contents.get("", { content: true });
         if ((root.content as Contents.IModel[]).length === 0) {
           await contents.save(WELCOME_PATH, { type: "notebook", format: "json", content: WELCOME });
@@ -150,11 +380,11 @@ export default function NotebookView() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceManager]);
 
   // Follow the open notebook when it, or a folder above it, is renamed or deleted.
   useEffect(() => {
-    if (!serviceManager) return;
     const contents = serviceManager.contents;
     const onChange = (_: unknown, change: Contents.IChangedArgs) => {
       if (change.type !== "rename" && change.type !== "delete") return;
@@ -164,7 +394,7 @@ export default function NotebookView() {
         if (!current || (current !== oldPath && !current.startsWith(oldPath + "/"))) return current;
         const newPath = change.type === "rename" ? change.newValue?.path : undefined;
         const next = newPath ? newPath + current.slice(oldPath.length) : null;
-        writeLastOpen(next);
+        writeStored(storeKey, next);
         return next;
       });
     };
@@ -172,9 +402,9 @@ export default function NotebookView() {
     return () => {
       contents.fileChanged.disconnect(onChange);
     };
-  }, [serviceManager]);
+  }, [serviceManager, storeKey]);
 
-  if (!serviceManager || !defaultKernel || !ready) return <p className="muted">Starting the Python kernel…</p>;
+  if (!ready) return <p className="muted">Opening files…</p>;
 
   return (
     <div className="nb-workspace">
@@ -190,7 +420,7 @@ export default function NotebookView() {
             docId={docId}
             path={openPath}
             serviceManager={serviceManager}
-            kernel={defaultKernel}
+            kernel={kernel}
             colorMode={colorMode}
           />
         ) : (

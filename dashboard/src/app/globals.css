@@ -954,7 +954,20 @@ dd.chips {
   }
 }
 
-/* Notebooks: a file browser beside the open notebook. */
+/* Notebooks: where they run, then a file browser beside the open notebook. */
+.nb-source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.nb-source label {
+  font-weight: 600;
+}
+.nb-source select {
+  width: auto;
+  max-width: 100%;
+}
 .nb-workspace {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
