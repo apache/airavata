@@ -327,7 +327,7 @@ export interface DataProduct {
 
 // Processes
 
-export type ProcessStatusType = "CREATED" | "SUBMITTED" | "RUNNING" | "COMPLETED" | "FAILED";
+export type ProcessStatusType = "CREATED" | "SUBMITTED" | "RUNNING" | "COMPLETED" | "FAILED" | "STOPPED";
 
 export interface Mapping {
   templateInputMappingId?: string;
@@ -386,7 +386,7 @@ export interface ProcessStatus {
 
 export type ProcessWorkflowType = "BATCH_JOB_SUBMISSION" | "JOB_MONITORING" | "BATCH_JOB_COMPLETION";
 
-export type ProcessWorkflowStatusType = "RUNNING" | "SUCCEEDED" | "FAILED";
+export type ProcessWorkflowStatusType = "RUNNING" | "SUCCEEDED" | "FAILED" | "STOPPED";
 
 // One workflow run of a process, updated in place as it moves from RUNNING to its
 // outcome. workflowId is the workflow engine's instance id.
@@ -401,7 +401,7 @@ export interface ProcessWorkflow {
 
 export type TaskType = "DATA_STAGING" | "JOB_SUBMISSION" | "JOB_MONITORING" | "INTERACTIVE_COMMAND";
 
-export type TaskStatusType = "CREATED" | "EXECUTING" | "PAUSED" | "COMPLETED" | "FAILED" | "CANCELED";
+export type TaskStatusType = "CREATED" | "EXECUTING" | "PAUSED" | "COMPLETED" | "FAILED" | "STOPPED";
 
 export interface TaskStatus {
   taskStatusId: string;
