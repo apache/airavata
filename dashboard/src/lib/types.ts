@@ -23,6 +23,17 @@ export interface Group {
   createdAt: number;
 }
 
+export type GroupRole = "ADMIN" | "MODERATOR" | "MEMBER";
+export type GroupMemberStatus = "ACTIVE" | "INACTIVE";
+
+// api/iam/dto.GroupMemberResponse.
+export interface GroupMember {
+  groupId: string;
+  userId: string;
+  groupRole: GroupRole;
+  groupMemberStatus: GroupMemberStatus;
+}
+
 export interface FieldError {
   field: string;
   message: string;

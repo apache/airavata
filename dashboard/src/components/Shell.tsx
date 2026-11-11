@@ -21,6 +21,7 @@ const NAV = [
   { href: "/applications/", label: "Applications" },
   { href: "/processes/", label: "Processes" },
   { href: "/data/", label: "Data products" },
+  { href: "/groups/", label: "Groups" },
   { href: "/notebooks/", label: "Notebooks" },
   { href: "/interactive-auth/", label: "Interactive auth" },
 ];
