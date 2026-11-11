@@ -2,6 +2,27 @@
 
 export type Permission = "READ" | "WRITE";
 
+// Who a record is shared with: a user, or every member of a group.
+export type PrincipalType = "USER" | "GROUP";
+
+// One grant from GET {resource}/{id}/shares (api/sharing/dto.ShareResponse).
+export interface ResourceShare {
+  resourceSharingId: string;
+  resourceType: string;
+  resourceId: string;
+  principalType: PrincipalType;
+  principalId: string;
+  permission: Permission;
+}
+
+// api/iam/dto.GroupResponse.
+export interface Group {
+  groupId: string;
+  groupName?: string | null;
+  ownerId?: string | null;
+  createdAt: number;
+}
+
 export interface FieldError {
   field: string;
   message: string;
