@@ -46,6 +46,7 @@ func (h *UserController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET "+auth.CurrentUserPath, h.me)
 	mux.HandleFunc("GET /api/v1/users/{userId}", h.get)
 	mux.HandleFunc("POST /api/v1/users/{userId}/status", h.setStatus)
+	mux.HandleFunc("POST /api/v1/users/{userId}/admin", h.setAdmin)
 	mux.HandleFunc("POST /api/v1/users/{userId}", h.update)
 }
 
@@ -116,6 +117,20 @@ func (h *UserController) setStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user, err := h.svc.SetStatus(r.Context(), r.PathValue("userId"), &req)
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, user)
+}
+
+func (h *UserController) setAdmin(w http.ResponseWriter, r *http.Request) {
+	var req dto.UserAdminUpdate
+	if err := httpx.Bind(r, &req); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	user, err := h.svc.SetAdmin(r.Context(), r.PathValue("userId"), &req)
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return

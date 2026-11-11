@@ -49,6 +49,16 @@ export default function UsersPage() {
     }
   };
 
+  const setAdmin = async (u: UserAccount, admin: boolean) => {
+    setError(null);
+    try {
+      await api.post(`/api/v1/users/${encodeURIComponent(u.userId)}/admin`, { admin });
+      await users.reload();
+    } catch (e) {
+      setError(errorText(e));
+    }
+  };
+
   if (!isAdmin) {
     return (
       <div className="stack">
@@ -143,7 +153,15 @@ export default function UsersPage() {
             {
               header: "",
               className: "actions",
-              cell: (u) => <StatusActions user={u} self={u.userId === me?.userId} canTouchAdmins={isSuperAdmin} onSet={setStatus} />,
+              cell: (u) => (
+                <StatusActions
+                  user={u}
+                  self={u.userId === me?.userId}
+                  canTouchAdmins={isSuperAdmin}
+                  onSet={setStatus}
+                  onSetAdmin={setAdmin}
+                />
+              ),
             },
           ]}
         />
@@ -157,11 +175,13 @@ function StatusActions({
   self,
   canTouchAdmins,
   onSet,
+  onSetAdmin,
 }: {
   user: UserAccount;
   self: boolean;
   canTouchAdmins: boolean;
   onSet: (u: UserAccount, status: UserStatus) => Promise<void>;
+  onSetAdmin: (u: UserAccount, admin: boolean) => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
   const status = user.status ?? "ACTIVE";
@@ -186,6 +206,14 @@ function StatusActions({
 
   return (
     <div className="row" style={{ justifyContent: "flex-end" }}>
+      {canTouchAdmins && !user.roles.includes("SUPER_ADMIN") && (
+        <ConfirmButton
+          confirmText={user.roles.includes("ADMIN") ? "Remove admin?" : "Make admin?"}
+          onConfirm={() => onSetAdmin(user, !user.roles.includes("ADMIN"))}
+        >
+          {user.roles.includes("ADMIN") ? "Remove admin" : "Make admin"}
+        </ConfirmButton>
+      )}
       {status !== "ACTIVE" && (
         <button className="small primary" disabled={busy} onClick={activate}>
           {busy ? "Working…" : "Activate"}
