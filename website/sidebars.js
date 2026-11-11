@@ -14,7 +14,7 @@ const sidebars = {
       type: 'category',
       label: 'Security',
       collapsed: false,
-      items: ['auth', 'interactive-auth', 'sharing'],
+      items: ['auth', 'interactive-auth', 'sharing', 'audit'],
     },
     {
       type: 'category',

@@ -405,3 +405,21 @@ export interface Task {
   // Kind-specific fields; rendered generically.
   [key: string]: unknown;
 }
+
+// Audit log (admin only): GET /api/v1/audit-events
+export type AuditAction = "CREATE" | "UPDATE" | "DELETE" | "UPSERT";
+
+export interface AuditEvent {
+  id: number;
+  occurredAt: number;
+  actor: string; // a user id, "root", "sa:<name>", or "system"
+  action: AuditAction;
+  entityType: string; // the table, e.g. "processes"
+  entityId: string;
+  changedFields: string; // comma-separated; empty unless an update named its columns
+}
+
+export interface AuditEventPage {
+  items: AuditEvent[];
+  nextCursor: number | null;
+}

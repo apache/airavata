@@ -12,6 +12,7 @@ import { InteractiveAuthDialog } from "./InteractiveAuth";
 const ADMIN_NAV: NavItem[] = [
   { href: "/users/", label: "Users", icon: "user" },
   { href: "/service-accounts/", label: "Service accounts", icon: "bot" },
+  { href: "/audit/", label: "Audit log", icon: "history" },
 ];
 
 const NAV: NavItem[] = [

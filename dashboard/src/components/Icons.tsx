@@ -50,6 +50,7 @@ export type IconName =
   | "shield"
   | "user"
   | "bot"
+  | "history"
   | "logout"
   | "folder"
   | "close";
@@ -126,6 +127,12 @@ const PATHS: Record<IconName, React.ReactNode> = {
     <>
       <rect x="4" y="8" width="16" height="12" rx="2" />
       <path d="M12 8V4M8 4h8M9 13v2M15 13v2M2 14h2M20 14h2" />
+    </>
+  ),
+  history: (
+    <>
+      <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+      <path d="M3 3v5h5M12 7v5l3 2" />
     </>
   ),
   logout: <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />,
