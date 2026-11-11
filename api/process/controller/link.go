@@ -54,7 +54,7 @@ func NewLinkController(svc *service.LinkService) *LinkController {
 		svc: svc,
 		proxy: &httputil.ReverseProxy{
 			Transport: svc.Registry().Transport(),
-			// The target was set on the request by jupyter; Rewrite only keeps the
+			// The target was set on the request by the linkspan handler; Rewrite only keeps the
 			// client's forwarding headers out.
 			Rewrite: func(out *httputil.ProxyRequest) {
 				out.Out.URL.Scheme = "http"
@@ -62,10 +62,10 @@ func NewLinkController(svc *service.LinkService) *LinkController {
 				out.Out.Host = out.In.Host
 			},
 			ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
-				slog.Warn("Jupyter proxy could not reach the process's server", "path", r.URL.Path, "error", err)
+				slog.Warn("Linkspan proxy could not reach the process's job", "path", r.URL.Path, "error", err)
 				httpx.WriteJSON(w, http.StatusBadGateway, map[string]string{
 					"error":   "Bad Gateway",
-					"message": "The process's Jupyter Server could not be reached: its job is not linked to Airavata, or its server has not started",
+					"message": "The process's Linkspan could not be reached: its job is not linked to Airavata, or the server has not started",
 				})
 			},
 		},
@@ -76,7 +76,7 @@ func NewLinkController(svc *service.LinkService) *LinkController {
 func (h *LinkController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/processes/{processId}/link", h.link)
 	mux.HandleFunc("GET /api/v1/processes/{processId}/jupyter-server", h.jupyterServer)
-	mux.HandleFunc("/api/v1/processes/{processId}/jupyter/", h.jupyter)
+	mux.HandleFunc("/api/v1/processes/{processId}/linkspan/", h.linkspan)
 }
 
 // link admits the WebSocket a process's Linkspan dials and holds it as the process's
@@ -86,6 +86,9 @@ func (h *LinkController) link(w http.ResponseWriter, r *http.Request) {
 	if !h.svc.Authenticate(r.Context(), processID, link.OfferedToken(r)) {
 		httpx.WriteError(w, r, httpx.Unauthorized("The link token is not the one issued to process %s", processID))
 		return
+	}
+	if err := h.svc.Begun(r.Context(), processID); err != nil {
+		slog.Warn("Failed to record a linking process as running", "processId", processID, "error", err)
 	}
 	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{Subprotocols: []string{link.Protocol}})
 	if err != nil {
@@ -112,30 +115,36 @@ func (h *LinkController) jupyterServer(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, http.StatusOK, resp)
 }
 
-// jupyter proxies the Jupyter Server API, kernel WebSockets included, to the server
-// the process's job runs, over its link. The token is left on the request: the
-// Jupyter Server checks it again.
-func (h *LinkController) jupyter(w http.ResponseWriter, r *http.Request) {
+// linkspan proxies a request over the process's link: to Linkspan's API, or to the port
+// itself for a path under forward/{port}/, as Linkspan's forward carries TCP only.
+// The token stays on the request because the Jupyter Server checks it again.
+func (h *LinkController) linkspan(w http.ResponseWriter, r *http.Request) {
 	processID := r.PathValue("processId")
 	token := r.URL.Query().Get("token")
 	if scheme, value, found := strings.Cut(r.Header.Get("Authorization"), " "); found && strings.EqualFold(scheme, "token") {
 		token = strings.TrimSpace(value)
 	}
-	port, ok := h.svc.JupyterPort(r.Context(), processID, token)
+	port, ok := h.svc.ControlPort(r.Context(), processID, token)
 	if !ok {
 		httpx.WriteError(w, r, httpx.Unauthorized("The Jupyter token is not the one issued to process %s", processID))
 		return
 	}
 
-	prefix := "/api/v1/processes/" + processID + "/jupyter"
+	prefix := "/api/v1/processes/" + processID + "/linkspan"
 	out := r.Clone(r.Context())
 	out.URL.Path = strings.TrimPrefix(r.URL.Path, prefix)
 	out.URL.RawPath = ""
 	if out.URL.Path == "" {
 		out.URL.Path = "/"
 	}
+	// A bare forward/{port} has no slash to cut on and stays Linkspan's own TCP stream.
+	if rawPort, path, ok := strings.Cut(strings.TrimPrefix(out.URL.Path, "/api/v1/forward/"), "/"); ok {
+		if forwarded, err := strconv.ParseUint(rawPort, 10, 16); err == nil {
+			port, out.URL.Path = uint16(forwarded), "/"+path
+		}
+	}
 	out.URL.Host = link.Host(processID, port)
-	// The Jupyter Server sees itself addressed on its own loopback port.
+	// The server sees itself addressed on its own loopback port.
 	out.Host = "127.0.0.1:" + strconv.Itoa(int(port))
 	h.proxy.ServeHTTP(w, out)
 }

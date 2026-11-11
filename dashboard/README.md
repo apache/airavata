@@ -35,7 +35,7 @@ src/components/NotebookView.tsx, NotebookFiles.tsx
                      the Notebooks page: a file browser and a @datalayer/jupyter-react
                      notebook, either on an in-browser Pyodide kernel with files in
                      the browser's IndexedDB, or on the Jupyter Server of a process's
-                     Linkspan job, through the API's /processes/{id}/jupyter/ proxy
+                     Linkspan job, through the API's /processes/{id}/linkspan/ proxy
 ```
 
 The build uses webpack (`next build --webpack`), not Turbopack: the JupyterLab packages

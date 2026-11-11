@@ -29,12 +29,14 @@ import (
 	"encoding/hex"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 	"github.com/apache/airavata/internal/link"
+	"github.com/apache/airavata/internal/ptr"
 
 	dto "github.com/apache/airavata/api/process/dto"
 	model "github.com/apache/airavata/api/process/model"
@@ -48,14 +50,25 @@ import (
 type LinkService struct {
 	links     *repository.LinkRepository
 	processes *repository.ProcessRepository
+	statuses  *StatusService
 	registry  *link.Registry
 	publicURL string
 }
 
 // NewLinkService returns a link service. publicURL is where jobs reach this server,
 // http(s)://host[:port]; the link URL is its ws(s) form.
-func NewLinkService(links *repository.LinkRepository, processes *repository.ProcessRepository, registry *link.Registry, publicURL string) *LinkService {
-	return &LinkService{links: links, processes: processes, registry: registry, publicURL: strings.TrimRight(publicURL, "/")}
+func NewLinkService(links *repository.LinkRepository, processes *repository.ProcessRepository, statuses *StatusService, registry *link.Registry, publicURL string) *LinkService {
+	return &LinkService{links: links, processes: processes, statuses: statuses, registry: registry, publicURL: strings.TrimRight(publicURL, "/")}
+}
+
+// Begun records a SUBMITTED process as RUNNING, without waiting on Slurm's begin mail.
+func (s *LinkService) Begun(ctx context.Context, processID string) error {
+	statuses, err := s.statuses.ListForProcess(ctx, processID)
+	if err != nil || len(statuses) == 0 || ptr.From(statuses[len(statuses)-1].Status) != model.ProcessStatusTypeSubmitted {
+		return err
+	}
+	_, err = s.statuses.Record(ctx, processID, model.ProcessStatusTypeRunning, nil)
+	return err
 }
 
 // Registry is the live links this service admits.
@@ -140,14 +153,14 @@ func (s *LinkService) JupyterServer(ctx context.Context, processID string) (*dto
 	return &dto.JupyterServerResponse{
 		ProcessID: processID,
 		Linked:    s.registry.Linked(processID),
-		BaseURL:   "/api/v1/processes/" + url.PathEscape(processID) + "/jupyter/",
+		BaseURL:   "/api/v1/processes/" + url.PathEscape(processID) + "/linkspan/api/v1/forward/" + strconv.Itoa(int(found.JupyterPort)) + "/",
 		Token:     found.JupyterToken,
 	}, nil
 }
 
-// JupyterPort returns the port of the process's Jupyter Server when token is its
+// ControlPort returns the port of the process's Linkspan API when token is its
 // Jupyter token, and false otherwise.
-func (s *LinkService) JupyterPort(ctx context.Context, processID, token string) (uint16, bool) {
+func (s *LinkService) ControlPort(ctx context.Context, processID, token string) (uint16, bool) {
 	if token == "" {
 		return 0, false
 	}
@@ -155,7 +168,7 @@ func (s *LinkService) JupyterPort(ctx context.Context, processID, token string) 
 	if err != nil || subtle.ConstantTimeCompare([]byte(token), []byte(found.JupyterToken)) != 1 {
 		return 0, false
 	}
-	return uint16(found.JupyterPort), true
+	return uint16(found.ControlPort), true
 }
 
 func newSecret() (string, error) {
