@@ -212,3 +212,17 @@ func TestTrackRefusesATaskOfAStoppedProcess(t *testing.T) {
 		t.Fatalf("err = %v, ran = %v; want an error and the task not run", err, ran)
 	}
 }
+
+func TestStopCancelsTheTasksAProcessHasInFlight(t *testing.T) {
+	tracker, _, _ := newTracker(t)
+	stopped, cancel := tracker.UntilStopped(context.Background(), "p1")
+	defer cancel()
+	other, cancelOther := tracker.UntilStopped(context.Background(), "p2")
+	defer cancelOther()
+
+	tracker.Stop("p1")
+	<-stopped.Done()
+	if other.Err() != nil {
+		t.Error("stopping one process cancelled another's task")
+	}
+}

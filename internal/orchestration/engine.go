@@ -55,6 +55,7 @@ import (
 type ExecutionEngine struct {
 	workflows     *workflows.Workflows
 	batch         *batch.Tasks
+	tracker       *execution.TaskTracker
 	orchestrator  *worker.WorkflowOrchestrator
 	processes     *processrepo.ProcessRepository
 	batchStatus   *processrepo.BatchJobStatusRepository
@@ -90,7 +91,8 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 
 	batchTasks := batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker, links)
 	return &ExecutionEngine{
-		batch: batchTasks,
+		batch:   batchTasks,
+		tracker: tracker,
 		workflows: workflows.New(
 			data.New(processes, dataStagingTasks, scpStorages, slurmClusterConfigs, sshContext, tracker),
 			batchTasks,
@@ -252,5 +254,6 @@ func (w *ExecutionEngine) Stop(ctx context.Context, processID string) error {
 			return err
 		}
 	}
+	w.tracker.Stop(processID)
 	return w.batch.CancelIfStopped(ctx, processID)
 }

@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"sync"
 	"time"
 
 	"github.com/cschleiden/go-workflows/workflow"
@@ -37,35 +38,50 @@ import (
 type TaskTracker struct {
 	statuses  *processrepo.TaskStatusRepository
 	processes *processrepo.ProcessRepository
+
+	mu    sync.Mutex
+	stops map[chan struct{}]string // one channel per task in flight, to its process id
 }
 
 // NewTaskTracker returns a tracker writing to statuses.
 func NewTaskTracker(statuses *processrepo.TaskStatusRepository, processes *processrepo.ProcessRepository) *TaskTracker {
-	return &TaskTracker{statuses: statuses, processes: processes}
+	return &TaskTracker{statuses: statuses, processes: processes, stops: map[chan struct{}]string{}}
 }
 
 var ErrStopped = errors.New("the process is stopped")
 
-// UntilStopped returns ctx cancelled once the process is stopped, so that work a task
-// has in flight ends with it.
+// UntilStopped returns ctx cancelled once Stop is called for the process, so that work
+// a task has in flight ends with it. A stop made before this call is not seen here:
+// Track refuses the task by the process's recorded status.
 func (t *TaskTracker) UntilStopped(ctx context.Context, processID string) (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(ctx)
+	stop := make(chan struct{})
+	t.mu.Lock()
+	t.stops[stop] = processID
+	t.mu.Unlock()
 	go func() {
-		tick := time.NewTicker(time.Second)
-		defer tick.Stop()
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-tick.C:
-				if Stopped(ctx, t.processes, processID) {
-					cancel()
-					return
-				}
-			}
+		select {
+		case <-stop:
+			cancel()
+		case <-ctx.Done():
+			t.mu.Lock()
+			delete(t.stops, stop)
+			t.mu.Unlock()
 		}
 	}()
 	return ctx, cancel
+}
+
+// Stop signals every task the process has in flight on this server.
+func (t *TaskTracker) Stop(processID string) {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	for stop, id := range t.stops {
+		if id == processID {
+			close(stop)
+			delete(t.stops, stop)
+		}
+	}
 }
 
 // Track runs one attempt of a task between an EXECUTING status and the status its

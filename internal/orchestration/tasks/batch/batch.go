@@ -361,11 +361,14 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 var jobGone = regexp.MustCompile(`(?i)invalid job id specified|already completing or completed`)
 
 func (a *Tasks) CancelIfStopped(ctx context.Context, processID string) error {
+	if !execution.Stopped(ctx, a.processes, processID) {
+		return nil
+	}
 	process, err := a.processes.FindByID(ctx, processID)
 	if err != nil {
 		return err
 	}
-	if !execution.Stopped(ctx, a.processes, processID) || process.BatchProcess == nil || process.BatchProcess.JobID == nil ||
+	if process.BatchProcess == nil || process.BatchProcess.JobID == nil ||
 		slices.ContainsFunc(process.BatchProcess.BatchJobStatuses, func(s *model.BatchJobStatus) bool {
 			return slices.Contains([]model.BatchJobStatusType{model.BatchJobStatusStopped, model.BatchJobStatusEnded,
 				model.BatchJobStatusFailed, model.BatchJobStatusTimeLimit}, s.Status)
