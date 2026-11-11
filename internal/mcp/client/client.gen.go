@@ -18,6 +18,30 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for AuditEventAction.
+const (
+	CREATE AuditEventAction = "CREATE"
+	DELETE AuditEventAction = "DELETE"
+	UPDATE AuditEventAction = "UPDATE"
+	UPSERT AuditEventAction = "UPSERT"
+)
+
+// Valid indicates whether the value is a known member of the AuditEventAction enum.
+func (e AuditEventAction) Valid() bool {
+	switch e {
+	case CREATE:
+		return true
+	case DELETE:
+		return true
+	case UPDATE:
+		return true
+	case UPSERT:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for AuthMethod.
 const (
 	CILOGON        AuthMethod = "CILOGON"
@@ -568,6 +592,38 @@ func (e Health200JSONResponseBodyStatus) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// AuditEvent One change to one record. It names the record and what was done, never the values.
+type AuditEvent struct {
+	Action AuditEventAction `json:"action"`
+
+	// Actor The user id, `root` or `sa:<name>` that made the change, or `system` when no caller was behind it.
+	Actor string `json:"actor"`
+
+	// ChangedFields Comma-separated columns an update set, when the write named them; otherwise empty.
+	ChangedFields string `json:"changedFields"`
+
+	// EntityId The record's id. A composite key is joined with `:`. Empty when the change addressed rows by a condition rather than by key.
+	EntityId string `json:"entityId"`
+
+	// EntityType The kind of record, such as `processes`.
+	EntityType string `json:"entityType"`
+	Id         int64  `json:"id"`
+
+	// OccurredAt Milliseconds since the epoch.
+	OccurredAt int64 `json:"occurredAt"`
+}
+
+// AuditEventAction defines model for AuditEvent.Action.
+type AuditEventAction string
+
+// AuditEventPage defines model for AuditEventPage.
+type AuditEventPage struct {
+	Items []AuditEvent `json:"items"`
+
+	// NextCursor Pass as `before` to fetch the next page; null on the last page.
+	NextCursor *int64 `json:"nextCursor"`
 }
 
 // AuthMethod defines model for AuthMethod.
@@ -1471,6 +1527,27 @@ type NotFound = Error
 // Unauthorized The envelope every failure response uses.
 type Unauthorized = Error
 
+// ListAuditEventsParams defines parameters for ListAuditEvents.
+type ListAuditEventsParams struct {
+	// UserId Only events by this actor — a user id, `root`, `sa:<name>` or `system`.
+	UserId *string `form:"userId,omitempty" json:"userId,omitempty"`
+
+	// EntityType Only events on this kind of record, such as `processes`. See `/api/v1/audit-events/entity-types`.
+	EntityType *string `form:"entityType,omitempty" json:"entityType,omitempty"`
+
+	// From Only events at or after this time, in milliseconds since the epoch.
+	From *int64 `form:"from,omitempty" json:"from,omitempty"`
+
+	// To Only events before this time (exclusive), in milliseconds since the epoch. Must be after `from`.
+	To *int64 `form:"to,omitempty" json:"to,omitempty"`
+
+	// Before Only events with an id below this one; the previous page's `nextCursor`.
+	Before *int64 `form:"before,omitempty" json:"before,omitempty"`
+
+	// Limit Page size.
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // UploadDataProductContentMultipartBody defines parameters for UploadDataProductContent.
 type UploadDataProductContentMultipartBody struct {
 	File openapi_types.File `json:"file"`
@@ -1781,6 +1858,24 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /api/v1/application-templates/{templateId} (the `UpdateApplicationTemplate` operationId).
 	UpdateApplicationTemplate(ctx context.Context, templateId TemplateId, body UpdateApplicationTemplateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListAuditEvents List audit events
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Returns the changes users and the
+	// system have made to records, newest first. Every filter is optional and they
+	// combine with AND. See docs/audit.md.
+	//
+	// Page through the log by passing the previous response's `nextCursor` as `before`.
+	//
+	// Corresponds with GET /api/v1/audit-events (the `ListAuditEvents` operationId).
+	ListAuditEvents(ctx context.Context, params *ListAuditEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListAuditEntityTypes List audited entity types
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. The values `entityType` accepts, for the kinds of record the log holds events for.
+	//
+	// Corresponds with GET /api/v1/audit-events/entity-types (the `ListAuditEntityTypes` operationId).
+	ListAuditEntityTypes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListDataProducts List all data products
 	//
@@ -3321,6 +3416,44 @@ func (c *Client) UpdateApplicationTemplateWithBody(ctx context.Context, template
 // Corresponds with PUT /api/v1/application-templates/{templateId} (the `UpdateApplicationTemplate` operationId).
 func (c *Client) UpdateApplicationTemplate(ctx context.Context, templateId TemplateId, body UpdateApplicationTemplateJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateApplicationTemplateRequest(c.Server, templateId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListAuditEvents List audit events
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Returns the changes users and the
+// system have made to records, newest first. Every filter is optional and they
+// combine with AND. See docs/audit.md.
+//
+// Page through the log by passing the previous response's `nextCursor` as `before`.
+//
+// Corresponds with GET /api/v1/audit-events (the `ListAuditEvents` operationId).
+func (c *Client) ListAuditEvents(ctx context.Context, params *ListAuditEventsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListAuditEventsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListAuditEntityTypes List audited entity types
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. The values `entityType` accepts, for the kinds of record the log holds events for.
+//
+// Corresponds with GET /api/v1/audit-events/entity-types (the `ListAuditEntityTypes` operationId).
+func (c *Client) ListAuditEntityTypes(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListAuditEntityTypesRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -6593,6 +6726,147 @@ func NewUpdateApplicationTemplateRequestWithBody(server string, templateId Templ
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListAuditEventsRequest constructs an http.Request for the ListAuditEvents method
+func NewListAuditEventsRequest(server string, params *ListAuditEventsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/audit-events")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.UserId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "userId", *params.UserId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.EntityType != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "entityType", *params.EntityType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.From != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "from", *params.From, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.To != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "to", *params.To, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Before != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "before", *params.Before, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: "int64"}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListAuditEntityTypesRequest constructs an http.Request for the ListAuditEntityTypes method
+func NewListAuditEntityTypesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/audit-events/entity-types")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -11472,6 +11746,28 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/v1/application-templates/{templateId} (the `UpdateApplicationTemplate` operationId).
 	UpdateApplicationTemplateWithResponse(ctx context.Context, templateId TemplateId, body UpdateApplicationTemplateJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateApplicationTemplateResponse, error)
 
+	// ListAuditEventsWithResponse List audit events
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. Returns the changes users and the
+	// system have made to records, newest first. Every filter is optional and they
+	// combine with AND. See docs/audit.md.
+	//
+	// Page through the log by passing the previous response's `nextCursor` as `before`.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/audit-events (the `ListAuditEvents` operationId).
+	ListAuditEventsWithResponse(ctx context.Context, params *ListAuditEventsParams, reqEditors ...RequestEditorFn) (*ListAuditEventsResponse, error)
+
+	// ListAuditEntityTypesWithResponse List audited entity types
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority. The values `entityType` accepts, for the kinds of record the log holds events for.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/audit-events/entity-types (the `ListAuditEntityTypes` operationId).
+	ListAuditEntityTypesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListAuditEntityTypesResponse, error)
+
 	// ListDataProductsWithResponse List all data products
 	//
 	// Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -13434,6 +13730,165 @@ func (r UpdateApplicationTemplateResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateApplicationTemplateResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListAuditEventsResponse401Headers the declared response headers of an HTTP 401 response for ListAuditEvents
+type ListAuditEventsResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListAuditEventsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *AuditEventPage
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListAuditEventsResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListAuditEventsResponse) GetJSON200() *AuditEventPage {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r ListAuditEventsResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListAuditEventsResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListAuditEventsResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListAuditEventsResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListAuditEventsResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListAuditEventsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListAuditEventsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListAuditEventsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListAuditEventsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListAuditEntityTypesResponse401Headers the declared response headers of an HTTP 401 response for ListAuditEntityTypes
+type ListAuditEntityTypesResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListAuditEntityTypesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]string
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListAuditEntityTypesResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListAuditEntityTypesResponse) GetJSON200() *[]string {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListAuditEntityTypesResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListAuditEntityTypesResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListAuditEntityTypesResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListAuditEntityTypesResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListAuditEntityTypesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListAuditEntityTypesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListAuditEntityTypesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListAuditEntityTypesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -23711,6 +24166,40 @@ func (c *ClientWithResponses) UpdateApplicationTemplateWithResponse(ctx context.
 	return ParseUpdateApplicationTemplateResponse(rsp)
 }
 
+// ListAuditEventsWithResponse List audit events
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. Returns the changes users and the
+// system have made to records, newest first. Every filter is optional and they
+// combine with AND. See docs/audit.md.
+//
+// Page through the log by passing the previous response's `nextCursor` as `before`.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/audit-events (the `ListAuditEvents` operationId).
+func (c *ClientWithResponses) ListAuditEventsWithResponse(ctx context.Context, params *ListAuditEventsParams, reqEditors ...RequestEditorFn) (*ListAuditEventsResponse, error) {
+	rsp, err := c.ListAuditEvents(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListAuditEventsResponse(rsp)
+}
+
+// ListAuditEntityTypesWithResponse List audited entity types
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority. The values `entityType` accepts, for the kinds of record the log holds events for.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/audit-events/entity-types (the `ListAuditEntityTypes` operationId).
+func (c *ClientWithResponses) ListAuditEntityTypesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListAuditEntityTypesResponse, error) {
+	rsp, err := c.ListAuditEntityTypes(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListAuditEntityTypesResponse(rsp)
+}
+
 // ListDataProductsWithResponse List all data products
 //
 // Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -26625,6 +27114,147 @@ func ParseUpdateApplicationTemplateResponse(rsp *http.Response) (*UpdateApplicat
 	switch {
 	case rsp.StatusCode == 401:
 		var headers UpdateApplicationTemplateResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListAuditEventsResponse parses an HTTP response from a ListAuditEventsWithResponse call
+func ParseListAuditEventsResponse(rsp *http.Response) (*ListAuditEventsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListAuditEventsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest AuditEventPage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListAuditEventsResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListAuditEntityTypesResponse parses an HTTP response from a ListAuditEntityTypesWithResponse call
+func ParseListAuditEntityTypesResponse(rsp *http.Response) (*ListAuditEntityTypesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListAuditEntityTypesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListAuditEntityTypesResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
