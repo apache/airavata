@@ -377,7 +377,7 @@ function Deployments() {
             },
             { header: "ID", cell: (d) => <Id value={d.deploymentId} /> },
             { header: "Cluster", cell: (d) => clusterName(d.slurmClusterId) },
-            { header: "Partition", cell: (d) => d.defaultPartition ?? "—" },
+            { header: "Partition", cell: (d) => d.defaultBatchJobConfig?.partition ?? "—" },
             {
               header: "Defaults",
               cell: (d) =>
@@ -435,8 +435,6 @@ function Deployments() {
               </dd>
               <dt>Cluster</dt>
               <dd>{clusterName(viewing.slurmClusterId)}</dd>
-              <dt>Default partition</dt>
-              <dd>{viewing.defaultPartition ?? "—"}</dd>
             </dl>
             <h3>Slurm run section</h3>
             <pre className="block">{viewing.slurmRunSection}</pre>
@@ -464,12 +462,10 @@ function DeploymentEditor({
 }) {
   const [templateId, setTemplateId] = useState(deployment?.templateId ?? "");
   const [clusterId, setClusterId] = useState(deployment?.slurmClusterId ?? "");
-  const [partition, setPartition] = useState(deployment?.defaultPartition ?? "");
   const [runSection, setRunSection] = useState(deployment?.slurmRunSection ?? "");
   const [config, setConfig] = useState<BatchJobConfigDraft>(() =>
     draftFrom(deployment?.defaultBatchJobConfig ?? { wallTimeMinutes: 60, allocation: "" }),
   );
-  const partitions = clusters.find((c) => c.slurmClusterId === clusterId)?.partitions ?? [];
   const template = templates.find((t) => t.templateId === templateId);
 
   // Allocations are discovered under one of the caller's logins on the chosen cluster;
@@ -491,7 +487,6 @@ function DeploymentEditor({
       templateId,
       slurmClusterId: strOrNull(clusterId),
       slurmRunSection: runSection,
-      defaultPartition: strOrNull(partition),
       defaultBatchJobConfig: toBatchJobConfig(config),
     };
     if (deployment) await api.put(`/api/v1/slurm-deployments/${deployment.deploymentId}`, body);
@@ -530,7 +525,7 @@ function DeploymentEditor({
               value={clusterId}
               onChange={(e) => {
                 setClusterId(e.target.value);
-                setPartition("");
+                setConfig((c) => ({ ...c, partition: "" }));
               }}
             >
               <option value="">Select…</option>
@@ -538,14 +533,6 @@ function DeploymentEditor({
                 <option key={c.slurmClusterId} value={c.slurmClusterId}>
                   {c.clusterName}
                 </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Default partition" hint="optional">
-            <select value={partition} onChange={(e) => setPartition(e.target.value)} disabled={!partitions.length}>
-              <option value="">None</option>
-              {partitions.map((p) => (
-                <option key={p.partitionId ?? p.name}>{p.name}</option>
               ))}
             </select>
           </Field>
@@ -585,7 +572,6 @@ function DeploymentEditor({
               onChange={setConfig}
               discover={{
                 configId: discoverWith,
-                partition: strOrNull(partition),
                 hint: !clusterId
                   ? "Choose a cluster to discover its allocations."
                   : clusterLogins.length === 0

@@ -13,6 +13,7 @@ const NUMERIC = new Set(["wallTimeMinutes", "cpus", "ntasksPerNode", "cpusPerTas
 
 const FIELDS: { key: keyof BatchJobConfigDraft; label: string; placeholder?: string }[] = [
   { key: "allocation", label: "Allocation (account)" },
+  { key: "partition", label: "Partition", placeholder: "default" },
   { key: "wallTimeMinutes", label: "Wall time (minutes)" },
   { key: "nodes", label: "Nodes" },
   { key: "ntasks", label: "Tasks" },
@@ -74,7 +75,7 @@ export function BatchJobConfigFields({
         <AllocationField
           value={value.allocation}
           onChange={(allocation) => onChange({ ...value, allocation })}
-          discover={discover}
+          discover={{ ...discover, partition: value.partition }}
         />
       )}
       {FIELDS.filter((f) => !(discover && f.key === "allocation")).map((f) => (

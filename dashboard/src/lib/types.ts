@@ -277,6 +277,7 @@ export interface BatchJobConfig {
   cpusPerGpu?: string | null;
   gpusPerNode?: number | null;
   constraints?: string | null;
+  partition?: string | null;
   qos?: string | null;
 }
 
@@ -286,7 +287,6 @@ export interface BatchDeployment {
   slurmClusterId: string | null;
   slurmRunSection: string;
   defaultBatchJobConfig: BatchJobConfig | null;
-  defaultPartition: string | null;
 }
 
 // Data

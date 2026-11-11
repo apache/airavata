@@ -210,7 +210,7 @@ export default function NewProcessPage() {
               {deployments.data?.map((d) => (
                 <option key={d.deploymentId} value={d.deploymentId}>
                   {names.appName(d.deploymentId) ?? d.deploymentId}
-                  {d.defaultPartition ? ` (${d.defaultPartition})` : ""}
+                  {d.defaultBatchJobConfig?.partition ? ` (${d.defaultBatchJobConfig.partition})` : ""}
                 </option>
               ))}
             </select>
@@ -267,7 +267,6 @@ export default function NewProcessPage() {
               onChange={setJobConfig}
               discover={{
                 configId: configId || null,
-                partition: deployment?.defaultPartition,
                 hint: "Choose a cluster config above to discover the allocations it may charge.",
               }}
             />
