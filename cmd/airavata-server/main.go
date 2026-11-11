@@ -35,6 +35,7 @@ import (
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 	iamsvc "github.com/apache/airavata/api/iam/service"
 	"github.com/apache/airavata/internal/app"
+	"github.com/apache/airavata/internal/audit"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
@@ -128,6 +129,10 @@ func runServer() error {
 	gdb, err := db.Open(db.DefaultConfig(cfg.DSN))
 	if err != nil {
 		return err
+	}
+	// Before anything writes, including the migration below and the root user.
+	if err := audit.Register(gdb); err != nil {
+		return fmt.Errorf("register audit log: %w", err)
 	}
 	if cfg.AutoMigrate {
 		if err := db.AutoMigrate(gdb); err != nil {

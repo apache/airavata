@@ -25,6 +25,7 @@ import (
 	"gorm.io/gorm"
 
 	applicationmodel "github.com/apache/airavata/api/application/model"
+	auditmodel "github.com/apache/airavata/api/audit/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	credentialsmodel "github.com/apache/airavata/api/credentials/model"
 	datamodel "github.com/apache/airavata/api/data/model"
@@ -110,6 +111,10 @@ func Entities() []any {
 
 		// The secrets a process's job is handed so its Linkspan can link back.
 		&processmodel.ProcessLink{},
+
+		// The append-only record of what callers did. It references nothing, so it
+		// outlives the users and resources it describes.
+		&auditmodel.Event{},
 	}
 }
 
