@@ -98,6 +98,7 @@ compose database.
 | `AIRAVATA_DASHBOARD_ENABLED` | `true` | Serve the [dashboard](#dashboard) under `/dashboard/`. |
 | `AIRAVATA_DASHBOARD_DIR` | `dashboard/out` | The dashboard's built static export, relative to the working directory. |
 | `AIRAVATA_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origins. The server echoes the caller's origin rather than sending `*`, because every authenticated call carries an `Authorization` header and browsers reject the wildcard for credentialed requests. |
+| `AIRAVATA_PUBLIC_URL` | `http://localhost:<SERVER_PORT>` | Where compute nodes reach this server. A job running [Linkspan](https://github.com/cyber-shuttle/linkspan) links back to its `ws(s)` form so the dashboard can open the job's Jupyter Server ([docs/notebooks.md](docs/notebooks.md)). Set it to the public `https://` URL in production. |
 
 ### Database
 
@@ -126,8 +127,9 @@ of 20 open connections, 2 kept idle, and a 30-minute connection lifetime
 
 | Variable | Default | Description |
 |---|---|---|
-| `CILOGON_CLIENT_ID` | *(empty)* | OAuth client id used to authenticate introspection calls. |
-| `CILOGON_CLIENT_SECRET` | *(empty)* | OAuth client secret. |
+| `CILOGON_CLIENT_ID` | *(empty)* | OAuth client id used to authenticate introspection calls and the dashboard's CILogon sign-in. |
+| `CILOGON_CLIENT_SECRET` | *(empty)* | OAuth client secret. With the client id, it turns on **Sign in with CILogon** in the dashboard. |
+| `CILOGON_ISSUER` | `https://cilogon.org` | OIDC issuer the dashboard's sign-in discovers its authorization and token endpoints from. |
 | `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | RFC 7662 introspection endpoint. |
 | `CILOGON_USERINFO_URI` | `https://cilogon.org/oauth2/userinfo` | Profile claims endpoint. |
 
@@ -259,8 +261,11 @@ processes — resolve the caller to a user record and refuse if none exists:
 ```
 
 When the root account is enabled, the server creates the `root` row on startup if it
-is missing, so `root` can own resources with no manual step. Any other principal needs
-a row, which you can create through the API (see "Registering users" below).
+is missing, so `root` can own resources with no manual step. A CILogon user's row is
+created on their first authenticated request, filled from their CILogon profile and
+**suspended**. An administrator activates it on the dashboard's Users page (or with
+`POST /api/v1/users/{userId}/status`); until then the server answers the account with
+`403` on everything but `GET /api/v1/users/me`.
 
 ### Granting a role requires a manual insert
 
@@ -278,9 +283,10 @@ Valid roles are `SUPER_ADMIN`, `ADMIN` and `USER`. A user with no rows is treate
 CILogon subjects are normalised to `cilogon:<id>` before lookup, so that is the form
 the `user_id` column must hold.
 
-### Registering users
+### Registering users ahead of sign-in
 
-With the root token you can register users through the API (Super Admin only):
+CILogon users are registered when they first sign in. A Super Admin can also create a
+record beforehand, for example to add someone to a group before their first sign-in:
 
 ```bash
 curl -s -X POST localhost:9095/api/v1/users \
@@ -330,7 +336,15 @@ caller lacking the required role returns `403`.
 `dashboard/` is a Next.js web UI over this API: register SSH credentials, clusters,
 cluster configs and storages; manage application templates and deployments; create,
 launch and monitor processes; register, upload and download data products; and answer
-interactive SSH logins (password, OTP, Duo) as they happen.
+interactive SSH logins (password, OTP, Duo) as they happen. Its **Notebooks** page is a
+Python notebook ([jupyter-ui](https://github.com/datalayer/jupyter-ui)) whose kernel runs
+in the browser on Pyodide, with an `airavata(path)` helper that calls this API as the
+signed-in user, and a file browser to create, rename, upload and download notebooks and
+files. Notebooks and files are kept in each browser's storage, not on the server, and the
+kernel downloads Pyodide from the jsDelivr CDN when it first starts, so browsers using it
+need internet access. The page can instead run notebooks on a cluster, in the Jupyter
+Server of a running process whose job runs Linkspan, reached through this server over
+Linkspan's link ([docs/notebooks.md](docs/notebooks.md)).
 
 It is built as a static export and served by the API server itself under
 `/dashboard/`, so it starts and stops with the server, on the same origin — there is no
@@ -380,7 +394,8 @@ NEXT_PUBLIC_AIRAVATA_API_URL=http://localhost:9095 npm run dev   # http://localh
 | `401` with `WWW-Authenticate: Bearer error="invalid_token"` | The token was rejected by introspection, or it is a stale root token from a previous start. Restart and use the newly printed token, or pin it with `AIRAVATA_ROOT_ACCOUNT_TOKEN`. |
 | `502 Unable to validate bearer token` | CILogon is unreachable. This is reported separately from `401` because it is not the caller's fault. |
 | `403 Access denied` on a write | The caller authenticated but lacks `ADMIN`/`SUPER_ADMIN`. Grant the role in `user_roles`. |
-| `404 No user record found for authenticated principal` | The caller has no `users` row. Register the user (see "First run" above). The `root` row is created automatically on startup. |
+| `404 No user record found for authenticated principal` | The caller has no `users` row. CILogon users get one on their first request. The `root` row is created automatically on startup. |
+| `403 Your account is suspended` | The caller's account hasn't been activated. Activate it on the dashboard's Users page. |
 | `409 SSH credential <id> is still presented by N record(s)` | A credential cannot be deleted while a cluster config or a data storage still presents it. Repoint or delete those first. |
 | `409 Template has deployments` | A template cannot be deleted while deployments reference it. Delete the deployments first. |
 

@@ -147,7 +147,7 @@ run_alphafold.sh \
 - An output: `{{ outputs.name }}`. Use `{{ outputs["name.ext"] }}` if the name contains a dot.
 - Optional inputs can be guarded: `{% if inputs.seed %}--seed {{ inputs.seed[0] }}{% endif %}`
 
-Other variables are available too: `work_dir`, `work_dir_quoted`, `process_id`, `job_name`, `stdout_file`, `stderr_file`, and the resource values (`nodes`, `cpus`, `mem`, `gpus`, …).
+Other variables are available too: `work_dir`, `work_dir_quoted`, `process_id`, `job_name`, `stdout_file`, `stderr_file`, and the resource values (`nodes`, `cpus`, `mem`, `gpus`, …). A run section that starts Linkspan also has `link_url`, `link_control_port` and `link_jupyter_port` and the matching environment variables. See [Notebooks on a cluster](notebooks.md).
 
 Shell-style references such as `$fastaFile` are **not** substituted by Airavata. They reach the script unchanged and are expanded by bash as ordinary environment variables, which are usually empty.
 

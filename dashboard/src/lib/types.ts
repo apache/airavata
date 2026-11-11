@@ -2,6 +2,38 @@
 
 export type Permission = "READ" | "WRITE";
 
+// Who a record is shared with: a user, or every member of a group.
+export type PrincipalType = "USER" | "GROUP";
+
+// One grant from GET {resource}/{id}/shares (api/sharing/dto.ShareResponse).
+export interface ResourceShare {
+  resourceSharingId: string;
+  resourceType: string;
+  resourceId: string;
+  principalType: PrincipalType;
+  principalId: string;
+  permission: Permission;
+}
+
+// api/iam/dto.GroupResponse.
+export interface Group {
+  groupId: string;
+  groupName?: string | null;
+  ownerId?: string | null;
+  createdAt: number;
+}
+
+export type GroupRole = "ADMIN" | "MODERATOR" | "MEMBER";
+export type GroupMemberStatus = "ACTIVE" | "INACTIVE";
+
+// api/iam/dto.GroupMemberResponse.
+export interface GroupMember {
+  groupId: string;
+  userId: string;
+  groupRole: GroupRole;
+  groupMemberStatus: GroupMemberStatus;
+}
+
 export interface FieldError {
   field: string;
   message: string;
@@ -14,9 +46,34 @@ export interface ErrorEnvelope {
   fieldErrors?: FieldError[];
 }
 
-// Service accounts (admin only)
+// Users
 
 export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type Role = "USER" | "ADMIN" | "SUPER_ADMIN";
+export type AuthMethod = "CILOGON" | "SYSTEM" | "SERVICE_ACCOUNT";
+
+// A user record as administrators see it in the user list, and users see themselves.
+export interface UserAccount {
+  userId: string;
+  status: UserStatus | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  authMethod: AuthMethod | null;
+  roles: Role[];
+  createdAt: number;
+}
+
+// GET /api/v1/users/me: the caller, and what the server decided about them.
+export interface CurrentUser {
+  userId: string;
+  status: UserStatus;
+  authorities: string[];
+  admin: boolean;
+  user: UserAccount | null;
+}
+
+// Service accounts (admin only)
 
 export interface ServiceAccount {
   serviceAccountId: string; // "sa:<name>"
@@ -290,6 +347,16 @@ export interface Process {
   lastStatusId: string | null;
   lastWorkflowId: string | null;
   batchProcess: BatchProcess | null;
+}
+
+// How the dashboard opens a process's Jupyter Server: Airavata's proxy at baseUrl (a
+// path under the API root), with token as the Jupyter token. linked says whether the
+// job's Linkspan holds its link to Airavata right now.
+export interface JupyterServer {
+  processId: string;
+  linked: boolean;
+  baseUrl: string;
+  token: string;
 }
 
 export interface ProcessStatus {

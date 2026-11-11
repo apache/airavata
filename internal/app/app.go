@@ -32,6 +32,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/config"
+	"github.com/apache/airavata/internal/link"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
 	applicationsvc "github.com/apache/airavata/api/application/service"
@@ -109,6 +110,7 @@ type Services struct {
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
 	Launch *processsvc.LaunchService
+	Link   *processsvc.LinkService
 
 	ExecutionEngine *orchestration.ExecutionEngine
 }
@@ -138,6 +140,7 @@ type Repositories struct {
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
 	JobMonitoringTasks      *processrepo.JobMonitoringTaskRepository
 	InteractiveCommandTasks *processrepo.InteractiveCommandTaskRepository
+	Links                   *processrepo.LinkRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -166,6 +169,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
 		JobMonitoringTasks:      processrepo.NewJobMonitoringTaskRepository(db),
 		InteractiveCommandTasks: processrepo.NewInteractiveCommandTaskRepository(db),
+		Links:                   processrepo.NewLinkRepository(db),
 	}
 }
 
@@ -222,8 +226,10 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
+	linkSvc := processsvc.NewLinkService(repos.Links, processes, link.NewRegistry(), cfg.PublicURL)
+
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext, linkSvc)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -274,6 +280,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
 			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, processWorkflows, executionEngine),
+
+		Link: linkSvc,
 
 		ExecutionEngine: executionEngine,
 	}

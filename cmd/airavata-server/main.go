@@ -154,6 +154,8 @@ func runServer() error {
 	// Service account tokens are Airavata-issued, so they are checked against the
 	// database and never forwarded to CILogon.
 	introspector.ServiceAccounts = iamrepo.ServiceAccountTokenLookup{DB: gdb}
+	// Signing in with CILogon is registration: the first request creates the user record.
+	introspector.Users = &iamrepo.CILogonUserProvisioner{DB: gdb}
 
 	repos := app.NewRepositories(gdb)
 	// The object graph, built once. The HTTP handler takes it, and so does the workflow

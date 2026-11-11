@@ -5,22 +5,96 @@ import type { ErrorEnvelope, FieldError } from "./types";
 export const API_BASE = (process.env.NEXT_PUBLIC_AIRAVATA_API_URL ?? "").replace(/\/$/, "");
 
 const TOKEN_KEY = "airavata.token";
+// Set only for a CILogon sign-in: its access tokens are short-lived, so the dashboard
+// keeps the refresh token and renews the access token before it expires.
+const REFRESH_KEY = "airavata.refreshToken";
+const EXPIRES_KEY = "airavata.tokenExpiresAt";
+// Renew this long before the access token expires.
+const REFRESH_MARGIN_MS = 60_000;
 
-export function getToken(): string | null {
+function read(key: string): string | null {
   try {
-    return window.localStorage.getItem(TOKEN_KEY);
+    return window.localStorage.getItem(key);
   } catch {
     return null;
   }
 }
 
-export function setToken(token: string | null) {
+function write(key: string, value: string | null) {
   try {
-    if (token) window.localStorage.setItem(TOKEN_KEY, token);
-    else window.localStorage.removeItem(TOKEN_KEY);
+    if (value) window.localStorage.setItem(key, value);
+    else window.localStorage.removeItem(key);
   } catch {
     // Storage unavailable (private mode); the token lives only as long as the page.
   }
+}
+
+export function getToken(): string | null {
+  return read(TOKEN_KEY);
+}
+
+// setToken stores a pasted token, which is not renewed, and drops any CILogon refresh
+// token. null signs out.
+export function setToken(token: string | null) {
+  write(TOKEN_KEY, token);
+  write(REFRESH_KEY, null);
+  write(EXPIRES_KEY, null);
+}
+
+// Tokens as the server's CILogon sign-in routes return them (internal/auth/signin.go).
+export interface SignInTokens {
+  accessToken: string;
+  refreshToken?: string;
+  expiresIn?: number;
+}
+
+// TOKEN_EVENT fires when a renewal replaced the access token, so holders of it (the
+// session, and the sockets it opens) pick up the new one.
+export const TOKEN_EVENT = "airavata:token";
+
+export function setSignInTokens(tokens: SignInTokens) {
+  write(TOKEN_KEY, tokens.accessToken);
+  // A refresh may not rotate the refresh token; keep the one held.
+  if (tokens.refreshToken) write(REFRESH_KEY, tokens.refreshToken);
+  write(EXPIRES_KEY, tokens.expiresIn ? String(Date.now() + tokens.expiresIn * 1000) : null);
+}
+
+// One renewal at a time: concurrent requests share it.
+let renewing: Promise<string | null> | null = null;
+
+function renew(): Promise<string | null> {
+  renewing ??= (async () => {
+    const refreshToken = read(REFRESH_KEY);
+    if (!refreshToken) return null;
+    try {
+      // No Authorization header: the access token is expired, and the server would
+      // refuse the request for it before reaching the route.
+      const res = await fetch(API_BASE + "/api/v1/auth/cilogon/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+      if (!res.ok) return null;
+      const tokens = (await res.json()) as SignInTokens;
+      setSignInTokens(tokens);
+      window.dispatchEvent(new Event(TOKEN_EVENT));
+      return tokens.accessToken;
+    } catch {
+      return null;
+    }
+  })().finally(() => {
+    renewing = null;
+  });
+  return renewing;
+}
+
+// currentToken is the access token to send, renewed first when it is about to expire.
+async function currentToken(): Promise<string | null> {
+  const expiresAt = Number(read(EXPIRES_KEY) || 0);
+  if (expiresAt && read(REFRESH_KEY) && Date.now() > expiresAt - REFRESH_MARGIN_MS) {
+    return (await renew()) ?? getToken();
+  }
+  return getToken();
 }
 
 export class ApiError extends Error {
@@ -43,16 +117,23 @@ export class ApiError extends Error {
 // and sends the user back to sign in.
 export const UNAUTHORIZED_EVENT = "airavata:unauthorized";
 
-async function raw(method: string, path: string, init: RequestInit = {}): Promise<Response> {
+async function send(method: string, path: string, init: RequestInit, token: string | null): Promise<Response> {
   const headers = new Headers(init.headers);
-  const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);
-
-  let res: Response;
   try {
-    res = await fetch(API_BASE + path, { ...init, method, headers });
+    return await fetch(API_BASE + path, { ...init, method, headers });
   } catch {
     throw new ApiError(0, `Cannot reach the Airavata server at ${API_BASE || window.location.origin}`);
+  }
+}
+
+async function raw(method: string, path: string, init: RequestInit = {}): Promise<Response> {
+  let res = await send(method, path, init, await currentToken());
+  // A CILogon token can be revoked or expire early; renew once and retry before
+  // treating the 401 as a sign-out.
+  if (res.status === 401 && read(REFRESH_KEY)) {
+    const renewed = await renew();
+    if (renewed) res = await send(method, path, init, renewed);
   }
   if (res.ok) return res;
 

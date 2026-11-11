@@ -41,6 +41,19 @@ type Principal struct {
 	Name        string
 	Authorities []string
 	Attributes  map[string]any
+
+	// Status is the user record's status for a CILogon principal, and empty for the
+	// root account and service accounts, whose standing is decided elsewhere.
+	Status string
+}
+
+// StatusActive is the user status that may use Airavata.
+const StatusActive = "ACTIVE"
+
+// Active reports whether the principal may use Airavata. A CILogon user starts out
+// SUSPENDED and is let in once an administrator makes them ACTIVE.
+func (p *Principal) Active() bool {
+	return p != nil && (p.Status == "" || p.Status == StatusActive)
 }
 
 // HasAnyAuthority reports whether the principal holds at least one of want.

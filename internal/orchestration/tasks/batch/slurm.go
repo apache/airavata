@@ -32,6 +32,7 @@ import (
 	appmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/internal/link"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
@@ -91,6 +92,9 @@ const slurmScriptTemplate = `#!/bin/bash
 
 echo "Airavata process {{ process_id }} starting on $(hostname) at $(date)"
 cd {{ work_dir_quoted }} || exit 1
+{% if link_env_file %}
+. {{ link_env_file_quoted }} || exit 1
+{% endif %}
 
 {{ run_section }}
 airavata_status=$?
@@ -106,6 +110,8 @@ func buildSlurmScript(
 	template *appmodel.Template,
 	clusterConfig *computemodel.SlurmClusterConfig,
 	globalJobConfigs *execution.GlobalJobConfigs,
+	issued *link.Issued,
+	linkEnvFile string,
 ) (string, error) {
 	batchProcess := process.BatchProcess
 
@@ -162,6 +168,17 @@ func buildSlurmScript(
 
 		"inputs":  inputs,
 		"outputs": outputs,
+	}
+
+	// The link back to Airavata, for a run section that starts Linkspan. The tokens
+	// are not here: they reach the job only through the sourced env file, as
+	// $LINKSPAN_LINK_TOKEN and $JUPYTER_TOKEN.
+	if issued != nil && linkEnvFile != "" {
+		ctx["link_env_file"] = linkEnvFile
+		ctx["link_env_file_quoted"] = ssh.ShellQuote(linkEnvFile)
+		ctx["link_url"] = issued.URL
+		ctx["link_control_port"] = int(issued.ControlPort)
+		ctx["link_jupyter_port"] = int(issued.JupyterPort)
 	}
 
 	// A directive is one line, so a value carrying a newline would not extend the

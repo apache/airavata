@@ -31,7 +31,17 @@ src/lib/session.tsx  the signed-in token and whether it is an admin
 src/lib/interactive-auth.tsx
                      subscription to waiting SSH logins (socket, polling fallback)
 src/lib/types.ts     wire shapes, mirroring api/*/dto
+src/components/NotebookView.tsx, NotebookFiles.tsx
+                     the Notebooks page: a file browser and a @datalayer/jupyter-react
+                     notebook, either on an in-browser Pyodide kernel with files in
+                     the browser's IndexedDB, or on the Jupyter Server of a process's
+                     Linkspan job, through the API's /processes/{id}/jupyter/ proxy
 ```
+
+The build uses webpack (`next build --webpack`), not Turbopack: the JupyterLab packages
+behind the Notebooks page need the loaders and shims in `next.config.mjs`. They are only
+loaded on that page. `package.json` overrides `react` and `react-dom` because
+jupyter-react pins its own versions, and two copies of React break hooks.
 
 The app is a static export (`output: "export"`), so it has no server code of its
 own: routes with an id take it as a query parameter (`/processes/view/?id=…`), and

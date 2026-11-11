@@ -105,8 +105,9 @@ func (s *UserService) Get(ctx context.Context, userID string) (*dto.UserResponse
 	return &out, nil
 }
 
-// List returns every user. Admin only.
-func (s *UserService) List(ctx context.Context) ([]dto.UserResponse, error) {
+// List returns every user, with the email, auth method and roles an administrator
+// needs to decide on them. Admin only.
+func (s *UserService) List(ctx context.Context) ([]dto.UserAccountResponse, error) {
 	if _, err := auth.RequireAdmin(ctx); err != nil {
 		return nil, err
 	}
@@ -115,11 +116,74 @@ func (s *UserService) List(ctx context.Context) ([]dto.UserResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := make([]dto.UserResponse, 0, len(users))
+	out := make([]dto.UserAccountResponse, 0, len(users))
 	for i := range users {
-		out = append(out, dto.ToUserResponse(&users[i]))
+		out = append(out, dto.ToUserAccountResponse(&users[i]))
 	}
 	return out, nil
+}
+
+// Me describes the caller. It is the one route open to an account that is not
+// active, so the dashboard can tell a suspended user why nothing else works.
+func (s *UserService) Me(ctx context.Context) (*dto.CurrentUserResponse, error) {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := &dto.CurrentUserResponse{
+		UserID:      principal.Name,
+		Status:      principal.Status,
+		Authorities: principal.Authorities,
+		Admin:       principal.IsAdmin(),
+	}
+	if out.Status == "" {
+		out.Status = auth.StatusActive
+	}
+	user, err := s.repo.FindByIDWithRoles(ctx, principal.Name)
+	switch {
+	case err == nil:
+		account := dto.ToUserAccountResponse(user)
+		out.User = &account
+	case !errors.Is(err, gorm.ErrRecordNotFound):
+		return nil, err
+	}
+	return out, nil
+}
+
+// SetStatus activates, deactivates or suspends a user. Admin only.
+//
+// An administrator cannot change their own status, which would be a way to lock the
+// last administrator out. Only a Super Admin may change another administrator's
+// status, so an ADMIN cannot suspend the people who appoint admins. Service accounts
+// have their own lifecycle under /api/v1/service-accounts.
+func (s *UserService) SetStatus(ctx context.Context, userID string, req *dto.UserStatusUpdate) (*dto.UserAccountResponse, error) {
+	principal, err := auth.RequireAdmin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if principal.Name == userID {
+		return nil, httpx.Forbidden("You cannot change your own status")
+	}
+
+	user, err := s.repo.FindByIDWithRoles(ctx, userID)
+	if err != nil {
+		return nil, notFoundAs(err, "User not found with ID: %s", userID)
+	}
+	if user.IsServiceAccount() {
+		return nil, httpx.Invalid([]httpx.FieldError{{Field: "userId",
+			Message: "Service accounts are managed through /api/v1/service-accounts"}})
+	}
+	if user.IsAdmin() && !principal.HasAnyAuthority(string(model.RoleSuperAdmin)) {
+		return nil, httpx.Forbidden("Only a Super Admin can change an administrator's status")
+	}
+
+	status := req.Status
+	user.Status = &status
+	if err := s.repo.Save(ctx, user); err != nil {
+		return nil, err
+	}
+	out := dto.ToUserAccountResponse(user)
+	return &out, nil
 }
 
 // Update changes a user's profile. A Super Admin may update anyone; everyone else may
