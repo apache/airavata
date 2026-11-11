@@ -47,7 +47,7 @@ func newTracker(t *testing.T) (*execution.TaskTracker, *processrepo.TaskStatusRe
 		t.Fatalf("automigrate: %v", err)
 	}
 	statuses := processrepo.NewTaskStatusRepository(gdb)
-	return execution.NewTaskTracker(statuses), statuses, gdb
+	return execution.NewTaskTracker(statuses, nil), statuses, gdb
 }
 
 func statusesOf(t *testing.T, repo *processrepo.TaskStatusRepository, taskID string) []model.TaskStatusType {
@@ -195,5 +195,21 @@ func TestTrackSkipsCompletedTask(t *testing.T) {
 	}
 	if !ran {
 		t.Error("a failed task was skipped")
+	}
+}
+
+func TestTrackRefusesATaskOfAStoppedProcess(t *testing.T) {
+	_, statuses, gdb := newTracker(t)
+	tracker := execution.NewTaskTracker(statuses, processrepo.NewProcessRepository(gdb))
+	proc := &model.Process{}
+	stopped := model.ProcessStatusTypeStopped
+	if err := errors.Join(gdb.Create(proc).Error, gdb.Create(&model.ProcessStatus{ProcessID: &proc.ID, Status: &stopped}).Error); err != nil {
+		t.Fatal(err)
+	}
+	ran := false
+	_, err := tracker.Track(context.Background(), proc.ID, "task-6", model.TaskTypeDataStaging, nil,
+		func() (*execution.Context, error) { ran = true; return nil, nil })
+	if err == nil || ran {
+		t.Fatalf("err = %v, ran = %v; want an error and the task not run", err, ran)
 	}
 }

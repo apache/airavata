@@ -131,6 +131,9 @@ func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*d
 	if err := s.requireOwnership(ctx, proc); err != nil {
 		return nil, err
 	}
+	if err := s.requireNotStopped(ctx, processID); err != nil {
+		return nil, err
+	}
 	if err := s.requireNotLaunched(ctx, proc.ProcessID); err != nil {
 		return nil, err
 	}
@@ -461,4 +464,15 @@ func findTemplateOutput(template *appdto.TemplateResponse, outputID string) *app
 		}
 	}
 	return nil
+}
+
+func (s *LaunchService) Stop(ctx context.Context, processID string) error {
+	proc, err := s.processService.Get(ctx, processID)
+	if err != nil {
+		return notFoundAs(err, "Process not found: %s", processID)
+	}
+	if err := s.requireOwnership(ctx, proc); err != nil {
+		return err
+	}
+	return s.executionEngine.Stop(context.WithoutCancel(ctx), processID)
 }

@@ -54,6 +54,7 @@ import (
 // process is launched or the scheduler reports its job has finished.
 type ExecutionEngine struct {
 	workflows     *workflows.Workflows
+	batch         *batch.Tasks
 	orchestrator  *worker.WorkflowOrchestrator
 	processes     *processrepo.ProcessRepository
 	batchStatus   *processrepo.BatchJobStatusRepository
@@ -85,15 +86,17 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		orchestrator = worker.NewWorkflowOrchestrator(workflowBackend, nil)
 	}
 
-	tracker := execution.NewTaskTracker(taskStatus)
+	tracker := execution.NewTaskTracker(taskStatus, processes)
 
+	batchTasks := batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker, links)
 	return &ExecutionEngine{
+		batch: batchTasks,
 		workflows: workflows.New(
 			data.New(processes, dataStagingTasks, scpStorages, slurmClusterConfigs, sshContext, tracker),
-			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker, links),
+			batchTasks,
 			monitoring.New(processes, jobMonitoringTasks, tracker),
 			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,
-			processWorkflows,
+			processWorkflows, processes,
 		),
 		orchestrator:  orchestrator,
 		processes:     processes,
@@ -143,6 +146,9 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 
 	if process == nil {
 		slog.Error("Processing batch email: Process is nil", "processID", parsed.JobName)
+		return nil
+	}
+	if execution.Stopped(ctx, w.processes, process.ID) {
 		return nil
 	}
 
@@ -234,4 +240,17 @@ func (w *ExecutionEngine) LaunchWorkflow(ctx context.Context, workflowID, proces
 		InstanceID: workflowID,
 	}, wf, processID)
 	return err
+}
+
+func (w *ExecutionEngine) Stop(ctx context.Context, processID string) error {
+	if done, err := w.processes.HasStatus(ctx, processID, model.ProcessStatusTypeCompleted); done || err != nil {
+		return err
+	}
+	if !execution.Stopped(ctx, w.processes, processID) {
+		if err := w.processStatus.Create(ctx, &model.ProcessStatus{ProcessID: &processID,
+			Status: internalptr.To(model.ProcessStatusTypeStopped), Timestamp: internalptr.To(time.Now().UnixMilli())}); err != nil {
+			return err
+		}
+	}
+	return w.batch.CancelIfStopped(ctx, processID)
 }

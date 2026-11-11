@@ -45,6 +45,7 @@ func NewLaunchController(svc *service.LaunchService) *LaunchController {
 func (h *LaunchController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/processes/{processId}/launch", h.launch)
 	mux.HandleFunc("POST /api/v1/processes/{processId}/retry", h.retry)
+	mux.HandleFunc("POST /api/v1/processes/{processId}/stop", h.stop)
 }
 
 // launch answers 202 rather than 200: the tasks are recorded here, and carrying them
@@ -68,4 +69,12 @@ func (h *LaunchController) retry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	httpx.WriteJSON(w, http.StatusAccepted, proc)
+}
+
+func (h *LaunchController) stop(w http.ResponseWriter, r *http.Request) {
+	if err := h.svc.Stop(r.Context(), r.PathValue("processId")); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusNoContent, nil)
 }

@@ -71,6 +71,8 @@ func New(processes *processrepo.ProcessRepository,
 // CopyData stages one file between the task's two storages, recording the task's status
 // as it goes.
 func (a *Tasks) CopyData(ctx context.Context, executionContext *execution.Context, processId string, dataStagingTaskId string) (*execution.Context, error) {
+	ctx, cancel := a.tracker.UntilStopped(ctx, processId)
+	defer cancel()
 	return a.tracker.Track(ctx, processId, dataStagingTaskId, model.TaskTypeDataStaging, executionContext, func() (*execution.Context, error) {
 		return a.copyData(ctx, executionContext, processId, dataStagingTaskId)
 	})

@@ -217,14 +217,14 @@ const (
 	TaskStatusTypePaused    TaskStatusType = "PAUSED"
 	TaskStatusTypeCompleted TaskStatusType = "COMPLETED"
 	TaskStatusTypeFailed    TaskStatusType = "FAILED"
-	TaskStatusTypeCanceled  TaskStatusType = "CANCELED"
+	TaskStatusTypeStopped   TaskStatusType = "STOPPED"
 )
 
 // Valid reports whether s is a recognised task status.
 func (s TaskStatusType) Valid() bool {
 	switch s {
 	case TaskStatusTypeCreated, TaskStatusTypeExecuting, TaskStatusTypePaused,
-		TaskStatusTypeCompleted, TaskStatusTypeFailed, TaskStatusTypeCanceled:
+		TaskStatusTypeCompleted, TaskStatusTypeFailed, TaskStatusTypeStopped:
 		return true
 	}
 	return false

@@ -66,6 +66,15 @@ func LoadGlobalJobConfigs() (*GlobalJobConfigs, error) {
 	}, nil
 }
 
+// Stopped reports whether the process has been stopped.
+func Stopped(ctx context.Context, processes *processrepo.ProcessRepository, processID string) bool {
+	if processes == nil {
+		return false
+	}
+	stopped, err := processes.HasStatus(context.WithoutCancel(ctx), processID, model.ProcessStatusTypeStopped)
+	return err == nil && stopped
+}
+
 // FindBatchProcess returns a process that carries a batch section, which is the only
 // kind a batch task can act on.
 func FindBatchProcess(ctx context.Context, processes *processrepo.ProcessRepository, processID string) (*model.Process, error) {

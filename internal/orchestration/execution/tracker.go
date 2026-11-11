@@ -22,8 +22,11 @@ package execution
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
+
+	"github.com/cschleiden/go-workflows/workflow"
 
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
@@ -32,12 +35,37 @@ import (
 
 // TaskTracker records the status history of the tasks an activity carries out.
 type TaskTracker struct {
-	statuses *processrepo.TaskStatusRepository
+	statuses  *processrepo.TaskStatusRepository
+	processes *processrepo.ProcessRepository
 }
 
 // NewTaskTracker returns a tracker writing to statuses.
-func NewTaskTracker(statuses *processrepo.TaskStatusRepository) *TaskTracker {
-	return &TaskTracker{statuses: statuses}
+func NewTaskTracker(statuses *processrepo.TaskStatusRepository, processes *processrepo.ProcessRepository) *TaskTracker {
+	return &TaskTracker{statuses: statuses, processes: processes}
+}
+
+var ErrStopped = errors.New("the process is stopped")
+
+// UntilStopped returns ctx cancelled once the process is stopped, so that work a task
+// has in flight ends with it.
+func (t *TaskTracker) UntilStopped(ctx context.Context, processID string) (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithCancel(ctx)
+	go func() {
+		tick := time.NewTicker(time.Second)
+		defer tick.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-tick.C:
+				if Stopped(ctx, t.processes, processID) {
+					cancel()
+					return
+				}
+			}
+		}
+	}()
+	return ctx, cancel
 }
 
 // Track runs one attempt of a task between an EXECUTING status and the status its
@@ -64,9 +92,18 @@ func (t *TaskTracker) Track(ctx context.Context, processID, taskID string, taskT
 		return in, nil
 	}
 
+	// Permanent, so the workflow does not retry a task its process no longer wants.
+	if Stopped(ctx, t.processes, processID) {
+		return in, workflow.NewPermanentError(ErrStopped)
+	}
+
 	t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeExecuting, nil)
 
 	out, err := run()
+	if err != nil && Stopped(ctx, t.processes, processID) {
+		t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeStopped, nil)
+		return out, workflow.NewPermanentError(ErrStopped)
+	}
 	if err != nil {
 		t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeFailed, internalptr.To(err.Error()))
 		return out, err

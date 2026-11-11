@@ -27,6 +27,7 @@ import (
 	workflow "github.com/cschleiden/go-workflows/workflow"
 
 	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/internal/orchestration/execution"
 )
 
 // recordingOutcome runs a workflow body between two records of it in the process's
@@ -77,6 +78,10 @@ func (w *Workflows) recordStatus(ctx workflow.Context, processID string,
 func (w *Workflows) RecordWorkflowStatus(ctx context.Context, processID, workflowID string,
 	workflowType model.ProcessWorkflowType, status model.ProcessWorkflowStatusType) error {
 
+	// A workflow of a stopped process fails at the first task it is refused.
+	if status == model.ProcessWorkflowStatusTypeFailed && execution.Stopped(ctx, w.processes, processID) {
+		status = model.ProcessWorkflowStatusTypeStopped
+	}
 	_, err := w.processWorkflows.Record(ctx, processID, workflowID, workflowType, status)
 	return err
 }

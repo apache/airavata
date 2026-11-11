@@ -50,6 +50,9 @@ func (s *LaunchService) RetryProcess(ctx context.Context, processID string) (*dt
 	if err := s.requireOwnership(ctx, proc); err != nil {
 		return nil, err
 	}
+	if err := s.requireNotStopped(ctx, processID); err != nil {
+		return nil, err
+	}
 
 	recorded, err := s.processWorkflows.FindByProcessID(ctx, processID)
 	if err != nil {
@@ -120,4 +123,13 @@ func workflowToRetry(processID string, recorded []procmodel.ProcessWorkflow) (pr
 		return procmodel.ProcessWorkflowTypeJobCompletion, nil
 	}
 	return "", httpx.Conflict("Process %s has no failed workflow to retry", processID)
+}
+
+// requireNotStopped keeps a stop final: a later status would hide it, and the job would run.
+func (s *LaunchService) requireNotStopped(ctx context.Context, processID string) error {
+	stopped, err := s.processService.processes.HasStatus(ctx, processID, procmodel.ProcessStatusTypeStopped)
+	if stopped {
+		return httpx.Conflict("Process %s is stopped", processID)
+	}
+	return err
 }

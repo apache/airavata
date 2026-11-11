@@ -99,8 +99,8 @@ const (
 	// Airavata specific status codes
 	BatchJobStatusSubmitted        BatchJobStatusType = "SUBMITTED"
 	BatchJobStatusSubmissionFailed BatchJobStatusType = "SUBMISSION_FAILED"
-	BatchJobStatusCancelling       BatchJobStatusType = "CANCELLING"
-	BatchJobStatusCancelled        BatchJobStatusType = "CANCELLED"
+	BatchJobStatusStopping         BatchJobStatusType = "STOPPING"
+	BatchJobStatusStopped          BatchJobStatusType = "STOPPED"
 
 	// SLURM specific status codes
 	BatchJobStatusBegin         BatchJobStatusType = "BEGIN"

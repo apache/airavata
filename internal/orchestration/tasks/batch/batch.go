@@ -29,6 +29,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -102,6 +103,8 @@ type SubmitBatchJobParameters struct {
 // SubmitBatchJob builds the process's submission script, uploads it and submits it,
 // recording the task's status as it goes.
 func (a *Tasks) SubmitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
+	ctx, cancel := a.tracker.UntilStopped(ctx, processID)
+	defer cancel()
 	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, executionContext, func() (*execution.Context, error) {
 		return a.submitBatchJob(ctx, executionContext, processID, taskID)
 	})
@@ -204,6 +207,10 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 
 	slog.Info("Submitting slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath)
 
+	// From here a stop no longer interrupts: a job submitted but not recorded could
+	// never be cancelled.
+	ctx = context.WithoutCancel(ctx)
+
 	sbatchPath := "sbatch"
 	if clusterConfig.SlurmCluster.SlurmHome != nil && strings.TrimSpace(*clusterConfig.SlurmCluster.SlurmHome) != "" {
 		sbatchPath = path.Join(*clusterConfig.SlurmCluster.SlurmHome, "sbatch")
@@ -255,6 +262,11 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 	if err := a.processes.SaveBatchProcess(ctx, process.BatchProcess); err != nil {
 		slog.Error("Failed to record job id on batch process", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
 		return nil, err
+	}
+	// Only after the job id is saved: a Stop that read none has recorded STOPPED by now.
+	// Not an error: a retried task would submit the job again.
+	if err := a.CancelIfStopped(ctx, processID); err != nil {
+		slog.Error("Failed to cancel the job of a stopped process", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
 	}
 
 	slog.Info("Completed submitting batch job", "taskId", taskID, "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID, "jobId", jobID)
@@ -346,18 +358,38 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs, issued, envFilePath)
 }
 
-func (a *Tasks) CancelBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
-	slog.Info("Starting to cancel batch job", "taskId", taskID, "processId", processID)
-	process, err := execution.FindBatchProcess(ctx, a.processes, processID)
+var jobGone = regexp.MustCompile(`(?i)invalid job id specified|already completing or completed`)
+
+func (a *Tasks) CancelIfStopped(ctx context.Context, processID string) error {
+	process, err := a.processes.FindByID(ctx, processID)
 	if err != nil {
-		slog.Error("Failed to retrieve process for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
+		return err
 	}
-	jst, err := a.jobSubmissionTasks.FindByIDAndProcessID(ctx, taskID, processID)
+	if !execution.Stopped(ctx, a.processes, processID) || process.BatchProcess == nil || process.BatchProcess.JobID == nil ||
+		slices.ContainsFunc(process.BatchProcess.BatchJobStatuses, func(s *model.BatchJobStatus) bool {
+			return s.Status == model.BatchJobStatusStopped || s.Status == model.BatchJobStatusEnded || s.Status == model.BatchJobStatusFailed
+		}) {
+		return nil
+	}
+	record := func(status model.BatchJobStatusType) error {
+		return a.batchStatus.Create(ctx, &model.BatchJobStatus{BatchProcessID: process.BatchProcess.ID, Status: status, UpdatedAt: time.Now()})
+	}
+	if err := record(model.BatchJobStatusStopping); err != nil {
+		return err
+	}
+	clusterConfig, err := a.slurmClusterConfigs.FindByID(ctx, process.BatchProcess.SlurmClusterConfigID)
 	if err != nil {
-		slog.Error("Failed to retrieve job submission task for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
+		return err
 	}
-	slog.Info("Completed cancelling batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JST Id", jst.ID)
-	return executionContext, nil
+	cluster := clusterConfig.SlurmCluster
+	scancel := "scancel"
+	if cluster.SlurmHome != nil && strings.TrimSpace(*cluster.SlurmHome) != "" {
+		scancel = path.Join(*cluster.SlurmHome, "scancel")
+	}
+	dialConfig := ssh.NewSSHDialConfig(cluster.HeadnodeHost, cluster.HeadnodePort, clusterConfig.LoginUser, *clusterConfig.SSHCredential, *process.OwnerID)
+	if _, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, ssh.ShellQuote(scancel)+" "+ssh.ShellQuote(*process.BatchProcess.JobID),
+		fmt.Sprintf("ssh scancel %s@%s", clusterConfig.LoginUser, cluster.HeadnodeHost)); err != nil && !jobGone.MatchString(stderr) {
+		return err
+	}
+	return record(model.BatchJobStatusStopped)
 }

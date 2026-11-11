@@ -55,7 +55,7 @@ func runRecorded(t *testing.T, bodyErr error) (error, model.ProcessWorkflow) {
 		t.Fatalf("create process: %v", err)
 	}
 
-	w := New(nil, nil, nil, nil, nil, nil, nil, processrepo.NewWorkflowRepository(gdb))
+	w := New(nil, nil, nil, nil, nil, nil, nil, processrepo.NewWorkflowRepository(gdb), nil)
 	wf := func(ctx workflow.Context, processID string) error {
 		return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission,
 			func() error { return bodyErr })

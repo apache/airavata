@@ -212,7 +212,7 @@ func status(ctx context.Context, d *tk.Deps, processID string) (statusOut, error
 		if bp.LatestBatchJobStatus != nil {
 			out.LatestJobState = string(bp.LatestBatchJobStatus.Status)
 		}
-		if out.Status != "COMPLETED" && out.Status != "FAILED" {
+		if out.Status != "COMPLETED" && out.Status != "FAILED" && out.Status != string(client.ProcessStatusTypeSTOPPED) {
 			out.WaitingOnSSH = waitingOnSSH(ctx, d, bp.SlurmClusterConfigId.String())
 			if out.WaitingOnSSH {
 				out.WaitingHowTo = "Tell the user to run `airavata-mcp ssh-auth` in a terminal. Never ask for the code or password in the conversation."
@@ -273,7 +273,7 @@ func diagnose(ctx context.Context, d *tk.Deps, processID string) (*mcp.CallToolR
 	}
 	jobs := st.jobs
 	if begin := has(jobs, client.BatchJobStatusTypeBEGIN); begin != nil {
-		for _, endState := range []client.BatchJobStatusType{client.BatchJobStatusTypeEND, client.BatchJobStatusTypeTIMELIMIT, client.BatchJobStatusTypeFAIL, client.BatchJobStatusTypeCANCELLED} {
+		for _, endState := range []client.BatchJobStatusType{client.BatchJobStatusTypeEND, client.BatchJobStatusTypeTIMELIMIT, client.BatchJobStatusTypeFAIL, client.BatchJobStatusTypeSTOPPED} {
 			if end := has(jobs, endState); end != nil && end.UpdatedAt >= begin.UpdatedAt {
 				m := int64(math.Round(float64(end.UpdatedAt-begin.UpdatedAt) / 60000))
 				out.RunMinutes = &m
@@ -296,9 +296,9 @@ func diagnose(ctx context.Context, d *tk.Deps, processID string) (*mcp.CallToolR
 	case has(jobs, client.BatchJobStatusTypeINVALIDDEPEND) != nil:
 		out.Cause = "INVALID_DEPEND"
 		out.Explanation = "Slurm reported that a job dependency can never be satisfied, so the job will not run."
-	case has(jobs, client.BatchJobStatusTypeCANCELLED) != nil || has(jobs, client.BatchJobStatusTypeCANCELLING) != nil:
-		out.Cause = "CANCELLED"
-		out.Explanation = "The job was cancelled, by Airavata, the user, or a cluster administrator."
+	case st.Status == string(client.ProcessStatusTypeSTOPPED):
+		out.Cause = string(client.ProcessStatusTypeSTOPPED)
+		out.Explanation = "The job was stopped through Airavata."
 	case has(jobs, client.BatchJobStatusTypeFAIL) != nil:
 		out.Cause = "FAIL"
 		out.Explanation = "Slurm reported the job failed. The cause (exit code, out of memory, a missing module or file) is in the job's logs and accounting data, which the API does not expose yet."

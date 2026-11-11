@@ -56,6 +56,7 @@ type Workflows struct {
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository
 	processStatus      *processrepo.StatusRepository
 	processWorkflows   *processrepo.WorkflowRepository
+	processes          *processrepo.ProcessRepository
 }
 
 // New returns the workflows over the given tasks and the repositories they are
@@ -66,6 +67,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository,
 	processStatus *processrepo.StatusRepository,
 	processWorkflows *processrepo.WorkflowRepository,
+	processes *processrepo.ProcessRepository,
 ) *Workflows {
 	return &Workflows{
 		data:               data,
@@ -76,6 +78,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 		jobMonitoringTasks: jobMonitoringTasks,
 		processStatus:      processStatus,
 		processWorkflows:   processWorkflows,
+		processes:          processes,
 	}
 }
 

@@ -2190,6 +2190,21 @@ paths:
         "409": { $ref: "#/components/responses/Conflict" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/processes/{processId}/stop:
+    parameters:
+      - $ref: "#/components/parameters/ProcessId"
+    post:
+      tags: [Processes]
+      summary: Stop the process
+      description: Owner only. Records `STOPPED`, ends the tasks of its workflows and cancels its job.
+      operationId: stopProcess
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/processes/{processId}/statuses:
     parameters:
       - $ref: "#/components/parameters/ProcessId"
@@ -3311,26 +3326,26 @@ components:
       enum: [BATCH_JOB, CLOUD_JOB]
     ProcessStatusType:
       type: string
-      enum: [CREATED, SUBMITTED, RUNNING, COMPLETED, FAILED]
+      enum: [CREATED, SUBMITTED, RUNNING, COMPLETED, FAILED, STOPPED]
     ProcessWorkflowType:
       type: string
       enum: [BATCH_JOB_SUBMISSION, JOB_MONITORING, BATCH_JOB_COMPLETION]
     ProcessWorkflowStatusType:
       type: string
-      enum: [RUNNING, SUCCEEDED, FAILED]
+      enum: [RUNNING, SUCCEEDED, FAILED, STOPPED]
     OnFailureAction:
       type: string
       enum: [RETRY, SKIP, EXIT]
     BatchJobStatusType:
       type: string
       description: |
-        Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `CANCELLING`,
-        `CANCELLED`) plus the Slurm mail states parsed from job notifications.
+        Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `STOPPING`,
+        `STOPPED`) plus the Slurm mail states parsed from job notifications.
       enum:
         - SUBMITTED
         - SUBMISSION_FAILED
-        - CANCELLING
-        - CANCELLED
+        - STOPPING
+        - STOPPED
         - BEGIN
         - REQUEUE
         - INVALID_DEPEND
@@ -4239,7 +4254,7 @@ components:
             - { type: "null" }
         status:
           description: |
-            `RUNNING` once the workflow is started, then `SUCCEEDED` or `FAILED`. `null`
+            `RUNNING` once the workflow is started, then `SUCCEEDED`, `FAILED`, or `STOPPED` by a stop. `null`
             for workflows recorded before the server tracked it.
           oneOf:
             - { $ref: "#/components/schemas/ProcessWorkflowStatusType" }

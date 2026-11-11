@@ -33,6 +33,9 @@ import (
 // CompleteProcess is the last activity of the completion workflow: it marks the process
 // complete once its outputs are staged.
 func (a *Workflows) CompleteProcess(ctx context.Context, executionContext *execution.Context, processID string) (*execution.Context, error) {
+	if execution.Stopped(ctx, a.processes, processID) {
+		return executionContext, nil
+	}
 	slog.Info("Completing process", "processID", processID)
 
 	runningStatus := model.ProcessStatusTypeCompleted
