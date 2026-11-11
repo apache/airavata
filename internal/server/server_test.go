@@ -36,6 +36,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"github.com/apache/airavata/internal/app"
+	"github.com/apache/airavata/internal/audit"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
@@ -89,6 +90,9 @@ func newHarness(t *testing.T) *harness {
 	}
 	if err := db.AutoMigrate(gdb); err != nil {
 		t.Fatalf("automigrate: %v", err)
+	}
+	if err := audit.Register(gdb); err != nil {
+		t.Fatalf("register audit: %v", err)
 	}
 
 	// Every principal must have a users row: ownership resolution looks the caller up

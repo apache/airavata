@@ -77,6 +77,9 @@ tags:
     description: User accounts.
   - name: Groups
     description: Groups and their membership; the subject of a group share.
+  - name: Audit
+    description: >-
+      The record of who changed what. Admin only. See docs/audit.md.
   - name: Service Accounts
     description: >-
       Non-human users that authenticate with an Airavata-issued, expiring token.
@@ -440,6 +443,75 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------------------ Audit log
+
+  /api/v1/audit-events:
+    get:
+      tags: [Audit]
+      summary: List audit events
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Returns the changes users and the
+        system have made to records, newest first. Every filter is optional and they
+        combine with AND. See docs/audit.md.
+
+        Page through the log by passing the previous response's `nextCursor` as `before`.
+      operationId: listAuditEvents
+      parameters:
+        - name: userId
+          in: query
+          description: Only events by this actor — a user id, `root`, `sa:<name>` or `system`.
+          schema: { type: string }
+        - name: entityType
+          in: query
+          description: Only events on this kind of record, such as `processes`. See `/api/v1/audit-events/entity-types`.
+          schema: { type: string }
+        - name: from
+          in: query
+          description: Only events at or after this time, in milliseconds since the epoch.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: to
+          in: query
+          description: Only events before this time (exclusive), in milliseconds since the epoch. Must be after `from`.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: before
+          in: query
+          description: Only events with an id below this one; the previous page's `nextCursor`.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: limit
+          in: query
+          description: Page size.
+          schema: { type: integer, minimum: 1, maximum: 500, default: 100 }
+      responses:
+        "200":
+          description: One page of events.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuditEventPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/audit-events/entity-types:
+    get:
+      tags: [Audit]
+      summary: List audited entity types
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority. The values `entityType` accepts, for the kinds of record the log holds events for.
+      operationId: listAuditEntityTypes
+      responses:
+        "200":
+          description: Entity types, alphabetically.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
@@ -3366,6 +3438,34 @@ components:
           minimum: 1
           maximum: 365
           description: How long the token lives from now. Defaults to 90.
+
+    AuditEvent:
+      type: object
+      description: >-
+        One change to one record. It names the record and what was done, never the values.
+      properties:
+        id: { type: integer, format: int64 }
+        occurredAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
+        actor:
+          type: string
+          description: The user id, `root` or `sa:<name>` that made the change, or `system` when no caller was behind it.
+        action: { type: string, enum: [CREATE, UPDATE, DELETE, UPSERT] }
+        entityType: { type: string, description: "The kind of record, such as `processes`." }
+        entityId: { type: string, description: The record's id. A composite key is joined with `:`. Empty when the change addressed rows by a condition rather than by key. }
+        changedFields: { type: string, description: "Comma-separated columns an update set, when the write named them; otherwise empty." }
+      required: [id, occurredAt, actor, action, entityType, entityId, changedFields]
+
+    AuditEventPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AuditEvent" }
+        nextCursor:
+          type: [integer, "null"]
+          format: int64
+          description: Pass as `before` to fetch the next page; null on the last page.
+      required: [items, nextCursor]
 
     ServiceAccountResponse:
       type: object

@@ -36,6 +36,8 @@ import (
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
 	applicationsvc "github.com/apache/airavata/api/application/service"
+	auditrepo "github.com/apache/airavata/api/audit/repository"
+	auditsvc "github.com/apache/airavata/api/audit/service"
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	computesvc "github.com/apache/airavata/api/compute/service"
 	credentialsrepo "github.com/apache/airavata/api/credentials/repository"
@@ -63,6 +65,9 @@ type Services struct {
 	// separately alongside this struct.
 	Config config.Config
 	DB     *gorm.DB
+
+	// Audit log.
+	Audit *auditsvc.EventService
 
 	// IAM.
 	User        *iamsvc.UserService
@@ -116,6 +121,7 @@ type Services struct {
 }
 
 type Repositories struct {
+	AuditEvents             *auditrepo.EventRepository
 	Users                   *iamrepo.UserRepository
 	Groups                  *iamrepo.GroupRepository
 	GroupMembers            *iamrepo.GroupMemberRepository
@@ -149,6 +155,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Groups:                  iamrepo.NewGroupRepository(db),
 		GroupMembers:            iamrepo.NewGroupMemberRepository(db),
 		ServiceAccounts:         iamrepo.NewServiceAccountRepository(db),
+		AuditEvents:             auditrepo.NewEventRepository(db),
 		SSHCredentials:          credentialsrepo.NewSSHCredentialRepository(db),
 		SlurmClusters:           computerepo.NewSlurmClusterRepository(db),
 		ClusterPartitions:       computerepo.NewClusterPartitionRepository(db),
@@ -235,6 +242,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	return &Services{
 		Config: cfg,
 		DB:     db,
+
+		Audit: auditsvc.NewEventService(repos.AuditEvents),
 
 		User:        iamsvc.NewUserService(db, users),
 		Group:       iamsvc.NewGroupService(db, groups, groupMembers, users, shares),

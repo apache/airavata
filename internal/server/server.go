@@ -31,6 +31,7 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	applicationctl "github.com/apache/airavata/api/application/controller"
+	auditctl "github.com/apache/airavata/api/audit/controller"
 	computectl "github.com/apache/airavata/api/compute/controller"
 	credentialsctl "github.com/apache/airavata/api/credentials/controller"
 	datactl "github.com/apache/airavata/api/data/controller"
@@ -46,6 +47,7 @@ import (
 // over the same database.
 func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) http.Handler {
 	mux := http.NewServeMux()
+	auditctl.NewEventController(svcs.Audit).Register(mux)
 	iamctl.NewUserController(svcs.User).Register(mux)
 	iamctl.NewGroupController(svcs.Group).Register(mux)
 	iamctl.NewGroupMemberController(svcs.GroupMember).Register(mux)
