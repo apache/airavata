@@ -1180,6 +1180,30 @@ func (h *harness) seedProcess(name, token string) string {
 	return proc["processId"].(string)
 }
 
+func TestARunWithoutAPartitionIsGivenItsDeployments(t *testing.T) {
+	h := newHarness(t)
+	configID, clusterID := h.seedClusterConfig(tokenAlice, "partition")
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "partition"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run", "slurmClusterId": clusterID,
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT", "partition": "gpu"},
+	}, http.StatusCreated)
+
+	for asked, want := range map[any]string{nil: "gpu", " ": "gpu", "cpu": "cpu"} {
+		proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, map[string]any{
+			"processType": "BATCH_JOB",
+			"batchProcess": map[string]any{
+				"deploymentId": deployment["deploymentId"], "slurmClusterConfigId": configID,
+				"batchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "ALLOC", "partition": asked},
+			},
+		}, http.StatusCreated)
+		if got := proc["batchProcess"].(map[string]any)["batchJobConfig"].(map[string]any)["partition"]; got != want {
+			t.Errorf("a run asking for partition %q was given %v, want %q", asked, got, want)
+		}
+	}
+}
+
 // Every task kind is the same five routes over a different payload, so one table
 // exercises the shape and each kind brings its own body.
 func TestProcessTasksAreScopedToTheirProcess(t *testing.T) {

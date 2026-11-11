@@ -213,6 +213,7 @@ type BatchJobConfigRequest struct {
 	CPUsPerGPU      *string `json:"cpusPerGpu"`
 	GPUsPerNode     *int32  `json:"gpusPerNode"`
 	Constraints     *string `json:"constraints"`
+	Partition       *string `json:"partition"`
 	QOS             *string `json:"qos"`
 }
 
@@ -244,6 +245,7 @@ type BatchJobConfigResponse struct {
 	CPUsPerGPU       *string `json:"cpusPerGpu"`
 	GPUsPerNode      *int32  `json:"gpusPerNode"`
 	Constraints      *string `json:"constraints"`
+	Partition        *string `json:"partition"`
 	QOS              *string `json:"qos"`
 }
 
@@ -267,6 +269,7 @@ func ApplyBatchJobConfigRequest(dst *model.BatchJobConfig, src *BatchJobConfigRe
 	dst.CPUsPerGPU = src.CPUsPerGPU
 	dst.GPUsPerNode = src.GPUsPerNode
 	dst.Constraints = src.Constraints
+	dst.Partition = src.Partition
 	dst.QOS = src.QOS
 }
 
@@ -292,6 +295,7 @@ func ToBatchJobConfigResponse(c *model.BatchJobConfig) *BatchJobConfigResponse {
 		CPUsPerGPU:       c.CPUsPerGPU,
 		GPUsPerNode:      c.GPUsPerNode,
 		Constraints:      c.Constraints,
+		Partition:        c.Partition,
 		QOS:              c.QOS,
 	}
 }
@@ -304,11 +308,10 @@ type BatchDeploymentRequest struct {
 	SlurmClusterID  *string `json:"slurmClusterId"`
 	SlurmRunSection string  `json:"slurmRunSection"`
 
-	// The resource request and partition a run of this deployment starts from. A run
-	// carries its own copy and may depart from both, so these are defaults rather than
+	// The resource request a run of this deployment starts from. A run
+	// carries its own copy and may depart from it, so it is a default rather than
 	// what any particular job is submitted with.
 	DefaultBatchJobConfig *BatchJobConfigRequest `json:"defaultBatchJobConfig"`
-	DefaultPartition      *string                `json:"defaultPartition"`
 }
 
 // Validate implements httpx.Validator.
@@ -333,7 +336,6 @@ type BatchDeploymentResponse struct {
 	SlurmClusterID        *string                 `json:"slurmClusterId"`
 	SlurmRunSection       string                  `json:"slurmRunSection"`
 	DefaultBatchJobConfig *BatchJobConfigResponse `json:"defaultBatchJobConfig"`
-	DefaultPartition      *string                 `json:"defaultPartition"`
 }
 
 func ToBatchDeploymentResponse(d *model.BatchDeployment) BatchDeploymentResponse {
@@ -343,7 +345,6 @@ func ToBatchDeploymentResponse(d *model.BatchDeployment) BatchDeploymentResponse
 		SlurmClusterID:        d.ClusterID,
 		SlurmRunSection:       d.SlurmRunSection,
 		DefaultBatchJobConfig: ToBatchJobConfigResponse(d.DefaultBatchJobConfig),
-		DefaultPartition:      d.DefaultPartition,
 	}
 }
 

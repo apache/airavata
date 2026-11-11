@@ -117,8 +117,7 @@ A deployment makes a template runnable on one compute resource. For the Slurm ba
 | `templateId` | The template being deployed. |
 | `slurmClusterId` | The cluster it runs on. This names only the machine. The account and SSH key a run submits under come from a [cluster config](api.md#slurm-cluster-configs) that the run chooses. |
 | `slurmRunSection` | The commands that run the application: module loads, the program invocation and any cleanup. It is a Jinja template ([pongo2](https://github.com/flosch/pongo2)). |
-| `defaultBatchJobConfig` | The resource request a run starts from: wall time, allocation, nodes, CPUs, memory, GPUs, constraints and QOS. A run copies it and may change any of it. |
-| `defaultPartition` | The Slurm partition to submit to. |
+| `defaultBatchJobConfig` | The resource request a run starts from: wall time, allocation, partition, nodes, CPUs, memory, GPUs, constraints and QOS. A run copies it and may change any of it. |
 
 ### The run section
 

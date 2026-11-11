@@ -3906,6 +3906,7 @@ components:
         cpusPerGpu: { type: [string, "null"] }
         gpusPerNode: { type: [integer, "null"], format: int32 }
         constraints: { type: [string, "null"] }
+        partition: { type: [string, "null"] }
         qos: { type: [string, "null"], description: "Slurm quality of service (`--qos`)." }
       required: [wallTimeMinutes, allocation]
 
@@ -3928,6 +3929,7 @@ components:
         cpusPerGpu: { type: [string, "null"] }
         gpusPerNode: { type: [integer, "null"], format: int32 }
         constraints: { type: [string, "null"] }
+        partition: { type: [string, "null"] }
         qos: { type: [string, "null"], description: "Slurm quality of service (`--qos`)." }
       required: [batchJobConfigId, wallTimeMinutes, allocation]
 
@@ -3944,7 +3946,6 @@ components:
           description: |
             The resource request a run of this deployment starts from. A run carries
             its own copy and may depart from it.
-        defaultPartition: { type: [string, "null"] }
       required: [templateId, slurmRunSection, defaultBatchJobConfig]
 
     BatchDeploymentResponse:
@@ -3958,7 +3959,6 @@ components:
           oneOf:
             - { $ref: "#/components/schemas/BatchJobConfigResponse" }
             - { type: "null" }
-        defaultPartition: { type: [string, "null"] }
       required: [deploymentId, slurmRunSection]
 
     # ----------------------------------------------------------- Data
@@ -4095,7 +4095,8 @@ components:
       description: |
         The `batchProcess` section of a process request. The resource request is
         carried here rather than copied from the deployment's default, which is what
-        lets a caller ask for different resources for a particular run.
+        lets a caller ask for different resources for a particular run. Only
+        `partition` is taken from the deployment's default, when the run names none.
       properties:
         deploymentId: { type: string, format: uuid }
         jobId:

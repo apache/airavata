@@ -50,15 +50,13 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 	}
 
 	deployment := &appmodel.BatchDeployment{
-		ID:               "dep-1",
-		TemplateID:       ptr("tpl-1"),
-		DefaultPartition: ptr("gpu"),
+		ID:         "dep-1",
+		TemplateID: ptr("tpl-1"),
 		SlurmRunSection: "module load alphafold\n" +
 			"run_fold --in {{ inputs.protein[0] }} --iterations {{ inputs.iterations[0] }} " +
 			"--files {{ inputs.files[0] }} {{ inputs.files[1] }} {{ inputs.files[2] }} " +
 			"--absolute {{ inputs.absolute[0] }} " +
 			"--out {{ outputs[\"structure.pdb\"] }}",
-		DefaultBatchJobConfig: &appmodel.BatchJobConfig{ID: "cfg-default", WallTimeMinutes: 10, Allocation: "unused"},
 	}
 
 	process := &model.Process{
@@ -76,6 +74,7 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 				GPUs:            ptr(int32(4)),
 				WallTimeMinutes: 1500,
 				Allocation:      "alloc-123",
+				Partition:       ptr("gpu"),
 			},
 			InputMappings: []*model.TemplateInputMapping{
 				{TemplateInputID: ptr("in-file"), Value: ptr("data-product-9")},
@@ -138,29 +137,6 @@ func TestBuildSlurmScript(t *testing.T) {
 		if strings.Contains(script, unwanted) {
 			t.Errorf("script should not contain %q\n---\n%s", unwanted, script)
 		}
-	}
-}
-
-// The run's own resource request is what a job is submitted with; the deployment's
-// default stands in only when the run carries none.
-func TestBuildSlurmScriptFallsBackToDeploymentConfig(t *testing.T) {
-	process, deployment, template, clusterConfig := scriptFixture()
-	process.BatchProcess.BatchJobConfig = nil
-	deployment.DefaultBatchJobConfig.Allocation = "alloc-default"
-
-	cfg := execution.GlobalJobConfigs{
-		MailUser: "airavata@example.com",
-	}
-
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg, nil, "")
-	if err != nil {
-		t.Fatalf("buildSlurmScript: %v", err)
-	}
-	if !strings.Contains(script, "#SBATCH --account=alloc-default") {
-		t.Errorf("expected the deployment's default allocation\n---\n%s", script)
-	}
-	if !strings.Contains(script, "#SBATCH --time=00:10:00") {
-		t.Errorf("expected the deployment's default wall time\n---\n%s", script)
 	}
 }
 

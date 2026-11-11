@@ -120,11 +120,7 @@ func buildSlurmScript(
 
 	jobConfig := batchProcess.BatchJobConfig
 	if jobConfig == nil {
-		jobConfig = deployment.DefaultBatchJobConfig
-	}
-	if jobConfig == nil {
-		return "", fmt.Errorf("process %s names no batch job config and deployment %s declares no default",
-			process.ID, deployment.ID)
+		return "", fmt.Errorf("process %s names no batch job config", process.ID)
 	}
 
 	workDir, err := workDirFor(batchProcess, clusterConfig, process.ID)
@@ -152,7 +148,7 @@ func buildSlurmScript(
 		"stderr_file":     path.Join(workDir, "stderr.txt"),
 		"wall_time":       slurmWallTime(jobConfig.WallTimeMinutes),
 		"account":         strings.TrimSpace(jobConfig.Allocation),
-		"partition":       optional(deployment.DefaultPartition),
+		"partition":       optional(jobConfig.Partition),
 		"mail_user":       globalJobConfigs.MailUser,
 
 		"nodes":           optional(jobConfig.Nodes),

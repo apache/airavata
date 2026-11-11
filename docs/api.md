@@ -1244,9 +1244,9 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
       "nodes": 1,
       "ntasks": 1,
       "gres": "gpu:1",
-      "gpus": 1
-    },
-    "defaultPartition": "gpu"
+      "gpus": 1,
+      "partition": "gpu"
+    }
   }' | jq -r '.deploymentId')
 ```
 
@@ -1273,8 +1273,8 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `defaultBatchJobConfig.cpusPerGpu` | string \| null | optional |
 | `defaultBatchJobConfig.gpusPerNode` | integer \| null | optional |
 | `defaultBatchJobConfig.constraints` | string \| null | optional |
+| `defaultBatchJobConfig.partition` | string \| null | optional; given to a run that names no partition |
 | `defaultBatchJobConfig.qos` | string \| null | optional |
-| `defaultPartition` | string \| null | optional |
 
 ```json
 {
@@ -1289,9 +1289,9 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "nodes": 1,
     "ntasks": 1,
     "gres": "gpu:1",
-    "gpus": 1
-  },
-  "defaultPartition": "gpu"
+    "gpus": 1,
+    "partition": "gpu"
+  }
 }
 ```
 
@@ -1321,9 +1321,9 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "memPerGpu": null,
     "cpusPerGpu": null,
     "gpusPerNode": null,
-    "constraints": null
-  },
-  "defaultPartition": "gpu"
+    "constraints": null,
+    "partition": "gpu"
+  }
 }
 ```
 
@@ -1862,7 +1862,8 @@ There is no `userId`: ownership comes from the token.
 
 The resource request is carried here rather than copied from the deployment's
 `defaultBatchJobConfig`, which is what lets a caller ask for different resources for a
-particular run. Each run owns its own `batchJobConfig` row, distinct from the
+particular run. Only `partition` is taken from the deployment's default, when the run
+names none. Each run owns its own `batchJobConfig` row, distinct from the
 deployment's, and deleting the process deletes it.
 
 `baseWorkDir` is carried here for the same reason, and used the same way: the run works

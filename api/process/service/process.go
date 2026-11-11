@@ -280,6 +280,9 @@ func (s *ProcessService) saveBatchProcess(
 	}
 
 	applicationdto.ApplyBatchJobConfigRequest(config, req.BatchJobConfig)
+	if config.Partition == nil || strings.TrimSpace(*config.Partition) == "" {
+		config.Partition = deployment.DefaultBatchJobConfig.Partition
+	}
 	if err := processes.SaveBatchJobConfig(ctx, config); err != nil {
 		return nil, err
 	}

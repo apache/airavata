@@ -69,7 +69,7 @@ func Register(s *mcp.Server, d *tk.Deps) {
 			return listAuthPrompts(ctx, d)
 		})
 	tk.Read(s, d, tk.Def{Name: "recommend_partition", Title: "Recommend a partition",
-		Description: "Rank partitions for a resource request by fit against their recorded limits, with requested core-hours and GPU-hours. Give template_id to rank the partitions of that application's deployments (a run cannot choose its own partition; it uses its deployment's), or cluster_id to rank every partition on a cluster for a new deployment."},
+		Description: "Rank partitions for a resource request by fit against their recorded limits, with requested core-hours and GPU-hours. Give template_id to rank the partitions of that application's deployments, or cluster_id to rank every partition on a cluster for a new deployment."},
 		func(ctx context.Context, _ *mcp.CallToolRequest, in recommendIn) (*mcp.CallToolResult, recommendOut, error) {
 			return recommend(ctx, d, in)
 		})
@@ -328,7 +328,7 @@ func recommend(ctx context.Context, d *tk.Deps, in recommendIn) (*mcp.CallToolRe
 				clusters[cid] = c
 			}
 			c := clusters[cid]
-			name := tk.Str(dep.DefaultPartition)
+			name := tk.Str(estimate.FromResponse(dep.DefaultBatchJobConfig).Partition)
 			cand := candidate{ClusterID: cid, ClusterName: c.ClusterName, Partition: name, DeploymentID: dep.DeploymentId.String()}
 			if p := tk.Partition(c, name); p != nil {
 				cand.Fit, cand.Limits = estimate.Check(in.Request, p), tk.SummarizePartition(*p)
@@ -337,7 +337,7 @@ func recommend(ctx context.Context, d *tk.Deps, in recommendIn) (*mcp.CallToolRe
 			}
 			cands = append(cands, cand)
 		}
-		out.Notes = append(out.Notes, "A run uses its deployment's partition; choosing a partition per run is not supported by airavata-server yet.")
+		out.Notes = append(out.Notes, "A run uses its deployment's default partition unless plan_run's resources.partition names another.")
 	}
 	sort.SliceStable(cands, func(i, j int) bool {
 		if cands[i].Fits != cands[j].Fits {

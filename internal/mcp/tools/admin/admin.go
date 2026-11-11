@@ -48,7 +48,7 @@ func Register(s *mcp.Server, d *tk.Deps) {
 		Description: "Create an application template and its deployments from a proposal_handle returned by draft_application or convert_sbatch_script (admins only). Asks the user to confirm. Each handle registers at most once."},
 		prepareApplication(d))
 	tk.Write(s, d, tk.Def{Name: "update_deployment", Title: "Update a deployment",
-		Description: "Change a deployment's run section, partition or default resources (admins only). Only the fields given change. Asks the user to confirm, showing old and new values."},
+		Description: "Change a deployment's run section or default resources (admins only). Only the fields given change. Asks the user to confirm, showing old and new values."},
 		prepareDeployment(d))
 }
 
@@ -299,7 +299,6 @@ func registerApplication(ctx context.Context, d *tk.Deps, principal, handle stri
 type updateDeploymentIn struct {
 	DeploymentID string            `json:"deployment_id"`
 	RunSection   *string           `json:"run_section,omitempty"`
-	Partition    *string           `json:"partition,omitempty"`
 	Resources    *estimate.Request `json:"default_resources,omitempty" jsonschema:"fields given here replace the deployment's defaults"`
 }
 
@@ -312,22 +311,19 @@ func prepareDeployment(d *tk.Deps) tk.Prepare[updateDeploymentIn, createdOut] {
 		if cur.TemplateId == nil || cur.SlurmClusterId == nil {
 			return nil, errors.New("the deployment names no template or cluster")
 		}
-		draft := applications.DeploymentDraft{ClusterID: cur.SlurmClusterId.String(), Partition: tk.Str(cur.DefaultPartition),
+		draft := applications.DeploymentDraft{ClusterID: cur.SlurmClusterId.String(),
 			RunSection: cur.SlurmRunSection, Job: estimate.FromResponse(cur.DefaultBatchJobConfig)}
 		var changes []string
 		if in.RunSection != nil && *in.RunSection != draft.RunSection {
 			changes = append(changes, "run section:\n--- old\n"+draft.RunSection+"\n+++ new\n"+*in.RunSection)
 			draft.RunSection = *in.RunSection
 		}
-		if in.Partition != nil && *in.Partition != draft.Partition {
-			changes = append(changes, fmt.Sprintf("partition: %s -> %s", draft.Partition, *in.Partition))
-			draft.Partition = *in.Partition
-		}
 		if in.Resources != nil {
 			before := draft.Job
 			draft.Job = draft.Job.Overlay(*in.Resources)
-			changes = append(changes, fmt.Sprintf("default resources: walltime %d -> %d min, cores %d -> %d, GPUs %d -> %d, allocation %s -> %s",
-				before.WallTimeMinutes, draft.Job.WallTimeMinutes, before.Cores(), draft.Job.Cores(), before.GPUs(), draft.Job.GPUs(), before.Allocation, draft.Job.Allocation))
+			changes = append(changes, fmt.Sprintf("default resources: walltime %d -> %d min, cores %d -> %d, GPUs %d -> %d, allocation %s -> %s, partition %s -> %s",
+				before.WallTimeMinutes, draft.Job.WallTimeMinutes, before.Cores(), draft.Job.Cores(), before.GPUs(), draft.Job.GPUs(), before.Allocation, draft.Job.Allocation,
+				tk.Str(before.Partition), tk.Str(draft.Job.Partition)))
 		}
 		if len(changes) == 0 {
 			return nil, errors.New("no fields to change were given")
