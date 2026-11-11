@@ -125,7 +125,6 @@ func workflowToRetry(processID string, recorded []procmodel.ProcessWorkflow) (pr
 	return "", httpx.Conflict("Process %s has no failed workflow to retry", processID)
 }
 
-// requireNotStopped keeps a stop final: a later status would hide it, and the job would run.
 func (s *LaunchService) requireNotStopped(ctx context.Context, processID string) error {
 	stopped, err := s.processService.processes.HasStatus(ctx, processID, procmodel.ProcessStatusTypeStopped)
 	if stopped {

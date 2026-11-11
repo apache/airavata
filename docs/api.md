@@ -2164,7 +2164,7 @@ as `lastWorkflowId`, which stays `null` until the first workflow is started.
 
 `workflowType` is one of `BATCH_JOB_SUBMISSION`, `JOB_MONITORING`,
 `BATCH_JOB_COMPLETION`. `status` is `RUNNING` once the workflow is started, then
-`SUCCEEDED` or `FAILED` when it finishes, or `STOPPED` by a stop; it is `null` for workflows recorded before
+`SUCCEEDED`, `FAILED` or `STOPPED` when it finishes; it is `null` for workflows recorded before
 the server tracked it. `timestamp` is when the workflow was started and does not
 change with its status. The `{processWorkflowId}` in the path is the entry's
 `processWorkflowId`, not the workflow engine's `workflowId`.

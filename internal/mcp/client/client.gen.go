@@ -1482,7 +1482,7 @@ type WorkflowResponse struct {
 	ProcessId         *openapi_types.UUID `json:"processId,omitempty"`
 	ProcessWorkflowId openapi_types.UUID  `json:"processWorkflowId"`
 
-	// Status `RUNNING` once the workflow is started, then `SUCCEEDED`, `FAILED`, or `STOPPED` by a stop. `null`
+	// Status `RUNNING` once the workflow is started, then `SUCCEEDED`, `FAILED` or `STOPPED`. `null`
 	// for workflows recorded before the server tracked it.
 	Status *ProcessWorkflowStatusType `json:"status,omitempty"`
 

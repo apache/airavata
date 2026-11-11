@@ -4254,7 +4254,7 @@ components:
             - { type: "null" }
         status:
           description: |
-            `RUNNING` once the workflow is started, then `SUCCEEDED`, `FAILED`, or `STOPPED` by a stop. `null`
+            `RUNNING` once the workflow is started, then `SUCCEEDED`, `FAILED` or `STOPPED`. `null`
             for workflows recorded before the server tracked it.
           oneOf:
             - { $ref: "#/components/schemas/ProcessWorkflowStatusType" }

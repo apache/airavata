@@ -78,7 +78,6 @@ func (w *Workflows) recordStatus(ctx workflow.Context, processID string,
 func (w *Workflows) RecordWorkflowStatus(ctx context.Context, processID, workflowID string,
 	workflowType model.ProcessWorkflowType, status model.ProcessWorkflowStatusType) error {
 
-	// A workflow of a stopped process fails at the first task it is refused.
 	if status == model.ProcessWorkflowStatusTypeFailed && execution.Stopped(ctx, w.processes, processID) {
 		status = model.ProcessWorkflowStatusTypeStopped
 	}
