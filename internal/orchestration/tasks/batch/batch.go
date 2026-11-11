@@ -367,7 +367,8 @@ func (a *Tasks) CancelIfStopped(ctx context.Context, processID string) error {
 	}
 	if !execution.Stopped(ctx, a.processes, processID) || process.BatchProcess == nil || process.BatchProcess.JobID == nil ||
 		slices.ContainsFunc(process.BatchProcess.BatchJobStatuses, func(s *model.BatchJobStatus) bool {
-			return s.Status == model.BatchJobStatusStopped || s.Status == model.BatchJobStatusEnded || s.Status == model.BatchJobStatusFailed
+			return slices.Contains([]model.BatchJobStatusType{model.BatchJobStatusStopped, model.BatchJobStatusEnded,
+				model.BatchJobStatusFailed, model.BatchJobStatusTimeLimit}, s.Status)
 		}) {
 		return nil
 	}
