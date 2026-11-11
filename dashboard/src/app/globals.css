@@ -1,47 +1,89 @@
 :root {
-  --bg: #f6f7f9;
+  /* Neutrals: cool slate, so surfaces read as calm and structured rather than warm. */
+  --bg: #f3f5f8;
   --surface: #ffffff;
-  --surface-2: #f1f3f6;
-  --border: #e2e5ea;
-  --text: #1b1f24;
-  --muted: #5f6b7a;
-  --accent: #2557d6;
+  --surface-2: #f1f4f8;
+  --border: #dbe1e8;
+  --border-strong: #c3ccd8;
+  --text: #0f1b2d;
+  --muted: #546275;
+
+  /* One deep, saturated blue carries every interactive cue. */
+  --accent: #1e4fc2;
+  --accent-hover: #173f9e;
   --accent-text: #ffffff;
-  --accent-soft: #e8eefc;
-  --danger: #c4312b;
-  --danger-soft: #fdecea;
-  --ok: #1d7a46;
-  --ok-soft: #e5f5ec;
-  --warn: #9a6200;
-  --warn-soft: #fdf3e1;
-  --info: #2557d6;
-  --info-soft: #e8eefc;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+  --accent-soft: #e8eefb;
+  --focus-ring: 0 0 0 3px rgba(30, 79, 194, 0.22);
+
+  --danger: #b42318;
+  --danger-soft: #fdeeed;
+  --ok: #067647;
+  --ok-soft: #e7f6ee;
+  --warn: #935406;
+  --warn-soft: #fdf4e3;
+  --info: #1e4fc2;
+  --info-soft: #e8eefb;
+
+  /* The navigation frame stays dark in both schemes: it anchors the page. */
+  --nav-bg: #0f1d33;
+  --nav-border: rgba(255, 255, 255, 0.08);
+  --nav-text: #c4cfdd;
+  --nav-muted: #8595ab;
+  --nav-hover: rgba(255, 255, 255, 0.06);
+  --nav-active-bg: rgba(91, 140, 255, 0.16);
+  --nav-active-text: #ffffff;
+  --nav-indicator: #5b8cff;
+  --tip-bg: #0f1b2d;
+  --tip-text: #ffffff;
+  --tip-muted: #a9b6c8;
+
+  --shadow: 0 1px 2px rgba(15, 27, 45, 0.05), 0 1px 3px rgba(15, 27, 45, 0.07);
+  --shadow-lg: 0 12px 32px rgba(15, 27, 45, 0.18);
   --radius: 8px;
+  --rail-width: 64px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1216;
-    --surface: #171b21;
-    --surface-2: #1e232b;
-    --border: #2b313a;
-    --text: #e6e9ee;
-    --muted: #9aa5b4;
-    --accent: #6e9bff;
-    --accent-text: #0b1020;
-    --accent-soft: #1b2741;
-    --danger: #ff7b72;
-    --danger-soft: #3a1d1d;
-    --ok: #56d38a;
-    --ok-soft: #16301f;
-    --warn: #f0b75a;
-    --warn-soft: #362a12;
-    --info: #6e9bff;
-    --info-soft: #1b2741;
+    --bg: #0b1119;
+    --surface: #121a25;
+    --surface-2: #182230;
+    --border: #253142;
+    --border-strong: #34435a;
+    --text: #e4eaf2;
+    --muted: #94a2b5;
+
+    --accent: #6f9dff;
+    --accent-hover: #8fb3ff;
+    --accent-text: #0a1222;
+    --accent-soft: #172440;
+    --focus-ring: 0 0 0 3px rgba(111, 157, 255, 0.3);
+
+    --danger: #f97066;
+    --danger-soft: #3a1a1a;
+    --ok: #47cd89;
+    --ok-soft: #0f2a1d;
+    --warn: #f5b85a;
+    --warn-soft: #33260f;
+    --info: #6f9dff;
+    --info-soft: #172440;
+
+    --nav-bg: #080d14;
+    --nav-border: #1c2533;
+    --nav-text: #b6c2d2;
+    --nav-muted: #7d8ca1;
+    --nav-hover: rgba(255, 255, 255, 0.05);
+    --nav-active-bg: rgba(111, 157, 255, 0.14);
+    --nav-active-text: #ffffff;
+    --nav-indicator: #6f9dff;
+    --tip-bg: #e4eaf2;
+    --tip-text: #0b1119;
+    --tip-muted: #4c5a6d;
+
     --shadow: none;
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
     color-scheme: dark;
   }
 }
@@ -74,10 +116,13 @@ code,
 
 h1 {
   font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
   margin: 0;
 }
 h2 {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
   margin: 0;
 }
 h3 {
@@ -89,66 +134,191 @@ h3 {
 
 .shell {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: var(--rail-width) 1fr;
   min-height: 100vh;
 }
 
-.sidebar {
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  padding: 16px 12px;
+/* Navigation rail: icons only, each named by a tooltip. */
+
+.rail {
+  background: var(--nav-bg);
+  border-right: 1px solid var(--nav-border);
+  color: var(--nav-text);
+  padding: 12px 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
   position: sticky;
   top: 0;
   height: 100vh;
+  z-index: 40;
 }
 
-.brand {
-  font-weight: 700;
-  font-size: 16px;
-  padding: 4px 10px 16px;
+.rail-logo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 8px;
+  border-radius: 10px;
 }
-.brand small {
-  display: block;
-  font-weight: 400;
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.nav a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 10px;
-  border-radius: 6px;
-  color: var(--text);
-}
-.nav a:hover {
-  background: var(--surface-2);
-  text-decoration: none;
-}
-.nav a.active {
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-weight: 600;
+.rail-logo:hover {
+  background: var(--nav-hover);
 }
 
-.sidebar-foot {
-  margin-top: auto;
+.rail-nav,
+.rail-foot {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 10px 0;
-  border-top: 1px solid var(--border);
+  align-items: center;
+  gap: 4px;
+}
+.rail-nav {
+  padding-top: 8px;
+  border-top: 1px solid var(--nav-border);
+}
+.rail-foot {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--nav-border);
+}
+
+.rail-item {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--nav-muted);
+  cursor: pointer;
+}
+.rail-item.static {
+  cursor: default;
+}
+.rail-item:hover,
+button.rail-item:hover:not(:disabled) {
+  background: var(--nav-hover);
+  color: var(--nav-active-text);
+  text-decoration: none;
+}
+.rail-item.active {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+}
+.rail-item.active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--nav-indicator);
+}
+
+/* Short screens: tighten the rail so the footer stays in view with every item shown. */
+@media (max-height: 760px) {
+  .rail {
+    gap: 2px;
+    padding: 8px 0;
+  }
+  .rail-item {
+    height: 34px;
+  }
+  .rail-logo {
+    height: 38px;
+    margin-bottom: 4px;
+  }
+}
+
+/* A login waiting for an answer: a dot on the corner of its icon. */
+.rail-alert {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warn);
+  box-shadow: 0 0 0 2px var(--nav-bg);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--nav-active-bg);
+  color: var(--nav-active-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.tip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translate(-4px, -50%);
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: var(--tip-bg);
+  color: var(--tip-text);
   font-size: 12px;
-  color: var(--muted);
+  font-weight: 500;
+  line-height: 1.35;
+  white-space: nowrap;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
+  z-index: 60;
+}
+.tip small {
+  display: block;
+  color: var(--tip-muted);
+  font-size: 11px;
+}
+.rail-logo:hover .tip,
+.rail-logo:focus-visible .tip,
+.rail-item:hover .tip,
+.rail-item:focus-visible .tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(0, -50%);
 }
 
 .main {
-  padding: 24px 32px 48px;
+  padding: 24px 32px 0;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.main-content {
+  flex: 1;
+  padding-bottom: 32px;
+}
+.app-footer {
+  padding: 14px 0 18px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+.app-footer a {
+  color: var(--muted);
+  font-weight: 600;
+}
+.app-footer a:hover {
+  color: var(--accent);
 }
 
 .page-head {
@@ -189,7 +359,8 @@ h3 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  min-height: 52px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
 }
 .card-body {
@@ -230,11 +401,16 @@ td {
   vertical-align: top;
 }
 th {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--muted);
   background: var(--surface-2);
   white-space: nowrap;
+}
+tbody tr:hover td {
+  background: var(--surface-2);
 }
 tr:last-child td {
   border-bottom: none;
@@ -284,7 +460,7 @@ textarea {
   font: inherit;
   color: var(--text);
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   padding: 7px 9px;
   width: 100%;
@@ -301,8 +477,14 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  outline: 2px solid var(--accent-soft);
+  outline: none;
   border-color: var(--accent);
+  box-shadow: var(--focus-ring);
+}
+button:focus-visible,
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 fieldset {
@@ -321,7 +503,7 @@ button,
   font: inherit;
   font-weight: 500;
   border-radius: 6px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   background: var(--surface);
   color: var(--text);
   padding: 6px 12px;
@@ -348,11 +530,15 @@ button.primary,
 }
 button.primary:hover:not(:disabled),
 .btn.primary:hover {
-  filter: brightness(1.08);
-  background: var(--accent);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 button.danger {
   color: var(--danger);
+}
+button.danger:hover:not(:disabled) {
+  background: var(--danger-soft);
+  border-color: var(--danger);
 }
 button.small,
 .btn.small {
@@ -372,6 +558,7 @@ button.link {
   border-radius: 6px;
   padding: 9px 12px;
   border: 1px solid transparent;
+  border-left: 3px solid currentColor;
 }
 .alert.error {
   background: var(--danger-soft);
@@ -484,8 +671,13 @@ dl.kv dd {
   padding: 8px 12px;
   color: var(--muted);
 }
+.tabs button:hover:not(:disabled) {
+  background: none;
+  color: var(--text);
+}
 .tabs button.active {
   color: var(--accent);
+  font-weight: 600;
   border-bottom-color: var(--accent);
 }
 
@@ -494,7 +686,7 @@ dl.kv dd {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(10, 14, 20, 0.45);
+  background: rgba(8, 13, 20, 0.55);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -507,7 +699,7 @@ dl.kv dd {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-lg);
 }
 .modal.wide {
   width: min(980px, 100%);
@@ -935,14 +1127,54 @@ dd.chips {
 
 @media (max-width: 760px) {
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
   }
-  .sidebar {
-    position: static;
+  /* The rail becomes a scrolling top bar; tooltips would be clipped there, and each
+     item keeps its accessible label. */
+  .rail {
+    position: sticky;
+    flex-direction: row;
     height: auto;
+    padding: 6px 8px;
+    border-right: none;
+    border-bottom: 1px solid var(--nav-border);
+    overflow-x: auto;
+    min-width: 0;
+  }
+  .rail-nav,
+  .rail-foot,
+  .rail-logo {
+    flex-shrink: 0;
+  }
+  .rail-logo {
+    margin: 0 4px 0 0;
+  }
+  .rail-nav,
+  .rail-foot {
+    flex-direction: row;
+    border-top: none;
+    padding-top: 0;
+  }
+  .rail-foot {
+    margin: 0 0 0 auto;
+    padding-left: 8px;
+    border-left: 1px solid var(--nav-border);
+  }
+  .rail-item.active::before {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: -6px;
+    width: auto;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+  }
+  .tip {
+    display: none;
   }
   .main {
-    padding: 16px;
+    padding: 16px 16px 0;
   }
   .timeline li {
     grid-template-columns: 1fr;
