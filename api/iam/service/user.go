@@ -186,6 +186,48 @@ func (s *UserService) SetStatus(ctx context.Context, userID string, req *dto.Use
 	return &out, nil
 }
 
+// SetAdmin grants or withdraws the ADMIN role. Super Admin only.
+//
+// A Super Admin cannot change their own role, and a Super Admin's standing is not
+// something this call touches: SUPER_ADMIN accounts are rejected. Service accounts
+// never hold administrator rights.
+func (s *UserService) SetAdmin(ctx context.Context, userID string, req *dto.UserAdminUpdate) (*dto.UserAccountResponse, error) {
+	principal, err := auth.RequireSuperAdmin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if principal.Name == userID {
+		return nil, httpx.Forbidden("You cannot change your own role")
+	}
+
+	user, err := s.repo.FindByIDWithRoles(ctx, userID)
+	if err != nil {
+		return nil, notFoundAs(err, "User not found with ID: %s", userID)
+	}
+	if user.IsServiceAccount() {
+		return nil, httpx.Invalid([]httpx.FieldError{{Field: "userId",
+			Message: "Service accounts cannot be administrators"}})
+	}
+	if user.HasRole(model.RoleSuperAdmin) {
+		return nil, httpx.Forbidden("A Super Admin's role cannot be changed here")
+	}
+
+	if req.Admin {
+		err = s.repo.AddRole(ctx, userID, model.RoleAdmin)
+	} else {
+		err = s.repo.RemoveRole(ctx, userID, model.RoleAdmin)
+	}
+	if err != nil {
+		return nil, err
+	}
+	user, err = s.repo.FindByIDWithRoles(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	out := dto.ToUserAccountResponse(user)
+	return &out, nil
+}
+
 // Update changes a user's profile. A Super Admin may update anyone; everyone else may
 // update only themselves.
 //

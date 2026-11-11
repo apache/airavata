@@ -128,3 +128,8 @@ func (r *UserStatusUpdate) Validate() []httpx.FieldError {
 	}
 	return c.Fields()
 }
+
+// UserAdminUpdate grants or withdraws the ADMIN role.
+type UserAdminUpdate struct {
+	Admin bool `json:"admin"`
+}

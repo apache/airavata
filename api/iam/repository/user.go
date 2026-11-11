@@ -66,3 +66,14 @@ func (r *UserRepository) FindByID(ctx context.Context, id string) (*model.User, 
 func (r *UserRepository) Save(ctx context.Context, u *model.User) error {
 	return r.db.WithContext(ctx).Save(u).Error
 }
+
+// AddRole grants role to the user. Granting a role already held is a no-op.
+func (r *UserRepository) AddRole(ctx context.Context, userID string, role model.Role) error {
+	ur := model.UserRole{UserID: userID, Role: role}
+	return r.db.WithContext(ctx).Where(ur).FirstOrCreate(&ur).Error
+}
+
+// RemoveRole withdraws role from the user. Withdrawing a role not held is a no-op.
+func (r *UserRepository) RemoveRole(ctx context.Context, userID string, role model.Role) error {
+	return r.db.WithContext(ctx).Delete(&model.UserRole{}, "user_id = ? AND role = ?", userID, role).Error
+}
