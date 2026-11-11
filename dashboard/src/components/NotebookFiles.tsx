@@ -151,7 +151,7 @@ export function NotebookFiles({
 
   return (
     <section
-      className={`nb-files card${dragging ? " dragging" : ""}`}
+      className={`nb-files${dragging ? " dragging" : ""}`}
       onDragOver={(e) => {
         if (!e.dataTransfer.types.includes("Files")) return;
         e.preventDefault();

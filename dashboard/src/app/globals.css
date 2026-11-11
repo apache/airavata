@@ -1214,16 +1214,129 @@ dd.chips {
   max-width: 100%;
 }
 .nb-workspace {
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
 }
+
+/* Side panel: a strip of tool buttons, and the files panel it opens and closes. */
+.nb-side {
+  display: flex;
+  flex-shrink: 0;
+  align-self: stretch;
+  height: calc(100vh - 150px);
+  min-height: 360px;
+  position: sticky;
+  top: 16px;
+}
+.nb-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 44px;
+  padding: 8px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.nb-side:has(.nb-panel:not([hidden])) .nb-strip {
+  border-radius: var(--radius) 0 0 var(--radius);
+  border-right: none;
+}
+button.nb-strip-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+button.nb-strip-button:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+button.nb-strip-button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.nb-panel {
+  display: flex;
+  flex-direction: column;
+  width: var(--nb-panel-width, 280px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.nb-panel[hidden] {
+  display: none;
+}
+.nb-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+button.nb-panel-close {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+}
+button.nb-panel-close:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* The panel's draggable edge: a wide hit area around a thin line that lights up. */
+.nb-resizer {
+  position: relative;
+  flex-shrink: 0;
+  width: 12px;
+  align-self: stretch;
+  cursor: col-resize;
+  touch-action: none;
+}
+.nb-resizer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 0.12s;
+}
+.nb-resizer:hover::after,
+.nb-resizer:focus-visible::after,
+.nb-resizer:active::after {
+  background: var(--accent);
+}
+.nb-resizer:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .nb-files {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 150px);
-  min-height: 360px;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 .nb-files.dragging {
@@ -1365,7 +1478,12 @@ button.nb-row-menu-button:hover:not(:disabled) {
   stroke: var(--accent);
 }
 .nb-editor {
+  flex: 1;
   min-width: 0;
+}
+/* With the panel closed there is no resize edge, so keep the editor off the strip. */
+.nb-side:has(.nb-panel[hidden]) {
+  margin-right: 16px;
 }
 .nb-editor-head {
   display: flex;
@@ -1386,11 +1504,25 @@ button.nb-row-menu-button:hover:not(:disabled) {
 
 @media (max-width: 900px) {
   .nb-workspace {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
   }
-  .nb-files {
+  .nb-side {
+    position: static;
     height: auto;
-    max-height: 320px;
+    min-height: 0;
+  }
+  .nb-side:has(.nb-panel[hidden]) {
+    margin-right: 0;
+  }
+  .nb-panel {
+    flex: 1;
+    width: auto;
+    max-height: 360px;
+  }
+  .nb-resizer {
+    display: none;
   }
   .nb-row-menu {
     visibility: visible;

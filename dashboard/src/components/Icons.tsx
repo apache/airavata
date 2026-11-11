@@ -50,7 +50,9 @@ export type IconName =
   | "shield"
   | "user"
   | "bot"
-  | "logout";
+  | "logout"
+  | "folder"
+  | "close";
 
 // 24×24 line drawings, 1.75 stroke.
 const PATHS: Record<IconName, React.ReactNode> = {
@@ -127,6 +129,8 @@ const PATHS: Record<IconName, React.ReactNode> = {
     </>
   ),
   logout: <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />,
+  folder: <path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.6l2 2.5h8.4A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
 };
 
 export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {

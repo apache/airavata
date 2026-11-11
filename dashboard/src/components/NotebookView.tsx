@@ -11,6 +11,7 @@ import { API_BASE, api, ApiError, errorText, getToken } from "@/lib/api";
 import { latestStatus, useDeploymentNames, withStatuses } from "@/lib/catalog";
 import { useResource } from "@/lib/hooks";
 import type { JupyterServer, Process } from "@/lib/types";
+import { Icon } from "./Icons";
 import { isNotebook, NotebookFiles } from "./NotebookFiles";
 import { Alert } from "./ui";
 
@@ -27,6 +28,10 @@ type Source = { kind: "browser" } | { kind: "process"; processId: string };
 // The source chosen last, and the notebook open last in each (per-browser conveniences).
 const SOURCE_KEY = "airavata.notebook.source";
 const LAST_OPEN_KEY = "airavata.notebook.open";
+// Whether the files panel is open, and how wide it was dragged to.
+const FILES_OPEN_KEY = "airavata.notebook.files-open";
+const FILES_WIDTH_KEY = "airavata.notebook.files-width";
+const FILES_WIDTH = { min: 200, max: 560, initial: 280, step: 16 };
 const WELCOME_PATH = "Welcome.ipynb";
 const SAVE_DELAY_MS = 1000;
 const LINK_POLL_MS = 5000;
@@ -408,11 +413,13 @@ function Workspace({
 
   return (
     <div className="nb-workspace">
-      <NotebookFiles
-        contents={serviceManager.contents}
-        openPath={openPath}
-        onOpen={(path) => path !== openPath && setOpenPath(path, true)}
-      />
+      <FilesSidebar>
+        <NotebookFiles
+          contents={serviceManager.contents}
+          openPath={openPath}
+          onOpen={(path) => path !== openPath && setOpenPath(path, true)}
+        />
+      </FilesSidebar>
       <div className="nb-editor">
         {openPath && isNotebook(openPath) ? (
           <NotebookEditor
@@ -424,11 +431,100 @@ function Workspace({
             colorMode={colorMode}
           />
         ) : (
-          <div className="empty card">Open a notebook from the panel on the left, or create one.</div>
+          <div className="empty card">Open a notebook from the Files panel, or create one there.</div>
         )}
       </div>
     </div>
   );
+}
+
+// FilesSidebar holds the file browser in a side panel that collapses to a strip of
+// tool buttons, so the notebook can take the full width, and that can be dragged wider
+// or narrower by its edge. The browser stays mounted while collapsed, keeping the
+// folder it was in.
+function FilesSidebar({ children }: { children: React.ReactNode }) {
+  const [open, setOpenState] = useState(() => readStored(FILES_OPEN_KEY) !== "false");
+  const [width, setWidthState] = useState(() => {
+    const stored = Number(readStored(FILES_WIDTH_KEY));
+    return Number.isFinite(stored) && stored > 0 ? clampWidth(stored) : FILES_WIDTH.initial;
+  });
+
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    writeStored(FILES_OPEN_KEY, next ? null : "false");
+  };
+  const setWidth = (next: number, persist: boolean) => {
+    const w = clampWidth(next);
+    setWidthState(w);
+    if (persist) writeStored(FILES_WIDTH_KEY, String(w));
+  };
+
+  const drag = useRef<{ x: number; width: number } | null>(null);
+
+  return (
+    <div className="nb-side" style={{ "--nb-panel-width": `${width}px` } as React.CSSProperties}>
+      <div className="nb-strip" role="toolbar" aria-label="Side panels" aria-orientation="vertical">
+        <button
+          className={`nb-strip-button${open ? " active" : ""}`}
+          onClick={() => setOpen(!open)}
+          aria-pressed={open}
+          aria-controls="nb-files-panel"
+          aria-label={open ? "Hide files" : "Show files"}
+          title={open ? "Hide files" : "Show files"}
+        >
+          <Icon name="folder" />
+        </button>
+      </div>
+      <aside id="nb-files-panel" className="nb-panel" hidden={!open} aria-label="Files">
+        <div className="nb-panel-head">
+          <span>Files</span>
+          <button className="nb-panel-close" onClick={() => setOpen(false)} aria-label="Hide files" title="Hide files">
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+        {children}
+      </aside>
+      {open && (
+        <div
+          className="nb-resizer"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize files panel"
+          aria-valuemin={FILES_WIDTH.min}
+          aria-valuemax={FILES_WIDTH.max}
+          aria-valuenow={width}
+          tabIndex={0}
+          onPointerDown={(e) => {
+            e.preventDefault();
+            e.currentTarget.setPointerCapture(e.pointerId);
+            drag.current = { x: e.clientX, width };
+          }}
+          onPointerMove={(e) => {
+            if (drag.current) setWidth(drag.current.width + e.clientX - drag.current.x, false);
+          }}
+          onPointerUp={(e) => {
+            if (!drag.current) return;
+            setWidth(drag.current.width + e.clientX - drag.current.x, true);
+            drag.current = null;
+          }}
+          onPointerCancel={() => {
+            drag.current = null;
+          }}
+          onDoubleClick={() => setWidth(FILES_WIDTH.initial, true)}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowLeft") setWidth(width - FILES_WIDTH.step, true);
+            else if (e.key === "ArrowRight") setWidth(width + FILES_WIDTH.step, true);
+            else return;
+            e.preventDefault();
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function clampWidth(w: number) {
+  return Math.round(Math.min(FILES_WIDTH.max, Math.max(FILES_WIDTH.min, w)));
 }
 
 type SaveState = "saved" | "pending" | "saving" | "error";
