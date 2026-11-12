@@ -91,6 +91,8 @@ curl -X POST https://airavata.example.org/api/v1/service-accounts \
   -d '{"name": "monitor", "permissions": ["process:list", "cluster:discover"]}'
 ```
 
+On the dashboard, the **Service accounts** page has a permission picker in both the create and edit dialogs. It lists the permissions a service account may hold, grouped by what they act on, with a description of each. A permission you don't hold yourself is shown but can't be ticked, and the table shows how many permissions each account has. The picker is filled from `GET /api/v1/permissions`, which lists every permission with its description and whether a service account may hold it, for any signed-in caller.
+
 Change the set later with `PUT /api/v1/service-accounts/{id}`. A `permissions` list **replaces** the whole set, an empty list removes every grant, and leaving it out changes nothing. The change applies on the account's next request. `GET /api/v1/service-accounts/{id}` and `GET /api/v1/users/me` (called with the account's token) both list what it holds.
 
 Three rules keep this from becoming a way round the limits above:

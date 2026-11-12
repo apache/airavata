@@ -140,3 +140,25 @@ func TestEachPermissionGatesItsAction(t *testing.T) {
 		})
 	}
 }
+
+func TestPermissionCatalogueIsListedForSignedInCallers(t *testing.T) {
+	h := newHarness(t)
+	if rec := h.do("GET", "/api/v1/permissions", "", nil); rec.Code != http.StatusUnauthorized {
+		t.Fatalf("anonymous: status = %d, want 401", rec.Code)
+	}
+	got := h.list("/api/v1/permissions", tokenAlice)
+	if len(got) != len(permission.All()) {
+		t.Fatalf("listed %d permissions, want %d", len(got), len(permission.All()))
+	}
+	byName := map[string]map[string]any{}
+	for _, p := range got {
+		byName[p["permission"].(string)] = p
+		if p["description"] == "" {
+			t.Errorf("%v has no description", p["permission"])
+		}
+	}
+	if byName["admin:manage"]["grantableToServiceAccount"] != false || byName["process:list"]["grantableToServiceAccount"] != true {
+		t.Errorf("grantability is wrong: admin:manage=%v process:list=%v",
+			byName["admin:manage"]["grantableToServiceAccount"], byName["process:list"]["grantableToServiceAccount"])
+	}
+}

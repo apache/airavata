@@ -12,6 +12,9 @@ interface Session {
   // me is the signed-in caller, null until it has been read.
   me: CurrentUser | null;
   isAdmin: boolean;
+  // can reports whether the caller holds a permission. It only decides what the page
+  // offers: the server refuses an action the caller may not take whatever the page shows.
+  can: (permission: string) => boolean;
   // active is false for an account an administrator has not activated, or has
   // suspended. The server refuses such an account everything but /api/v1/users/me.
   active: boolean;
@@ -102,10 +105,11 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   );
 
   const isAdmin = !!me?.admin;
+  const can = (permission: string) => !!me?.permissions?.includes(permission);
   const active = !me || me.status === "ACTIVE";
 
   return (
-    <SessionContext.Provider value={{ token, me, isAdmin, active, refreshMe, signIn, signInWithCILogon, signOut }}>
+    <SessionContext.Provider value={{ token, me, isAdmin, can, active, refreshMe, signIn, signInWithCILogon, signOut }}>
       {children}
     </SessionContext.Provider>
   );

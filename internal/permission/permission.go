@@ -111,6 +111,55 @@ var superAdminOnly = map[Permission]bool{
 	AdminManage:   true,
 }
 
+// descriptions say, in a line, what each permission allows. They are what an
+// administrator sees when choosing what to grant, so they are written for that reader.
+var descriptions = map[Permission]string{
+	Permission("audit:read"):            "read the audit log",
+	Permission("user:create"):           "create a user record ahead of the user's first sign-in",
+	Permission("user:list"):             "list every user",
+	Permission("user:read_any"):         "read another user's record",
+	Permission("user:update_any"):       "edit another user's profile",
+	Permission("user:set_status"):       "activate, suspend or deactivate a user",
+	Permission("admin:manage"):          "appoint and remove administrators, and change an administrator's status",
+	Permission("group:list"):            "list every group",
+	Permission("group:read_any"):        "read a group the caller is not in",
+	Permission("group:manage_any"):      "rename, delete and manage members of any group",
+	Permission("serviceaccount:read"):   "list and read service accounts",
+	Permission("serviceaccount:manage"): "create, edit, delete and re-issue tokens",
+	Permission("cluster:manage"):        "create, edit and delete clusters and their partitions",
+	Permission("cluster:discover"):      "discover a cluster's partitions over SSH",
+	Permission("clusterconfig:list"):    "list every cluster config",
+	Permission("template:manage"):       "create, edit and delete application templates",
+	Permission("deployment:manage"):     "create, edit and delete batch deployments",
+	Permission("storage:list"):          "list every data storage",
+	Permission("dataproduct:list"):      "list every data product",
+	Permission("virtualdirectory:list"): "list every virtual data directory",
+	Permission("resource:manage_any"):   "act as the owner of any cluster config, data storage, data product or virtual data directory",
+	Permission("process:list"):          "list every process",
+	Permission("process:update"):        "edit any process directly",
+	Permission("process:delete"):        "delete any process",
+	Permission("process:manage_any"):    "read, launch and edit the tasks, statuses and workflows of any process",
+}
+
+// Description returns what p allows, or "" for a permission that is not defined.
+func (p Permission) Description() string { return descriptions[p] }
+
+// Info describes one permission for a client that lets an administrator choose them.
+type Info struct {
+	Permission                Permission
+	Description               string
+	GrantableToServiceAccount bool
+}
+
+// Catalog returns every defined permission with its description, sorted.
+func Catalog() []Info {
+	out := make([]Info, 0, len(all))
+	for _, p := range All() {
+		out = append(out, Info{Permission: p, Description: p.Description(), GrantableToServiceAccount: p.GrantableToServiceAccount()})
+	}
+	return out
+}
+
 // notForServiceAccounts are the permissions a service account can never hold, however
 // an administrator asks. They are the ones that let a token widen access beyond what it
 // was given: appointing administrators, rewriting another user's profile, and creating

@@ -275,6 +275,30 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  # ------------------------------------------------------ Permissions
+
+  /api/v1/permissions:
+    get:
+      tags: [Service Accounts]
+      summary: List permissions
+      description: |
+        Any signed-in caller. Every permission that exists, with a description of what it
+        allows, sorted by name. `grantableToServiceAccount` is false for the permissions no
+        service account may hold. What a caller may grant from the list is decided where
+        the grant is made. See docs/auth.md.
+      operationId: listPermissions
+      responses:
+        "200":
+          description: Every permission.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Permission" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   # ------------------------------------------------------ Service accounts
 
   /api/v1/service-accounts:
@@ -3404,6 +3428,14 @@ components:
       properties:
         status: { $ref: "#/components/schemas/UserStatus" }
       required: [status]
+
+    Permission:
+      type: object
+      properties:
+        permission: { type: string, description: "`resource:action`, such as `process:list`." }
+        description: { type: string }
+        grantableToServiceAccount: { type: boolean }
+      required: [permission, description, grantableToServiceAccount]
 
     ServiceAccountCreate:
       type: object

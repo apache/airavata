@@ -487,6 +487,33 @@ a:focus-visible {
   box-shadow: var(--focus-ring);
 }
 
+.perm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.perm-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+}
+.perm-group legend {
+  font-size: 12px;
+  color: var(--muted);
+}
+.perm-row {
+  align-items: flex-start;
+}
+.perm-row input {
+  margin-top: 3px;
+}
+.perm-row[title] {
+  opacity: 0.7;
+}
+
 fieldset {
   border: 1px solid var(--border);
   border-radius: var(--radius);

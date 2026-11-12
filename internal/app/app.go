@@ -80,6 +80,8 @@ type Services struct {
 	GroupMember *iamsvc.GroupMemberService
 	// ServiceAccount administers non-human users and their expiring tokens.
 	ServiceAccount *iamsvc.ServiceAccountService
+	// Permission lists the permissions that exist.
+	Permission *iamsvc.PermissionService
 
 	// Credentials.
 	SSHCredential   *credentialssvc.SSHCredentialService
@@ -261,6 +263,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		// A deleted service account takes the shares granted to it along, hence the
 		// sharing repository.
 		ServiceAccount: iamsvc.NewServiceAccountService(db, repos.ServiceAccounts, users, shares, permissions),
+		Permission:     iamsvc.NewPermissionService(),
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PermissionPicker, sameSet } from "@/components/PermissionPicker";
 import { Alert, Card, ConfirmButton, Field, formatTime, Modal, numOrNull, PageHead, StatusBadge, strOrNull, Table } from "@/components/ui";
 import { api, API_BASE, errorText } from "@/lib/api";
 import { useAction, useResource } from "@/lib/hooks";
@@ -26,10 +27,12 @@ type Dialog =
   | { kind: "token"; minted: ServiceAccountToken; regenerated: boolean };
 
 export default function ServiceAccountsPage() {
-  const { isAdmin } = useSession();
+  const { can } = useSession();
+  const canRead = can("serviceaccount:read");
+  const canManage = can("serviceaccount:manage");
   const accounts = useResource(
-    () => (isAdmin ? api.get<ServiceAccount[]>("/api/v1/service-accounts") : Promise.resolve([])),
-    [isAdmin],
+    () => (canRead ? api.get<ServiceAccount[]>("/api/v1/service-accounts") : Promise.resolve([])),
+    [canRead],
   );
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -40,11 +43,11 @@ export default function ServiceAccountsPage() {
     void accounts.reload();
   };
 
-  if (!isAdmin) {
+  if (!canRead) {
     return (
       <div className="stack">
         <PageHead title="Service accounts" />
-        <Alert kind="info">Only administrators can manage service accounts.</Alert>
+        <Alert kind="info">You don&apos;t have permission to view service accounts.</Alert>
       </div>
     );
   }
@@ -53,11 +56,13 @@ export default function ServiceAccountsPage() {
     <div className="stack">
       <PageHead
         title="Service accounts"
-        sub="Identities for automation such as CI pipelines and gateways. They act as ordinary users and can never be administrators. Each has one token, which expires."
+        sub="Identities for automation such as CI pipelines and gateways. They act as ordinary users, can never be administrators, and can do more only where you grant them a permission. Each has one token, which expires."
       >
-        <button className="primary" onClick={() => setDialog({ kind: "create" })}>
-          Create service account
-        </button>
+        {canManage && (
+          <button className="primary" onClick={() => setDialog({ kind: "create" })}>
+            Create service account
+          </button>
+        )}
       </PageHead>
       <Alert>{accounts.error || error}</Alert>
       <Card flush>
@@ -78,6 +83,7 @@ export default function ServiceAccountsPage() {
               ),
             },
             { header: "Status", cell: (sa) => <StatusBadge status={sa.status} /> },
+            { header: "Permissions", cell: (sa) => <PermissionSummary permissions={sa.permissions} /> },
             { header: "Token", cell: (sa) => <TokenExpiry expiresAt={sa.tokenExpiresAt} /> },
             {
               header: "Description",
@@ -101,7 +107,8 @@ export default function ServiceAccountsPage() {
             {
               header: "",
               className: "actions",
-              cell: (sa) => (
+              cell: (sa) =>
+                !canManage ? null : (
                 <div className="row" style={{ justifyContent: "flex-end" }}>
                   <button className="small" onClick={() => setDialog({ kind: "edit", sa })}>
                     Edit
@@ -127,7 +134,7 @@ export default function ServiceAccountsPage() {
                     Delete
                   </ConfirmButton>
                 </div>
-              ),
+                ),
             },
           ]}
         />
@@ -147,6 +154,16 @@ export default function ServiceAccountsPage() {
       )}
       {dialog?.kind === "token" && <TokenDialog minted={dialog.minted} regenerated={dialog.regenerated} onClose={done} />}
     </div>
+  );
+}
+
+// PermissionSummary shows how many permissions an account holds, and which on hover.
+function PermissionSummary({ permissions }: { permissions: string[] }) {
+  if (permissions.length === 0) return <span className="muted">None</span>;
+  return (
+    <span className="badge info" title={permissions.join("\n")}>
+      {permissions.length} {permissions.length === 1 ? "permission" : "permissions"}
+    </span>
   );
 }
 
@@ -181,6 +198,7 @@ function ValidityField({ value, onChange }: { value: string; onChange: (v: strin
 
 function CreateDialog({ onClose, onCreated }: { onClose: () => void; onCreated: (t: ServiceAccountToken) => void }) {
   const [f, setF] = useState({ name: "", displayName: "", description: "", email: "", validityDays: String(DEFAULT_VALIDITY_DAYS) });
+  const [permissions, setPermissions] = useState<string[]>([]);
   const set = (patch: Partial<typeof f>) => setF((x) => ({ ...x, ...patch }));
   const nameOk = f.name === "" || NAME_PATTERN.test(f.name);
 
@@ -191,6 +209,7 @@ function CreateDialog({ onClose, onCreated }: { onClose: () => void; onCreated: 
       description: strOrNull(f.description),
       email: strOrNull(f.email),
       validityDays: numOrNull(f.validityDays),
+      permissions,
     };
     onCreated(await api.post<ServiceAccountToken>("/api/v1/service-accounts", body));
   });
@@ -225,6 +244,7 @@ function CreateDialog({ onClose, onCreated }: { onClose: () => void; onCreated: 
           <input type="email" value={f.email} onChange={(e) => set({ email: e.target.value })} />
         </Field>
         <ValidityField value={f.validityDays} onChange={(validityDays) => set({ validityDays })} />
+        <PermissionPicker value={permissions} onChange={setPermissions} />
         <p className="muted small" style={{ margin: 0 }}>
           The account always has <code>USER</code> authority. Share records with it, or add it to groups, by its user id.
         </p>
@@ -241,6 +261,7 @@ function EditDialog({ sa, onClose, onSaved }: { sa: ServiceAccount; onClose: () 
     email: sa.email ?? "",
     status: (sa.status ?? "ACTIVE") as UserStatus,
   });
+  const [permissions, setPermissions] = useState<string[]>(sa.permissions);
   const set = (patch: Partial<typeof f>) => setF((x) => ({ ...x, ...patch }));
 
   const save = useAction(async () => {
@@ -251,6 +272,9 @@ function EditDialog({ sa, onClose, onSaved }: { sa: ServiceAccount; onClose: () 
     if (f.description !== (sa.description ?? "")) body.description = f.description;
     if (f.email !== (sa.email ?? "")) body.email = f.email;
     if (f.status !== sa.status) body.status = f.status;
+    // The list replaces the account's whole set on the server, so it is sent only when
+    // it changed, and then in full.
+    if (!sameSet(permissions, sa.permissions)) body.permissions = permissions;
     await api.put(path(sa), body);
     onSaved();
   });
@@ -289,6 +313,10 @@ function EditDialog({ sa, onClose, onSaved }: { sa: ServiceAccount; onClose: () 
           <Alert kind="warn">
             The token stops working as soon as you save. It is kept, so setting the account back to Active restores access.
           </Alert>
+        )}
+        <PermissionPicker value={permissions} onChange={setPermissions} initial={sa.permissions} />
+        {!sameSet(permissions, sa.permissions) && (
+          <Alert kind="info">Permission changes apply to the account&apos;s next request.</Alert>
         )}
         <Alert>{save.error}</Alert>
       </div>
