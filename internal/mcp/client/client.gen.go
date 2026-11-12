@@ -793,8 +793,11 @@ type ClusterPartitionResponse struct {
 
 // CurrentUser defines model for CurrentUser.
 type CurrentUser struct {
-	Admin       bool       `json:"admin"`
-	Authorities []string   `json:"authorities"`
+	Admin       bool     `json:"admin"`
+	Authorities []string `json:"authorities"`
+
+	// Permissions What the caller's roles grant, sorted, such as `audit:read`.
+	Permissions []string   `json:"permissions"`
 	Status      UserStatus `json:"status"`
 
 	// User The caller's user record, or null if they have none.
@@ -1064,6 +1067,15 @@ type OutputMapping struct {
 	Value *string `json:"value,omitempty"`
 }
 
+// Permission defines model for Permission.
+type Permission struct {
+	Description               string `json:"description"`
+	GrantableToServiceAccount bool   `json:"grantableToServiceAccount"`
+
+	// Permission `resource:action`, such as `process:list`.
+	Permission string `json:"permission"`
+}
+
 // ProcessRequest The create/update payload for a process. There is no owner field. Which
 // sections a body may carry follows from its type: a `BATCH_JOB` without a
 // `batchProcess` describes no job at all, and a `batchProcess` on any other kind
@@ -1173,6 +1185,9 @@ type ServiceAccountCreate struct {
 	// Name Becomes the account's user id as `sa:<name>`.
 	Name string `json:"name"`
 
+	// Permissions What the account may do, such as `process:list`. Empty or absent means it can act only on its own records and what is shared with it. Refused with 400: an unknown permission, and `admin:manage`, `user:update_any` and `serviceaccount:manage`, which no service account may hold. Refused with 403: a permission the caller does not hold themselves.
+	Permissions *[]string `json:"permissions,omitempty"`
+
 	// ValidityDays How long the first token lives. Defaults to 90.
 	ValidityDays *int `json:"validityDays,omitempty"`
 }
@@ -1188,6 +1203,9 @@ type ServiceAccountResponse struct {
 	DisplayName *string `json:"displayName"`
 	Email       *string `json:"email"`
 	Name        string  `json:"name"`
+
+	// Permissions What the account may do, sorted.
+	Permissions []string `json:"permissions"`
 
 	// ServiceAccountId `sa:<name>`
 	ServiceAccountId string      `json:"serviceAccountId"`
@@ -1220,7 +1238,10 @@ type ServiceAccountUpdate struct {
 	Description *string              `json:"description,omitempty"`
 	DisplayName *string              `json:"displayName,omitempty"`
 	Email       *openapi_types.Email `json:"email,omitempty"`
-	Status      *UserStatus          `json:"status,omitempty"`
+
+	// Permissions Replaces the account's whole set; an empty list removes every grant, and absent leaves the set as it is. Takes effect on the account's next request. The same rules as on create apply to what is being added.
+	Permissions *[]string   `json:"permissions,omitempty"`
+	Status      *UserStatus `json:"status,omitempty"`
 }
 
 // ShareRequest A grant. The same body for every shareable record: the record is named by the path, and the subject's kind is principalType rather than a separate endpoint.
@@ -2147,6 +2168,16 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /api/v1/groups/{groupId}/members/{userId} (the `UpdateGroupMember` operationId).
 	UpdateGroupMember(ctx context.Context, groupId GroupId, userId UserId, body UpdateGroupMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListPermissions List permissions
+	//
+	// Any signed-in caller. Every permission that exists, with a description of what it
+	// allows, sorted by name. `grantableToServiceAccount` is false for the permissions no
+	// service account may hold. What a caller may grant from the list is decided where
+	// the grant is made. See docs/auth.md.
+	//
+	// Corresponds with GET /api/v1/permissions (the `ListPermissions` operationId).
+	ListPermissions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListProcesses List processes
 	//
@@ -4045,6 +4076,26 @@ func (c *Client) UpdateGroupMemberWithBody(ctx context.Context, groupId GroupId,
 // Corresponds with PUT /api/v1/groups/{groupId}/members/{userId} (the `UpdateGroupMember` operationId).
 func (c *Client) UpdateGroupMember(ctx context.Context, groupId GroupId, userId UserId, body UpdateGroupMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateGroupMemberRequest(c.Server, groupId, userId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListPermissions List permissions
+//
+// Any signed-in caller. Every permission that exists, with a description of what it
+// allows, sorted by name. `grantableToServiceAccount` is false for the permissions no
+// service account may hold. What a caller may grant from the list is decided where
+// the grant is made. See docs/auth.md.
+//
+// Corresponds with GET /api/v1/permissions (the `ListPermissions` operationId).
+func (c *Client) ListPermissions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListPermissionsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -7775,6 +7826,33 @@ func NewUpdateGroupMemberRequestWithBody(server string, groupId GroupId, userId 
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListPermissionsRequest constructs an http.Request for the ListPermissions method
+func NewListPermissionsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/permissions")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -12069,6 +12147,18 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/v1/groups/{groupId}/members/{userId} (the `UpdateGroupMember` operationId).
 	UpdateGroupMemberWithResponse(ctx context.Context, groupId GroupId, userId UserId, body UpdateGroupMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupMemberResponse, error)
 
+	// ListPermissionsWithResponse List permissions
+	//
+	// Any signed-in caller. Every permission that exists, with a description of what it
+	// allows, sorted by name. `grantableToServiceAccount` is false for the permissions no
+	// service account may hold. What a caller may grant from the list is decided where
+	// the grant is made. See docs/auth.md.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/permissions (the `ListPermissions` operationId).
+	ListPermissionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPermissionsResponse, error)
+
 	// ListProcessesWithResponse List processes
 	//
 	// The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
@@ -15916,6 +16006,75 @@ func (r UpdateGroupMemberResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateGroupMemberResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListPermissionsResponse401Headers the declared response headers of an HTTP 401 response for ListPermissions
+type ListPermissionsResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListPermissionsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]Permission
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListPermissionsResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListPermissionsResponse) GetJSON200() *[]Permission {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListPermissionsResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListPermissionsResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListPermissionsResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListPermissionsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListPermissionsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListPermissionsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListPermissionsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -24693,6 +24852,24 @@ func (c *ClientWithResponses) UpdateGroupMemberWithResponse(ctx context.Context,
 	return ParseUpdateGroupMemberResponse(rsp)
 }
 
+// ListPermissionsWithResponse List permissions
+//
+// Any signed-in caller. Every permission that exists, with a description of what it
+// allows, sorted by name. `grantableToServiceAccount` is false for the permissions no
+// service account may hold. What a caller may grant from the list is decided where
+// the grant is made. See docs/auth.md.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/permissions (the `ListPermissions` operationId).
+func (c *ClientWithResponses) ListPermissionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListPermissionsResponse, error) {
+	rsp, err := c.ListPermissions(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListPermissionsResponse(rsp)
+}
+
 // ListProcessesWithResponse List processes
 //
 // The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
@@ -29081,6 +29258,66 @@ func ParseUpdateGroupMemberResponse(rsp *http.Response) (*UpdateGroupMemberRespo
 	switch {
 	case rsp.StatusCode == 401:
 		var headers UpdateGroupMemberResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListPermissionsResponse parses an HTTP response from a ListPermissionsWithResponse call
+func ParseListPermissionsResponse(rsp *http.Response) (*ListPermissionsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListPermissionsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Permission
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListPermissionsResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {

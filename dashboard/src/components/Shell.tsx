@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
+import { useBrand } from "@/lib/branding";
 import { useInteractiveAuth } from "@/lib/interactive-auth";
 import { useSession } from "@/lib/session";
 import { AiravataMark, Icon, type IconName } from "./Icons";
@@ -70,6 +71,7 @@ const CONNECTION_LABEL = {
 export function Shell({ children }: { children: React.ReactNode }) {
   const { token, me, isAdmin, active, signOut } = useSession();
   const { current, connection } = useInteractiveAuth();
+  const brand = useBrand();
   const pathname = usePathname();
   const router = useRouter();
   const onLogin = pathname.startsWith("/login");
@@ -128,9 +130,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className={`shell${collapsed ? " collapsed" : ""}`}>
       <aside className="rail">
-        <Link href="/" className="rail-logo" aria-label="Apache Airavata home">
-          <AiravataMark size={30} />
-          <span>Airavata</span>
+        <Link href="/" className="rail-logo" aria-label={`${brand.name} home`}>
+          {brand.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="rail-logo-img" src={brand.logoUrl} alt="" />
+          ) : (
+            <AiravataMark size={30} />
+          )}
+          <span>{brand.name}</span>
         </Link>
         <nav className="rail-nav" aria-label="Main">
           {NAV_GROUPS.map((g) => (
