@@ -169,6 +169,13 @@ h3 {
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
+.rail-logo-img {
+  height: 30px;
+  max-width: 120px;
+  width: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+}
 .rail-logo:hover {
   text-decoration: none;
 }

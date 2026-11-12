@@ -368,6 +368,21 @@ cd dashboard
 NEXT_PUBLIC_AIRAVATA_API_URL=http://localhost:9095 npm run dev   # http://localhost:3000/dashboard/
 ```
 
+### Branding
+
+The sidebar's logo and name are configurable. At build time, set
+`NEXT_PUBLIC_AIRAVATA_BRAND_NAME` and `NEXT_PUBLIC_AIRAVATA_BRAND_LOGO_URL` (a file in
+`dashboard/public/`, or an `https://` URL). After a build, edit `dashboard/out/branding.json`
+(or the `branding.json` in the directory `AIRAVATA_DASHBOARD_DIR` points at) and copy the logo
+file beside it; the browser reads it on load, so no rebuild is needed:
+
+```json
+{ "name": "My Portal", "logoUrl": "logo.svg" }
+```
+
+Either field may be left out, and the file overrides the build-time values. With no logo
+the Airavata mark is shown.
+
 ---
 
 ## Production notes
