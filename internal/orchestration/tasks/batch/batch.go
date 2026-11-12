@@ -376,7 +376,10 @@ func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
 		scancel = path.Join(*cluster.SlurmHome, "scancel")
 	}
 	dialConfig := ssh.NewSSHDialConfig(cluster.HeadnodeHost, cluster.HeadnodePort, clusterConfig.LoginUser, *clusterConfig.SSHCredential, *process.OwnerID)
-	if _, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, ssh.ShellQuote(scancel)+" "+ssh.ShellQuote(*process.BatchProcess.JobID),
+	// Bounded, since a stop request waits on this.
+	sshCtx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
+	if _, stderr, err := ssh.RunSSHCommand(sshCtx, dialConfig, a.sshContext, ssh.ShellQuote(scancel)+" "+ssh.ShellQuote(*process.BatchProcess.JobID),
 		fmt.Sprintf("ssh scancel %s@%s", clusterConfig.LoginUser, cluster.HeadnodeHost)); err != nil && !jobGone.MatchString(stderr) {
 		return err
 	}

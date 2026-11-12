@@ -144,8 +144,7 @@ func (r *ProcessRepository) ReplaceOutputMappings(ctx context.Context, batchProc
 	return db.Create(mappings).Error
 }
 
-// HasStatus reports whether the process was ever given status. A stop is read this way
-// rather than off the newest status, which a write racing the stop can replace.
+// HasStatus reports whether the process was ever given status.
 func (r *ProcessRepository) HasStatus(ctx context.Context, processID string, status model.ProcessStatusType) (bool, error) {
 	var n int64
 	err := r.db.WithContext(ctx).Model(&model.ProcessStatus{}).

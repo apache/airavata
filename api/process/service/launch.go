@@ -482,5 +482,13 @@ func (s *LaunchService) Stop(ctx context.Context, processID string) error {
 	if err := s.requireOwnership(ctx, proc); err != nil {
 		return err
 	}
+	// A failed run has nothing left to stop, and stays retryable.
+	recorded, err := s.processWorkflows.FindByProcessID(ctx, processID)
+	if err != nil {
+		return err
+	}
+	if _, err := workflowToRetry(processID, recorded); err == nil {
+		return nil
+	}
 	return s.executionEngine.Stop(context.WithoutCancel(ctx), processID)
 }

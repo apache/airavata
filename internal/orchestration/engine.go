@@ -248,14 +248,13 @@ func (w *ExecutionEngine) LaunchWorkflow(ctx context.Context, workflowID, proces
 }
 
 func (w *ExecutionEngine) Stop(ctx context.Context, processID string) error {
-	if done, err := w.processes.HasStatus(ctx, processID, model.ProcessStatusTypeCompleted); done || err != nil {
+	if err := w.processStatus.Create(ctx, &model.ProcessStatus{ProcessID: &processID,
+		Status: internalptr.To(model.ProcessStatusTypeStopped), Timestamp: internalptr.To(time.Now().UnixMilli())}); err != nil {
 		return err
 	}
+	// Not recorded, so the process had already completed.
 	if !execution.Stopped(ctx, w.processes, processID) {
-		if err := w.processStatus.Create(ctx, &model.ProcessStatus{ProcessID: &processID,
-			Status: internalptr.To(model.ProcessStatusTypeStopped), Timestamp: internalptr.To(time.Now().UnixMilli())}); err != nil {
-			return err
-		}
+		return nil
 	}
 	// Workflows first, so a workflow sees its cancellation before its interrupted task.
 	err := w.cancelWorkflows(ctx, processID)
