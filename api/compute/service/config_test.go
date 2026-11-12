@@ -28,6 +28,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	computemodel "github.com/apache/airavata/api/compute/model"
@@ -71,7 +72,7 @@ func userCtx(name string) context.Context {
 }
 
 func adminCtx(name string) context.Context {
-	return auth.WithPrincipal(context.Background(), &auth.Principal{Name: name, Authorities: []string{"ADMIN"}})
+	return auth.WithPrincipal(context.Background(), &auth.Principal{Name: name, Authorities: []string{"ADMIN"}, Permissions: permission.SetOf(permission.All()...)})
 }
 
 func newConfigFixture(t *testing.T) *configFixture {

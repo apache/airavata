@@ -26,6 +26,7 @@ import (
 	"context"
 
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 	"github.com/apache/airavata/internal/role"
 )
 
@@ -41,6 +42,12 @@ type Principal struct {
 	Name        string
 	Authorities []string
 	Attributes  map[string]any
+
+	// Permissions is what Authorities grant, resolved by Middleware once per request.
+	// An introspector never sets it: like the authorities, it is looked up server-side
+	// rather than read from the token. It is empty for a principal that did not come
+	// through Middleware, which therefore holds no permission.
+	Permissions permission.Set
 
 	// Status is the user record's status for a CILogon principal, and empty for the
 	// root account and service accounts, whose standing is decided elsewhere.
@@ -114,28 +121,4 @@ func RequireAnyAuthority(ctx context.Context, want ...string) (*Principal, error
 		return nil, httpx.Forbidden("Access denied")
 	}
 	return p, nil
-}
-
-// RequireAdmin is shorthand for the ADMIN/SUPER_ADMIN pairing.
-func RequireAdmin(ctx context.Context) (*Principal, error) {
-	return RequireAnyAuthority(ctx, string(role.Admin), string(role.SuperAdmin))
-}
-
-// RequireSuperAdmin gates the user-registration path.
-func RequireSuperAdmin(ctx context.Context) (*Principal, error) {
-	return RequireAnyAuthority(ctx, string(role.SuperAdmin))
-}
-
-// RequireSelfOrAdmin allows the owner or any admin, and is the imperative check the
-// credential, data and user services use in place of an annotation. The message is
-// caller-supplied because each service phrases its own.
-func RequireSelfOrAdmin(ctx context.Context, ownerID string, message string) (*Principal, error) {
-	p, err := RequireAuthenticated(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if p.Name == ownerID || p.IsAdmin() {
-		return p, nil
-	}
-	return nil, httpx.Forbidden("%s", message)
 }

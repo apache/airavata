@@ -29,6 +29,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
@@ -56,7 +57,7 @@ func NewUserService(db *gorm.DB, repo *repository.UserRepository) *UserService {
 // Status and creation time are set here rather than taken from the request, so a
 // caller cannot register an account that is already suspended or backdated.
 func (s *UserService) Register(ctx context.Context, req *dto.UserRegistration) (*dto.UserResponse, error) {
-	if _, err := auth.RequireSuperAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.UserCreate); err != nil {
 		return nil, err
 	}
 	// Service accounts have their own API, which is what issues their token. One
@@ -92,7 +93,7 @@ func (s *UserService) Register(ctx context.Context, req *dto.UserRegistration) (
 // Get returns one user. Admins may read anyone; everyone else may read only
 // themselves.
 func (s *UserService) Get(ctx context.Context, userID string) (*dto.UserResponse, error) {
-	if _, err := auth.RequireSelfOrAdmin(ctx, userID,
+	if _, err := auth.RequireSelfOrPermission(ctx, userID, permission.UserReadAny,
 		"Access denied: You can only access your own user information"); err != nil {
 		return nil, err
 	}
@@ -106,9 +107,9 @@ func (s *UserService) Get(ctx context.Context, userID string) (*dto.UserResponse
 }
 
 // List returns every user, with the email, auth method and roles an administrator
-// needs to decide on them. Admin only.
+// needs to decide on them. Needs user:list.
 func (s *UserService) List(ctx context.Context) ([]dto.UserAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.UserList); err != nil {
 		return nil, err
 	}
 
@@ -134,6 +135,7 @@ func (s *UserService) Me(ctx context.Context) (*dto.CurrentUserResponse, error) 
 		UserID:      principal.Name,
 		Status:      principal.Status,
 		Authorities: principal.Authorities,
+		Permissions: principal.Permissions.Sorted(),
 		Admin:       principal.IsAdmin(),
 	}
 	if out.Status == "" {
@@ -150,14 +152,14 @@ func (s *UserService) Me(ctx context.Context) (*dto.CurrentUserResponse, error) 
 	return out, nil
 }
 
-// SetStatus activates, deactivates or suspends a user. Admin only.
+// SetStatus activates, deactivates or suspends a user. Needs user:set_status.
 //
 // An administrator cannot change their own status, which would be a way to lock the
 // last administrator out. Only a Super Admin may change another administrator's
 // status, so an ADMIN cannot suspend the people who appoint admins. Service accounts
 // have their own lifecycle under /api/v1/service-accounts.
 func (s *UserService) SetStatus(ctx context.Context, userID string, req *dto.UserStatusUpdate) (*dto.UserAccountResponse, error) {
-	principal, err := auth.RequireAdmin(ctx)
+	principal, err := auth.RequirePermission(ctx, permission.UserSetStatus)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +175,7 @@ func (s *UserService) SetStatus(ctx context.Context, userID string, req *dto.Use
 		return nil, httpx.Invalid([]httpx.FieldError{{Field: "userId",
 			Message: "Service accounts are managed through /api/v1/service-accounts"}})
 	}
-	if user.IsAdmin() && !principal.HasAnyAuthority(string(model.RoleSuperAdmin)) {
+	if user.IsAdmin() && !principal.Can(permission.AdminManage) {
 		return nil, httpx.Forbidden("Only a Super Admin can change an administrator's status")
 	}
 
@@ -186,13 +188,13 @@ func (s *UserService) SetStatus(ctx context.Context, userID string, req *dto.Use
 	return &out, nil
 }
 
-// SetAdmin grants or withdraws the ADMIN role. Super Admin only.
+// SetAdmin grants or withdraws the ADMIN role. Needs admin:manage, which only SUPER_ADMIN holds by default.
 //
 // A Super Admin cannot change their own role, and a Super Admin's standing is not
 // something this call touches: SUPER_ADMIN accounts are rejected. Service accounts
 // never hold administrator rights.
 func (s *UserService) SetAdmin(ctx context.Context, userID string, req *dto.UserAdminUpdate) (*dto.UserAccountResponse, error) {
-	principal, err := auth.RequireSuperAdmin(ctx)
+	principal, err := auth.RequirePermission(ctx, permission.AdminManage)
 	if err != nil {
 		return nil, err
 	}
@@ -239,7 +241,7 @@ func (s *UserService) Update(ctx context.Context, userID string, req *dto.UserRe
 	if err != nil {
 		return nil, err
 	}
-	if principal.Name != userID && !principal.HasAnyAuthority(string(model.RoleSuperAdmin)) {
+	if principal.Name != userID && !principal.Can(permission.UserUpdateAny) {
 		return nil, httpx.Forbidden("Access denied: You can only update your own user information")
 	}
 

@@ -29,6 +29,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
@@ -40,7 +41,7 @@ import (
 // ServiceAccountService administers service accounts: non-human users that
 // authenticate with an Airavata-issued, expiring token.
 //
-// Every operation is admin only. A service account is otherwise an ordinary user —
+// Every operation needs serviceaccount:read or serviceaccount:manage, which ADMIN holds by default. A service account is otherwise an ordinary user —
 // it owns what it creates, can be shared with and can join groups — but it can never
 // administer anything: its token always resolves to USER authority, and since
 // creating service accounts needs ADMIN, a service account cannot mint another.
@@ -62,7 +63,7 @@ func NewServiceAccountService(db *gorm.DB, accounts *repository.ServiceAccountRe
 // Create registers a service account and mints its first token. The token is in the
 // response and nowhere else; it cannot be read back later.
 func (s *ServiceAccountService) Create(ctx context.Context, req *dto.ServiceAccountCreate) (*dto.ServiceAccountTokenResponse, error) {
-	admin, err := auth.RequireAdmin(ctx)
+	admin, err := auth.RequirePermission(ctx, permission.ServiceAccountManage)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +116,7 @@ func (s *ServiceAccountService) Create(ctx context.Context, req *dto.ServiceAcco
 
 // List returns every service account.
 func (s *ServiceAccountService) List(ctx context.Context) ([]dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountRead); err != nil {
 		return nil, err
 	}
 	users, err := s.accounts.FindAll(ctx)
@@ -131,7 +132,7 @@ func (s *ServiceAccountService) List(ctx context.Context) ([]dto.ServiceAccountR
 
 // Get returns one service account.
 func (s *ServiceAccountService) Get(ctx context.Context, id string) (*dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountRead); err != nil {
 		return nil, err
 	}
 	user, err := s.require(ctx, s.accounts, id)
@@ -146,7 +147,7 @@ func (s *ServiceAccountService) Get(ctx context.Context, id string) (*dto.Servic
 // Setting the status to anything but ACTIVE stops its token working immediately,
 // without discarding it, so the account can be re-enabled.
 func (s *ServiceAccountService) Update(ctx context.Context, id string, req *dto.ServiceAccountUpdate) (*dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountManage); err != nil {
 		return nil, err
 	}
 
@@ -184,7 +185,7 @@ func (s *ServiceAccountService) Update(ctx context.Context, id string, req *dto.
 // itself is unchanged, so whatever holds it keeps working. An expired token can be
 // renewed back into use.
 func (s *ServiceAccountService) RenewToken(ctx context.Context, id string, req *dto.ServiceAccountTokenRequest) (*dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountManage); err != nil {
 		return nil, err
 	}
 
@@ -207,7 +208,7 @@ func (s *ServiceAccountService) RenewToken(ctx context.Context, id string, req *
 // RegenerateToken replaces the token with a new one. The old token stops working in
 // the same write; this is how a leaked token is revoked.
 func (s *ServiceAccountService) RegenerateToken(ctx context.Context, id string, req *dto.ServiceAccountTokenRequest) (*dto.ServiceAccountTokenResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountManage); err != nil {
 		return nil, err
 	}
 
@@ -244,7 +245,7 @@ func (s *ServiceAccountService) RegenerateToken(ctx context.Context, id string, 
 // transferred implicitly — and gets 409. Disabling it (status INACTIVE) revokes its
 // access while keeping what it owns.
 func (s *ServiceAccountService) Delete(ctx context.Context, id string) error {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountManage); err != nil {
 		return err
 	}
 

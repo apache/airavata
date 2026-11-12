@@ -28,6 +28,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	model "github.com/apache/airavata/api/data/model"
 	"github.com/apache/airavata/api/data/repository"
@@ -121,7 +122,7 @@ func (a directoryAccess) permissionOf(ctx context.Context, dir *model.VirtualDat
 	if err != nil {
 		return sharingmodel.AccessPermissionNone, false, err
 	}
-	if principal.IsAdmin() {
+	if principal.Can(permission.ResourceManageAny) {
 		return sharingmodel.AccessPermissionWrite, true, nil
 	}
 

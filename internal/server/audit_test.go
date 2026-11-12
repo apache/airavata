@@ -32,6 +32,8 @@ import (
 	auditmodel "github.com/apache/airavata/api/audit/model"
 	iammodel "github.com/apache/airavata/api/iam/model"
 	"github.com/apache/airavata/internal/auth"
+	"github.com/apache/airavata/internal/permission"
+	"github.com/apache/airavata/internal/role"
 	"gorm.io/gorm"
 )
 
@@ -246,5 +248,57 @@ func TestAuditEndpointRejectsBadQuery(t *testing.T) {
 		if rec := h.do("GET", "/api/v1/audit-events"+q, tokenAdmin, nil); rec.Code != http.StatusBadRequest {
 			t.Errorf("%s: status = %d, want 400", q, rec.Code)
 		}
+	}
+}
+
+// Audit access follows the permission, not the role name: granting audit:read to USER
+// opens the log to a plain user, and revoking it closes it again.
+func TestAuditAccessFollowsRolePermissions(t *testing.T) {
+	h := newHarness(t)
+	const path = "/api/v1/audit-events"
+
+	if rec := h.do("GET", path, tokenAlice, nil); rec.Code != http.StatusForbidden {
+		t.Fatalf("user without the permission: status = %d, want 403", rec.Code)
+	}
+	if rec := h.do("GET", path, "", nil); rec.Code != http.StatusUnauthorized {
+		t.Fatalf("anonymous: status = %d, want 401", rec.Code)
+	}
+
+	grant := iammodel.RolePermission{Role: role.User, Permission: permission.AuditRead}
+	if err := h.db.Create(&grant).Error; err != nil {
+		t.Fatal(err)
+	}
+	h.svcs.Permissions.Invalidate()
+	if rec := h.do("GET", path, tokenAlice, nil); rec.Code != http.StatusOK {
+		t.Fatalf("user after grant: status = %d, want 200", rec.Code)
+	}
+
+	if err := h.db.Delete(&grant).Error; err != nil {
+		t.Fatal(err)
+	}
+	h.svcs.Permissions.Invalidate()
+	if rec := h.do("GET", path, tokenAlice, nil); rec.Code != http.StatusForbidden {
+		t.Fatalf("user after revoke: status = %d, want 403", rec.Code)
+	}
+	// ADMIN still has its default grant.
+	if rec := h.do("GET", path, tokenAdmin, nil); rec.Code != http.StatusOK {
+		t.Fatalf("admin: status = %d, want 200", rec.Code)
+	}
+}
+
+func TestCurrentUserListsPermissions(t *testing.T) {
+	h := newHarness(t)
+	admin := h.mustDo("GET", "/api/v1/users/me", tokenAdmin, nil, http.StatusOK)
+	got, _ := admin["permissions"].([]any)
+	has := map[any]bool{}
+	for _, p := range got {
+		has[p] = true
+	}
+	if !has["audit:read"] || !has["user:set_status"] || has["admin:manage"] {
+		t.Errorf("admin permissions = %v, want the ADMIN defaults without admin:manage", got)
+	}
+	alice := h.mustDo("GET", "/api/v1/users/me", tokenAlice, nil, http.StatusOK)
+	if got, ok := alice["permissions"].([]any); !ok || len(got) != 0 {
+		t.Errorf("user permissions = %v, want []", alice["permissions"])
 	}
 }

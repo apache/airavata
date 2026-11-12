@@ -27,6 +27,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/auth"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
@@ -64,10 +65,10 @@ func NewVirtualDataDirectoryService(
 	}
 }
 
-// List returns every directory node across every dataset. Admin only — it names who
+// List returns every directory node across every dataset. Needs virtualdirectory:list — it names who
 // holds what data.
 func (s *VirtualDataDirectoryService) List(ctx context.Context) ([]dto.VirtualDataDirectoryResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.VirtualDirectoryList); err != nil {
 		return nil, err
 	}
 	dirs, err := s.directories.FindAll(ctx)

@@ -31,6 +31,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/application/dto"
 	model "github.com/apache/airavata/api/application/model"
@@ -86,7 +87,7 @@ func (s *TemplateService) Get(ctx context.Context, id string) (*dto.TemplateResp
 
 // Create registers a template together with its declarations.
 func (s *TemplateService) Create(ctx context.Context, req *dto.TemplateRequest) (*dto.TemplateResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.TemplateManage); err != nil {
 		return nil, err
 	}
 
@@ -118,7 +119,7 @@ func (s *TemplateService) Create(ctx context.Context, req *dto.TemplateRequest) 
 
 // Update replaces a template's fields and its declaration set.
 func (s *TemplateService) Update(ctx context.Context, id string, req *dto.TemplateRequest) (*dto.TemplateResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.TemplateManage); err != nil {
 		return nil, err
 	}
 
@@ -160,7 +161,7 @@ func (s *TemplateService) Update(ctx context.Context, id string, req *dto.Templa
 // endpoints, so removing the template out from under them is rejected rather than
 // cascaded.
 func (s *TemplateService) Delete(ctx context.Context, id string) error {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.TemplateManage); err != nil {
 		return err
 	}
 
@@ -233,7 +234,7 @@ func (s *BatchDeploymentService) Get(ctx context.Context, id string) (*dto.Batch
 
 // Create registers a deployment and the resource request it owns.
 func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeploymentRequest) (*dto.BatchDeploymentResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.DeploymentManage); err != nil {
 		return nil, err
 	}
 
@@ -275,7 +276,7 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 // Update changes a deployment, mutating its owned config in place so the config row
 // survives the edit rather than being replaced.
 func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto.BatchDeploymentRequest) (*dto.BatchDeploymentResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.DeploymentManage); err != nil {
 		return nil, err
 	}
 
@@ -322,7 +323,7 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 
 // Delete removes a deployment and its owned config.
 func (s *BatchDeploymentService) Delete(ctx context.Context, id string) error {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.DeploymentManage); err != nil {
 		return err
 	}
 	deployment, err := s.deployments.FindByID(ctx, id)

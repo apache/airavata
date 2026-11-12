@@ -27,6 +27,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	credmodel "github.com/apache/airavata/api/credentials/model"
 	credsvc "github.com/apache/airavata/api/credentials/service"
@@ -149,10 +150,10 @@ func NewSCPDataStorageService(
 	}
 }
 
-// List returns every storage across every owner. Admin only — it names who stages what
+// List returns every storage across every owner. Needs storage:list — it names who stages what
 // where.
 func (s *SCPDataStorageService) List(ctx context.Context) ([]dto.SCPDataStorageResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.StorageList); err != nil {
 		return nil, err
 	}
 	storages, err := s.storages.FindAll(ctx)

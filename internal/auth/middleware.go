@@ -37,7 +37,11 @@ import (
 // is a token that is present but unusable: a caller who supplies a bad token gets 401
 // rather than being silently downgraded to anonymous, which would otherwise turn a
 // typo'd token into a confusing 403 further down.
-func Middleware(introspector Introspector) func(http.Handler) http.Handler {
+func Middleware(introspector Introspector, opts ...Option) func(http.Handler) http.Handler {
+	var cfg middlewareConfig
+	for _, opt := range opts {
+		opt(&cfg)
+	}
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token := bearerToken(r)
@@ -68,6 +72,10 @@ func Middleware(introspector Introspector) func(http.Handler) http.Handler {
 			if !principal.Active() && !(r.Method == http.MethodGet && r.URL.Path == CurrentUserPath) {
 				httpx.WriteError(w, r, httpx.Forbidden("%s", inactiveMessage(principal.Status)))
 				return
+			}
+
+			if cfg.permissions != nil {
+				principal.Permissions = cfg.permissions.Permissions(r.Context(), principal.Authorities)
 			}
 
 			next.ServeHTTP(w, r.WithContext(WithPrincipal(r.Context(), principal)))

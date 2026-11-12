@@ -36,6 +36,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 	dto "github.com/apache/airavata/api/sharing/dto"
@@ -75,7 +76,7 @@ func (a Access) PermissionOf(ctx context.Context, ownerID *string, shares []mode
 	if err != nil {
 		return model.AccessPermissionNone, false, err
 	}
-	if principal.IsAdmin() || (ownerID != nil && *ownerID == principal.Name) {
+	if principal.Can(permission.ResourceManageAny) || (ownerID != nil && *ownerID == principal.Name) {
 		return model.AccessPermissionWrite, true, nil
 	}
 

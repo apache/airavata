@@ -3387,13 +3387,17 @@ components:
         authorities:
           type: array
           items: { type: string }
+        permissions:
+          description: What the caller's roles grant, sorted, such as `audit:read`.
+          type: array
+          items: { type: string }
         admin: { type: boolean }
         user:
           description: The caller's user record, or null if they have none.
           oneOf:
             - { $ref: "#/components/schemas/UserAccount" }
             - { type: "null" }
-      required: [userId, status, authorities, admin, user]
+      required: [userId, status, authorities, permissions, admin, user]
 
     UserStatusUpdate:
       type: object

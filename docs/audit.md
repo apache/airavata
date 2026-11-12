@@ -27,7 +27,7 @@ When a record is deleted, anything the database removes along with it, such as a
 
 ## Reading the log
 
-Only `ADMIN` and `SUPER_ADMIN` can read it, because it names what every user did.
+Reading it needs the `audit:read` permission, which `ADMIN` and `SUPER_ADMIN` have by default, because the log names what every user did. See [Permissions](auth.md#permissions).
 
 ```
 GET /api/v1/audit-events

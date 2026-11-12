@@ -92,7 +92,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 
 	// Outermost first: CORS answers preflights before authentication runs, since a
 	// preflight carries no credentials by definition.
-	return cors(cfg.CORSAllowedOrigins)(auth.Middleware(introspector)(mux))
+	return cors(cfg.CORSAllowedOrigins)(auth.Middleware(introspector, auth.WithPermissions(svcs.Permissions))(mux))
 }
 
 // cors applies the airavata.cors.allowed-origins policy.

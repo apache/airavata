@@ -24,6 +24,8 @@ package db
 import (
 	"gorm.io/gorm"
 
+	"github.com/apache/airavata/internal/permission"
+
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	auditmodel "github.com/apache/airavata/api/audit/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
@@ -48,6 +50,7 @@ func Entities() []any {
 
 		// One level in.
 		&iammodel.UserRole{},
+		&iammodel.RolePermission{},
 		&iammodel.ServiceAccount{},
 		&iammodel.Group{},
 		&computemodel.SlurmCluster{},
@@ -125,5 +128,35 @@ func Entities() []any {
 // indexes but never drops or narrows anything. Production schema changes belong in
 // versioned migrations.
 func AutoMigrate(gdb *gorm.DB) error {
-	return gdb.AutoMigrate(Entities()...)
+	if err := gdb.AutoMigrate(Entities()...); err != nil {
+		return err
+	}
+	return seedRolePermissions(gdb)
+}
+
+// seedRolePermissions gives a fresh schema the default grants, the way migration
+// 0015_role_permissions.sql does for a versioned one.
+//
+// It seeds only an empty table. Once any grant exists the table is the administrators'
+// to edit, and re-inserting the defaults on every start would quietly undo a revoked
+// permission. A permission added by a later release reaches an existing database
+// through a migration, not through here.
+func seedRolePermissions(gdb *gorm.DB) error {
+	var existing int64
+	if err := gdb.Model(&iammodel.RolePermission{}).Count(&existing).Error; err != nil {
+		return err
+	}
+	if existing > 0 {
+		return nil
+	}
+	var rows []iammodel.RolePermission
+	for r, perms := range permission.Defaults() {
+		for _, p := range perms {
+			rows = append(rows, iammodel.RolePermission{Role: r, Permission: p})
+		}
+	}
+	if len(rows) == 0 {
+		return nil
+	}
+	return gdb.Create(&rows).Error
 }

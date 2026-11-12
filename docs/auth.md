@@ -171,7 +171,7 @@ Administrators activate, suspend and deactivate users on the dashboard's **Users
 
 | Route | Who | Purpose |
 |---|---|---|
-| `GET /api/v1/users/me` | Any signed-in caller, active or not | `{userId, status, authorities, admin, user}`: who the server thinks the caller is |
+| `GET /api/v1/users/me` | Any signed-in caller, active or not | `{userId, status, authorities, permissions, admin, user}`: who the server thinks the caller is |
 | `GET /api/v1/users` | `ADMIN`, `SUPER_ADMIN` | Every user, with email, sign-in method, roles and status |
 | `POST /api/v1/users/{userId}/status` | `ADMIN`, `SUPER_ADMIN` | `{"status": "ACTIVE" \| "SUSPENDED" \| "INACTIVE"}` |
 
@@ -298,6 +298,50 @@ Roles are stored in Airavata's `user_roles` table and looked up on every request
 | `USER` | The default for anyone with no role row, and the only role a service account ever has. Self-service: register SSH credentials, cluster configs, storages, data products, templates, deployments and runs; manage and share what you own. |
 | `ADMIN` | Platform-wide listings (every process, config, storage and user), and activating and suspending users other than administrators. |
 | `SUPER_ADMIN` | Everything `ADMIN` can do, plus changing administrators' status and creating user records ahead of a first sign-in. The root account has this role. |
+
+### Permissions
+
+Actions that need privilege are gated by a **permission** such as `audit:read`, not by a role name. Each role is granted a set of permissions in Airavata's `role_permissions` table, and a caller holds the union of what their roles grant. Which roles may do something is therefore data, not code. `GET /api/v1/users/me` lists the caller's permissions.
+
+| Permission | Allows | Default |
+|---|---|---|
+| `audit:read` | Reading the [audit log](audit.md) | `ADMIN` |
+| `user:list` | Listing every user | `ADMIN` |
+| `user:read_any` | Reading another user's record | `ADMIN` |
+| `user:set_status` | Activating, suspending and deactivating users | `ADMIN` |
+| `user:create` | Creating a user record ahead of the user's first sign-in | `SUPER_ADMIN` only |
+| `user:update_any` | Editing another user's profile | `SUPER_ADMIN` only |
+| `admin:manage` | Appointing and removing administrators, and changing an administrator's status | `SUPER_ADMIN` only |
+| `group:list` | Listing every group | `ADMIN` |
+| `group:read_any` | Reading a group the caller is not in | `ADMIN` |
+| `group:manage_any` | Renaming, deleting and managing the members of any group | `ADMIN` |
+| `serviceaccount:read` | Listing and reading service accounts | `ADMIN` |
+| `serviceaccount:manage` | Creating, editing and deleting service accounts, and re-issuing their tokens | `ADMIN` |
+| `cluster:manage` | Creating, editing and deleting clusters and their partitions | `ADMIN` |
+| `cluster:discover` | Discovering a cluster's partitions over SSH | `ADMIN` |
+| `clusterconfig:list` | Listing every cluster config | `ADMIN` |
+| `template:manage` | Creating, editing and deleting application templates | `ADMIN` |
+| `deployment:manage` | Creating, editing and deleting batch deployments | `ADMIN` |
+| `storage:list` | Listing every data storage | `ADMIN` |
+| `dataproduct:list` | Listing every data product | `ADMIN` |
+| `virtualdirectory:list` | Listing every virtual data directory | `ADMIN` |
+| `resource:manage_any` | Acting as the owner of any cluster config, data storage, data product or virtual data directory. SSH credentials are not included: they stay visible to their owner only | `ADMIN` |
+| `process:list` | Listing every process | `ADMIN` |
+| `process:update` | Editing any process directly | `ADMIN` |
+| `process:delete` | Deleting any process | `ADMIN` |
+| `process:manage_any` | Reading, launching and editing the tasks, statuses and workflows of any process | `ADMIN` |
+
+A name ending in `_any` is an override that reaches records the caller does not own. A caller can always act on their own records, and on records shared with them, without any permission. Granting only one of these permissions grants exactly that: a role holding `process:update` can edit a process, but still needs access to the cluster config the process names.
+
+Where the API reference says an endpoint is "admin only", read it as "needs the permission listed here, which `ADMIN` holds by default".
+
+`SUPER_ADMIN` holds every permission by definition and is never looked up in the table, so no change to `role_permissions` can lock the last administrator out. To let another role read the audit log, for example:
+
+```sql
+INSERT INTO role_permissions (role, permission) VALUES ('USER', 'audit:read');
+```
+
+Grants are cached for a minute, so a change made directly in the database reaches every request within that time.
 
 ### Ownership
 

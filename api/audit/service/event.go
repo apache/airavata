@@ -25,12 +25,13 @@ import (
 	"context"
 
 	"github.com/apache/airavata/internal/auth"
+	"github.com/apache/airavata/internal/permission"
 
 	"github.com/apache/airavata/api/audit/dto"
 	"github.com/apache/airavata/api/audit/repository"
 )
 
-// EventService reads the audit log. Every call needs ADMIN or SUPER_ADMIN: the log
+// EventService reads the audit log. Every call needs the audit:read permission: the log
 // names what every user did.
 type EventService struct{ events *repository.EventRepository }
 
@@ -41,7 +42,7 @@ func NewEventService(events *repository.EventRepository) *EventService {
 
 // List returns one page of events matching q, newest first.
 func (s *EventService) List(ctx context.Context, q *dto.EventQuery) (*dto.EventPage, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.AuditRead); err != nil {
 		return nil, err
 	}
 	found, err := s.events.Find(ctx, q)
@@ -64,7 +65,7 @@ func (s *EventService) List(ctx context.Context, q *dto.EventQuery) (*dto.EventP
 
 // EntityTypes lists the entity types the log holds events for.
 func (s *EventService) EntityTypes(ctx context.Context) ([]string, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.AuditRead); err != nil {
 		return nil, err
 	}
 	out, err := s.events.EntityTypes(ctx)

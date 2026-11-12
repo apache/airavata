@@ -66,6 +66,11 @@ type Services struct {
 	Config config.Config
 	DB     *gorm.DB
 
+	// Permissions resolves roles to the permissions they grant. The HTTP middleware
+	// resolves each caller through it, and whatever changes role_permissions calls
+	// Invalidate on it so the change takes effect at once.
+	Permissions *iamrepo.PermissionResolver
+
 	// Audit log.
 	Audit *auditsvc.EventService
 
@@ -242,6 +247,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	return &Services{
 		Config: cfg,
 		DB:     db,
+
+		Permissions: iamrepo.NewPermissionResolver(db, iamrepo.DefaultPermissionTTL),
 
 		Audit: auditsvc.NewEventService(repos.AuditEvents),
 

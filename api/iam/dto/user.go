@@ -109,8 +109,11 @@ type CurrentUserResponse struct {
 	UserID string `json:"userId"`
 	// Status is ACTIVE for the root account and service accounts, whose standing is
 	// not kept on a user record.
-	Status      string               `json:"status"`
-	Authorities []string             `json:"authorities"`
+	Status      string   `json:"status"`
+	Authorities []string `json:"authorities"`
+	// Permissions is what the caller's roles grant, sorted. A client can use it to hide
+	// what the caller cannot do; the server enforces it regardless.
+	Permissions []string             `json:"permissions"`
 	Admin       bool                 `json:"admin"`
 	User        *UserAccountResponse `json:"user"`
 }

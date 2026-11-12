@@ -31,6 +31,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	computerepo "github.com/apache/airavata/api/compute/repository"
@@ -60,7 +61,7 @@ func setup(t *testing.T) (*service.SlurmClusterService, *service.ClusterPartitio
 	clusters := computerepo.NewSlurmClusterRepository(gdb)
 	partitions := computerepo.NewClusterPartitionRepository(gdb)
 	configs := computerepo.NewSlurmClusterConfigRepository(gdb)
-	ctx := auth.WithPrincipal(context.Background(), &auth.Principal{Name: "root", Authorities: []string{"ADMIN"}})
+	ctx := auth.WithPrincipal(context.Background(), &auth.Principal{Name: "root", Authorities: []string{"ADMIN"}, Permissions: permission.SetOf(permission.All()...)})
 	return service.NewSlurmClusterService(gdb, clusters, partitions, configs),
 		service.NewClusterPartitionService(gdb, partitions, clusters),
 		ctx
