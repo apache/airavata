@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useInteractiveAuth } from "@/lib/interactive-auth";
 import { useSession } from "@/lib/session";
 import { AiravataMark, Icon, type IconName } from "./Icons";
@@ -15,17 +15,37 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/audit/", label: "Audit log", icon: "history" },
 ];
 
-const NAV: NavItem[] = [
-  { href: "/", label: "Overview", icon: "overview" },
-  { href: "/credentials/", label: "SSH credentials", icon: "key" },
-  { href: "/compute/", label: "Compute clusters", icon: "server" },
-  { href: "/storages/", label: "Storages", icon: "database" },
-  { href: "/applications/", label: "Applications", icon: "app" },
-  { href: "/processes/", label: "Processes", icon: "activity" },
-  { href: "/data/", label: "Data products", icon: "file" },
-  { href: "/groups/", label: "Groups", icon: "users" },
-  { href: "/notebooks/", label: "Notebooks", icon: "notebook" },
-  { href: "/interactive-auth/", label: "Interactive auth", icon: "shield" },
+interface NavGroup {
+  heading: string;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    heading: "Workspace",
+    items: [
+      { href: "/", label: "Overview", icon: "overview" },
+      { href: "/storages/", label: "Storages", icon: "database" },
+      { href: "/data/", label: "Data products", icon: "file" },
+      { href: "/groups/", label: "Groups", icon: "users" },
+      { href: "/notebooks/", label: "Notebooks", icon: "notebook" },
+    ],
+  },
+  {
+    heading: "Compute",
+    items: [
+      { href: "/compute/", label: "Compute clusters", icon: "server" },
+      { href: "/credentials/", label: "SSH credentials", icon: "key" },
+      { href: "/interactive-auth/", label: "Interactive auth", icon: "shield" },
+    ],
+  },
+  {
+    heading: "Applications",
+    items: [
+      { href: "/applications/", label: "Applications", icon: "app" },
+      { href: "/processes/", label: "Processes", icon: "activity" },
+    ],
+  },
 ];
 
 interface NavItem {
@@ -53,6 +73,22 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const onLogin = pathname.startsWith("/login");
+  const [collapsed, setCollapsed] = useState(false);
+
+  // The collapsed state is a per-browser preference; read it after mount so the
+  // statically exported page matches on first paint.
+  useEffect(() => {
+    try {
+      setCollapsed(localStorage.getItem("sidebar-collapsed") === "1");
+    } catch {}
+  }, []);
+  const toggleSidebar = () =>
+    setCollapsed((c) => {
+      try {
+        localStorage.setItem("sidebar-collapsed", c ? "0" : "1");
+      } catch {}
+      return !c;
+    });
 
   useEffect(() => {
     if (token === null && !onLogin) router.replace("/login/");
@@ -66,65 +102,105 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const name = displayName(me) ?? "Signed in";
   const connectionText = `Auth requests: ${CONNECTION_LABEL[connection]}`;
 
+  const items = [...NAV_GROUPS.flatMap((g) => g.items), ...(isAdmin ? ADMIN_NAV : [])];
+  const here = items.find((n) => isActive(n.href));
+  const crumbs = [...(here && ADMIN_NAV.includes(here) ? ["Admin"] : []), here?.label ?? "Dashboard"];
+
+  const link = (n: NavItem) => {
+    const waiting = n.href === "/interactive-auth/" && !!current;
+    const on = isActive(n.href);
+    return (
+      <Link
+        key={n.href}
+        href={n.href}
+        className={`rail-item${on ? " active" : ""}`}
+        aria-label={waiting ? `${n.label} — a login is waiting` : n.label}
+        title={collapsed ? n.label : undefined}
+        aria-current={on ? "page" : undefined}
+      >
+        <Icon name={n.icon} />
+        <span className="rail-label">{n.label}</span>
+        {waiting && <span className="rail-alert" />}
+      </Link>
+    );
+  };
+
   return (
-    <div className="shell">
+    <div className={`shell${collapsed ? " collapsed" : ""}`}>
       <aside className="rail">
         <Link href="/" className="rail-logo" aria-label="Apache Airavata home">
           <AiravataMark size={30} />
-          <span className="tip">Apache Airavata</span>
+          <span>Airavata</span>
         </Link>
         <nav className="rail-nav" aria-label="Main">
-          {[...NAV, ...(isAdmin ? ADMIN_NAV : [])].map((n) => {
-            const waiting = n.href === "/interactive-auth/" && !!current;
-            const label = waiting ? `${n.label} — a login is waiting` : n.label;
-            const on = isActive(n.href);
-            return (
-              <Link
-                key={n.href}
-                href={n.href}
-                className={`rail-item${on ? " active" : ""}`}
-                aria-label={label}
-                aria-current={on ? "page" : undefined}
-              >
-                <Icon name={n.icon} />
-                {waiting && <span className="rail-alert" />}
-                <span className="tip">{label}</span>
-              </Link>
-            );
-          })}
+          {NAV_GROUPS.map((g) => (
+            <Fragment key={g.heading}>
+              <div className="rail-heading">{g.heading}</div>
+              {g.items.map(link)}
+            </Fragment>
+          ))}
+          {isAdmin && (
+            <>
+              <div className="rail-heading">Site administration</div>
+              {ADMIN_NAV.map(link)}
+            </>
+          )}
         </nav>
         <div className="rail-foot">
-          <span className="rail-item static" tabIndex={0} aria-label={connectionText}>
+          <span className="rail-item static" tabIndex={0} title={collapsed ? connectionText : undefined}>
             <span className={`dot ${connection === "live" ? "ok" : connection === "polling" ? "warn" : ""}`} />
-            <span className="tip">{connectionText}</span>
+            <span className="rail-label">{connectionText}</span>
           </span>
-          <span
-            className="rail-item static"
-            tabIndex={0}
-            aria-label={`Signed in as ${name}${isAdmin ? " (admin)" : ""}`}
-          >
-            <span className="avatar">{initials(name)}</span>
-            <span className="tip">
-              {name}
-              {isAdmin && " · admin"}
-              {me?.userId && me.userId !== name && <small>{me.userId}</small>}
-            </span>
-          </span>
-          <button className="rail-item" onClick={signOut} aria-label="Sign out">
+          <button className="rail-item" onClick={signOut} title={collapsed ? "Sign out" : undefined}>
             <Icon name="logout" />
-            <span className="tip">Sign out</span>
+            <span className="rail-label">Sign out</span>
           </button>
         </div>
       </aside>
-      <main className="main">
-        <div className="main-content">{children}</div>
+      <div className="main">
+        <header className="topbar">
+          <button
+            className="topbar-toggle"
+            onClick={toggleSidebar}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!collapsed}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <Icon name="sidebar" size={18} />
+          </button>
+          <div className="topbar-nav">
+            <button onClick={() => router.back()} aria-label="Back">
+              <Icon name="chevron-left" size={18} />
+            </button>
+            <button onClick={() => window.history.forward()} aria-label="Forward">
+              <Icon name="chevron-right" size={18} />
+            </button>
+          </div>
+          <nav className="crumbs" aria-label="Breadcrumb">
+            {crumbs.map((c, i) => (
+              <span key={c} style={{ display: "contents" }}>
+                {i > 0 && <span className="sep">/</span>}
+                <span className={i === crumbs.length - 1 ? "current" : undefined}>{c}</span>
+              </span>
+            ))}
+          </nav>
+          <span className="spacer" />
+          <div className="session" title={me?.userId}>
+            <div>
+              <strong>{name}</strong>
+              <small>{isAdmin ? "Administrator" : "Signed in"}</small>
+            </div>
+            <span className="avatar">{initials(name)}</span>
+          </div>
+        </header>
+        <main className="main-content">{children}</main>
         <footer className="app-footer">
           Powered by{" "}
           <a href="https://airavata.apache.org" target="_blank" rel="noreferrer">
             Apache Airavata
           </a>
         </footer>
-      </main>
+      </div>
       <InteractiveAuthDialog />
     </div>
   );
