@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert, Field } from "@/components/ui";
 import { errorText } from "@/lib/api";
+import { useBrand } from "@/lib/branding";
 import { beginCILogon, getCILogonConfig } from "@/lib/cilogon";
 import type { CILogonConfig } from "@/lib/cilogon";
 import { useSession } from "@/lib/session";
@@ -11,6 +12,7 @@ import { useSession } from "@/lib/session";
 export default function LoginPage() {
   const { token, signIn } = useSession();
   const router = useRouter();
+  const brand = useBrand();
   // undefined while the server is asked whether CILogon sign-in is configured.
   const [cilogon, setCILogon] = useState<CILogonConfig | null | undefined>(undefined);
   const [redirecting, setRedirecting] = useState(false);
@@ -69,7 +71,7 @@ export default function LoginPage() {
     <div className="center">
       <div className="card" style={{ width: "min(460px, 100%)" }}>
         <div className="card-head">
-          <h2>Sign in to Airavata</h2>
+          <h2>Sign in to {brand.name}</h2>
         </div>
         <div className="card-body form">
           {cilogon === undefined ? (
