@@ -335,7 +335,7 @@ function Deployments() {
   const deployments = useResource(() => api.get<BatchDeployment[]>("/api/v1/slurm-deployments"));
   const templates = useResource(() => api.get<Template[]>("/api/v1/application-templates"));
   const clusters = useResource(() => api.get<SlurmCluster[]>("/api/v1/slurm-clusters"));
-  const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<BatchDeployment | "new" | null>(null);
   const [viewing, setViewing] = useState<BatchDeployment | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -356,7 +356,7 @@ function Deployments() {
         flush
         actions={
           isAdmin && (
-            <button className="primary" onClick={() => setCreating(true)}>
+            <button className="primary" onClick={() => setEditing("new")}>
               New deployment
             </button>
           )
@@ -390,31 +390,37 @@ function Deployments() {
               className: "actions",
               cell: (d) =>
                 isAdmin && (
-                  <ConfirmButton
-                    onConfirm={async () => {
-                      setError(null);
-                      try {
-                        await api.del(`/api/v1/slurm-deployments/${d.deploymentId}`);
-                        await deployments.reload();
-                      } catch (e) {
-                        setError(errorText(e));
-                      }
-                    }}
-                  >
-                    Delete
-                  </ConfirmButton>
+                  <>
+                    <button className="small" onClick={() => setEditing(d)}>
+                      Edit
+                    </button>
+                    <ConfirmButton
+                      onConfirm={async () => {
+                        setError(null);
+                        try {
+                          await api.del(`/api/v1/slurm-deployments/${d.deploymentId}`);
+                          await deployments.reload();
+                        } catch (e) {
+                          setError(errorText(e));
+                        }
+                      }}
+                    >
+                      Delete
+                    </ConfirmButton>
+                  </>
                 ),
             },
           ]}
         />
       </Card>
-      {creating && (
-        <CreateDeployment
+      {editing && (
+        <DeploymentEditor
+          deployment={editing === "new" ? null : editing}
           templates={templates.data ?? []}
           clusters={clusters.data ?? []}
-          onClose={() => setCreating(false)}
-          onCreated={() => {
-            setCreating(false);
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
             void deployments.reload();
           }}
         />
@@ -443,22 +449,26 @@ function Deployments() {
   );
 }
 
-function CreateDeployment({
+function DeploymentEditor({
+  deployment,
   templates,
   clusters,
   onClose,
-  onCreated,
+  onSaved,
 }: {
+  deployment: BatchDeployment | null;
   templates: Template[];
   clusters: SlurmCluster[];
   onClose: () => void;
-  onCreated: () => void;
+  onSaved: () => void;
 }) {
-  const [templateId, setTemplateId] = useState("");
-  const [clusterId, setClusterId] = useState("");
-  const [partition, setPartition] = useState("");
-  const [runSection, setRunSection] = useState("");
-  const [config, setConfig] = useState<BatchJobConfigDraft>(() => draftFrom({ wallTimeMinutes: 60, allocation: "" }));
+  const [templateId, setTemplateId] = useState(deployment?.templateId ?? "");
+  const [clusterId, setClusterId] = useState(deployment?.slurmClusterId ?? "");
+  const [partition, setPartition] = useState(deployment?.defaultPartition ?? "");
+  const [runSection, setRunSection] = useState(deployment?.slurmRunSection ?? "");
+  const [config, setConfig] = useState<BatchJobConfigDraft>(() =>
+    draftFrom(deployment?.defaultBatchJobConfig ?? { wallTimeMinutes: 60, allocation: "" }),
+  );
   const partitions = clusters.find((c) => c.slurmClusterId === clusterId)?.partitions ?? [];
   const template = templates.find((t) => t.templateId === templateId);
 
@@ -477,26 +487,28 @@ function CreateDeployment({
     (clusterLogins.length === 1 ? clusterLogins[0].slurmClusterConfigId : null);
 
   const save = useAction(async () => {
-    await api.post("/api/v1/slurm-deployments", {
+    const body = {
       templateId,
       slurmClusterId: strOrNull(clusterId),
       slurmRunSection: runSection,
       defaultPartition: strOrNull(partition),
       defaultBatchJobConfig: toBatchJobConfig(config),
-    });
-    onCreated();
+    };
+    if (deployment) await api.put(`/api/v1/slurm-deployments/${deployment.deploymentId}`, body);
+    else await api.post("/api/v1/slurm-deployments", body);
+    onSaved();
   });
 
   return (
     <Modal
-      title="New batch deployment"
+      title={deployment ? "Edit batch deployment" : "New batch deployment"}
       wide
       onClose={onClose}
       footer={
         <>
           <button onClick={onClose}>Cancel</button>
           <button className="primary" disabled={save.busy} onClick={() => void save.run()}>
-            {save.busy ? "Saving…" : "Create deployment"}
+            {save.busy ? "Saving…" : deployment ? "Save changes" : "Create deployment"}
           </button>
         </>
       }
