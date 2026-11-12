@@ -41,7 +41,47 @@ import (
 	gossh "golang.org/x/crypto/ssh"
 )
 
-// ========================== Utility section =====================================
+// hostKeyCallback verifies the server's host key against the user's known_hosts
+// file, rejecting any unknown or changed key (fail-closed).
+func hostKeyCallback() gossh.HostKeyCallback {
+	return func(hostname string, remote net.Addr, key gossh.PublicKey) error {
+		knownHostsPath := filepath.Join(os.Getenv("HOME"), ".ssh", "known_hosts")
+		data, err := os.ReadFile(knownHostsPath)
+		if err != nil {
+			return fmt.Errorf("cannot read known_hosts at %s: %w", knownHostsPath, err)
+		}
+		// Parse known_hosts and check if this host/key is trusted
+		trusted := false
+		for _, line := range strings.Split(string(data), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			// known_hosts format: [hostnames] key-type base64-key [comment]
+			fields := strings.Fields(line)
+			if len(fields) < 3 {
+				continue
+			}
+			// Check if any hostname pattern matches
+			hostPattern := fields[0]
+			if strings.Contains(hostPattern, hostname) || hostname == hostPattern {
+				// Parse and compare the key
+				_, pubKey, _, _, err := gossh.ParseAuthorizedKey([]byte(line))
+				if err != nil {
+					continue
+				}
+				if pubKey.Type() == key.Type() && bytes.Equal(pubKey.Marshal(), key.Marshal()) {
+					trusted = true
+					break
+				}
+			}
+		}
+		if !trusted {
+			return fmt.Errorf("host key for %s not found in known_hosts", hostname)
+		}
+		return nil
+	}
+}
 
 // scpOK is the byte each side of the SCP wire protocol writes to acknowledge the
 // other's last message. A leading 0x01 or 0x02 instead introduces a one-line error,
@@ -104,7 +144,7 @@ func dialSSH(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSS
 
 // newSSHClient opens and authenticates a fresh connection for dialConfig.
 func newSSHClient(ctx context.Context, dialConfig SSHDialConfig, sshContext *GlobalSSHContext) (*gossh.Client, error) {
-	hostKeys := gossh.InsecureIgnoreHostKey()
+		hostKeys := hostKeyCallback()
 	addr := net.JoinHostPort(dialConfig.host, strconv.Itoa(dialConfig.port))
 
 	// DialContext rather than ssh.Dial: the activity's context has to be able to
