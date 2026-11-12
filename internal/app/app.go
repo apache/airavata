@@ -190,6 +190,9 @@ func NewRepositories(db *gorm.DB) *Repositories {
 // The repositories stay local: they are an implementation detail of the services above
 // them, and nothing outside this function has ever wanted one directly.
 func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBackend backend.Backend) *Services {
+	// Built first: the service account service tells it when a grant changes.
+	permissions := iamrepo.NewPermissionResolver(db, iamrepo.DefaultPermissionTTL)
+
 	// Repositories.
 	users := repos.Users
 	groups := repos.Groups
@@ -248,7 +251,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		Config: cfg,
 		DB:     db,
 
-		Permissions: iamrepo.NewPermissionResolver(db, iamrepo.DefaultPermissionTTL),
+		Permissions: permissions,
 
 		Audit: auditsvc.NewEventService(repos.AuditEvents),
 
@@ -257,7 +260,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		GroupMember: iamsvc.NewGroupMemberService(db, groups, groupMembers, users),
 		// A deleted service account takes the shares granted to it along, hence the
 		// sharing repository.
-		ServiceAccount: iamsvc.NewServiceAccountService(db, repos.ServiceAccounts, users, shares),
+		ServiceAccount: iamsvc.NewServiceAccountService(db, repos.ServiceAccounts, users, shares, permissions),
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.

@@ -70,7 +70,7 @@ func TestAuthorityDoesNotImplyPermission(t *testing.T) {
 
 type fakeResolver map[string]permission.Set
 
-func (f fakeResolver) Permissions(_ context.Context, authorities []string) permission.Set {
+func (f fakeResolver) Permissions(_ context.Context, _ string, authorities []string) permission.Set {
 	out := permission.Set{}
 	for _, a := range authorities {
 		for p := range f[a] {

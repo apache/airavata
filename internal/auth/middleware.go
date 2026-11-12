@@ -75,7 +75,7 @@ func Middleware(introspector Introspector, opts ...Option) func(http.Handler) ht
 			}
 
 			if cfg.permissions != nil {
-				principal.Permissions = cfg.permissions.Permissions(r.Context(), principal.Authorities)
+				principal.Permissions = cfg.permissions.Permissions(r.Context(), principal.Name, principal.Authorities)
 			}
 
 			next.ServeHTTP(w, r.WithContext(WithPrincipal(r.Context(), principal)))

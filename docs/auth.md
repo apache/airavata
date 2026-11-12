@@ -37,10 +37,11 @@ If CILogon cannot be reached, the request fails with `502 Unable to validate bea
 
 A service account is an identity for software rather than a person. An admin creates it, and Airavata issues it a token. The token expires, and an admin can renew or regenerate it.
 
-A service account is an ordinary user in every way but two:
+A service account is an ordinary user in every way but three:
 
-- **It is never an admin.** Its token always authenticates with `USER` authority. Rows in `user_roles` are ignored for service accounts, so it can't be promoted. Because of this, a service account can't create or manage other service accounts.
-- **Only admins create and manage it.** Every `/api/v1/service-accounts` endpoint requires `ADMIN` or `SUPER_ADMIN`.
+- **It is never an admin.** Its token always authenticates with `USER` authority. Rows in `user_roles` are ignored for service accounts, so it can't be promoted. A service account can't create or manage other service accounts either.
+- **Only admins create and manage it.** Every `/api/v1/service-accounts` endpoint needs `serviceaccount:read` or `serviceaccount:manage`, which `ADMIN` and `SUPER_ADMIN` hold.
+- **Its permissions are its own.** See [Permissions for a service account](#permissions-for-a-service-account).
 
 Apart from that, it does what a user does. It owns the SSH credentials, cluster configs, storages and runs it creates. Other users can share records with it, by user id or through a group, and add it to groups.
 
@@ -79,6 +80,24 @@ curl -s localhost:9095/api/v1/ssh-credentials -H "Authorization: Bearer $SA_TOKE
 ```
 
 Service account tokens start with `airavata_sa_`. The server checks them against its own database and never sends them to CILogon. The `airavata_sa_` prefix also helps secret scanners recognise a leaked token.
+
+#### Permissions for a service account
+
+By default a service account can do only what any user can do with their own records and what is shared with them. To let it do more, grant it [permissions](#permissions). Each account has its own set, so one can read every process while another can only use its own.
+
+```bash
+curl -X POST https://airavata.example.org/api/v1/service-accounts \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H 'Content-Type: application/json' \
+  -d '{"name": "monitor", "permissions": ["process:list", "cluster:discover"]}'
+```
+
+Change the set later with `PUT /api/v1/service-accounts/{id}`. A `permissions` list **replaces** the whole set, an empty list removes every grant, and leaving it out changes nothing. The change applies on the account's next request. `GET /api/v1/service-accounts/{id}` and `GET /api/v1/users/me` (called with the account's token) both list what it holds.
+
+Three rules keep this from becoming a way round the limits above:
+
+- **A service account holds only what was granted to it.** It gets nothing from a role. Granting a permission to `USER` reaches people, not service accounts.
+- **Some permissions can never be granted to one:** `admin:manage`, `user:update_any` and `serviceaccount:manage`. A token holding them could appoint administrators, rewrite another user's profile, or mint service accounts, which would widen its own access. The API refuses them with `400`, and a row inserted into the database by hand is ignored. `user:create` and `user:set_status` can be granted, for an onboarding integration, but they don't reach administrators: changing an administrator's status still needs `admin:manage`.
+- **You can only grant what you hold yourself.** An admin missing a permission can't hand it out. The API answers `403`.
 
 #### Manage the token
 

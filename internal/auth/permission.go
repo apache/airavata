@@ -27,14 +27,15 @@ import (
 	"github.com/apache/airavata/internal/permission"
 )
 
-// PermissionResolver turns a caller's authorities (their role names) into the
-// permissions those roles grant.
+// PermissionResolver turns a caller into the permissions they hold: what their
+// authorities (role names) grant, or for a service account what has been granted to
+// that account itself.
 //
 // An implementation must not fail open. When it cannot tell what a role grants it
 // returns fewer permissions, never more, so a fault in the lookup denies rather than
 // allows.
 type PermissionResolver interface {
-	Permissions(ctx context.Context, authorities []string) permission.Set
+	Permissions(ctx context.Context, name string, authorities []string) permission.Set
 }
 
 // Option configures Middleware.

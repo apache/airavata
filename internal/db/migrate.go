@@ -52,6 +52,7 @@ func Entities() []any {
 		&iammodel.UserRole{},
 		&iammodel.RolePermission{},
 		&iammodel.ServiceAccount{},
+		&iammodel.ServiceAccountPermission{},
 		&iammodel.Group{},
 		&computemodel.SlurmCluster{},
 		&datamodel.SCPDataStorage{},

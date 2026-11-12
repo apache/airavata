@@ -111,6 +111,28 @@ var superAdminOnly = map[Permission]bool{
 	AdminManage:   true,
 }
 
+// notForServiceAccounts are the permissions a service account can never hold, however
+// an administrator asks. They are the ones that let a token widen access beyond what it
+// was given: appointing administrators, rewriting another user's profile, and creating
+// or administering service accounts. The guarantee that a service account cannot become
+// an administrator or mint another service account depends on them staying out of
+// reach.
+//
+// user:create and user:set_status are deliberately not here. They let an account
+// register users and activate or suspend them, which an integration such as an
+// onboarding system legitimately needs, and neither reaches an administrator: changing
+// an administrator's status still needs admin:manage.
+var notForServiceAccounts = map[Permission]bool{
+	AdminManage:          true,
+	UserUpdateAny:        true,
+	ServiceAccountManage: true,
+}
+
+// GrantableToServiceAccount reports whether p may be granted to a service account.
+func (p Permission) GrantableToServiceAccount() bool {
+	return p.Valid() && !notForServiceAccounts[p]
+}
+
 // All returns every defined permission, sorted.
 func All() []Permission {
 	out := append([]Permission(nil), all...)
