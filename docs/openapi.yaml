@@ -3339,13 +3339,13 @@ components:
     BatchJobStatusType:
       type: string
       description: |
-        Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `STOPPING`,
-        `STOPPED`) plus the Slurm mail states parsed from job notifications.
+        Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `CANCELLING`,
+        `CANCELLED`) plus the Slurm mail states parsed from job notifications.
       enum:
         - SUBMITTED
         - SUBMISSION_FAILED
-        - STOPPING
-        - STOPPED
+        - CANCELLING
+        - CANCELLED
         - BEGIN
         - REQUEUE
         - INVALID_DEPEND

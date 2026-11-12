@@ -87,7 +87,7 @@ func (t *TaskTracker) Stop(processID string) {
 
 // Track runs one attempt of a task between an EXECUTING status and the status its
 // outcome earns: COMPLETED on success, FAILED with the error as the log otherwise, or
-// STOPPED when it failed because its process was stopped.
+// CANCELED when it failed because its process was stopped.
 //
 // It is called from inside an activity, never from the workflow, since a workflow body
 // is replayed and must not write. Each retry of the activity is an attempt of its own,
@@ -122,7 +122,7 @@ func (t *TaskTracker) Track(ctx context.Context, processID, taskID string, taskT
 
 	out, err := run(ctx)
 	if err != nil && Stopped(ctx, t.processes, processID) {
-		t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeStopped, nil)
+		t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeCanceled, nil)
 		return out, workflow.NewPermanentError(errStopped)
 	}
 	if err != nil {

@@ -361,16 +361,10 @@ func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
 	}
 	if process.BatchProcess == nil || process.BatchProcess.JobID == nil ||
 		slices.ContainsFunc(process.BatchProcess.BatchJobStatuses, func(s *model.BatchJobStatus) bool {
-			return slices.Contains([]model.BatchJobStatusType{model.BatchJobStatusStopped, model.BatchJobStatusEnded,
+			return slices.Contains([]model.BatchJobStatusType{model.BatchJobStatusCancelled, model.BatchJobStatusEnded,
 				model.BatchJobStatusFailed, model.BatchJobStatusTimeLimit}, s.Status)
 		}) {
 		return nil
-	}
-	record := func(status model.BatchJobStatusType) error {
-		return a.batchStatus.Create(ctx, &model.BatchJobStatus{BatchProcessID: process.BatchProcess.ID, Status: status, UpdatedAt: time.Now()})
-	}
-	if err := record(model.BatchJobStatusStopping); err != nil {
-		return err
 	}
 	clusterConfig, err := a.slurmClusterConfigs.FindByID(ctx, process.BatchProcess.SlurmClusterConfigID)
 	if err != nil {
@@ -386,5 +380,5 @@ func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
 		fmt.Sprintf("ssh scancel %s@%s", clusterConfig.LoginUser, cluster.HeadnodeHost)); err != nil && !jobGone.MatchString(stderr) {
 		return err
 	}
-	return record(model.BatchJobStatusStopped)
+	return a.batchStatus.Create(ctx, &model.BatchJobStatus{BatchProcessID: process.BatchProcess.ID, Status: model.BatchJobStatusCancelled, UpdatedAt: time.Now()})
 }

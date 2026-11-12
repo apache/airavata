@@ -757,7 +757,7 @@ const TASK_STATE: Record<string, StepState> = {
   EXECUTING: "running",
   PAUSED: "running",
   FAILED: "failed",
-  STOPPED: "stopped",
+  CANCELED: "stopped",
 };
 
 // Stepper shows where the run is: submission and completion by the latest run of

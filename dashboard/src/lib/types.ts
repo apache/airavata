@@ -401,7 +401,7 @@ export interface ProcessWorkflow {
 
 export type TaskType = "DATA_STAGING" | "JOB_SUBMISSION" | "JOB_MONITORING" | "INTERACTIVE_COMMAND";
 
-export type TaskStatusType = "CREATED" | "EXECUTING" | "PAUSED" | "COMPLETED" | "FAILED" | "STOPPED";
+export type TaskStatusType = "CREATED" | "EXECUTING" | "PAUSED" | "COMPLETED" | "FAILED" | "CANCELED";
 
 export interface TaskStatus {
   taskStatusId: string;

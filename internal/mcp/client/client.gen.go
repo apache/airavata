@@ -66,13 +66,13 @@ func (e AuthMethod) Valid() bool {
 // Defines values for BatchJobStatusType.
 const (
 	BatchJobStatusTypeBEGIN            BatchJobStatusType = "BEGIN"
+	BatchJobStatusTypeCANCELLED        BatchJobStatusType = "CANCELLED"
+	BatchJobStatusTypeCANCELLING       BatchJobStatusType = "CANCELLING"
 	BatchJobStatusTypeEND              BatchJobStatusType = "END"
 	BatchJobStatusTypeFAIL             BatchJobStatusType = "FAIL"
 	BatchJobStatusTypeINVALIDDEPEND    BatchJobStatusType = "INVALID_DEPEND"
 	BatchJobStatusTypeREQUEUE          BatchJobStatusType = "REQUEUE"
 	BatchJobStatusTypeSTAGEOUT         BatchJobStatusType = "STAGE_OUT"
-	BatchJobStatusTypeSTOPPED          BatchJobStatusType = "STOPPED"
-	BatchJobStatusTypeSTOPPING         BatchJobStatusType = "STOPPING"
 	BatchJobStatusTypeSUBMISSIONFAILED BatchJobStatusType = "SUBMISSION_FAILED"
 	BatchJobStatusTypeSUBMITTED        BatchJobStatusType = "SUBMITTED"
 	BatchJobStatusTypeTIMELIMIT        BatchJobStatusType = "TIME_LIMIT"
@@ -86,6 +86,10 @@ func (e BatchJobStatusType) Valid() bool {
 	switch e {
 	case BatchJobStatusTypeBEGIN:
 		return true
+	case BatchJobStatusTypeCANCELLED:
+		return true
+	case BatchJobStatusTypeCANCELLING:
+		return true
 	case BatchJobStatusTypeEND:
 		return true
 	case BatchJobStatusTypeFAIL:
@@ -95,10 +99,6 @@ func (e BatchJobStatusType) Valid() bool {
 	case BatchJobStatusTypeREQUEUE:
 		return true
 	case BatchJobStatusTypeSTAGEOUT:
-		return true
-	case BatchJobStatusTypeSTOPPED:
-		return true
-	case BatchJobStatusTypeSTOPPING:
 		return true
 	case BatchJobStatusTypeSUBMISSIONFAILED:
 		return true
@@ -708,16 +708,16 @@ type BatchJobStatusResponse struct {
 	BatchProcessId       openapi_types.UUID `json:"batchProcessId"`
 	BatchProcessStatusId openapi_types.UUID `json:"batchProcessStatusId"`
 
-	// Status Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `STOPPING`,
-	// `STOPPED`) plus the Slurm mail states parsed from job notifications.
+	// Status Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `CANCELLING`,
+	// `CANCELLED`) plus the Slurm mail states parsed from job notifications.
 	Status BatchJobStatusType `json:"status"`
 
 	// UpdatedAt When the state was recorded, in milliseconds since the epoch.
 	UpdatedAt int64 `json:"updatedAt"`
 }
 
-// BatchJobStatusType Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `STOPPING`,
-// `STOPPED`) plus the Slurm mail states parsed from job notifications.
+// BatchJobStatusType Airavata's own states (`SUBMITTED`, `SUBMISSION_FAILED`, `CANCELLING`,
+// `CANCELLED`) plus the Slurm mail states parsed from job notifications.
 type BatchJobStatusType string
 
 // BatchProcessRequest The `batchProcess` section of a process request. The resource request is
