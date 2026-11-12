@@ -97,6 +97,12 @@ func (r *WorkflowRepository) UpdateStatus(ctx context.Context, id string, status
 	return nil
 }
 
+// SetExecutionID records the engine's execution id of one workflow.
+func (r *WorkflowRepository) SetExecutionID(ctx context.Context, id, executionID string) error {
+	return r.db.WithContext(ctx).Model(&model.ProcessWorkflow{}).
+		Where("process_workflow_id = ?", id).Update("execution_id", executionID).Error
+}
+
 // Record creates the workflow of one workflow instance of a process, or moves an
 // existing one to status. An update changes only the status: the type and timestamp
 // stay as first recorded, so the timestamp keeps saying when the workflow started.

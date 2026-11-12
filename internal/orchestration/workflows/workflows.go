@@ -91,7 +91,7 @@ func (w *Workflows) Register(r Registrar) error {
 			return err
 		}
 	}
-	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.CompleteProcess, w.RecordWorkflowStatus} {
+	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.batch.CancelBatchJob, w.CompleteProcess, w.RecordWorkflowStatus} {
 		if err := r.RegisterActivity(a); err != nil {
 			return err
 		}

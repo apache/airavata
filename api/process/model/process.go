@@ -255,7 +255,9 @@ type ProcessWorkflow struct {
 	ProcessID *string  `gorm:"column:process_id;type:varchar(36);index" json:"processId,omitempty"`
 	Process   *Process `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 	// Workflow id or monitoring task id
-	WorkflowID   string               `gorm:"column:workflow_id;type:varchar(36)" json:"workflowId"`
+	WorkflowID string `gorm:"column:workflow_id;type:varchar(36)" json:"workflowId"`
+	// The engine's id for this run of the workflow, which cancelling it needs.
+	ExecutionID  *string              `gorm:"column:execution_id;type:varchar(36)" json:"-"`
 	WorkflowType *ProcessWorkflowType `gorm:"column:workflow_type;type:varchar(255)" json:"workflowType,omitempty"`
 
 	// Where the run stands: RUNNING once started, then SUCCEEDED, FAILED or STOPPED.

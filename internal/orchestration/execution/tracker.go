@@ -48,12 +48,12 @@ func NewTaskTracker(statuses *processrepo.TaskStatusRepository, processes *proce
 	return &TaskTracker{statuses: statuses, processes: processes, stops: map[chan struct{}]string{}}
 }
 
-var ErrStopped = errors.New("the process is stopped")
+var errStopped = errors.New("the process is stopped")
 
-// UntilStopped returns ctx cancelled once Stop is called for the process, so that work
-// a task has in flight ends with it. A stop made before this call is not seen here:
-// Track refuses the task by the process's recorded status.
-func (t *TaskTracker) UntilStopped(ctx context.Context, processID string) (context.Context, context.CancelFunc) {
+// untilStopped returns ctx cancelled once Stop is called for the process, so that work
+// a task has in flight ends with it. A stop made before this call is not seen here,
+// so Track calls it before reading the process's recorded status.
+func (t *TaskTracker) untilStopped(ctx context.Context, processID string) (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(ctx)
 	stop := make(chan struct{})
 	t.mu.Lock()
@@ -72,7 +72,8 @@ func (t *TaskTracker) UntilStopped(ctx context.Context, processID string) (conte
 	return ctx, cancel
 }
 
-// Stop signals every task the process has in flight on this server.
+// Stop signals every task the process has in flight on this server. Cancelling a
+// workflow only keeps its later tasks from starting; this ends the one running.
 func (t *TaskTracker) Stop(processID string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -101,24 +102,27 @@ func (t *TaskTracker) Stop(processID string) {
 // the history describes the work, and losing an entry of it is no reason to redo work
 // that succeeded.
 func (t *TaskTracker) Track(ctx context.Context, processID, taskID string, taskType model.TaskType,
-	in *Context, run func() (*Context, error)) (*Context, error) {
+	in *Context, run func(context.Context) (*Context, error)) (*Context, error) {
 
 	if t.completed(ctx, processID, taskID) {
 		slog.Info("Skipping task that has already completed", "taskId", taskID, "processId", processID, "taskType", taskType)
 		return in, nil
 	}
 
+	ctx, cancel := t.untilStopped(ctx, processID)
+	defer cancel()
+
 	// Permanent, so the workflow does not retry a task its process no longer wants.
 	if Stopped(ctx, t.processes, processID) {
-		return in, workflow.NewPermanentError(ErrStopped)
+		return in, workflow.NewPermanentError(errStopped)
 	}
 
 	t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeExecuting, nil)
 
-	out, err := run()
+	out, err := run(ctx)
 	if err != nil && Stopped(ctx, t.processes, processID) {
 		t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeStopped, nil)
-		return out, workflow.NewPermanentError(ErrStopped)
+		return out, workflow.NewPermanentError(errStopped)
 	}
 	if err != nil {
 		t.Record(ctx, processID, taskID, taskType, model.TaskStatusTypeFailed, internalptr.To(err.Error()))

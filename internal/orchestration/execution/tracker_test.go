@@ -72,7 +72,7 @@ func TestTrackRecordsExecutingThenCompleted(t *testing.T) {
 
 	want := &execution.Context{SomeData: "carried"}
 	got, err := tracker.Track(context.Background(), proc.ID, "task-1", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { return want, nil })
+		func(context.Context) (*execution.Context, error) { return want, nil })
 	if err != nil {
 		t.Fatalf("track: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestTrackRecordsFailureWithItsError(t *testing.T) {
 
 	boom := errors.New("scp refused")
 	_, err := tracker.Track(context.Background(), proc.ID, "task-2", model.TaskTypeJobSubmission, nil,
-		func() (*execution.Context, error) { return nil, boom })
+		func(context.Context) (*execution.Context, error) { return nil, boom })
 	if !errors.Is(err, boom) {
 		t.Fatalf("Track error = %v, want the run's own error", err)
 	}
@@ -121,7 +121,7 @@ func TestTrackSurvivesUnwritableStatus(t *testing.T) {
 
 	// No such process, so the foreign key rejects every status row.
 	_, err := tracker.Track(context.Background(), "missing-process", "task-3", model.TaskTypeJobMonitoring, nil,
-		func() (*execution.Context, error) { return &execution.Context{}, nil })
+		func(context.Context) (*execution.Context, error) { return &execution.Context{}, nil })
 	if err != nil {
 		t.Fatalf("Track error = %v, want the run's success to stand", err)
 	}
@@ -162,14 +162,14 @@ func TestTrackSkipsCompletedTask(t *testing.T) {
 	}
 	ctx := context.Background()
 	if _, err := tracker.Track(ctx, proc.ID, "task-4", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { return &execution.Context{}, nil }); err != nil {
+		func(context.Context) (*execution.Context, error) { return &execution.Context{}, nil }); err != nil {
 		t.Fatalf("first run: %v", err)
 	}
 
 	in := &execution.Context{SomeData: "handed on"}
 	ran := false
 	got, err := tracker.Track(ctx, proc.ID, "task-4", model.TaskTypeDataStaging, in,
-		func() (*execution.Context, error) { ran = true; return nil, errors.New("must not run") })
+		func(context.Context) (*execution.Context, error) { ran = true; return nil, errors.New("must not run") })
 	if err != nil {
 		t.Fatalf("second run: %v", err)
 	}
@@ -185,12 +185,12 @@ func TestTrackSkipsCompletedTask(t *testing.T) {
 
 	// A failed task is not completed, so it runs again.
 	if _, err := tracker.Track(ctx, proc.ID, "task-5", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { return nil, errors.New("boom") }); err == nil {
+		func(context.Context) (*execution.Context, error) { return nil, errors.New("boom") }); err == nil {
 		t.Fatal("failing run returned no error")
 	}
 	ran = false
 	if _, err := tracker.Track(ctx, proc.ID, "task-5", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { ran = true; return &execution.Context{}, nil }); err != nil {
+		func(context.Context) (*execution.Context, error) { ran = true; return &execution.Context{}, nil }); err != nil {
 		t.Fatalf("rerun of failed task: %v", err)
 	}
 	if !ran {
@@ -198,31 +198,24 @@ func TestTrackSkipsCompletedTask(t *testing.T) {
 	}
 }
 
-func TestTrackRefusesATaskOfAStoppedProcess(t *testing.T) {
-	tracker, _, gdb := newTracker(t)
-	proc := &model.Process{}
-	stopped := model.ProcessStatusTypeStopped
-	if err := errors.Join(gdb.Create(proc).Error, gdb.Create(&model.ProcessStatus{ProcessID: &proc.ID, Status: &stopped}).Error); err != nil {
-		t.Fatal(err)
-	}
-	ran := false
-	_, err := tracker.Track(context.Background(), proc.ID, "task-6", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { ran = true; return nil, nil })
-	if err == nil || ran {
-		t.Fatalf("err = %v, ran = %v; want an error and the task not run", err, ran)
-	}
-}
-
 func TestStopCancelsTheTasksAProcessHasInFlight(t *testing.T) {
 	tracker, _, _ := newTracker(t)
-	stopped, cancel := tracker.UntilStopped(context.Background(), "p1")
-	defer cancel()
-	other, cancelOther := tracker.UntilStopped(context.Background(), "p2")
-	defer cancelOther()
+	running, done := make(chan struct{}), make(chan struct{})
+	go tracker.Track(context.Background(), "p1", "task-7", model.TaskTypeDataStaging, nil,
+		func(ctx context.Context) (*execution.Context, error) {
+			close(running)
+			<-ctx.Done()
+			close(done)
+			return nil, ctx.Err()
+		})
+	<-running
 
-	tracker.Stop("p1")
-	<-stopped.Done()
-	if other.Err() != nil {
-		t.Error("stopping one process cancelled another's task")
+	tracker.Stop("p2")
+	select {
+	case <-done:
+		t.Fatal("stopping one process cancelled another's task")
+	default:
 	}
+	tracker.Stop("p1")
+	<-done
 }

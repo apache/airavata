@@ -32,6 +32,7 @@ import (
 
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/client"
+	"github.com/cschleiden/go-workflows/core"
 	"github.com/cschleiden/go-workflows/worker"
 	"github.com/cschleiden/go-workflows/workflow"
 	"github.com/google/uuid"
@@ -53,13 +54,14 @@ import (
 // ExecutionEngine runs the workflows that carry out a process, and starts them when a
 // process is launched or the scheduler reports its job has finished.
 type ExecutionEngine struct {
-	workflows     *workflows.Workflows
-	batch         *batch.Tasks
-	tracker       *execution.TaskTracker
-	orchestrator  *worker.WorkflowOrchestrator
-	processes     *processrepo.ProcessRepository
-	batchStatus   *processrepo.BatchJobStatusRepository
-	processStatus *processrepo.StatusRepository
+	workflows        *workflows.Workflows
+	batch            *batch.Tasks
+	tracker          *execution.TaskTracker
+	orchestrator     *worker.WorkflowOrchestrator
+	processes        *processrepo.ProcessRepository
+	batchStatus      *processrepo.BatchJobStatusRepository
+	processStatus    *processrepo.StatusRepository
+	processWorkflows *processrepo.WorkflowRepository
 }
 
 // NewExecutionEngine returns the workflow set scheduling acts.
@@ -100,10 +102,11 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,
 			processWorkflows, processes,
 		),
-		orchestrator:  orchestrator,
-		processes:     processes,
-		batchStatus:   batchStatus,
-		processStatus: processStatus,
+		orchestrator:     orchestrator,
+		processes:        processes,
+		batchStatus:      batchStatus,
+		processStatus:    processStatus,
+		processWorkflows: processWorkflows,
 	}
 }
 
@@ -254,6 +257,30 @@ func (w *ExecutionEngine) Stop(ctx context.Context, processID string) error {
 			return err
 		}
 	}
+	if err := w.cancelWorkflows(ctx, processID); err != nil {
+		return err
+	}
 	w.tracker.Stop(processID)
-	return w.batch.CancelIfStopped(ctx, processID)
+	return w.batch.CancelBatchJob(ctx, processID)
+}
+
+// cancelWorkflows cancels the workflows the process has running, so that none of
+// their later tasks start.
+func (w *ExecutionEngine) cancelWorkflows(ctx context.Context, processID string) error {
+	if w.orchestrator == nil {
+		return nil
+	}
+	recorded, err := w.processWorkflows.FindByProcessID(ctx, processID)
+	if err != nil {
+		return err
+	}
+	for _, wf := range recorded {
+		if wf.ExecutionID == nil || wf.Status == nil || *wf.Status != model.ProcessWorkflowStatusTypeRunning {
+			continue
+		}
+		if err := w.orchestrator.Client.CancelWorkflowInstance(ctx, core.NewWorkflowInstance(wf.WorkflowID, *wf.ExecutionID)); err != nil && !errors.Is(err, backend.ErrInstanceNotFound) {
+			return err
+		}
+	}
+	return nil
 }

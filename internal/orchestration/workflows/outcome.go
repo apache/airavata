@@ -54,7 +54,16 @@ func (w *Workflows) recordingOutcome(ctx workflow.Context, processID string,
 	}
 	// Disconnected, so the outcome is still recorded when the body ended because the
 	// workflow was cancelled.
-	w.recordStatus(workflow.NewDisconnectedContext(ctx), processID, workflowType, status)
+	disconnected := workflow.NewDisconnectedContext(ctx)
+	if ctx.Err() != nil {
+		// A stop cancels the workflow, and a job submitted while it arrived is only
+		// known once the submission has returned.
+		if _, err := workflow.ExecuteActivity[any](disconnected, workflow.DefaultActivityOptions,
+			w.batch.CancelBatchJob, processID).Get(disconnected); err != nil {
+			slog.Error("Failed to cancel the job of a stopped process", "processId", processID, "error", err)
+		}
+	}
+	w.recordStatus(disconnected, processID, workflowType, status)
 	return err
 }
 
@@ -64,21 +73,28 @@ func (w *Workflows) recordingOutcome(ctx workflow.Context, processID string,
 func (w *Workflows) recordStatus(ctx workflow.Context, processID string,
 	workflowType model.ProcessWorkflowType, status model.ProcessWorkflowStatusType) {
 
-	workflowID := workflow.WorkflowInstance(ctx).InstanceID
+	instance := workflow.WorkflowInstance(ctx)
 	if _, err := workflow.ExecuteActivity[any](ctx, workflow.DefaultActivityOptions,
-		w.RecordWorkflowStatus, processID, workflowID, workflowType, status).Get(ctx); err != nil {
+		w.RecordWorkflowStatus, processID, instance.InstanceID, instance.ExecutionID, workflowType, status).Get(ctx); err != nil {
 		slog.Error("Failed to record process workflow", "processId", processID,
-			"workflowId", workflowID, "status", status, "error", err)
+			"workflowId", instance.InstanceID, "status", status, "error", err)
 	}
 }
 
 // RecordWorkflowStatus is the activity behind recordStatus. The write is an activity
 // rather than workflow code so that a replay reads its result from history instead of
 // writing again.
-func (w *Workflows) RecordWorkflowStatus(ctx context.Context, processID, workflowID string,
+func (w *Workflows) RecordWorkflowStatus(ctx context.Context, processID, workflowID, executionID string,
 	workflowType model.ProcessWorkflowType, status model.ProcessWorkflowStatusType) error {
 
-	if status == model.ProcessWorkflowStatusTypeFailed && execution.Stopped(ctx, w.processes, processID) {
+	if status == model.ProcessWorkflowStatusTypeRunning {
+		recorded, err := w.processWorkflows.Record(ctx, processID, workflowID, workflowType, status)
+		if err != nil {
+			return err
+		}
+		return w.processWorkflows.SetExecutionID(ctx, recorded.ID, executionID)
+	}
+	if execution.Stopped(ctx, w.processes, processID) {
 		status = model.ProcessWorkflowStatusTypeStopped
 	}
 	_, err := w.processWorkflows.Record(ctx, processID, workflowID, workflowType, status)

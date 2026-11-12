@@ -103,9 +103,7 @@ type SubmitBatchJobParameters struct {
 // SubmitBatchJob builds the process's submission script, uploads it and submits it,
 // recording the task's status as it goes.
 func (a *Tasks) SubmitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
-	ctx, cancel := a.tracker.UntilStopped(ctx, processID)
-	defer cancel()
-	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, executionContext, func() (*execution.Context, error) {
+	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, executionContext, func(ctx context.Context) (*execution.Context, error) {
 		return a.submitBatchJob(ctx, executionContext, processID, taskID)
 	})
 }
@@ -263,11 +261,6 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 		slog.Error("Failed to record job id on batch process", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
 		return nil, err
 	}
-	// Only after the job id is saved: a Stop that read none has recorded STOPPED by now.
-	// Not an error: a retried task would submit the job again.
-	if err := a.CancelIfStopped(ctx, processID); err != nil {
-		slog.Error("Failed to cancel the job of a stopped process", "taskId", taskID, "processId", processID, "jobId", jobID, "error", err)
-	}
 
 	slog.Info("Completed submitting batch job", "taskId", taskID, "processId", processID, "deploymentId", process.BatchProcess.DeploymentID, "JST Id", jst.ID, "jobId", jobID)
 	return executionContext, nil
@@ -360,10 +353,8 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 
 var jobGone = regexp.MustCompile(`(?i)invalid job id specified|already completing or completed`)
 
-func (a *Tasks) CancelIfStopped(ctx context.Context, processID string) error {
-	if !execution.Stopped(ctx, a.processes, processID) {
-		return nil
-	}
+// CancelBatchJob cancels the job of a stopped process, if it has one still running.
+func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
 	process, err := a.processes.FindByID(ctx, processID)
 	if err != nil {
 		return err
