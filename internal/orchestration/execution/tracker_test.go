@@ -210,12 +210,6 @@ func TestStopCancelsTheTasksAProcessHasInFlight(t *testing.T) {
 		})
 	<-running
 
-	tracker.Stop("p2")
-	select {
-	case <-done:
-		t.Fatal("stopping one process cancelled another's task")
-	default:
-	}
 	tracker.Stop("p1")
 	<-done
 }

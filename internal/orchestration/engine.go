@@ -262,8 +262,6 @@ func (w *ExecutionEngine) Stop(ctx context.Context, processID string) error {
 	return errors.Join(err, w.batch.CancelBatchJob(ctx, processID))
 }
 
-// cancelWorkflows cancels the workflows the process has running, so that none of
-// their later tasks start.
 func (w *ExecutionEngine) cancelWorkflows(ctx context.Context, processID string) error {
 	if w.orchestrator == nil {
 		return nil

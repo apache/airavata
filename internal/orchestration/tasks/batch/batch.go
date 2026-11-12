@@ -353,7 +353,6 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 
 var jobGone = regexp.MustCompile(`(?i)invalid job id specified|already completing or completed`)
 
-// CancelBatchJob cancels the job of a stopped process, if it has one still running.
 func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
 	process, err := a.processes.FindByID(ctx, processID)
 	if err != nil {

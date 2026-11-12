@@ -40,12 +40,12 @@ type TaskTracker struct {
 	processes *processrepo.ProcessRepository
 
 	mu    sync.Mutex
-	stops map[chan struct{}]string // one channel per task in flight, to its process id
+	stops map[*context.CancelFunc]string // one per task in flight, to its process id
 }
 
 // NewTaskTracker returns a tracker writing to statuses.
 func NewTaskTracker(statuses *processrepo.TaskStatusRepository, processes *processrepo.ProcessRepository) *TaskTracker {
-	return &TaskTracker{statuses: statuses, processes: processes, stops: map[chan struct{}]string{}}
+	return &TaskTracker{statuses: statuses, processes: processes, stops: map[*context.CancelFunc]string{}}
 }
 
 var errStopped = errors.New("the process is stopped")
@@ -55,21 +55,15 @@ var errStopped = errors.New("the process is stopped")
 // so Track calls it before reading the process's recorded status.
 func (t *TaskTracker) untilStopped(ctx context.Context, processID string) (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(ctx)
-	stop := make(chan struct{})
 	t.mu.Lock()
-	t.stops[stop] = processID
+	t.stops[&cancel] = processID
 	t.mu.Unlock()
-	go func() {
-		select {
-		case <-stop:
-			cancel()
-		case <-ctx.Done():
-			t.mu.Lock()
-			delete(t.stops, stop)
-			t.mu.Unlock()
-		}
-	}()
-	return ctx, cancel
+	return ctx, func() {
+		t.mu.Lock()
+		delete(t.stops, &cancel)
+		t.mu.Unlock()
+		cancel()
+	}
 }
 
 // Stop signals every task the process has in flight on this server. Cancelling a
@@ -77,10 +71,9 @@ func (t *TaskTracker) untilStopped(ctx context.Context, processID string) (conte
 func (t *TaskTracker) Stop(processID string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
-	for stop, id := range t.stops {
+	for cancel, id := range t.stops {
 		if id == processID {
-			close(stop)
-			delete(t.stops, stop)
+			(*cancel)()
 		}
 	}
 }
