@@ -53,10 +53,21 @@ export type IconName =
   | "history"
   | "logout"
   | "folder"
-  | "close";
+  | "close"
+  | "sidebar"
+  | "chevron-left"
+  | "chevron-right";
 
 // 24×24 line drawings, 1.75 stroke.
 const PATHS: Record<IconName, React.ReactNode> = {
+  sidebar: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2.5" />
+      <path d="M9 4v16" />
+    </>
+  ),
+  "chevron-left": <path d="m15 18-6-6 6-6" />,
+  "chevron-right": <path d="m9 18 6-6-6-6" />,
   overview: (
     <>
       <rect x="3" y="3" width="7" height="9" rx="1.5" />

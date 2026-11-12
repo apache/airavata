@@ -1,19 +1,19 @@
+/* Calm, neutral theme: a light sidebar, white content, near-black ink as the one
+   interactive colour, and a single orange cue marking the current page. */
 :root {
-  /* Neutrals: cool slate, so surfaces read as calm and structured rather than warm. */
-  --bg: #f3f5f8;
+  --bg: #ffffff;
   --surface: #ffffff;
-  --surface-2: #f1f4f8;
-  --border: #dbe1e8;
-  --border-strong: #c3ccd8;
-  --text: #0f1b2d;
-  --muted: #546275;
+  --surface-2: #f6f7f9;
+  --border: #e6e8ec;
+  --border-strong: #d3d7de;
+  --text: #111827;
+  --muted: #6b7280;
 
-  /* One deep, saturated blue carries every interactive cue. */
-  --accent: #1e4fc2;
-  --accent-hover: #173f9e;
+  --accent: #111827;
+  --accent-hover: #2b3445;
   --accent-text: #ffffff;
-  --accent-soft: #e8eefb;
-  --focus-ring: 0 0 0 3px rgba(30, 79, 194, 0.22);
+  --accent-soft: #f1f3f6;
+  --focus-ring: 0 0 0 3px rgba(17, 24, 39, 0.14);
 
   --danger: #b42318;
   --danger-soft: #fdeeed;
@@ -21,45 +21,47 @@
   --ok-soft: #e7f6ee;
   --warn: #935406;
   --warn-soft: #fdf4e3;
-  --info: #1e4fc2;
-  --info-soft: #e8eefb;
+  --info: #1d4ed8;
+  --info-soft: #eaf0fd;
 
-  /* The navigation frame stays dark in both schemes: it anchors the page. */
-  --nav-bg: #0f1d33;
-  --nav-border: rgba(255, 255, 255, 0.08);
-  --nav-text: #c4cfdd;
-  --nav-muted: #8595ab;
-  --nav-hover: rgba(255, 255, 255, 0.06);
-  --nav-active-bg: rgba(91, 140, 255, 0.16);
-  --nav-active-text: #ffffff;
-  --nav-indicator: #5b8cff;
-  --tip-bg: #0f1b2d;
+  --nav-bg: #f5f6f8;
+  --nav-border: #e6e8ec;
+  --nav-text: #374151;
+  --nav-muted: #6b7280;
+  --nav-heading: #8a919e;
+  --nav-hover: rgba(17, 24, 39, 0.05);
+  --nav-active-bg: #ffffff;
+  --nav-active-text: #111827;
+  --nav-indicator: #f59e0b;
+  --tip-bg: #111827;
   --tip-text: #ffffff;
   --tip-muted: #a9b6c8;
 
-  --shadow: 0 1px 2px rgba(15, 27, 45, 0.05), 0 1px 3px rgba(15, 27, 45, 0.07);
-  --shadow-lg: 0 12px 32px rgba(15, 27, 45, 0.18);
-  --radius: 8px;
-  --rail-width: 64px;
+  --shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  --shadow-lg: 0 12px 32px rgba(17, 24, 39, 0.18);
+  --radius: 12px;
+  --sidebar-width: 256px;
+  --sidebar-collapsed-width: 68px;
+  --topbar-height: 56px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b1119;
-    --surface: #121a25;
-    --surface-2: #182230;
-    --border: #253142;
-    --border-strong: #34435a;
-    --text: #e4eaf2;
-    --muted: #94a2b5;
+    --bg: #0d1117;
+    --surface: #0d1117;
+    --surface-2: #161b22;
+    --border: #232a34;
+    --border-strong: #333c49;
+    --text: #e6eaf0;
+    --muted: #9099a6;
 
-    --accent: #6f9dff;
-    --accent-hover: #8fb3ff;
-    --accent-text: #0a1222;
-    --accent-soft: #172440;
-    --focus-ring: 0 0 0 3px rgba(111, 157, 255, 0.3);
+    --accent: #e6eaf0;
+    --accent-hover: #ffffff;
+    --accent-text: #0d1117;
+    --accent-soft: #1b222c;
+    --focus-ring: 0 0 0 3px rgba(230, 234, 240, 0.22);
 
     --danger: #f97066;
     --danger-soft: #3a1a1a;
@@ -67,19 +69,20 @@
     --ok-soft: #0f2a1d;
     --warn: #f5b85a;
     --warn-soft: #33260f;
-    --info: #6f9dff;
+    --info: #7aa2ff;
     --info-soft: #172440;
 
-    --nav-bg: #080d14;
-    --nav-border: #1c2533;
-    --nav-text: #b6c2d2;
-    --nav-muted: #7d8ca1;
+    --nav-bg: #11161d;
+    --nav-border: #232a34;
+    --nav-text: #c3ccd8;
+    --nav-muted: #8b95a3;
+    --nav-heading: #6f7a89;
     --nav-hover: rgba(255, 255, 255, 0.05);
-    --nav-active-bg: rgba(111, 157, 255, 0.14);
+    --nav-active-bg: #1b222c;
     --nav-active-text: #ffffff;
-    --nav-indicator: #6f9dff;
-    --tip-bg: #e4eaf2;
-    --tip-text: #0b1119;
+    --nav-indicator: #f5a524;
+    --tip-bg: #e6eaf0;
+    --tip-text: #0d1117;
     --tip-muted: #4c5a6d;
 
     --shadow: none;
@@ -97,7 +100,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font: 14px/1.5 "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 a {
@@ -134,69 +137,85 @@ h3 {
 
 .shell {
   display: grid;
-  grid-template-columns: var(--rail-width) 1fr;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   min-height: 100vh;
 }
 
-/* Navigation rail: icons only, each named by a tooltip. */
+/* Sidebar: brand, grouped navigation with labels, and the session at the foot. */
 
 .rail {
   background: var(--nav-bg);
   border-right: 1px solid var(--nav-border);
   color: var(--nav-text);
-  padding: 12px 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
   z-index: 40;
 }
 
 .rail-logo {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 8px;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--topbar-height);
+  padding: 0 20px;
+  flex-shrink: 0;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 .rail-logo:hover {
-  background: var(--nav-hover);
+  text-decoration: none;
 }
 
-.rail-nav,
-.rail-foot {
+.rail-nav {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.rail-nav {
-  padding-top: 8px;
-  border-top: 1px solid var(--nav-border);
+  gap: 2px;
+  padding: 4px 0 12px;
 }
 .rail-foot {
   margin-top: auto;
-  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 0;
   border-top: 1px solid var(--nav-border);
+}
+
+.rail-heading {
+  padding: 16px 20px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--nav-heading);
 }
 
 .rail-item {
   position: relative;
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 8px;
+  padding: 9px 12px;
   border: none;
   border-radius: 8px;
   background: transparent;
-  color: var(--nav-muted);
+  color: var(--nav-text);
+  font-size: 14.5px;
+  font-weight: 500;
+  text-align: left;
   cursor: pointer;
+}
+.rail-item > svg {
+  flex-shrink: 0;
+  color: var(--nav-muted);
 }
 .rail-item.static {
   cursor: default;
@@ -210,103 +229,176 @@ button.rail-item:hover:not(:disabled) {
 .rail-item.active {
   background: var(--nav-active-bg);
   color: var(--nav-active-text);
+  font-weight: 600;
 }
-.rail-item.active::before {
+.rail-item.active > svg {
+  color: var(--nav-active-text);
+}
+/* The current page: an orange bar against the sidebar's right edge. */
+.rail-item.active::after {
   content: "";
   position: absolute;
-  left: -12px;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
+  right: -8px;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  border-radius: 4px 0 0 4px;
   background: var(--nav-indicator);
 }
-
-/* Short screens: tighten the rail so the footer stays in view with every item shown. */
-@media (max-height: 760px) {
-  .rail {
-    gap: 2px;
-    padding: 8px 0;
-  }
-  .rail-item {
-    height: 34px;
-  }
-  .rail-logo {
-    height: 38px;
-    margin-bottom: 4px;
-  }
+.rail-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* A login waiting for an answer: a dot on the corner of its icon. */
+/* A login waiting for an answer: a dot beside the item's label. */
 .rail-alert {
-  position: absolute;
-  top: 7px;
-  right: 7px;
   width: 8px;
   height: 8px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--warn);
-  box-shadow: 0 0 0 2px var(--nav-bg);
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
   border-radius: 50%;
-  background: var(--nav-active-bg);
-  color: var(--nav-active-text);
-  font-size: 11px;
-  font-weight: 700;
+  background: var(--surface);
+  border: 2px solid var(--nav-indicator);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-.tip {
+/* Collapsed sidebar: icons only, names on hover via the title attribute. */
+
+.shell {
+  transition: grid-template-columns 0.18s ease;
+}
+.shell.collapsed {
+  grid-template-columns: var(--sidebar-collapsed-width) minmax(0, 1fr);
+}
+.shell.collapsed .rail {
+  overflow-x: hidden;
+}
+.shell.collapsed .rail-logo {
+  justify-content: center;
+  padding: 0;
+}
+.shell.collapsed .rail-logo span,
+.shell.collapsed .rail-label {
+  display: none;
+}
+.shell.collapsed .rail-heading {
+  height: 1px;
+  margin: 10px 16px;
+  padding: 0;
+  overflow: hidden;
+  font-size: 0;
+  background: var(--nav-border);
+}
+.shell.collapsed .rail-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+.shell.collapsed .rail-alert {
   position: absolute;
-  left: calc(100% + 12px);
-  top: 50%;
-  transform: translate(-4px, -50%);
-  padding: 5px 9px;
-  border-radius: 6px;
-  background: var(--tip-bg);
-  color: var(--tip-text);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.35;
+  top: 7px;
+  right: 10px;
+}
+
+/* Top bar: breadcrumb trail on the left, who is signed in on the right. */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: var(--topbar-height);
+  padding: 0 32px 0 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-nav {
+  display: flex;
+  gap: 2px;
+}
+.topbar-toggle,
+.topbar-nav button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+}
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
   white-space: nowrap;
-  box-shadow: var(--shadow-lg);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s;
-  z-index: 60;
+  overflow: hidden;
 }
-.tip small {
+.crumbs .sep {
+  color: var(--border-strong);
+}
+.crumbs .current {
+  color: var(--text);
+  font-weight: 500;
+}
+.session {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+  line-height: 1.25;
+}
+.session strong {
   display: block;
-  color: var(--tip-muted);
-  font-size: 11px;
+  font-size: 14.5px;
+  font-weight: 600;
 }
-.rail-logo:hover .tip,
-.rail-logo:focus-visible .tip,
-.rail-item:hover .tip,
-.rail-item:focus-visible .tip {
-  opacity: 1;
-  visibility: visible;
-  transform: translate(0, -50%);
+.session small {
+  display: block;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+.session .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+}
+.session button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  border-radius: 50%;
 }
 
 .main {
-  padding: 24px 32px 0;
+  padding: 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
 }
 .main-content {
   flex: 1;
-  padding-bottom: 32px;
+  padding: 28px 32px 32px;
 }
 .app-footer {
+  margin: 0 32px;
   padding: 14px 0 18px;
   border-top: 1px solid var(--border);
   color: var(--muted);
@@ -354,6 +446,7 @@ button.rail-item:hover:not(:disabled) {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  overflow: hidden;
 }
 .card-head {
   display: flex;
@@ -396,17 +489,17 @@ table {
 th,
 td {
   text-align: left;
-  padding: 9px 16px;
+  padding: 14px 16px;
   border-bottom: 1px solid var(--border);
   vertical-align: top;
 }
 th {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
-  background: var(--surface-2);
+  background: var(--surface);
   white-space: nowrap;
 }
 tbody tr:hover td {
@@ -467,6 +560,7 @@ textarea {
 }
 input[type="checkbox"] {
   width: auto;
+  accent-color: var(--accent);
 }
 textarea {
   font-family: var(--mono);
@@ -602,7 +696,8 @@ button.link {
 
 .badge {
   display: inline-block;
-  padding: 1px 8px;
+  padding: 2px 10px;
+  border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 11.5px;
   font-weight: 600;
@@ -1157,51 +1252,63 @@ dd.chips {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto 1fr;
   }
-  /* The rail becomes a scrolling top bar; tooltips would be clipped there, and each
-     item keeps its accessible label. */
+  /* The sidebar becomes a scrolling strip across the top; section headings and the
+     breadcrumb trail drop away. */
   .rail {
     position: sticky;
     flex-direction: row;
+    align-items: center;
     height: auto;
-    padding: 6px 8px;
     border-right: none;
     border-bottom: 1px solid var(--nav-border);
     overflow-x: auto;
     min-width: 0;
   }
-  .rail-nav,
-  .rail-foot,
   .rail-logo {
+    height: 48px;
+    padding: 0 12px;
     flex-shrink: 0;
   }
-  .rail-logo {
-    margin: 0 4px 0 0;
+  .shell.collapsed {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .rail-nav,
-  .rail-foot {
+  .shell.collapsed .rail-label {
+    display: inline;
+  }
+  .shell.collapsed .rail-item {
+    padding: 8px 10px;
+    justify-content: flex-start;
+  }
+  .rail-logo span,
+  .shell.collapsed .rail-logo span,
+  .rail-heading,
+  .rail-foot,
+  .topbar {
+    display: none;
+  }
+  .rail-nav {
     flex-direction: row;
-    border-top: none;
-    padding-top: 0;
+    padding: 4px 8px;
   }
-  .rail-foot {
-    margin: 0 0 0 auto;
-    padding-left: 8px;
-    border-left: 1px solid var(--nav-border);
+  .rail-item {
+    margin: 0;
+    padding: 8px 10px;
+    flex-shrink: 0;
   }
-  .rail-item.active::before {
-    left: 8px;
+  .rail-item.active::after {
     right: 8px;
+    left: 8px;
     top: auto;
-    bottom: -6px;
+    bottom: -4px;
     width: auto;
     height: 3px;
     border-radius: 3px 3px 0 0;
   }
-  .tip {
-    display: none;
+  .main-content {
+    padding: 16px 16px 24px;
   }
-  .main {
-    padding: 16px 16px 0;
+  .app-footer {
+    margin: 0 16px;
   }
   .timeline li {
     grid-template-columns: 1fr;
