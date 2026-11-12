@@ -86,8 +86,9 @@ func TestRootRedirectsToDashboard(t *testing.T) {
 	h := newDashboardHarness(t, map[string]string{"index.html": "home"})
 
 	// Without the trailing slash, the mux redirects into the dashboard.
-	if rec := h.do(http.MethodGet, "/dashboard", "", nil); rec.Code != http.StatusMovedPermanently || rec.Header().Get("Location") != "/dashboard/" {
-		t.Errorf("GET /dashboard = %d to %q, want 301 to /dashboard/", rec.Code, rec.Header().Get("Location"))
+	// Go 1.26 changed ServeMux trailing-slash redirects from 301 to 307.
+	if rec := h.do(http.MethodGet, "/dashboard", "", nil); rec.Code != http.StatusMovedPermanently && rec.Code != http.StatusTemporaryRedirect || rec.Header().Get("Location") != "/dashboard/" {
+		t.Errorf("GET /dashboard = %d to %q, want 301 or 307 to /dashboard/", rec.Code, rec.Header().Get("Location"))
 	}
 
 	rec := h.do(http.MethodGet, "/", "", nil)
