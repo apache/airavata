@@ -2098,6 +2098,14 @@ POST /api/v1/processes/{processId}/stop
 
 Records `STOPPED`, ends the tasks of its workflows, cancels its job, and answers `204`. A task in flight is interrupted, except a job submission, whose job is cancelled once it is known. Owner-scoped like [launching](#launch-a-process). A completed run is unchanged. A stopped run cannot be launched or retried: both answer `409`.
 
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `403 Forbidden` | the run belongs to another user |
+| `404 Not Found` | no such process |
+| `500 Internal Server Error` | the job could not be cancelled; the run is `STOPPED`, and stopping again retries |
+
 ## Process Statuses
 
 A run's status history, read-only and nested under the process:

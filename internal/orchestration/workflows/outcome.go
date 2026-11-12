@@ -32,7 +32,7 @@ import (
 
 // recordingOutcome runs a workflow body between two records of it in the process's
 // workflow history: RUNNING before the body starts, then SUCCEEDED or FAILED by what
-// the body returns. A workflow fails exactly when its function returns an error, so
+// the body returns, or STOPPED if the process was stopped. A workflow fails exactly when its function returns an error, so
 // this is where every failure path of the body passes.
 //
 // RUNNING is recorded here rather than by whoever started the workflow: a caller

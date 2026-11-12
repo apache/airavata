@@ -124,11 +124,3 @@ func workflowToRetry(processID string, recorded []procmodel.ProcessWorkflow) (pr
 	}
 	return "", httpx.Conflict("Process %s has no failed workflow to retry", processID)
 }
-
-func (s *LaunchService) requireNotStopped(ctx context.Context, processID string) error {
-	stopped, err := s.processService.processes.HasStatus(ctx, processID, procmodel.ProcessStatusTypeStopped)
-	if stopped {
-		return httpx.Conflict("Process %s is stopped", processID)
-	}
-	return err
-}

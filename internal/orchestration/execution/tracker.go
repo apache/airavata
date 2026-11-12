@@ -86,7 +86,8 @@ func (t *TaskTracker) Stop(processID string) {
 }
 
 // Track runs one attempt of a task between an EXECUTING status and the status its
-// outcome earns: COMPLETED on success, FAILED with the error as the log otherwise.
+// outcome earns: COMPLETED on success, FAILED with the error as the log otherwise, or
+// STOPPED when it failed because its process was stopped.
 //
 // It is called from inside an activity, never from the workflow, since a workflow body
 // is replayed and must not write. Each retry of the activity is an attempt of its own,

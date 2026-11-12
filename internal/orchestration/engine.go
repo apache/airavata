@@ -257,11 +257,10 @@ func (w *ExecutionEngine) Stop(ctx context.Context, processID string) error {
 			return err
 		}
 	}
-	if err := w.cancelWorkflows(ctx, processID); err != nil {
-		return err
-	}
+	// Workflows first, so a workflow sees its cancellation before its interrupted task.
+	err := w.cancelWorkflows(ctx, processID)
 	w.tracker.Stop(processID)
-	return w.batch.CancelBatchJob(ctx, processID)
+	return errors.Join(err, w.batch.CancelBatchJob(ctx, processID))
 }
 
 // cancelWorkflows cancels the workflows the process has running, so that none of
@@ -278,7 +277,12 @@ func (w *ExecutionEngine) cancelWorkflows(ctx context.Context, processID string)
 		if wf.ExecutionID == nil || wf.Status == nil || *wf.Status != model.ProcessWorkflowStatusTypeRunning {
 			continue
 		}
-		if err := w.orchestrator.Client.CancelWorkflowInstance(ctx, core.NewWorkflowInstance(wf.WorkflowID, *wf.ExecutionID)); err != nil && !errors.Is(err, backend.ErrInstanceNotFound) {
+		err := w.orchestrator.Client.CancelWorkflowInstance(ctx, core.NewWorkflowInstance(wf.WorkflowID, *wf.ExecutionID))
+		// A workflow the engine no longer has will never record its own outcome.
+		if errors.Is(err, backend.ErrInstanceNotFound) {
+			err = w.processWorkflows.UpdateStatus(ctx, wf.ID, model.ProcessWorkflowStatusTypeStopped)
+		}
+		if err != nil {
 			return err
 		}
 	}

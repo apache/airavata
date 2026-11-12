@@ -165,6 +165,14 @@ func (s *LaunchService) requireOwnership(ctx context.Context, proc *dto.Response
 	return nil
 }
 
+func (s *LaunchService) requireNotStopped(ctx context.Context, processID string) error {
+	stopped, err := s.processService.processes.HasStatus(ctx, processID, procmodel.ProcessStatusTypeStopped)
+	if stopped {
+		return httpx.Conflict("Process %s is stopped", processID)
+	}
+	return err
+}
+
 // requireNotLaunched reports a conflict when a process already carries the tasks a
 // launch creates. It is the guard that keeps a retried request from staging every input
 // twice and submitting the job twice over.
