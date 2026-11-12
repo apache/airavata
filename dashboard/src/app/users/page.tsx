@@ -16,10 +16,11 @@ const fullName = (u: UserAccount) => [u.firstName, u.lastName].filter(Boolean).j
 const isAdminAccount = (u: UserAccount) => u.roles.includes("ADMIN") || u.roles.includes("SUPER_ADMIN");
 
 export default function UsersPage() {
-  const { me, isAdmin } = useSession();
+  const { me, can } = useSession();
+  const canListUsers = can("user:list");
   const users = useResource(
-    () => (isAdmin ? api.get<UserAccount[]>("/api/v1/users") : Promise.resolve([])),
-    [isAdmin],
+    () => (canListUsers ? api.get<UserAccount[]>("/api/v1/users") : Promise.resolve([])),
+    [canListUsers],
   );
   // Opens on the accounts waiting for a decision, which is why an admin usually comes here.
   const [tab, setTab] = useState<Tab>("SUSPENDED");
@@ -59,7 +60,7 @@ export default function UsersPage() {
     }
   };
 
-  if (!isAdmin) {
+  if (!canListUsers) {
     return (
       <div className="stack">
         <PageHead title="Users" />

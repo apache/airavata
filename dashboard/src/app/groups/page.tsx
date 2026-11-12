@@ -151,13 +151,14 @@ function GroupDetail({
   onClose: () => void;
   onChanged: (g: Group | null) => void;
 }) {
-  const { me, isAdmin } = useSession();
+  const { me, isAdmin, can } = useSession();
+  const canListUsers = can("user:list");
   const base = groupPath(group);
   const members = useResource(() => api.get<GroupMember[]>(`${base}/members`), [base]);
   // Admins can pick from the user list; everyone else types a user id.
   const users = useResource(
-    () => (isAdmin ? api.get<UserAccount[]>("/api/v1/users") : Promise.resolve([] as UserAccount[])),
-    [isAdmin],
+    () => (canListUsers ? api.get<UserAccount[]>("/api/v1/users") : Promise.resolve([] as UserAccount[])),
+    [canListUsers],
   );
   const [rowError, setRowError] = useState<string | null>(null);
 

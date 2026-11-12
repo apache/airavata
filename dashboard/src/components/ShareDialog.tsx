@@ -27,15 +27,16 @@ export function ShareDialog({
   permissionHelp: Record<Permission, string>;
   onClose: () => void;
 }) {
-  const { isAdmin } = useSession();
+  const { can } = useSession();
+  const canListUsers = can("user:list");
   const sharesPath = `${resourcePath}/shares`;
   const shares = useResource(() => api.get<ResourceShare[]>(sharesPath), [sharesPath]);
   // Groups the caller owns or belongs to are the ones they can name. Everyone may list
-  // their own; the full user list is admin-only, so others type a user id.
+  // their own; the full user list needs user:list, so others type a user id.
   const groups = useResource(() => api.get<Group[]>("/api/v1/groups/me"));
   const users = useResource(
-    () => (isAdmin ? api.get<UserAccount[]>("/api/v1/users") : Promise.resolve([] as UserAccount[])),
-    [isAdmin],
+    () => (canListUsers ? api.get<UserAccount[]>("/api/v1/users") : Promise.resolve([] as UserAccount[])),
+    [canListUsers],
   );
 
   const [principalType, setPrincipalType] = useState<PrincipalType>("USER");
