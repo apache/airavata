@@ -49,7 +49,7 @@ func TestPermissionResolver(t *testing.T) {
 		{"unknown authority", []string{"WIZARD"}, false},
 		{"no authorities", nil, false},
 	} {
-		if got := r.Permissions(ctx, tc.authorities).Has(permission.AuditRead); got != tc.want {
+		if got := r.Permissions(ctx, "", tc.authorities).Has(permission.AuditRead); got != tc.want {
 			t.Errorf("%s: has audit:read = %v, want %v", tc.name, got, tc.want)
 		}
 	}
@@ -61,28 +61,28 @@ func TestPermissionResolverCachesUntilInvalidatedOrExpired(t *testing.T) {
 	ctx := context.Background()
 	user := []string{"USER"}
 
-	if r.Permissions(ctx, user).Has(permission.AuditRead) {
+	if r.Permissions(ctx, "", user).Has(permission.AuditRead) {
 		t.Fatal("USER holds audit:read before any grant")
 	}
 	if err := gdb.Create(&model.RolePermission{Role: role.User, Permission: permission.AuditRead}).Error; err != nil {
 		t.Fatal(err)
 	}
-	if r.Permissions(ctx, user).Has(permission.AuditRead) {
+	if r.Permissions(ctx, "", user).Has(permission.AuditRead) {
 		t.Error("a change was visible before Invalidate or expiry; the cache is not caching")
 	}
 	r.Invalidate()
-	if !r.Permissions(ctx, user).Has(permission.AuditRead) {
+	if !r.Permissions(ctx, "", user).Has(permission.AuditRead) {
 		t.Error("the grant is not visible after Invalidate")
 	}
 
 	// A fresh resolver with a tiny TTL picks changes up on its own.
 	short := iamrepo.NewPermissionResolver(gdb, time.Millisecond)
-	short.Permissions(ctx, user)
+	short.Permissions(ctx, "", user)
 	if err := gdb.Delete(&model.RolePermission{}, "role = ? AND permission = ?", "USER", "audit:read").Error; err != nil {
 		t.Fatal(err)
 	}
 	time.Sleep(5 * time.Millisecond)
-	if short.Permissions(ctx, user).Has(permission.AuditRead) {
+	if short.Permissions(ctx, "", user).Has(permission.AuditRead) {
 		t.Error("the revoked grant outlived its TTL")
 	}
 }
@@ -94,11 +94,11 @@ func TestPermissionResolverFailsClosed(t *testing.T) {
 	if err := gdb.Migrator().DropTable(&model.RolePermission{}); err != nil {
 		t.Fatal(err)
 	}
-	if r.Permissions(context.Background(), []string{"ADMIN"}).Has(permission.AuditRead) {
+	if r.Permissions(context.Background(), "", []string{"ADMIN"}).Has(permission.AuditRead) {
 		t.Error("a failed lookup granted a permission")
 	}
 	// SUPER_ADMIN needs no lookup, so it survives a broken table.
-	if !r.Permissions(context.Background(), []string{"SUPER_ADMIN"}).Has(permission.AuditRead) {
+	if !r.Permissions(context.Background(), "", []string{"SUPER_ADMIN"}).Has(permission.AuditRead) {
 		t.Error("SUPER_ADMIN was locked out by a broken role_permissions table")
 	}
 	if err := gdb.AutoMigrate(&model.RolePermission{}); err != nil {
@@ -107,7 +107,7 @@ func TestPermissionResolverFailsClosed(t *testing.T) {
 	if err := gdb.Create(&model.RolePermission{Role: role.Admin, Permission: permission.AuditRead}).Error; err != nil {
 		t.Fatal(err)
 	}
-	if !r.Permissions(context.Background(), []string{"ADMIN"}).Has(permission.AuditRead) {
+	if !r.Permissions(context.Background(), "", []string{"ADMIN"}).Has(permission.AuditRead) {
 		t.Error("the failure was cached")
 	}
 }
@@ -120,6 +120,55 @@ func TestRolePermissionRejectsUnknownValues(t *testing.T) {
 	} {
 		if err := gdb.Create(&rp).Error; err == nil {
 			t.Errorf("stored %+v", rp)
+		}
+	}
+}
+
+// A service account resolves from its own grants only, cached per account until
+// InvalidateUser, and ignores what any role grants.
+func TestPermissionResolverForServiceAccounts(t *testing.T) {
+	gdb := openTestDB(t)
+	r := iamrepo.NewPermissionResolver(gdb, time.Hour)
+	ctx := context.Background()
+	const id = "sa:ci"
+	if err := gdb.Create(&model.User{ID: id, CreatedAt: 1}).Error; err != nil {
+		t.Fatal(err)
+	}
+	if err := gdb.Create(&model.ServiceAccount{UserID: id, CreatedBy: "admin", TokenHash: "h", TokenIssuedAt: 1, TokenExpiresAt: 2}).Error; err != nil {
+		t.Fatal(err)
+	}
+
+	// USER=none, ADMIN=audit:read by default; the account's USER authority must not matter.
+	if r.Permissions(ctx, id, []string{"ADMIN"}).Has(permission.AuditRead) {
+		t.Fatal("a service account inherited a role's grant")
+	}
+
+	if err := gdb.Create(&model.ServiceAccountPermission{UserID: id, Permission: permission.ProcessList}).Error; err != nil {
+		t.Fatal(err)
+	}
+	if r.Permissions(ctx, id, nil).Has(permission.ProcessList) {
+		t.Error("a change was visible before invalidation; the cache is not caching")
+	}
+	r.InvalidateUser(id)
+	if !r.Permissions(ctx, id, nil).Has(permission.ProcessList) {
+		t.Error("the grant is not visible after InvalidateUser")
+	}
+
+	// A forbidden permission inserted around the model is ignored.
+	if err := gdb.Exec("INSERT INTO service_account_permissions (user_id, permission) VALUES (?, ?)", id, "admin:manage").Error; err != nil {
+		t.Fatal(err)
+	}
+	r.Invalidate()
+	if r.Permissions(ctx, id, nil).Has(permission.AdminManage) {
+		t.Error("a service account holds admin:manage")
+	}
+}
+
+func TestServiceAccountPermissionRejectsForbiddenValues(t *testing.T) {
+	gdb := openTestDB(t)
+	for _, p := range []permission.Permission{permission.AdminManage, permission.ServiceAccountManage, "bogus:x"} {
+		if err := gdb.Create(&model.ServiceAccountPermission{UserID: "sa:x", Permission: p}).Error; err == nil {
+			t.Errorf("stored %s", p)
 		}
 	}
 }

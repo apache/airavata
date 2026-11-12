@@ -275,6 +275,30 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  # ------------------------------------------------------ Permissions
+
+  /api/v1/permissions:
+    get:
+      tags: [Service Accounts]
+      summary: List permissions
+      description: |
+        Any signed-in caller. Every permission that exists, with a description of what it
+        allows, sorted by name. `grantableToServiceAccount` is false for the permissions no
+        service account may hold. What a caller may grant from the list is decided where
+        the grant is made. See docs/auth.md.
+      operationId: listPermissions
+      responses:
+        "200":
+          description: Every permission.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Permission" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   # ------------------------------------------------------ Service accounts
 
   /api/v1/service-accounts:
@@ -3405,6 +3429,14 @@ components:
         status: { $ref: "#/components/schemas/UserStatus" }
       required: [status]
 
+    Permission:
+      type: object
+      properties:
+        permission: { type: string, description: "`resource:action`, such as `process:list`." }
+        description: { type: string }
+        grantableToServiceAccount: { type: boolean }
+      required: [permission, description, grantableToServiceAccount]
+
     ServiceAccountCreate:
       type: object
       properties:
@@ -3420,6 +3452,14 @@ components:
           minimum: 1
           maximum: 365
           description: How long the first token lives. Defaults to 90.
+        permissions:
+          type: array
+          items: { type: string }
+          description: >-
+            What the account may do, such as `process:list`. Empty or absent means it can
+            act only on its own records and what is shared with it. Refused with 400:
+            an unknown permission, and `admin:manage`, `user:update_any` and
+            `serviceaccount:manage`, which no service account may hold. Refused with 403: a permission the caller does not hold themselves.
       required: [name]
 
     ServiceAccountUpdate:
@@ -3433,6 +3473,13 @@ components:
           oneOf:
             - { $ref: "#/components/schemas/UserStatus" }
             - { type: "null" }
+        permissions:
+          type: [array, "null"]
+          items: { type: string }
+          description: >-
+            Replaces the account's whole set; an empty list removes every grant, and
+            absent leaves the set as it is. Takes effect on the account's next request.
+            The same rules as on create apply to what is being added.
 
     ServiceAccountTokenRequest:
       type: object
@@ -3488,7 +3535,11 @@ components:
         createdAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
         tokenIssuedAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
         tokenExpiresAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
-      required: [serviceAccountId, name, displayName, description, email, status, createdBy, createdAt, tokenIssuedAt, tokenExpiresAt]
+        permissions:
+          type: array
+          items: { type: string }
+          description: What the account may do, sorted.
+      required: [serviceAccountId, name, displayName, description, email, status, createdBy, createdAt, tokenIssuedAt, tokenExpiresAt, permissions]
 
     ServiceAccountTokenResponse:
       type: object

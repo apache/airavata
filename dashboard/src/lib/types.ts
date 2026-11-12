@@ -69,8 +69,19 @@ export interface CurrentUser {
   userId: string;
   status: UserStatus;
   authorities: string[];
+  // What the caller's roles grant, such as "audit:read". Use it to hide what the caller
+  // cannot do; the server enforces it regardless.
+  permissions: string[];
   admin: boolean;
   user: UserAccount | null;
+}
+
+// GET /api/v1/permissions: every permission, for pages that let an administrator choose.
+export interface PermissionInfo {
+  permission: string; // "resource:action"
+  description: string;
+  // False for the permissions no service account may hold.
+  grantableToServiceAccount: boolean;
 }
 
 // Service accounts (admin only)
@@ -86,6 +97,8 @@ export interface ServiceAccount {
   createdAt: number;
   tokenIssuedAt: number;
   tokenExpiresAt: number;
+  // What the account may do, sorted.
+  permissions: string[];
 }
 
 // Returned on create and regenerate: the only times the token is ever sent.
@@ -100,6 +113,7 @@ export interface ServiceAccountCreate {
   description: string | null;
   email: string | null;
   validityDays: number | null;
+  permissions: string[];
 }
 
 export interface ServiceAccountUpdate {
@@ -107,6 +121,8 @@ export interface ServiceAccountUpdate {
   description?: string | null;
   email?: string | null;
   status?: UserStatus;
+  // Replaces the account's whole set. Leave out to keep it as it is.
+  permissions?: string[];
 }
 
 // Credentials

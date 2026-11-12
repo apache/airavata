@@ -26,6 +26,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	model "github.com/apache/airavata/api/iam/model"
 )
@@ -52,6 +53,10 @@ type ServiceAccountCreate struct {
 
 	// ValidityDays is how long the first token lives. Defaults to 90.
 	ValidityDays *int `json:"validityDays"`
+
+	// Permissions is what the account may do. Empty means it can act only on its own
+	// records and what is shared with it.
+	Permissions []string `json:"permissions"`
 }
 
 // Validate implements httpx.Validator.
@@ -63,16 +68,21 @@ func (r *ServiceAccountCreate) Validate() []httpx.FieldError {
 	c.Email("email", "Email should be valid", r.Email)
 	validateDescription(&c, r.Description)
 	validateValidity(&c, r.ValidityDays)
+	validatePermissions(&c, r.Permissions)
 	return c.Fields()
 }
 
-// ServiceAccountUpdate changes an account's profile or status. Absent fields are left
-// as they are.
+// ServiceAccountUpdate changes an account's profile, status or permissions. Absent
+// fields are left as they are.
 type ServiceAccountUpdate struct {
 	DisplayName *string           `json:"displayName"`
 	Description *string           `json:"description"`
 	Email       *string           `json:"email"`
 	Status      *model.UserStatus `json:"status"`
+
+	// Permissions, when present, replaces the account's whole set; an empty list
+	// removes every grant. Absent leaves the set as it is.
+	Permissions *[]string `json:"permissions"`
 }
 
 // Validate implements httpx.Validator.
@@ -82,6 +92,9 @@ func (r *ServiceAccountUpdate) Validate() []httpx.FieldError {
 	validateDescription(&c, r.Description)
 	if r.Status != nil && !r.Status.Valid() {
 		c.Add("status", "Status must be one of ACTIVE, INACTIVE, SUSPENDED")
+	}
+	if r.Permissions != nil {
+		validatePermissions(&c, *r.Permissions)
 	}
 	return c.Fields()
 }
@@ -113,6 +126,34 @@ func validateValidity(c *httpx.Constraints, v *int) {
 	}
 }
 
+// validatePermissions rejects a permission that does not exist, and one that a service
+// account may never hold, naming it so the caller can see which.
+func validatePermissions(c *httpx.Constraints, ps []string) {
+	for _, p := range ps {
+		perm := permission.Permission(p)
+		switch {
+		case !perm.Valid():
+			c.Add("permissions", "Unknown permission: "+p)
+		case !perm.GrantableToServiceAccount():
+			c.Add("permissions", "Permission "+p+" cannot be granted to a service account")
+		}
+	}
+}
+
+// ToPermissions converts validated names to permissions, dropping duplicates.
+func ToPermissions(ps []string) []permission.Permission {
+	seen := make(map[permission.Permission]bool, len(ps))
+	out := make([]permission.Permission, 0, len(ps))
+	for _, p := range ps {
+		perm := permission.Permission(p)
+		if !seen[perm] {
+			seen[perm] = true
+			out = append(out, perm)
+		}
+	}
+	return out
+}
+
 func validateDescription(c *httpx.Constraints, d *string) {
 	if d != nil && len(*d) > 1024 {
 		c.Add("description", "Description must be at most 1024 characters")
@@ -132,6 +173,9 @@ type ServiceAccountResponse struct {
 	CreatedAt        int64             `json:"createdAt"`
 	TokenIssuedAt    int64             `json:"tokenIssuedAt"`
 	TokenExpiresAt   int64             `json:"tokenExpiresAt"`
+
+	// Permissions is what the account is allowed to do, sorted.
+	Permissions []string `json:"permissions"`
 }
 
 // ServiceAccountTokenResponse is returned when a token is minted: on create and on
@@ -151,12 +195,18 @@ func ToServiceAccountResponse(u *model.User) ServiceAccountResponse {
 		Email:            u.Email,
 		Status:           u.Status,
 		CreatedAt:        u.CreatedAt,
+		Permissions:      []string{},
 	}
 	if sa := u.ServiceAccount; sa != nil {
 		out.Description = sa.Description
 		out.CreatedBy = sa.CreatedBy
 		out.TokenIssuedAt = sa.TokenIssuedAt
 		out.TokenExpiresAt = sa.TokenExpiresAt
+		set := make(permission.Set, len(sa.Permissions))
+		for _, p := range sa.Permissions {
+			set[p.Permission] = struct{}{}
+		}
+		out.Permissions = set.Sorted()
 	}
 	return out
 }
