@@ -634,7 +634,6 @@ type BatchDeploymentRequest struct {
 	// DefaultBatchJobConfig The resource request a run of this deployment starts from. A run carries
 	// its own copy and may depart from it.
 	DefaultBatchJobConfig BatchJobConfigRequest `json:"defaultBatchJobConfig"`
-	DefaultPartition      *string               `json:"defaultPartition,omitempty"`
 	SlurmClusterId        *openapi_types.UUID   `json:"slurmClusterId,omitempty"`
 
 	// SlurmRunSection The run script section a job of this deployment executes.
@@ -645,7 +644,6 @@ type BatchDeploymentRequest struct {
 // BatchDeploymentResponse defines model for BatchDeploymentResponse.
 type BatchDeploymentResponse struct {
 	DefaultBatchJobConfig *BatchJobConfigResponse `json:"defaultBatchJobConfig,omitempty"`
-	DefaultPartition      *string                 `json:"defaultPartition,omitempty"`
 	DeploymentId          openapi_types.UUID      `json:"deploymentId"`
 	SlurmClusterId        *openapi_types.UUID     `json:"slurmClusterId,omitempty"`
 	SlurmRunSection       string                  `json:"slurmRunSection"`
@@ -668,6 +666,7 @@ type BatchJobConfigRequest struct {
 	Nodes         *int32  `json:"nodes,omitempty"`
 	Ntasks        *int32  `json:"ntasks,omitempty"`
 	NtasksPerNode *int32  `json:"ntasksPerNode,omitempty"`
+	Partition     *string `json:"partition,omitempty"`
 
 	// Qos Slurm quality of service (`--qos`).
 	Qos             *string `json:"qos,omitempty"`
@@ -691,6 +690,7 @@ type BatchJobConfigResponse struct {
 	Nodes            *int32             `json:"nodes,omitempty"`
 	Ntasks           *int32             `json:"ntasks,omitempty"`
 	NtasksPerNode    *int32             `json:"ntasksPerNode,omitempty"`
+	Partition        *string            `json:"partition,omitempty"`
 
 	// Qos Slurm quality of service (`--qos`).
 	Qos             *string `json:"qos,omitempty"`
@@ -716,7 +716,8 @@ type BatchJobStatusType string
 
 // BatchProcessRequest The `batchProcess` section of a process request. The resource request is
 // carried here rather than copied from the deployment's default, which is what
-// lets a caller ask for different resources for a particular run.
+// lets a caller ask for different resources for a particular run. Only
+// `partition` is taken from the deployment's default, when the run names none.
 type BatchProcessRequest struct {
 	// BaseWorkDir The parent directory on the cluster this run works under; it gets a
 	// subdirectory of its own beneath it, named for the process id, which is
