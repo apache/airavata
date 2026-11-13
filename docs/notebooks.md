@@ -6,7 +6,7 @@ The job reaches Airavata the way a [CyberShuttle](https://github.com/cyber-shutt
 
 ```
 browser ──HTTPS──▶ Airavata ──link (WebSocket, yamux)──▶ Linkspan ──loopback──▶ Jupyter Server
-                   /api/v1/processes/{id}/jupyter/      dialled from the job        on the compute node
+                   /api/v1/processes/{id}/linkspan/     dialled from the job        on the compute node
 ```
 
 ## What every batch job is given
@@ -54,7 +54,7 @@ This needs Linkspan 0.22.0 or newer, the first release with the link transport, 
 
 On the Notebooks page, **Run notebooks** lists the signed-in user's processes that are submitted or running. Choosing one waits for its Linkspan to link, then opens the job's Jupyter Server: the file browser shows the job's files, and notebooks run on a `python3` kernel on the compute node. The kernel is shut down when the page is left or another source is chosen. Choosing **In this browser** goes back to Pyodide and the notebooks kept in the browser.
 
-If Airavata restarts, or the link drops, Linkspan redials on its own and the page picks the server up again.
+If Airavata restarts, or the link drops, Linkspan redials on its own and the page picks the server up again. A `SUBMITTED` process is recorded `RUNNING` when its Linkspan dials, without waiting for Slurm's begin mail.
 
 ## API
 
@@ -62,9 +62,9 @@ If Airavata restarts, or the link drops, Linkspan redials on its own and the pag
 |---|---|---|
 | `GET /api/v1/processes/{processId}/link` | The link token, as the WebSocket subprotocol `link.<token>` | Linkspan's link. Airavata selects the subprotocol `cybershuttle.v1`. |
 | `GET /api/v1/processes/{processId}/jupyter-server` | Bearer token of the process owner | `{processId, linked, baseUrl, token}`: where to reach the Jupyter Server and its token |
-| `/api/v1/processes/{processId}/jupyter/…` | The Jupyter token, as `Authorization: token <token>` or `?token=` | Proxy to the job's Jupyter Server, including kernel WebSockets. `502` while the job is not linked. |
+| `/api/v1/processes/{processId}/linkspan/…` | The Jupyter token, as `Authorization: token <token>` or `?token=` | Proxy to [Linkspan's API](https://github.com/cyber-shuttle/linkspan#http-api) in the job, including WebSockets. A request for `api/v1/forward/{port}/…` goes to that port itself; the `baseUrl` above uses it. `502` while the job is not linked. |
 
-Only the owner of a process can read its Jupyter token, because the token runs code as the owner's cluster account. The proxy compares the token before forwarding, and the Jupyter Server checks it again. Airavata's bearer tokens are never sent to the job. Other users on a shared node can reach the job's loopback ports, but they still need the Jupyter token to use the server ([Linkspan's security model](https://github.com/cyber-shuttle/linkspan/blob/main/SECURITY.md#security-model)).
+Only the owner of a process can read its Jupyter token, because the token runs code as the owner's cluster account. The proxy compares the token before forwarding. The Jupyter Server checks it again; Linkspan's own API does not. Airavata's bearer tokens are never sent to the job. Other users on a shared node can reach the job's loopback ports, but they still need the Jupyter token to use the Jupyter Server ([Linkspan's security model](https://github.com/cyber-shuttle/linkspan/blob/main/SECURITY.md#security-model)).
 
 The link protocol is Linkspan's, as frozen in its [compatibility document](https://github.com/cyber-shuttle/linkspan/blob/main/docs/COMPATIBILITY.md): yamux runs over binary WebSocket frames, with Airavata as the yamux client. For each stream Airavata writes the target port as two big-endian bytes, and Linkspan answers `1` and carries the stream if one of its own servers listens there, or answers `0`.
 

@@ -140,7 +140,7 @@ func TestLinkCarriesTheJupyterServerToItsOwner(t *testing.T) {
 	wsBase := "ws" + strings.TrimPrefix(api.URL, "http")
 	linkURL := wsBase + "/api/v1/processes/" + processID + "/link"
 	jupyter := fakeJupyter(t)
-	proxy := api.URL + "/api/v1/processes/" + processID + "/jupyter"
+	proxy := api.URL + "/api/v1/processes/" + processID + "/linkspan/api/v1/forward/" + itoa(jupyterPort)
 
 	get := func(path, authorization string) (*http.Response, map[string]string) {
 		req, _ := http.NewRequest(http.MethodGet, proxy+path, nil)
@@ -155,6 +155,10 @@ func TestLinkCarriesTheJupyterServerToItsOwner(t *testing.T) {
 		var body map[string]string
 		_ = json.NewDecoder(resp.Body).Decode(&body)
 		return resp, body
+	}
+
+	if _, err := h.svcs.ProcessStatus.Record(ctx, processID, "SUBMITTED", nil); err != nil {
+		t.Fatal(err)
 	}
 
 	// Before Linkspan links, the proxy has nowhere to go.
@@ -184,8 +188,11 @@ func TestLinkCarriesTheJupyterServerToItsOwner(t *testing.T) {
 		time.Sleep(20 * time.Millisecond)
 	}
 	if access["linked"] != true || access["token"] != issued.JupyterToken ||
-		access["baseUrl"] != "/api/v1/processes/"+processID+"/jupyter/" {
+		access["baseUrl"] != "/api/v1/processes/"+processID+"/linkspan/api/v1/forward/"+itoa(jupyterPort)+"/" {
 		t.Fatalf("jupyter-server = %v", access)
+	}
+	if statuses := h.list("/api/v1/processes/"+processID+"/statuses", tokenAlice); statuses[len(statuses)-1]["status"] != "RUNNING" {
+		t.Errorf("statuses after link = %v, want the submitted process recorded RUNNING", statuses)
 	}
 
 	// The proxy wants the Jupyter token, not a bearer token.
@@ -205,7 +212,7 @@ func TestLinkCarriesTheJupyterServerToItsOwner(t *testing.T) {
 	}
 
 	// Kernel channels are WebSockets with the token in the query.
-	wsURL := wsBase + "/api/v1/processes/" + processID + "/jupyter/api/kernels/k1/channels?token=" + issued.JupyterToken
+	wsURL := "ws" + strings.TrimPrefix(proxy, "http") + "/api/kernels/k1/channels?token=" + issued.JupyterToken
 	kernel, wsResp, err := websocket.Dial(ctx, wsURL, nil)
 	if wsResp != nil && wsResp.Body != nil {
 		wsResp.Body.Close()
