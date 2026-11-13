@@ -85,6 +85,7 @@ type Services struct {
 
 	// Credentials.
 	SSHCredential   *credentialssvc.SSHCredentialService
+	S3Credential    *credentialssvc.S3CredentialService
 	InteractiveAuth *credentialssvc.InteractiveAuthService
 
 	// Compute.
@@ -134,6 +135,7 @@ type Repositories struct {
 	GroupMembers            *iamrepo.GroupMemberRepository
 	ServiceAccounts         *iamrepo.ServiceAccountRepository
 	SSHCredentials          *credentialsrepo.SSHCredentialRepository
+	S3Credentials           *credentialsrepo.S3CredentialRepository
 	SlurmClusters           *computerepo.SlurmClusterRepository
 	ClusterPartitions       *computerepo.ClusterPartitionRepository
 	SlurmClusterConfigs     *computerepo.SlurmClusterConfigRepository
@@ -164,6 +166,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		ServiceAccounts:         iamrepo.NewServiceAccountRepository(db),
 		AuditEvents:             auditrepo.NewEventRepository(db),
 		SSHCredentials:          credentialsrepo.NewSSHCredentialRepository(db),
+		S3Credentials:           credentialsrepo.NewS3CredentialRepository(db),
 		SlurmClusters:           computerepo.NewSlurmClusterRepository(db),
 		ClusterPartitions:       computerepo.NewClusterPartitionRepository(db),
 		SlurmClusterConfigs:     computerepo.NewSlurmClusterConfigRepository(db),
@@ -200,6 +203,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	groups := repos.Groups
 	groupMembers := repos.GroupMembers
 	sshCredentials := repos.SSHCredentials
+	s3Credentials := repos.S3Credentials
 	clusters := repos.SlurmClusters
 	partitions := repos.ClusterPartitions
 	clusterConfigs := repos.SlurmClusterConfigs
@@ -242,6 +246,9 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	virtualDataFileSvc := datasvc.NewVirtualDataFileService(db, virtualDirs, virtualFiles, shares, products, groupMembers)
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
+	// Nothing presents an S3 credential yet; S3 data storages will, and are passed here
+	// as its referrer when they arrive.
+	s3CredentialSvc := credentialssvc.NewS3CredentialService(s3Credentials, users)
 
 	linkSvc := processsvc.NewLinkService(repos.Links, processes, link.NewRegistry(), cfg.PublicURL)
 
@@ -268,6 +275,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.
 		SSHCredential:   sshCredentialSvc,
+		S3Credential:    s3CredentialSvc,
 		InteractiveAuth: credentialssvc.NewInteractiveAuthService(sshContext),
 
 		SlurmCluster:              slurmClusterSvc,

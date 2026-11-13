@@ -4,7 +4,7 @@ Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via
 
 This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.\n\nSharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [S3 credentials](#s3-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but credentials, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
 ## Error responses
 
@@ -482,6 +482,89 @@ curl -s -X PUT localhost:9095/api/v1/groups/"$GROUP_ID"/members/cilogon:67890 \
 `DELETE` returns `204 No Content`, or `409 Conflict` when the named user owns the group.
 
 
+
+## S3 Credentials
+
+An S3 credential is an access key for an S3-compatible object store — AWS S3, MinIO, Ceph and the like. It follows the [SSH credential](#ssh-credentials) rules exactly: registering one is self-service, it belongs to whoever registered it, reading, updating and deleting it are the owner's alone, the listing returns only the caller's own credentials, **platform admins are not treated as owners**, and there is no share to open one up.
+
+The credential holds only the key material. Which endpoint, region and bucket it opens is the business of the storage that presents it.
+
+```
+GET    /api/v1/s3-credentials                       # the caller's own credentials
+POST   /api/v1/s3-credentials
+GET    /api/v1/s3-credentials/{s3CredentialId}      (owner)
+PUT    /api/v1/s3-credentials/{s3CredentialId}      (owner)
+DELETE /api/v1/s3-credentials/{s3CredentialId}      (owner)
+```
+
+### Create S3 Credential
+
+```
+POST /api/v1/s3-credentials
+```
+
+Requires an authenticated principal with a `users` row. The owner is taken from the token and is not transferable afterwards. `secretAccessKey` and `sessionToken` are write-only — they are never returned by any read endpoint.
+
+**curl example**
+
+```bash
+S3_CREDENTIAL_ID=$(curl -s -X POST localhost:9095/api/v1/s3-credentials \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "minio-research",
+    "accessKeyId": "AKIAIOSFODNN7EXAMPLE",
+    "secretAccessKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    "sessionToken": null
+  }' | jq -r '.s3CredentialId')
+
+echo "$S3_CREDENTIAL_ID"
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string | required, cannot be blank |
+| `accessKeyId` | string | required, cannot be blank |
+| `secretAccessKey` | string \| null | required on create; omit on update to keep the stored secret |
+| `sessionToken` | string \| null | optional; only for temporary credentials (for example from STS) |
+
+**Response — `201 Created`**
+
+`s3CredentialId` is server-generated (UUID); `ownerId` is resolved from the caller's token. `secretAccessKey` and `sessionToken` are absent from the response.
+
+```json
+{
+  "s3CredentialId": "3f2c9a1e-7b4d-4e8a-9c1f-2d3e4f5a6b7c",
+  "name": "minio-research",
+  "accessKeyId": "AKIAIOSFODNN7EXAMPLE",
+  "ownerId": "cilogon:12345"
+}
+```
+
+### Update S3 Credential
+
+```
+PUT /api/v1/s3-credentials/{s3CredentialId}
+```
+
+Takes the same body as create. The access key ID, secret and session token are treated as one set:
+
+- Omitting `secretAccessKey` (or sending it blank) keeps the stored secret and session token. Changing `accessKeyId` that way is `400 Bad Request`, since the old secret cannot sign for a new key ID.
+- Sending a new `secretAccessKey` replaces `sessionToken` too: it is set to what the request sends, and cleared when the request sends none.
+- Sending only a new `sessionToken` replaces the stored token and keeps the secret.
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | `name` or `accessKeyId` blank, `secretAccessKey` missing on create, or `accessKeyId` changed without a new `secretAccessKey` |
+| `401 Unauthorized` | no token — every route here needs one, reads included |
+| `403 Forbidden` | the credential belongs to another user |
+| `404 Not Found` | no such credential, or the caller has no `users` row |
+
+`DELETE` returns `204 No Content`. Nothing presents an S3 credential yet; once the S3 data storages that use one exist, deleting a credential still in use will be `409 Conflict`.
 
 ## Slurm Clusters
 
