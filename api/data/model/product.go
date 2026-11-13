@@ -68,6 +68,10 @@ type DataProduct struct {
 	DataStorageType DataStorageType `gorm:"column:data_storage_type;type:varchar(32)" json:"dataStorageType,omitempty"`
 
 	CreatedAt int64 `gorm:"column:created_at;not null" json:"createdAt"`
+
+	// Replicas is every location of this product, the primary one included. Deleting a
+	// product deletes them: a replica means nothing without its product.
+	Replicas []DataProductReplica `gorm:"foreignKey:DataProductID;references:ID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-"`
 }
 
 // TableName returns the table backing DataProduct.

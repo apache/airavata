@@ -108,6 +108,7 @@ type DataProductService struct {
 	productAccess
 	db       *gorm.DB
 	storages *repository.SCPDataStorageRepository
+	replicas *repository.DataProductReplicaRepository
 	users    *iamrepo.UserRepository
 }
 
@@ -117,6 +118,7 @@ func NewDataProductService(
 	products *repository.DataProductRepository,
 	sharing *sharingrepo.Repository,
 	storages *repository.SCPDataStorageRepository,
+	replicas *repository.DataProductReplicaRepository,
 	users *iamrepo.UserRepository,
 	members *iamrepo.GroupMemberRepository,
 ) *DataProductService {
@@ -128,6 +130,7 @@ func NewDataProductService(
 		},
 		db:       db,
 		storages: storages,
+		replicas: replicas,
 		users:    users,
 	}
 }
@@ -237,6 +240,9 @@ func (s *DataProductService) Create(ctx context.Context, req *dto.DataProductReq
 		if err := products.Save(ctx, product); err != nil {
 			return err
 		}
+		if err := s.syncPrimaryReplica(ctx, tx, product); err != nil {
+			return err
+		}
 		out = dto.ToDataProductResponseWith(product, string(sharingmodel.AccessPermissionWrite))
 		return nil
 	})
@@ -272,6 +278,9 @@ func (s *DataProductService) Update(ctx context.Context, id string, req *dto.Dat
 		if err := products.Save(ctx, product); err != nil {
 			return err
 		}
+		if err := s.syncPrimaryReplica(ctx, tx, product); err != nil {
+			return err
+		}
 		out = dto.ToDataProductResponseWith(product, string(held))
 		return nil
 	})
@@ -281,7 +290,8 @@ func (s *DataProductService) Update(ctx context.Context, id string, req *dto.Dat
 	return &out, nil
 }
 
-// Delete removes a product and every share of it, for its owner or an admin.
+// Delete removes a product and every share of it, for its owner or an admin. Its
+// replicas go with it through their foreign key.
 //
 // The shares go first and in the same transaction: their foreign keys are RESTRICT, so
 // leaving them would turn an ordinary delete into a constraint violation.
@@ -314,4 +324,34 @@ func (s *DataProductService) resolveReferences(ctx context.Context, tx *gorm.DB,
 		return notFoundAs(err, "SCP data storage not found: %s", req.DataStorageID)
 	}
 	return requireStorageReadable(ctx, s.access.WithTx(tx), s.sharing.WithTx(tx), storage)
+}
+
+// syncPrimaryReplica makes the primary replica match the location on the product, and
+// reloads the product's replicas so the response shows the result.
+//
+// A product with no path names no location, so it has no primary. A secondary replica
+// the primary has just moved onto is dropped, or the product would list one location
+// twice.
+func (s *DataProductService) syncPrimaryReplica(ctx context.Context, tx *gorm.DB, product *model.DataProduct) error {
+	replicas := s.replicas.WithTx(tx)
+
+	if primary := model.PrimaryReplicaOf(product); primary == nil {
+		if err := replicas.DeletePrimary(ctx, product.ID); err != nil {
+			return err
+		}
+	} else {
+		if err := replicas.DeleteSecondaryAtLocation(ctx, product.ID, primary.DataStorageID, primary.DataStorageType, primary.Path); err != nil {
+			return err
+		}
+		if err := replicas.Save(ctx, primary); err != nil {
+			return err
+		}
+	}
+
+	all, err := replicas.FindByProductID(ctx, product.ID)
+	if err != nil {
+		return err
+	}
+	product.Replicas = all
+	return nil
 }

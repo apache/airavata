@@ -34,11 +34,24 @@ type DataStorageType string
 const (
 	DataStorageTypeSCP DataStorageType = "SCP"
 	DataStorageTypeHPC DataStorageType = "HPC"
+	DataStorageTypeS3  DataStorageType = "S3"
 )
 
+// Valid reports whether t may be named by a product's primary location or a staging
+// task. S3 is deliberately absent until staging can act on it: a task naming a type
+// copyData does not handle would do nothing and still report success.
 func (t DataStorageType) Valid() bool {
 	switch t {
 	case DataStorageTypeSCP, DataStorageTypeHPC:
+		return true
+	}
+	return false
+}
+
+// ValidForReplica reports whether t may be named by a data product replica.
+func (t DataStorageType) ValidForReplica() bool {
+	switch t {
+	case DataStorageTypeSCP, DataStorageTypeS3:
 		return true
 	}
 	return false

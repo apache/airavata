@@ -59,6 +59,7 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"s3_data_storages", "s3_credential_id", "s3_credentials", "s3_credential_id"},
 		{"s3_data_storages", "user_id", "users", "user_id"},
 		{"data_products", "user_id", "users", "user_id"},
+		{"data_product_replicas", "data_product_id", "data_products", "data_id"},
 		// resource_sharings names its resource and its principal by (type, id) and so
 		// carries no foreign key at all: a column cannot reference four resource
 		// tables, nor users and groups at once. The services delete a record's shares

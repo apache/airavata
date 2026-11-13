@@ -298,9 +298,9 @@ func TestS3StorageAndCredentialDeletion(t *testing.T) {
 	h.mustDo(http.MethodDelete, "/api/v1/s3-credentials/"+credID, tokenAlice, nil, http.StatusNoContent)
 }
 
-// Products cannot live on an S3 storage yet. One that names no storage type is on SCP,
-// so an S3 storage id does not resolve as its location, and S3 is not a type a product
-// accepts.
+// A product's primary location is still an SCP storage. One that names no storage type
+// is on SCP, so an S3 storage id does not resolve as its location, and S3 is not a type
+// a product's primary location accepts. S3 data is attached to a product as a replica.
 func TestS3StorageIsNotYetAPrimaryProductLocation(t *testing.T) {
 	h := newHarness(t)
 	_, storageID := h.seedS3Storage("not-yet", tokenAlice)

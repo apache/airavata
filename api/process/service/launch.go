@@ -371,6 +371,10 @@ func (s *LaunchService) createOutputStagingTasks(ctx context.Context, processId 
 				if err := db.Create(product).Error; err != nil {
 					return err
 				}
+				// Like every product with a location, it has a primary replica mirroring it.
+				if err := db.Create(datamodel.PrimaryReplicaOf(product)).Error; err != nil {
+					return err
+				}
 				if err := db.Model(&procmodel.TemplateOutputMapping{}).
 					Where("template_output_mapping_id = ?", output.TemplateOutputMappingID).
 					Update("value", product.ID).Error; err != nil {

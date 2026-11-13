@@ -1545,7 +1545,7 @@ An S3 data storage is a bucket on an S3-compatible object store — AWS S3, MinI
 
 It follows the [SCP data storage](#scp-data-storages) rules: the same standings, the same `/me` and `/shared-with-me` listings, the same admin-only unfiltered listing, and the same sharing sub-resource. Putting a credential on a storage requires owning it, while a `WRITE` grantee may edit a storage and keep the credential already on it — the rule [SSH credentials](#ssh-credentials) follow on SCP storages.
 
-The credential stays on the server: no response carries its secret, and a cluster is never handed it. Registering a storage records where a bucket is and who may reach it; [data products](#data-products) cannot live on one yet, since a product's `dataStorageType` is still `SCP` only.
+The credential stays on the server: no response carries its secret, and a cluster is never handed it. Registering a storage records where a bucket is and who may reach it. A [data product](#data-products) cannot have an S3 storage as its primary location yet, but can name one as a [replica](#data-product-replicas).
 
 ```
 GET    /api/v1/s3-data-storages                                   (admin)
@@ -1788,6 +1788,65 @@ A successful upload is what moves a product from `REGISTERD` to `PROVISIONED` �
 
 A `502` is the host's failure rather than the request's; the underlying SSH error is logged server-side and kept out of the response body.
 
+
+### Data Product Replicas
+
+A data product can have several locations, on storages of different kinds. Every read of a product returns them in `replicas`, primary first.
+
+```
+GET    /api/v1/data-products/{dataProductId}/replicas               (READ)
+POST   /api/v1/data-products/{dataProductId}/replicas               (WRITE)
+DELETE /api/v1/data-products/{dataProductId}/replicas/{replicaId}   (WRITE)
+```
+
+The **primary** replica is the location in the product's own `dataStorageId`, `dataStorageType` and `path`. It is created with the product and moves when the product is updated, so it cannot be added or removed here. Job launches and the content endpoint use the primary location, which is why it cannot be an S3 storage yet: it is an SCP storage, or the cluster (`HPC`) for an output tracked in place with `TRACK_IN_PLACE`. [S3 data storages](#s3-data-storages) can be named by secondary replicas.
+
+Adding a replica needs `WRITE` on the product and `READ` on the storage it names, the same rule as registering a product on that storage. It records where the data is and does not copy anything.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/data-products/"$DATA_PRODUCT_ID"/replicas \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataStorageId": "'"$S3_STORAGE_ID"'",
+    "dataStorageType": "S3",
+    "path": "runs/2024/output.dat"
+  }'
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `dataStorageId` | string | required, must reference a storage of that type the caller can reach |
+| `dataStorageType` | string \| null | optional, `SCP` or `S3`; defaults to `SCP` |
+| `path` | string | required; a file path on SCP, up to 2048 characters. On S3, an object key of at most 1024 bytes with no leading `/`, `.` or `..` segment, or control character |
+
+**Response — `201 Created`**
+
+```json
+{
+  "replicaId": "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
+  "dataProductId": "a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+  "dataStorageId": "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a6b7c8d",
+  "dataStorageType": "S3",
+  "path": "runs/2024/output.dat",
+  "isPrimary": false,
+  "createdAt": 1730000000000
+}
+```
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | a field fails the rules above |
+| `401 Unauthorized` | no token |
+| `403 Forbidden` | too little standing on the product or the storage |
+| `404 Not Found` | no such product, replica, or storage of that type |
+| `409 Conflict` | the product already has a replica at that location, or the replica being removed is the primary |
+
+A storage that any replica names cannot be deleted (`409 Conflict`). Deleting a product deletes its replicas.
 
 ### Share a Data Product
 

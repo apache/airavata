@@ -2142,6 +2142,77 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/data-products/{dataProductId}/replicas:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+    get:
+      tags: [Data Products]
+      summary: List the locations of a data product
+      description: Requires a `READ` standing. The primary location comes first.
+      operationId: listDataProductReplicas
+      responses:
+        "200":
+          description: Every location of the product.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DataProductReplicaResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Data Products]
+      summary: Add a secondary location to a data product
+      description: |
+        Requires a `WRITE` standing on the product and a `READ` standing on the storage
+        named. This records a location and copies nothing. The location must not
+        already be one of the product's replicas.
+      operationId: addDataProductReplica
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataProductReplicaRequest" }
+      responses:
+        "201":
+          description: The added replica.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DataProductReplicaResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/data-products/{dataProductId}/replicas/{replicaId}:
+    parameters:
+      - $ref: "#/components/parameters/DataProductId"
+      - name: replicaId
+        in: path
+        required: true
+        schema: { type: string }
+    delete:
+      tags: [Data Products]
+      summary: Remove a secondary location from a data product
+      description: |
+        Requires a `WRITE` standing. Removing the primary location is `409 Conflict`:
+        update the product to move it.
+      operationId: removeDataProductReplica
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/data-products/{dataProductId}/content:
     parameters:
       - $ref: "#/components/parameters/DataProductId"
@@ -3622,7 +3693,10 @@ components:
       enum: [READ, WRITE]
     DataStorageType:
       type: string
-      enum: [SCP, HPC]
+      description: |
+        `SCP` and `HPC` name either end of a data staging task. A product's own
+        location is `SCP`; a replica's is `SCP` or `S3`.
+      enum: [SCP, HPC, S3]
     ProvisionStatus:
       type: string
       description: |
@@ -4442,6 +4516,38 @@ components:
             - { type: "null" }
       required: [dataName, isFile, path, dataStorageId]
 
+    DataProductReplicaRequest:
+      type: object
+      description: One more location of a data product.
+      properties:
+        dataStorageId: { type: string, format: uuid }
+        dataStorageType:
+          description: '`SCP` or `S3`. Defaults to `SCP`.'
+          oneOf:
+            - { $ref: "#/components/schemas/DataStorageType" }
+            - { type: "null" }
+        path:
+          type: string
+          maxLength: 2048
+          description: |
+            A file path on an SCP storage. On an S3 storage, an object key of at most
+            1024 bytes with no leading slash, `.` or `..` segment, or control character.
+      required: [dataStorageId, path]
+
+    DataProductReplicaResponse:
+      type: object
+      properties:
+        replicaId: { type: string }
+        dataProductId: { type: string, format: uuid }
+        dataStorageId: { type: string, format: uuid }
+        dataStorageType: { $ref: "#/components/schemas/DataStorageType" }
+        path: { type: string }
+        isPrimary:
+          type: boolean
+          description: Whether this is the location named by the product's own fields.
+        createdAt: { type: integer, format: int64 }
+      required: [replicaId, dataProductId, dataStorageId, dataStorageType, path, isPrimary, createdAt]
+
     DataProductResponse:
       type: object
       properties:
@@ -4458,6 +4564,10 @@ components:
         dataStorageId: { type: [string, "null"], format: uuid }
         dataStorageType: { $ref: "#/components/schemas/DataStorageType" }
         createdAt: { type: integer, format: int64 }
+        replicas:
+          type: array
+          description: Every location of the product, primary first.
+          items: { $ref: "#/components/schemas/DataProductReplicaResponse" }
         permission:
           type: string
           description: |

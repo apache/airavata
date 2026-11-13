@@ -66,7 +66,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 		"slurm_clusters", "cluster_partitions",
 		"slurm_cluster_configs",
 		"scp_data_storages", "s3_data_storages",
-		"data_products", "resource_sharings",
+		"data_products", "data_product_replicas", "resource_sharings",
 		"virtual_data_directories", "virtual_data_files",
 		"application_templates", "application_template_inputs", "application_template_outputs",
 		"batch_application_deployments", "batch_job_configs",

@@ -59,6 +59,7 @@ func Entities() []any {
 		&datamodel.SCPDataStorage{},
 		&datamodel.S3DataStorage{},
 		&datamodel.DataProduct{},
+		&datamodel.DataProductReplica{},
 		&applicationmodel.TemplateInput{},
 		&applicationmodel.TemplateOutput{},
 
@@ -134,6 +135,9 @@ func AutoMigrate(gdb *gorm.DB) error {
 	if err := gdb.AutoMigrate(Entities()...); err != nil {
 		return err
 	}
+	if err := gdb.Exec(backfillProductReplicas).Error; err != nil {
+		return err
+	}
 	return seedRolePermissions(gdb)
 }
 
@@ -163,3 +167,16 @@ func seedRolePermissions(gdb *gorm.DB) error {
 	}
 	return gdb.Create(&rows).Error
 }
+
+// backfillProductReplicas gives every located product its primary replica row, the same
+// step migration 0022 takes on the versioned path. AutoMigrate only creates the table,
+// so a development database with existing products needs this too. It is idempotent:
+// the NOT EXISTS skips a product that already has its row.
+//
+// A blank storage type is SCP, the only kind a product could be registered on.
+const backfillProductReplicas = `
+INSERT INTO "data_product_replicas" ("replica_id","data_product_id","data_storage_id","data_storage_type","path","is_primary","created_at")
+SELECT "data_id","data_id","data_storage_id",COALESCE(NULLIF("data_storage_type",''),'SCP'),"path",true,"created_at"
+FROM "data_products" p
+WHERE "data_storage_id" IS NOT NULL AND "path" IS NOT NULL AND "path" <> ''
+AND NOT EXISTS (SELECT 1 FROM "data_product_replicas" r WHERE r."replica_id" = p."data_id")`

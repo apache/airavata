@@ -138,6 +138,7 @@ func (e DataProductResponsePermission) Valid() bool {
 // Defines values for DataStorageType.
 const (
 	HPC DataStorageType = "HPC"
+	S3  DataStorageType = "S3"
 	SCP DataStorageType = "SCP"
 )
 
@@ -145,6 +146,8 @@ const (
 func (e DataStorageType) Valid() bool {
 	switch e {
 	case HPC:
+		return true
+	case S3:
 		return true
 	case SCP:
 		return true
@@ -832,6 +835,34 @@ type CurrentUser struct {
 	UserId string       `json:"userId"`
 }
 
+// DataProductReplicaRequest One more location of a data product.
+type DataProductReplicaRequest struct {
+	DataStorageId openapi_types.UUID `json:"dataStorageId"`
+
+	// DataStorageType `SCP` or `S3`. Defaults to `SCP`.
+	DataStorageType *DataStorageType `json:"dataStorageType,omitempty"`
+
+	// Path A file path on an SCP storage. On an S3 storage, an object key of at most
+	// 1024 bytes with no leading slash, `.` or `..` segment, or control character.
+	Path string `json:"path"`
+}
+
+// DataProductReplicaResponse defines model for DataProductReplicaResponse.
+type DataProductReplicaResponse struct {
+	CreatedAt     int64              `json:"createdAt"`
+	DataProductId openapi_types.UUID `json:"dataProductId"`
+	DataStorageId openapi_types.UUID `json:"dataStorageId"`
+
+	// DataStorageType `SCP` and `HPC` name either end of a data staging task. A product's own
+	// location is `SCP`; a replica's is `SCP` or `S3`.
+	DataStorageType DataStorageType `json:"dataStorageType"`
+
+	// IsPrimary Whether this is the location named by the product's own fields.
+	IsPrimary bool   `json:"isPrimary"`
+	Path      string `json:"path"`
+	ReplicaId string `json:"replicaId"`
+}
+
 // DataProductRequest The create/update payload for a registered dataset. There is no owner field
 // and no provision status: a caller who could set either would be able to
 // register a dataset as someone else's, or claim it was already provisioned.
@@ -853,16 +884,22 @@ type DataProductResponse struct {
 	DataId          openapi_types.UUID  `json:"dataId"`
 	DataName        *string             `json:"dataName,omitempty"`
 	DataStorageId   *openapi_types.UUID `json:"dataStorageId,omitempty"`
-	DataStorageType DataStorageType     `json:"dataStorageType"`
-	IsFile          bool                `json:"isFile"`
-	OwnerId         *string             `json:"ownerId,omitempty"`
-	Path            *string             `json:"path,omitempty"`
+
+	// DataStorageType `SCP` and `HPC` name either end of a data staging task. A product's own
+	// location is `SCP`; a replica's is `SCP` or `S3`.
+	DataStorageType DataStorageType `json:"dataStorageType"`
+	IsFile          bool            `json:"isFile"`
+	OwnerId         *string         `json:"ownerId,omitempty"`
+	Path            *string         `json:"path,omitempty"`
 
 	// Permission What the calling principal may do with this dataset — a property of the
 	// request rather than of the record, which is why it is not stored. Present
 	// only on the listings that compute it.
 	Permission      *DataProductResponsePermission `json:"permission,omitempty"`
 	ProvisionStatus *ProvisionStatus               `json:"provisionStatus,omitempty"`
+
+	// Replicas Every location of the product, primary first.
+	Replicas *[]DataProductReplicaResponse `json:"replicas,omitempty"`
 }
 
 // DataProductResponsePermission What the calling principal may do with this dataset — a property of the
@@ -899,7 +936,8 @@ type DataStagingTaskResponse struct {
 	TaskOrder                  *int                `json:"taskOrder,omitempty"`
 }
 
-// DataStorageType defines model for DataStorageType.
+// DataStorageType `SCP` and `HPC` name either end of a data staging task. A product's own
+// location is `SCP`; a replica's is `SCP` or `S3`.
 type DataStorageType string
 
 // Error The envelope every failure response uses.
@@ -1704,6 +1742,9 @@ type UpdateDataProductJSONRequestBody = DataProductRequest
 // UploadDataProductContentMultipartRequestBody defines body for UploadDataProductContent for multipart/form-data ContentType.
 type UploadDataProductContentMultipartRequestBody UploadDataProductContentMultipartBody
 
+// AddDataProductReplicaJSONRequestBody defines body for AddDataProductReplica for application/json ContentType.
+type AddDataProductReplicaJSONRequestBody = DataProductReplicaRequest
+
 // PostApiV1DataProductsDataProductIdSharesJSONRequestBody defines body for PostApiV1DataProductsDataProductIdShares for application/json ContentType.
 type PostApiV1DataProductsDataProductIdSharesJSONRequestBody = ShareRequest
 
@@ -2115,6 +2156,43 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /api/v1/data-products/{dataProductId}/content (the `UploadDataProductContent` operationId).
 	UploadDataProductContentWithBody(ctx context.Context, dataProductId DataProductId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListDataProductReplicas List the locations of a data product
+	//
+	// Requires a `READ` standing. The primary location comes first.
+	//
+	// Corresponds with GET /api/v1/data-products/{dataProductId}/replicas (the `ListDataProductReplicas` operationId).
+	ListDataProductReplicas(ctx context.Context, dataProductId DataProductId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddDataProductReplicaWithBody Add a secondary location to a data product
+	//
+	// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+	// named. This records a location and copies nothing. The location must not
+	// already be one of the product's replicas.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+	AddDataProductReplicaWithBody(ctx context.Context, dataProductId DataProductId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddDataProductReplica Add a secondary location to a data product
+	//
+	// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+	// named. This records a location and copies nothing. The location must not
+	// already be one of the product's replicas.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+	AddDataProductReplica(ctx context.Context, dataProductId DataProductId, body AddDataProductReplicaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveDataProductReplica Remove a secondary location from a data product
+	//
+	// Requires a `WRITE` standing. Removing the primary location is `409 Conflict`:
+	// update the product to move it.
+	//
+	// Corresponds with DELETE /api/v1/data-products/{dataProductId}/replicas/{replicaId} (the `RemoveDataProductReplica` operationId).
+	RemoveDataProductReplica(ctx context.Context, dataProductId DataProductId, replicaId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiV1DataProductsDataProductIdShares List who has access to this data product
 	//
@@ -4000,6 +4078,83 @@ func (c *Client) DownloadDataProductContent(ctx context.Context, dataProductId D
 // Corresponds with PUT /api/v1/data-products/{dataProductId}/content (the `UploadDataProductContent` operationId).
 func (c *Client) UploadDataProductContentWithBody(ctx context.Context, dataProductId DataProductId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUploadDataProductContentRequestWithBody(c.Server, dataProductId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListDataProductReplicas List the locations of a data product
+//
+// Requires a `READ` standing. The primary location comes first.
+//
+// Corresponds with GET /api/v1/data-products/{dataProductId}/replicas (the `ListDataProductReplicas` operationId).
+func (c *Client) ListDataProductReplicas(ctx context.Context, dataProductId DataProductId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListDataProductReplicasRequest(c.Server, dataProductId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AddDataProductReplicaWithBody Add a secondary location to a data product
+//
+// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+// named. This records a location and copies nothing. The location must not
+// already be one of the product's replicas.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+func (c *Client) AddDataProductReplicaWithBody(ctx context.Context, dataProductId DataProductId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddDataProductReplicaRequestWithBody(c.Server, dataProductId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// AddDataProductReplica Add a secondary location to a data product
+//
+// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+// named. This records a location and copies nothing. The location must not
+// already be one of the product's replicas.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+func (c *Client) AddDataProductReplica(ctx context.Context, dataProductId DataProductId, body AddDataProductReplicaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddDataProductReplicaRequest(c.Server, dataProductId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// RemoveDataProductReplica Remove a secondary location from a data product
+//
+// Requires a `WRITE` standing. Removing the primary location is `409 Conflict`:
+// update the product to move it.
+//
+// Corresponds with DELETE /api/v1/data-products/{dataProductId}/replicas/{replicaId} (the `RemoveDataProductReplica` operationId).
+func (c *Client) RemoveDataProductReplica(ctx context.Context, dataProductId DataProductId, replicaId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveDataProductReplicaRequest(c.Server, dataProductId, replicaId)
 	if err != nil {
 		return nil, err
 	}
@@ -7927,6 +8082,128 @@ func NewUploadDataProductContentRequestWithBody(server string, dataProductId Dat
 	}
 
 	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListDataProductReplicasRequest constructs an http.Request for the ListDataProductReplicas method
+func NewListDataProductReplicasRequest(server string, dataProductId DataProductId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataProductId", dataProductId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/data-products/%s/replicas", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddDataProductReplicaRequest calls the generic AddDataProductReplica builder with application/json body
+func NewAddDataProductReplicaRequest(server string, dataProductId DataProductId, body AddDataProductReplicaJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddDataProductReplicaRequestWithBody(server, dataProductId, "application/json", bodyReader)
+}
+
+// NewAddDataProductReplicaRequestWithBody constructs an http.Request for the AddDataProductReplica method, with any body, and a specified content type
+func NewAddDataProductReplicaRequestWithBody(server string, dataProductId DataProductId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataProductId", dataProductId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/data-products/%s/replicas", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewRemoveDataProductReplicaRequest constructs an http.Request for the RemoveDataProductReplica method
+func NewRemoveDataProductReplicaRequest(server string, dataProductId DataProductId, replicaId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataProductId", dataProductId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "replicaId", replicaId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/data-products/%s/replicas/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	return req, nil
 }
@@ -13264,6 +13541,47 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/v1/data-products/{dataProductId}/content (the `UploadDataProductContent` operationId).
 	UploadDataProductContentWithBodyWithResponse(ctx context.Context, dataProductId DataProductId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadDataProductContentResponse, error)
 
+	// ListDataProductReplicasWithResponse List the locations of a data product
+	//
+	// Requires a `READ` standing. The primary location comes first.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/data-products/{dataProductId}/replicas (the `ListDataProductReplicas` operationId).
+	ListDataProductReplicasWithResponse(ctx context.Context, dataProductId DataProductId, reqEditors ...RequestEditorFn) (*ListDataProductReplicasResponse, error)
+
+	// AddDataProductReplicaWithBodyWithResponse Add a secondary location to a data product
+	//
+	// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+	// named. This records a location and copies nothing. The location must not
+	// already be one of the product's replicas.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+	AddDataProductReplicaWithBodyWithResponse(ctx context.Context, dataProductId DataProductId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddDataProductReplicaResponse, error)
+
+	// AddDataProductReplicaWithResponse Add a secondary location to a data product
+	//
+	// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+	// named. This records a location and copies nothing. The location must not
+	// already be one of the product's replicas.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+	AddDataProductReplicaWithResponse(ctx context.Context, dataProductId DataProductId, body AddDataProductReplicaJSONRequestBody, reqEditors ...RequestEditorFn) (*AddDataProductReplicaResponse, error)
+
+	// RemoveDataProductReplicaWithResponse Remove a secondary location from a data product
+	//
+	// Requires a `WRITE` standing. Removing the primary location is `409 Conflict`:
+	// update the product to move it.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/v1/data-products/{dataProductId}/replicas/{replicaId} (the `RemoveDataProductReplica` operationId).
+	RemoveDataProductReplicaWithResponse(ctx context.Context, dataProductId DataProductId, replicaId string, reqEditors ...RequestEditorFn) (*RemoveDataProductReplicaResponse, error)
+
 	// GetApiV1DataProductsDataProductIdSharesWithResponse List who has access to this data product
 	//
 	// Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
@@ -16258,6 +16576,269 @@ func (r UploadDataProductContentResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UploadDataProductContentResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListDataProductReplicasResponse401Headers the declared response headers of an HTTP 401 response for ListDataProductReplicas
+type ListDataProductReplicasResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListDataProductReplicasResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]DataProductReplicaResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListDataProductReplicasResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListDataProductReplicasResponse) GetJSON200() *[]DataProductReplicaResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListDataProductReplicasResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListDataProductReplicasResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r ListDataProductReplicasResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListDataProductReplicasResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListDataProductReplicasResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListDataProductReplicasResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListDataProductReplicasResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListDataProductReplicasResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListDataProductReplicasResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// AddDataProductReplicaResponse401Headers the declared response headers of an HTTP 401 response for AddDataProductReplica
+type AddDataProductReplicaResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type AddDataProductReplicaResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *DataProductReplicaResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *AddDataProductReplicaResponse401Headers
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON201() *DataProductReplicaResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r AddDataProductReplicaResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r AddDataProductReplicaResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r AddDataProductReplicaResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddDataProductReplicaResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r AddDataProductReplicaResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// RemoveDataProductReplicaResponse401Headers the declared response headers of an HTTP 401 response for RemoveDataProductReplica
+type RemoveDataProductReplicaResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type RemoveDataProductReplicaResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *RemoveDataProductReplicaResponse401Headers
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r RemoveDataProductReplicaResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r RemoveDataProductReplicaResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r RemoveDataProductReplicaResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r RemoveDataProductReplicaResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r RemoveDataProductReplicaResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r RemoveDataProductReplicaResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r RemoveDataProductReplicaResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveDataProductReplicaResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveDataProductReplicaResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r RemoveDataProductReplicaResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -27385,6 +27966,71 @@ func (c *ClientWithResponses) UploadDataProductContentWithBodyWithResponse(ctx c
 	return ParseUploadDataProductContentResponse(rsp)
 }
 
+// ListDataProductReplicasWithResponse List the locations of a data product
+//
+// Requires a `READ` standing. The primary location comes first.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/data-products/{dataProductId}/replicas (the `ListDataProductReplicas` operationId).
+func (c *ClientWithResponses) ListDataProductReplicasWithResponse(ctx context.Context, dataProductId DataProductId, reqEditors ...RequestEditorFn) (*ListDataProductReplicasResponse, error) {
+	rsp, err := c.ListDataProductReplicas(ctx, dataProductId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListDataProductReplicasResponse(rsp)
+}
+
+// AddDataProductReplicaWithBodyWithResponse Add a secondary location to a data product
+//
+// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+// named. This records a location and copies nothing. The location must not
+// already be one of the product's replicas.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+func (c *ClientWithResponses) AddDataProductReplicaWithBodyWithResponse(ctx context.Context, dataProductId DataProductId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddDataProductReplicaResponse, error) {
+	rsp, err := c.AddDataProductReplicaWithBody(ctx, dataProductId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddDataProductReplicaResponse(rsp)
+}
+
+// AddDataProductReplicaWithResponse Add a secondary location to a data product
+//
+// Requires a `WRITE` standing on the product and a `READ` standing on the storage
+// named. This records a location and copies nothing. The location must not
+// already be one of the product's replicas.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/data-products/{dataProductId}/replicas (the `AddDataProductReplica` operationId).
+func (c *ClientWithResponses) AddDataProductReplicaWithResponse(ctx context.Context, dataProductId DataProductId, body AddDataProductReplicaJSONRequestBody, reqEditors ...RequestEditorFn) (*AddDataProductReplicaResponse, error) {
+	rsp, err := c.AddDataProductReplica(ctx, dataProductId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddDataProductReplicaResponse(rsp)
+}
+
+// RemoveDataProductReplicaWithResponse Remove a secondary location from a data product
+//
+// Requires a `WRITE` standing. Removing the primary location is `409 Conflict`:
+// update the product to move it.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/v1/data-products/{dataProductId}/replicas/{replicaId} (the `RemoveDataProductReplica` operationId).
+func (c *ClientWithResponses) RemoveDataProductReplicaWithResponse(ctx context.Context, dataProductId DataProductId, replicaId string, reqEditors ...RequestEditorFn) (*RemoveDataProductReplicaResponse, error) {
+	rsp, err := c.RemoveDataProductReplica(ctx, dataProductId, replicaId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveDataProductReplicaResponse(rsp)
+}
+
 // GetApiV1DataProductsDataProductIdSharesWithResponse List who has access to this data product
 //
 // Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
@@ -31310,6 +31956,245 @@ func ParseUploadDataProductContentResponse(rsp *http.Response) (*UploadDataProdu
 	switch {
 	case rsp.StatusCode == 401:
 		var headers UploadDataProductContentResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListDataProductReplicasResponse parses an HTTP response from a ListDataProductReplicasWithResponse call
+func ParseListDataProductReplicasResponse(rsp *http.Response) (*ListDataProductReplicasResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListDataProductReplicasResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []DataProductReplicaResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListDataProductReplicasResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseAddDataProductReplicaResponse parses an HTTP response from a AddDataProductReplicaWithResponse call
+func ParseAddDataProductReplicaResponse(rsp *http.Response) (*AddDataProductReplicaResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddDataProductReplicaResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest DataProductReplicaResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers AddDataProductReplicaResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseRemoveDataProductReplicaResponse parses an HTTP response from a RemoveDataProductReplicaWithResponse call
+func ParseRemoveDataProductReplicaResponse(rsp *http.Response) (*RemoveDataProductReplicaResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveDataProductReplicaResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers RemoveDataProductReplicaResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {

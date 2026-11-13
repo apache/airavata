@@ -93,6 +93,10 @@ type DataProductResponse struct {
 	DataStorageType model.DataStorageType  `json:"dataStorageType"`
 	CreatedAt       int64                  `json:"createdAt"`
 
+	// Replicas is every location of the product, primary first. DataStorageID,
+	// DataStorageType and Path above are the primary one.
+	Replicas []DataProductReplicaResponse `json:"replicas"`
+
 	Permission *string `json:"permission,omitempty"`
 }
 
@@ -108,6 +112,7 @@ func ToDataProductResponse(p *model.DataProduct) DataProductResponse {
 		DataStorageID:   p.DataStorageID,
 		DataStorageType: p.DataStorageType,
 		CreatedAt:       p.CreatedAt,
+		Replicas:        ToDataProductReplicaResponses(p.Replicas),
 	}
 }
 
