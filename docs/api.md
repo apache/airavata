@@ -2096,7 +2096,7 @@ curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/retry \
 POST /api/v1/processes/{processId}/stop
 ```
 
-Records `STOPPED`, ends the tasks of its workflows, cancels its job, and answers `204`. A task in flight is interrupted, except a job submission, whose job is cancelled once it is known. Owner-scoped like [launching](#launch-a-process). A completed run is unchanged, and so is a failed one, which can still be retried. A stopped run cannot be launched or retried: both answer `409`. If the job cannot be cancelled the answer is `500`, and stopping again retries.
+Records `STOPPED`, cancels its workflows, tasks and job, and answers `204`. Owner-scoped like [launching](#launch-a-process). A completed or failed run is unchanged. A stopped run answers `409` to launch and retry. If the job cannot be cancelled the answer is `500`, and stopping again retries.
 
 ## Process Statuses
 

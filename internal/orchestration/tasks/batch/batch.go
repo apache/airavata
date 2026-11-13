@@ -209,10 +209,7 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 	// never be cancelled.
 	ctx = context.WithoutCancel(ctx)
 
-	sbatchPath := "sbatch"
-	if clusterConfig.SlurmCluster.SlurmHome != nil && strings.TrimSpace(*clusterConfig.SlurmCluster.SlurmHome) != "" {
-		sbatchPath = path.Join(*clusterConfig.SlurmCluster.SlurmHome, "sbatch")
-	}
+	sbatchPath := slurmCommand(clusterConfig.SlurmCluster.SlurmHome, "sbatch")
 
 	// sbatch is run from the working directory so that a script writing relative paths —
 	// and the job's own stdout and stderr files — land beside the staged inputs rather
@@ -351,6 +348,13 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs, issued, envFilePath)
 }
 
+func slurmCommand(slurmHome *string, name string) string {
+	if slurmHome != nil && strings.TrimSpace(*slurmHome) != "" {
+		return path.Join(*slurmHome, name)
+	}
+	return name
+}
+
 var jobGone = regexp.MustCompile(`(?i)invalid job id specified|already completing or completed`)
 
 func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
@@ -370,12 +374,8 @@ func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
 		return err
 	}
 	cluster := clusterConfig.SlurmCluster
-	scancel := "scancel"
-	if cluster.SlurmHome != nil && strings.TrimSpace(*cluster.SlurmHome) != "" {
-		scancel = path.Join(*cluster.SlurmHome, "scancel")
-	}
+	scancel := slurmCommand(cluster.SlurmHome, "scancel")
 	dialConfig := ssh.NewSSHDialConfig(cluster.HeadnodeHost, cluster.HeadnodePort, clusterConfig.LoginUser, *clusterConfig.SSHCredential, *process.OwnerID)
-	// Bounded, since a stop request waits on this.
 	sshCtx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()
 	if _, stderr, err := ssh.RunSSHCommand(sshCtx, dialConfig, a.sshContext, ssh.ShellQuote(scancel)+" "+ssh.ShellQuote(*process.BatchProcess.JobID),

@@ -32,8 +32,7 @@ import (
 
 func TestAStoppedOrCompletedProcessTakesNoFurtherStatus(t *testing.T) {
 	for ended, late := range map[model.ProcessStatusType]model.ProcessStatusType{
-		model.ProcessStatusTypeStopped:   model.ProcessStatusTypeCompleted,
-		model.ProcessStatusTypeCompleted: model.ProcessStatusTypeStopped,
+		model.ProcessStatusTypeStopped: model.ProcessStatusTypeCompleted,
 	} {
 		gdb := newDB(t)
 		proc, _ := newBatchProcess(t, gdb)

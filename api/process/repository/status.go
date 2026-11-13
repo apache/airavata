@@ -65,9 +65,8 @@ func (r *StatusRepository) FindByIDAndProcessID(ctx context.Context, id, process
 // Create inserts a status row. BeforeCreate assigns its id and AfterCreate repoints
 // the owning process's LastStatusID at it.
 //
-// A process that is COMPLETED or STOPPED takes no further status, so s is dropped. The
-// process row is locked meanwhile, or a stop and a completion racing each other would
-// both be recorded.
+// COMPLETED and STOPPED are final; the row lock keeps a racing stop and completion
+// from both landing.
 func (r *StatusRepository) Create(ctx context.Context, s *model.ProcessStatus) error {
 	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var locked []string

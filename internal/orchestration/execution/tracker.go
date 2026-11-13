@@ -50,9 +50,7 @@ func NewTaskTracker(statuses *processrepo.TaskStatusRepository, processes *proce
 
 var errStopped = errors.New("the process is stopped")
 
-// untilStopped returns ctx cancelled once Stop is called for the process, so that work
-// a task has in flight ends with it. A stop made before this call is not seen here,
-// so Track calls it before reading the process's recorded status.
+// untilStopped must be called before reading the recorded status, or an earlier Stop is missed.
 func (t *TaskTracker) untilStopped(ctx context.Context, processID string) (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(ctx)
 	t.mu.Lock()

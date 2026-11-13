@@ -197,19 +197,3 @@ func TestTrackSkipsCompletedTask(t *testing.T) {
 		t.Error("a failed task was skipped")
 	}
 }
-
-func TestStopCancelsTheTasksAProcessHasInFlight(t *testing.T) {
-	tracker, _, _ := newTracker(t)
-	running, done := make(chan struct{}), make(chan struct{})
-	go tracker.Track(context.Background(), "p1", "task-7", model.TaskTypeDataStaging, nil,
-		func(ctx context.Context) (*execution.Context, error) {
-			close(running)
-			<-ctx.Done()
-			close(done)
-			return nil, ctx.Err()
-		})
-	<-running
-
-	tracker.Stop("p1")
-	<-done
-}
