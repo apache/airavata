@@ -32,9 +32,12 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/config"
+	"github.com/apache/airavata/internal/link"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
 	applicationsvc "github.com/apache/airavata/api/application/service"
+	auditrepo "github.com/apache/airavata/api/audit/repository"
+	auditsvc "github.com/apache/airavata/api/audit/service"
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	computesvc "github.com/apache/airavata/api/compute/service"
 	credentialsrepo "github.com/apache/airavata/api/credentials/repository"
@@ -63,12 +66,22 @@ type Services struct {
 	Config config.Config
 	DB     *gorm.DB
 
+	// Permissions resolves roles to the permissions they grant. The HTTP middleware
+	// resolves each caller through it, and whatever changes role_permissions calls
+	// Invalidate on it so the change takes effect at once.
+	Permissions *iamrepo.PermissionResolver
+
+	// Audit log.
+	Audit *auditsvc.EventService
+
 	// IAM.
 	User        *iamsvc.UserService
 	Group       *iamsvc.GroupService
 	GroupMember *iamsvc.GroupMemberService
 	// ServiceAccount administers non-human users and their expiring tokens.
 	ServiceAccount *iamsvc.ServiceAccountService
+	// Permission lists the permissions that exist.
+	Permission *iamsvc.PermissionService
 
 	// Credentials.
 	SSHCredential   *credentialssvc.SSHCredentialService
@@ -109,11 +122,13 @@ type Services struct {
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
 	Launch *processsvc.LaunchService
+	Link   *processsvc.LinkService
 
 	ExecutionEngine *orchestration.ExecutionEngine
 }
 
 type Repositories struct {
+	AuditEvents             *auditrepo.EventRepository
 	Users                   *iamrepo.UserRepository
 	Groups                  *iamrepo.GroupRepository
 	GroupMembers            *iamrepo.GroupMemberRepository
@@ -138,6 +153,7 @@ type Repositories struct {
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
 	JobMonitoringTasks      *processrepo.JobMonitoringTaskRepository
 	InteractiveCommandTasks *processrepo.InteractiveCommandTaskRepository
+	Links                   *processrepo.LinkRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -146,6 +162,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Groups:                  iamrepo.NewGroupRepository(db),
 		GroupMembers:            iamrepo.NewGroupMemberRepository(db),
 		ServiceAccounts:         iamrepo.NewServiceAccountRepository(db),
+		AuditEvents:             auditrepo.NewEventRepository(db),
 		SSHCredentials:          credentialsrepo.NewSSHCredentialRepository(db),
 		SlurmClusters:           computerepo.NewSlurmClusterRepository(db),
 		ClusterPartitions:       computerepo.NewClusterPartitionRepository(db),
@@ -166,6 +183,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
 		JobMonitoringTasks:      processrepo.NewJobMonitoringTaskRepository(db),
 		InteractiveCommandTasks: processrepo.NewInteractiveCommandTaskRepository(db),
+		Links:                   processrepo.NewLinkRepository(db),
 	}
 }
 
@@ -174,6 +192,9 @@ func NewRepositories(db *gorm.DB) *Repositories {
 // The repositories stay local: they are an implementation detail of the services above
 // them, and nothing outside this function has ever wanted one directly.
 func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBackend backend.Backend) *Services {
+	// Built first: the service account service tells it when a grant changes.
+	permissions := iamrepo.NewPermissionResolver(db, iamrepo.DefaultPermissionTTL)
+
 	// Repositories.
 	users := repos.Users
 	groups := repos.Groups
@@ -222,20 +243,27 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
+	linkSvc := processsvc.NewLinkService(repos.Links, processes, link.NewRegistry(), cfg.PublicURL)
+
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext)
+		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext, linkSvc)
 	executionEngine.StartEngine()
 
 	return &Services{
 		Config: cfg,
 		DB:     db,
 
+		Permissions: permissions,
+
+		Audit: auditsvc.NewEventService(repos.AuditEvents),
+
 		User:        iamsvc.NewUserService(db, users),
 		Group:       iamsvc.NewGroupService(db, groups, groupMembers, users, shares),
 		GroupMember: iamsvc.NewGroupMemberService(db, groups, groupMembers, users),
 		// A deleted service account takes the shares granted to it along, hence the
 		// sharing repository.
-		ServiceAccount: iamsvc.NewServiceAccountService(db, repos.ServiceAccounts, users, shares),
+		ServiceAccount: iamsvc.NewServiceAccountService(db, repos.ServiceAccounts, users, shares, permissions),
+		Permission:     iamsvc.NewPermissionService(),
 
 		// A key is deleted only when nothing presents it, and what can present one
 		// lives in other verticals — hence both repositories here.
@@ -274,6 +302,8 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 			templateSvc, slurmClusterSvc, slurmClusterConfigSvc,
 			sshCredentialSvc, scpDataStorageSvc, dataProductSvc, statusSvc, stagingTasks, submissionTasks,
 			monitoringTasks, commandTasks, processWorkflows, executionEngine),
+
+		Link: linkSvc,
 
 		ExecutionEngine: executionEngine,
 	}

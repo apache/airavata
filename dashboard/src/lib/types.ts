@@ -2,6 +2,38 @@
 
 export type Permission = "READ" | "WRITE";
 
+// Who a record is shared with: a user, or every member of a group.
+export type PrincipalType = "USER" | "GROUP";
+
+// One grant from GET {resource}/{id}/shares (api/sharing/dto.ShareResponse).
+export interface ResourceShare {
+  resourceSharingId: string;
+  resourceType: string;
+  resourceId: string;
+  principalType: PrincipalType;
+  principalId: string;
+  permission: Permission;
+}
+
+// api/iam/dto.GroupResponse.
+export interface Group {
+  groupId: string;
+  groupName?: string | null;
+  ownerId?: string | null;
+  createdAt: number;
+}
+
+export type GroupRole = "ADMIN" | "MODERATOR" | "MEMBER";
+export type GroupMemberStatus = "ACTIVE" | "INACTIVE";
+
+// api/iam/dto.GroupMemberResponse.
+export interface GroupMember {
+  groupId: string;
+  userId: string;
+  groupRole: GroupRole;
+  groupMemberStatus: GroupMemberStatus;
+}
+
 export interface FieldError {
   field: string;
   message: string;
@@ -14,9 +46,45 @@ export interface ErrorEnvelope {
   fieldErrors?: FieldError[];
 }
 
-// Service accounts (admin only)
+// Users
 
 export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
+export type Role = "USER" | "ADMIN" | "SUPER_ADMIN";
+export type AuthMethod = "CILOGON" | "SYSTEM" | "SERVICE_ACCOUNT";
+
+// A user record as administrators see it in the user list, and users see themselves.
+export interface UserAccount {
+  userId: string;
+  status: UserStatus | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  authMethod: AuthMethod | null;
+  roles: Role[];
+  createdAt: number;
+}
+
+// GET /api/v1/users/me: the caller, and what the server decided about them.
+export interface CurrentUser {
+  userId: string;
+  status: UserStatus;
+  authorities: string[];
+  // What the caller's roles grant, such as "audit:read". Use it to hide what the caller
+  // cannot do; the server enforces it regardless.
+  permissions: string[];
+  admin: boolean;
+  user: UserAccount | null;
+}
+
+// GET /api/v1/permissions: every permission, for pages that let an administrator choose.
+export interface PermissionInfo {
+  permission: string; // "resource:action"
+  description: string;
+  // False for the permissions no service account may hold.
+  grantableToServiceAccount: boolean;
+}
+
+// Service accounts (admin only)
 
 export interface ServiceAccount {
   serviceAccountId: string; // "sa:<name>"
@@ -29,6 +97,8 @@ export interface ServiceAccount {
   createdAt: number;
   tokenIssuedAt: number;
   tokenExpiresAt: number;
+  // What the account may do, sorted.
+  permissions: string[];
 }
 
 // Returned on create and regenerate: the only times the token is ever sent.
@@ -43,6 +113,7 @@ export interface ServiceAccountCreate {
   description: string | null;
   email: string | null;
   validityDays: number | null;
+  permissions: string[];
 }
 
 export interface ServiceAccountUpdate {
@@ -50,6 +121,8 @@ export interface ServiceAccountUpdate {
   description?: string | null;
   email?: string | null;
   status?: UserStatus;
+  // Replaces the account's whole set. Leave out to keep it as it is.
+  permissions?: string[];
 }
 
 // Credentials
@@ -292,6 +365,16 @@ export interface Process {
   batchProcess: BatchProcess | null;
 }
 
+// How the dashboard opens a process's Jupyter Server: Airavata's proxy at baseUrl (a
+// path under the API root), with token as the Jupyter token. linked says whether the
+// job's Linkspan holds its link to Airavata right now.
+export interface JupyterServer {
+  processId: string;
+  linked: boolean;
+  baseUrl: string;
+  token: string;
+}
+
 export interface ProcessStatus {
   processStatusId: string;
   processId: string | null;
@@ -337,4 +420,22 @@ export interface Task {
   taskOrder: number | null;
   // Kind-specific fields; rendered generically.
   [key: string]: unknown;
+}
+
+// Audit log (admin only): GET /api/v1/audit-events
+export type AuditAction = "CREATE" | "UPDATE" | "DELETE" | "UPSERT";
+
+export interface AuditEvent {
+  id: number;
+  occurredAt: number;
+  actor: string; // a user id, "root", "sa:<name>", or "system"
+  action: AuditAction;
+  entityType: string; // the table, e.g. "processes"
+  entityId: string;
+  changedFields: string; // comma-separated; empty unless an update named its columns
+}
+
+export interface AuditEventPage {
+  items: AuditEvent[];
+  nextCursor: number | null;
 }

@@ -34,6 +34,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	appdto "github.com/apache/airavata/api/application/dto"
 	appmod "github.com/apache/airavata/api/application/model"
@@ -155,7 +156,7 @@ func (s *LaunchService) requireOwnership(ctx context.Context, proc *dto.Response
 		return err
 	}
 	owned := proc.UserID != nil && *proc.UserID == principal.Name
-	if !owned && !principal.IsAdmin() {
+	if !owned && !principal.Can(permission.ProcessManageAny) {
 		return httpx.Forbidden("Access denied: you may only launch your own processes")
 	}
 	return nil

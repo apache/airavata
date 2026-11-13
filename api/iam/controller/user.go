@@ -23,6 +23,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 
 	dto "github.com/apache/airavata/api/iam/dto"
@@ -42,7 +43,10 @@ func NewUserController(svc *service.UserService) *UserController { return &UserC
 func (h *UserController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/users", h.list)
 	mux.HandleFunc("POST /api/v1/users", h.create)
+	mux.HandleFunc("GET "+auth.CurrentUserPath, h.me)
 	mux.HandleFunc("GET /api/v1/users/{userId}", h.get)
+	mux.HandleFunc("POST /api/v1/users/{userId}/status", h.setStatus)
+	mux.HandleFunc("POST /api/v1/users/{userId}/admin", h.setAdmin)
 	mux.HandleFunc("POST /api/v1/users/{userId}", h.update)
 }
 
@@ -90,6 +94,43 @@ func (h *UserController) update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user, err := h.svc.Update(r.Context(), r.PathValue("userId"), &req)
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, user)
+}
+
+func (h *UserController) me(w http.ResponseWriter, r *http.Request) {
+	me, err := h.svc.Me(r.Context())
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, me)
+}
+
+func (h *UserController) setStatus(w http.ResponseWriter, r *http.Request) {
+	var req dto.UserStatusUpdate
+	if err := httpx.Bind(r, &req); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	user, err := h.svc.SetStatus(r.Context(), r.PathValue("userId"), &req)
+	if err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	httpx.WriteJSON(w, http.StatusOK, user)
+}
+
+func (h *UserController) setAdmin(w http.ResponseWriter, r *http.Request) {
+	var req dto.UserAdminUpdate
+	if err := httpx.Bind(r, &req); err != nil {
+		httpx.WriteError(w, r, err)
+		return
+	}
+	user, err := h.svc.SetAdmin(r.Context(), r.PathValue("userId"), &req)
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return

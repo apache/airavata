@@ -36,6 +36,7 @@ import (
 	"gorm.io/gorm/logger"
 
 	"github.com/apache/airavata/internal/app"
+	"github.com/apache/airavata/internal/audit"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
@@ -90,6 +91,9 @@ func newHarness(t *testing.T) *harness {
 	if err := db.AutoMigrate(gdb); err != nil {
 		t.Fatalf("automigrate: %v", err)
 	}
+	if err := audit.Register(gdb); err != nil {
+		t.Fatalf("register audit: %v", err)
+	}
 
 	// Every principal must have a users row: ownership resolution looks the caller up
 	// by principal name, and an unregistered caller cannot own anything.
@@ -109,7 +113,7 @@ func newHarness(t *testing.T) *harness {
 		}
 	}
 
-	cfg := config.Config{CORSAllowedOrigins: []string{"*"}, DocsEnabled: true}
+	cfg := config.Config{CORSAllowedOrigins: []string{"*"}, DocsEnabled: true, PublicURL: "https://airavata.example.org"}
 	introspector := stubIntrospector{
 		tokenAdmin: {Name: "admin-user", Authorities: []string{string(role.Admin)}},
 		tokenAlice: {Name: "alice", Authorities: []string{string(role.User)}},
@@ -360,11 +364,17 @@ func TestSSHCredentialSecretsAreNeverReturnedAndRequiredOnCreate(t *testing.T) {
 		"sshCredentialName": "k", "publicKey": "ssh-ed25519 AAAA", "privateKey": "SUPER-SECRET",
 		"passphrase": "hunter2",
 	}, http.StatusCreated)
+	h.mustDo(http.MethodPost, "/api/v1/ssh-credentials", tokenAdmin, map[string]any{
+		"sshCredentialName": "p", "password": "letmein-pw", "fullInteractive": true,
+	}, http.StatusCreated)
 
 	for _, path := range []string{"/api/v1/ssh-credentials", "/api/v1/ssh-credentials/" + created["sshCredentialId"].(string)} {
 		body := h.do(http.MethodGet, path, tokenAdmin, nil).Body.String()
 		if strings.Contains(body, "SUPER-SECRET") || strings.Contains(body, "hunter2") {
 			t.Errorf("GET %s leaked a secret: %s", path, body)
+		}
+		if strings.Contains(body, "letmein-pw") {
+			t.Errorf("GET %s leaked the password: %s", path, body)
 		}
 	}
 }

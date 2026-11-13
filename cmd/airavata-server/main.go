@@ -35,6 +35,7 @@ import (
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 	iamsvc "github.com/apache/airavata/api/iam/service"
 	"github.com/apache/airavata/internal/app"
+	"github.com/apache/airavata/internal/audit"
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/db"
@@ -219,6 +220,10 @@ func runServer() error {
 	if err != nil {
 		return err
 	}
+	// Before anything writes, including the migration below and the root user.
+	if err := audit.Register(gdb); err != nil {
+		return fmt.Errorf("register audit log: %w", err)
+	}
 	if cfg.AutoMigrate {
 		if err := db.AutoMigrate(gdb); err != nil {
 			return fmt.Errorf("migrate schema: %w", err)
@@ -251,6 +256,8 @@ func runServer() error {
 	// Service account tokens are Airavata-issued, so they are checked against the
 	// database and never forwarded to CILogon.
 	introspector.ServiceAccounts = iamrepo.ServiceAccountTokenLookup{DB: gdb}
+	// Signing in with CILogon is registration: the first request creates the user record.
+	introspector.Users = &iamrepo.CILogonUserProvisioner{DB: gdb}
 
 	repos := app.NewRepositories(gdb)
 	// The object graph, built once. The HTTP handler takes it, and so does the workflow

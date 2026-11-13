@@ -29,6 +29,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
@@ -56,7 +57,7 @@ func NewUserService(db *gorm.DB, repo *repository.UserRepository) *UserService {
 // Status and creation time are set here rather than taken from the request, so a
 // caller cannot register an account that is already suspended or backdated.
 func (s *UserService) Register(ctx context.Context, req *dto.UserRegistration) (*dto.UserResponse, error) {
-	if _, err := auth.RequireSuperAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.UserCreate); err != nil {
 		return nil, err
 	}
 	// Service accounts have their own API, which is what issues their token. One
@@ -92,7 +93,7 @@ func (s *UserService) Register(ctx context.Context, req *dto.UserRegistration) (
 // Get returns one user. Admins may read anyone; everyone else may read only
 // themselves.
 func (s *UserService) Get(ctx context.Context, userID string) (*dto.UserResponse, error) {
-	if _, err := auth.RequireSelfOrAdmin(ctx, userID,
+	if _, err := auth.RequireSelfOrPermission(ctx, userID, permission.UserReadAny,
 		"Access denied: You can only access your own user information"); err != nil {
 		return nil, err
 	}
@@ -105,9 +106,10 @@ func (s *UserService) Get(ctx context.Context, userID string) (*dto.UserResponse
 	return &out, nil
 }
 
-// List returns every user. Admin only.
-func (s *UserService) List(ctx context.Context) ([]dto.UserResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+// List returns every user, with the email, auth method and roles an administrator
+// needs to decide on them. Needs user:list.
+func (s *UserService) List(ctx context.Context) ([]dto.UserAccountResponse, error) {
+	if _, err := auth.RequirePermission(ctx, permission.UserList); err != nil {
 		return nil, err
 	}
 
@@ -115,11 +117,117 @@ func (s *UserService) List(ctx context.Context) ([]dto.UserResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := make([]dto.UserResponse, 0, len(users))
+	out := make([]dto.UserAccountResponse, 0, len(users))
 	for i := range users {
-		out = append(out, dto.ToUserResponse(&users[i]))
+		out = append(out, dto.ToUserAccountResponse(&users[i]))
 	}
 	return out, nil
+}
+
+// Me describes the caller. It is the one route open to an account that is not
+// active, so the dashboard can tell a suspended user why nothing else works.
+func (s *UserService) Me(ctx context.Context) (*dto.CurrentUserResponse, error) {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := &dto.CurrentUserResponse{
+		UserID:      principal.Name,
+		Status:      principal.Status,
+		Authorities: principal.Authorities,
+		Permissions: principal.Permissions.Sorted(),
+		Admin:       principal.IsAdmin(),
+	}
+	if out.Status == "" {
+		out.Status = auth.StatusActive
+	}
+	user, err := s.repo.FindByIDWithRoles(ctx, principal.Name)
+	switch {
+	case err == nil:
+		account := dto.ToUserAccountResponse(user)
+		out.User = &account
+	case !errors.Is(err, gorm.ErrRecordNotFound):
+		return nil, err
+	}
+	return out, nil
+}
+
+// SetStatus activates, deactivates or suspends a user. Needs user:set_status.
+//
+// An administrator cannot change their own status, which would be a way to lock the
+// last administrator out. Only a Super Admin may change another administrator's
+// status, so an ADMIN cannot suspend the people who appoint admins. Service accounts
+// have their own lifecycle under /api/v1/service-accounts.
+func (s *UserService) SetStatus(ctx context.Context, userID string, req *dto.UserStatusUpdate) (*dto.UserAccountResponse, error) {
+	principal, err := auth.RequirePermission(ctx, permission.UserSetStatus)
+	if err != nil {
+		return nil, err
+	}
+	if principal.Name == userID {
+		return nil, httpx.Forbidden("You cannot change your own status")
+	}
+
+	user, err := s.repo.FindByIDWithRoles(ctx, userID)
+	if err != nil {
+		return nil, notFoundAs(err, "User not found with ID: %s", userID)
+	}
+	if user.IsServiceAccount() {
+		return nil, httpx.Invalid([]httpx.FieldError{{Field: "userId",
+			Message: "Service accounts are managed through /api/v1/service-accounts"}})
+	}
+	if user.IsAdmin() && !principal.Can(permission.AdminManage) {
+		return nil, httpx.Forbidden("Only a Super Admin can change an administrator's status")
+	}
+
+	status := req.Status
+	user.Status = &status
+	if err := s.repo.Save(ctx, user); err != nil {
+		return nil, err
+	}
+	out := dto.ToUserAccountResponse(user)
+	return &out, nil
+}
+
+// SetAdmin grants or withdraws the ADMIN role. Needs admin:manage, which only SUPER_ADMIN holds by default.
+//
+// A Super Admin cannot change their own role, and a Super Admin's standing is not
+// something this call touches: SUPER_ADMIN accounts are rejected. Service accounts
+// never hold administrator rights.
+func (s *UserService) SetAdmin(ctx context.Context, userID string, req *dto.UserAdminUpdate) (*dto.UserAccountResponse, error) {
+	principal, err := auth.RequirePermission(ctx, permission.AdminManage)
+	if err != nil {
+		return nil, err
+	}
+	if principal.Name == userID {
+		return nil, httpx.Forbidden("You cannot change your own role")
+	}
+
+	user, err := s.repo.FindByIDWithRoles(ctx, userID)
+	if err != nil {
+		return nil, notFoundAs(err, "User not found with ID: %s", userID)
+	}
+	if user.IsServiceAccount() {
+		return nil, httpx.Invalid([]httpx.FieldError{{Field: "userId",
+			Message: "Service accounts cannot be administrators"}})
+	}
+	if user.HasRole(model.RoleSuperAdmin) {
+		return nil, httpx.Forbidden("A Super Admin's role cannot be changed here")
+	}
+
+	if req.Admin {
+		err = s.repo.AddRole(ctx, userID, model.RoleAdmin)
+	} else {
+		err = s.repo.RemoveRole(ctx, userID, model.RoleAdmin)
+	}
+	if err != nil {
+		return nil, err
+	}
+	user, err = s.repo.FindByIDWithRoles(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	out := dto.ToUserAccountResponse(user)
+	return &out, nil
 }
 
 // Update changes a user's profile. A Super Admin may update anyone; everyone else may
@@ -133,7 +241,7 @@ func (s *UserService) Update(ctx context.Context, userID string, req *dto.UserRe
 	if err != nil {
 		return nil, err
 	}
-	if principal.Name != userID && !principal.HasAnyAuthority(string(model.RoleSuperAdmin)) {
+	if principal.Name != userID && !principal.Can(permission.UserUpdateAny) {
 		return nil, httpx.Forbidden("Access denied: You can only update your own user information")
 	}
 

@@ -31,6 +31,7 @@ import (
 	"github.com/apache/airavata/internal/httpx"
 
 	applicationctl "github.com/apache/airavata/api/application/controller"
+	auditctl "github.com/apache/airavata/api/audit/controller"
 	computectl "github.com/apache/airavata/api/compute/controller"
 	credentialsctl "github.com/apache/airavata/api/credentials/controller"
 	datactl "github.com/apache/airavata/api/data/controller"
@@ -46,10 +47,12 @@ import (
 // over the same database.
 func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) http.Handler {
 	mux := http.NewServeMux()
+	auditctl.NewEventController(svcs.Audit).Register(mux)
 	iamctl.NewUserController(svcs.User).Register(mux)
 	iamctl.NewGroupController(svcs.Group).Register(mux)
 	iamctl.NewGroupMemberController(svcs.GroupMember).Register(mux)
 	iamctl.NewServiceAccountController(svcs.ServiceAccount).Register(mux)
+	iamctl.NewPermissionController(svcs.Permission).Register(mux)
 	credentialsctl.NewSSHCredentialController(svcs.SSHCredential).Register(mux)
 	credentialsctl.NewInteractiveAuthController(svcs.InteractiveAuth).Register(mux)
 	computectl.NewSlurmClusterController(svcs.SlurmCluster).Register(mux)
@@ -79,6 +82,9 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	processctl.NewJobSubmissionTaskController(svcs.JobSubmissionTask).Register(mux)
 	processctl.NewJobMonitoringTaskController(svcs.JobMonitoringTask).Register(mux)
 	processctl.NewInteractiveCommandTaskController(svcs.InteractiveCommandTask).Register(mux)
+	processctl.NewLinkController(svcs.Link).Register(mux)
+
+	auth.NewSignIn(cfg.Issuer, cfg.ClientID, cfg.ClientSecret).Register(mux)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})
@@ -88,7 +94,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 
 	// Outermost first: CORS answers preflights before authentication runs, since a
 	// preflight carries no credentials by definition.
-	return cors(cfg.CORSAllowedOrigins)(auth.Middleware(introspector)(mux))
+	return cors(cfg.CORSAllowedOrigins)(auth.Middleware(introspector, auth.WithPermissions(svcs.Permissions))(mux))
 }
 
 // cors applies the airavata.cors.allowed-origins policy.
@@ -125,7 +131,7 @@ func cors(allowed []string) func(http.Handler) http.Handler {
 			if origin != "" && (allowAll || origins[origin]) {
 				w.Header().Set("Access-Control-Allow-Credentials", "true")
 				w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			}
 
 			if r.Method == http.MethodOptions {

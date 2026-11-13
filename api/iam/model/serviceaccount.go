@@ -42,6 +42,11 @@ type ServiceAccount struct {
 	TokenHash      string `gorm:"column:token_hash;type:varchar(64);not null;uniqueIndex:uk_service_account_token_hash" json:"-"`
 	TokenIssuedAt  int64  `gorm:"column:token_issued_at;not null" json:"tokenIssuedAt"`
 	TokenExpiresAt int64  `gorm:"column:token_expires_at;not null" json:"tokenExpiresAt"`
+
+	// Permissions is what the account is allowed to do beyond acting on its own
+	// records. Owned by the account: deleting it deletes the rows. Services write them
+	// through the permission set operations, not by mutating this slice.
+	Permissions []ServiceAccountPermission `gorm:"foreignKey:UserID;references:UserID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE" json:"-"`
 }
 
 // TableName pins the table name.

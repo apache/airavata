@@ -82,6 +82,10 @@ type JobSubmissionTask struct {
 
 	WorkingDir *string `gorm:"column:working_dir;type:varchar(1024)" json:"workingDir,omitempty"`
 
+	// Script is the batch script the task last built and submitted, recorded by the
+	// server so a run can be inspected afterwards.
+	Script *string `gorm:"column:script;type:text" json:"script,omitempty"`
+
 	OnFailure  *OnFailureAction `gorm:"column:on_failure;type:varchar(32)" json:"onFailure,omitempty"`
 	RetryCount *int             `gorm:"column:retry_count;type:int" json:"retryCount,omitempty"`
 

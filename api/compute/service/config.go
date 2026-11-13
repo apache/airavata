@@ -27,6 +27,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	model "github.com/apache/airavata/api/compute/model"
@@ -179,10 +180,10 @@ func NewSlurmClusterConfigService(
 	}
 }
 
-// List returns every config across every owner. Admin only — it names who may submit
+// List returns every config across every owner. Needs clusterconfig:list — it names who may submit
 // as whom, and where.
 func (s *SlurmClusterConfigService) List(ctx context.Context) ([]dto.SlurmClusterConfigResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ClusterConfigList); err != nil {
 		return nil, err
 	}
 	configs, err := s.configs.FindAll(ctx)

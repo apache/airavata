@@ -33,6 +33,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 	"github.com/apache/airavata/internal/ssh"
 
 	dto "github.com/apache/airavata/api/compute/dto"
@@ -79,7 +80,7 @@ func (s *ClusterDiscoveryService) WithRunner(run CommandRunner) *ClusterDiscover
 // under a key the caller owns: it is a way to make the server open an SSH session to
 // a host of the caller's choosing, which nobody else's key may be lent to.
 func (s *ClusterDiscoveryService) DiscoverPartitions(ctx context.Context, req *dto.PartitionDiscoveryRequest) (*dto.PartitionDiscoveryResponse, error) {
-	principal, err := auth.RequireAdmin(ctx)
+	principal, err := auth.RequirePermission(ctx, permission.ClusterDiscover)
 	if err != nil {
 		return nil, err
 	}

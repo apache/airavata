@@ -27,6 +27,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/process/dto"
 	model "github.com/apache/airavata/api/process/model"
@@ -156,7 +157,7 @@ func (s *TaskService[T, Req]) requireProcessWith(ctx context.Context, processes 
 	if err != nil {
 		return nil, notFoundAs(err, "Process not found: %s", processID)
 	}
-	if !proc.OwnedBy(principal.Name) && !principal.IsAdmin() {
+	if !proc.OwnedBy(principal.Name) && !principal.Can(permission.ProcessManageAny) {
 		return nil, httpx.Forbidden("Access denied: you may only work with tasks of your own processes")
 	}
 	return proc, nil

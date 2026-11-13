@@ -77,6 +77,9 @@ tags:
     description: User accounts.
   - name: Groups
     description: Groups and their membership; the subject of a group share.
+  - name: Audit
+    description: >-
+      The record of who changed what. Admin only. See docs/audit.md.
   - name: Service Accounts
     description: >-
       Non-human users that authenticate with an Airavata-issued, expiring token.
@@ -138,7 +141,9 @@ paths:
     get:
       tags: [Users]
       summary: List users
-      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Newest first, with the email, auth
+        method and roles an administrator needs to decide whether to activate someone.
       operationId: listUsers
       responses:
         "200":
@@ -147,7 +152,7 @@ paths:
             application/json:
               schema:
                 type: array
-                items: { $ref: "#/components/schemas/UserResponse" }
+                items: { $ref: "#/components/schemas/UserAccount" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "502": { $ref: "#/components/responses/BadGateway" }
@@ -156,8 +161,9 @@ paths:
       tags: [Users]
       summary: Register a user
       description: |
-        Creates the `users` row an owned resource is attached to. Owning anything in
-        this API requires such a row.
+        Creates the `users` row an owned resource is attached to, active straight away.
+        A CILogon user who signs in without one gets one created for them, suspended
+        until an administrator activates it.
       operationId: createUser
       requestBody:
         required: true
@@ -173,6 +179,54 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/users/me:
+    get:
+      tags: [Users]
+      summary: Read the caller
+      description: |
+        Who the server thinks the caller is. This is the one route a suspended or
+        inactive account may call; every other route answers it with `403`.
+      operationId: getCurrentUser
+      responses:
+        "200":
+          description: The caller.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CurrentUser" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/users/{userId}/status:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+    post:
+      tags: [Users]
+      summary: Set a user's status
+      description: |
+        Activates, suspends or deactivates a user, from their next request. Requires
+        `ADMIN` or `SUPER_ADMIN` authority. Nobody can change their own status, only a
+        `SUPER_ADMIN` can change an administrator's, and service accounts are managed
+        under `/api/v1/service-accounts`.
+      operationId: setUserStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UserStatusUpdate" }
+      responses:
+        "200":
+          description: The user with their new status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UserAccount" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
@@ -218,6 +272,30 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------------ Permissions
+
+  /api/v1/permissions:
+    get:
+      tags: [Service Accounts]
+      summary: List permissions
+      description: |
+        Any signed-in caller. Every permission that exists, with a description of what it
+        allows, sorted by name. `grantableToServiceAccount` is false for the permissions no
+        service account may hold. What a caller may grant from the list is decided where
+        the grant is made. See docs/auth.md.
+      operationId: listPermissions
+      responses:
+        "200":
+          description: Every permission.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Permission" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
@@ -389,6 +467,75 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  # ------------------------------------------------------------ Audit log
+
+  /api/v1/audit-events:
+    get:
+      tags: [Audit]
+      summary: List audit events
+      description: |
+        Requires `ADMIN` or `SUPER_ADMIN` authority. Returns the changes users and the
+        system have made to records, newest first. Every filter is optional and they
+        combine with AND. See docs/audit.md.
+
+        Page through the log by passing the previous response's `nextCursor` as `before`.
+      operationId: listAuditEvents
+      parameters:
+        - name: userId
+          in: query
+          description: Only events by this actor — a user id, `root`, `sa:<name>` or `system`.
+          schema: { type: string }
+        - name: entityType
+          in: query
+          description: Only events on this kind of record, such as `processes`. See `/api/v1/audit-events/entity-types`.
+          schema: { type: string }
+        - name: from
+          in: query
+          description: Only events at or after this time, in milliseconds since the epoch.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: to
+          in: query
+          description: Only events before this time (exclusive), in milliseconds since the epoch. Must be after `from`.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: before
+          in: query
+          description: Only events with an id below this one; the previous page's `nextCursor`.
+          schema: { type: integer, format: int64, minimum: 0 }
+        - name: limit
+          in: query
+          description: Page size.
+          schema: { type: integer, minimum: 1, maximum: 500, default: 100 }
+      responses:
+        "200":
+          description: One page of events.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuditEventPage" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/audit-events/entity-types:
+    get:
+      tags: [Audit]
+      summary: List audited entity types
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority. The values `entityType` accepts, for the kinds of record the log holds events for.
+      operationId: listAuditEntityTypes
+      responses:
+        "200":
+          description: Entity types, alphabetically.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
@@ -3229,6 +3376,67 @@ components:
           description: Milliseconds since the epoch.
       required: [userId, status, firstName, lastName, createdAt]
 
+    UserAccount:
+      type: object
+      description: |
+        A user as administrators see them in the user list, and callers see themselves.
+      properties:
+        userId: { type: string }
+        status:
+          oneOf:
+            - { $ref: "#/components/schemas/UserStatus" }
+            - { type: "null" }
+        firstName: { type: [string, "null"] }
+        lastName: { type: [string, "null"] }
+        email: { type: [string, "null"] }
+        authMethod:
+          oneOf:
+            - { $ref: "#/components/schemas/AuthMethod" }
+            - { type: "null" }
+        roles:
+          type: array
+          items: { type: string, enum: [USER, ADMIN, SUPER_ADMIN] }
+        createdAt:
+          type: integer
+          format: int64
+          description: Milliseconds since the epoch.
+      required: [userId, status, firstName, lastName, email, authMethod, roles, createdAt]
+
+    CurrentUser:
+      type: object
+      properties:
+        userId: { type: string }
+        status:
+          $ref: "#/components/schemas/UserStatus"
+        authorities:
+          type: array
+          items: { type: string }
+        permissions:
+          description: What the caller's roles grant, sorted, such as `audit:read`.
+          type: array
+          items: { type: string }
+        admin: { type: boolean }
+        user:
+          description: The caller's user record, or null if they have none.
+          oneOf:
+            - { $ref: "#/components/schemas/UserAccount" }
+            - { type: "null" }
+      required: [userId, status, authorities, permissions, admin, user]
+
+    UserStatusUpdate:
+      type: object
+      properties:
+        status: { $ref: "#/components/schemas/UserStatus" }
+      required: [status]
+
+    Permission:
+      type: object
+      properties:
+        permission: { type: string, description: "`resource:action`, such as `process:list`." }
+        description: { type: string }
+        grantableToServiceAccount: { type: boolean }
+      required: [permission, description, grantableToServiceAccount]
+
     ServiceAccountCreate:
       type: object
       properties:
@@ -3244,6 +3452,14 @@ components:
           minimum: 1
           maximum: 365
           description: How long the first token lives. Defaults to 90.
+        permissions:
+          type: array
+          items: { type: string }
+          description: >-
+            What the account may do, such as `process:list`. Empty or absent means it can
+            act only on its own records and what is shared with it. Refused with 400:
+            an unknown permission, and `admin:manage`, `user:update_any` and
+            `serviceaccount:manage`, which no service account may hold. Refused with 403: a permission the caller does not hold themselves.
       required: [name]
 
     ServiceAccountUpdate:
@@ -3257,6 +3473,13 @@ components:
           oneOf:
             - { $ref: "#/components/schemas/UserStatus" }
             - { type: "null" }
+        permissions:
+          type: [array, "null"]
+          items: { type: string }
+          description: >-
+            Replaces the account's whole set; an empty list removes every grant, and
+            absent leaves the set as it is. Takes effect on the account's next request.
+            The same rules as on create apply to what is being added.
 
     ServiceAccountTokenRequest:
       type: object
@@ -3266,6 +3489,34 @@ components:
           minimum: 1
           maximum: 365
           description: How long the token lives from now. Defaults to 90.
+
+    AuditEvent:
+      type: object
+      description: >-
+        One change to one record. It names the record and what was done, never the values.
+      properties:
+        id: { type: integer, format: int64 }
+        occurredAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
+        actor:
+          type: string
+          description: The user id, `root` or `sa:<name>` that made the change, or `system` when no caller was behind it.
+        action: { type: string, enum: [CREATE, UPDATE, DELETE, UPSERT] }
+        entityType: { type: string, description: "The kind of record, such as `processes`." }
+        entityId: { type: string, description: The record's id. A composite key is joined with `:`. Empty when the change addressed rows by a condition rather than by key. }
+        changedFields: { type: string, description: "Comma-separated columns an update set, when the write named them; otherwise empty." }
+      required: [id, occurredAt, actor, action, entityType, entityId, changedFields]
+
+    AuditEventPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AuditEvent" }
+        nextCursor:
+          type: [integer, "null"]
+          format: int64
+          description: Pass as `before` to fetch the next page; null on the last page.
+      required: [items, nextCursor]
 
     ServiceAccountResponse:
       type: object
@@ -3284,7 +3535,11 @@ components:
         createdAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
         tokenIssuedAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
         tokenExpiresAt: { type: integer, format: int64, description: Milliseconds since the epoch. }
-      required: [serviceAccountId, name, displayName, description, email, status, createdBy, createdAt, tokenIssuedAt, tokenExpiresAt]
+        permissions:
+          type: array
+          items: { type: string }
+          description: What the account may do, sorted.
+      required: [serviceAccountId, name, displayName, description, email, status, createdBy, createdAt, tokenIssuedAt, tokenExpiresAt, permissions]
 
     ServiceAccountTokenResponse:
       type: object
@@ -3375,6 +3630,9 @@ components:
         passphrase:
           type: [string, "null"]
           description: Write-only. Never returned by any read endpoint.
+        password:
+          type: [string, "null"]
+          description: Write-only. Never returned by any read endpoint.
         fullInteractive:
           type: boolean
           description: Also answer keyboard-interactive prompts (OTP, Duo) after the key.
@@ -3383,7 +3641,7 @@ components:
     SSHCredentialResponse:
       type: object
       description: |
-        The read model for a credential. It has no private key or passphrase field at all —
+        The read model for a credential. It has no private key, passphrase or password field at all —
         the secrets cannot leak through this endpoint because there is nowhere for
         them to go.
       properties:
@@ -4064,6 +4322,11 @@ components:
         processId: { type: [string, "null"], format: uuid }
         jobId: { type: [string, "null"] }
         workingDir: { type: [string, "null"] }
+        script:
+          type: [string, "null"]
+          description: |
+            The batch script the task last built and submitted. Server-set and
+            read-only: null until the task first runs, replaced on each retry.
         onFailure:
           oneOf:
             - { $ref: "#/components/schemas/OnFailureAction" }

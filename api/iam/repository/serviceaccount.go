@@ -27,8 +27,10 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/apache/airavata/internal/auth"
+	"github.com/apache/airavata/internal/permission"
 
 	model "github.com/apache/airavata/api/iam/model"
 )
@@ -51,6 +53,7 @@ func (r *ServiceAccountRepository) FindAll(ctx context.Context) ([]model.User, e
 	var out []model.User
 	err := r.db.WithContext(ctx).
 		Preload("ServiceAccount").
+		Preload("ServiceAccount.Permissions").
 		Where("auth_method = ?", model.AuthMethodServiceAccount).
 		Order("user_id").
 		Find(&out).Error
@@ -63,6 +66,7 @@ func (r *ServiceAccountRepository) FindByID(ctx context.Context, id string) (*mo
 	var out model.User
 	err := r.db.WithContext(ctx).
 		Preload("ServiceAccount").
+		Preload("ServiceAccount.Permissions").
 		Where("auth_method = ?", model.AuthMethodServiceAccount).
 		First(&out, "user_id = ?", id).Error
 	if err != nil {
@@ -74,9 +78,44 @@ func (r *ServiceAccountRepository) FindByID(ctx context.Context, id string) (*mo
 	return &out, nil
 }
 
-// Save inserts or updates a service account row.
+// Save inserts or updates a service account row. Its permissions are written only
+// through ReplacePermissions, never as a side effect of saving the account.
 func (r *ServiceAccountRepository) Save(ctx context.Context, sa *model.ServiceAccount) error {
-	return r.db.WithContext(ctx).Save(sa).Error
+	return r.db.WithContext(ctx).Omit(clause.Associations).Save(sa).Error
+}
+
+// ReplacePermissions makes want the account's complete set of grants: rows not in want
+// are deleted and missing ones inserted, and rows already present are left alone, so an
+// unchanged permission leaves no trace in the audit log.
+func (r *ServiceAccountRepository) ReplacePermissions(ctx context.Context, id string, want []permission.Permission) error {
+	db := r.db.WithContext(ctx)
+
+	var have []model.ServiceAccountPermission
+	if err := db.Where("user_id = ?", id).Find(&have).Error; err != nil {
+		return err
+	}
+	keep := make(map[permission.Permission]bool, len(want))
+	for _, p := range want {
+		keep[p] = true
+	}
+	present := make(map[permission.Permission]bool, len(have))
+	for _, row := range have {
+		present[row.Permission] = true
+		if !keep[row.Permission] {
+			if err := db.Delete(&row).Error; err != nil {
+				return err
+			}
+		}
+	}
+	for _, p := range want {
+		if present[p] {
+			continue
+		}
+		if err := db.Create(&model.ServiceAccountPermission{UserID: id, Permission: p}).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // ServiceAccountTokenLookup resolves service account tokens against the database. It

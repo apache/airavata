@@ -29,6 +29,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
@@ -81,7 +82,7 @@ func (a groupAccess) requireReader(ctx context.Context, group *model.Group) (*au
 	if err != nil {
 		return nil, err
 	}
-	if principal.IsAdmin() || group.OwnedBy(principal.Name) {
+	if principal.Can(permission.GroupReadAny) || principal.Can(permission.GroupManageAny) || group.OwnedBy(principal.Name) {
 		return principal, nil
 	}
 	member, err := a.membership(ctx, group.ID, principal.Name)
@@ -101,7 +102,7 @@ func (a groupAccess) requireManager(ctx context.Context, group *model.Group) (*a
 	if err != nil {
 		return nil, err
 	}
-	if principal.IsAdmin() || group.OwnedBy(principal.Name) {
+	if principal.Can(permission.GroupManageAny) || group.OwnedBy(principal.Name) {
 		return principal, nil
 	}
 	member, err := a.membership(ctx, group.ID, principal.Name)
@@ -122,7 +123,7 @@ func (a groupAccess) requireOwner(ctx context.Context, group *model.Group) (*aut
 	if err != nil {
 		return nil, err
 	}
-	if principal.IsAdmin() || group.OwnedBy(principal.Name) {
+	if principal.Can(permission.GroupManageAny) || group.OwnedBy(principal.Name) {
 		return principal, nil
 	}
 	return nil, httpx.Forbidden("Access denied: you may only modify a group you own")
@@ -155,10 +156,10 @@ func NewGroupService(db *gorm.DB, groups *repository.GroupRepository, members *r
 	}
 }
 
-// List returns every group across every owner. Admin only — this exposes who is
+// List returns every group across every owner. Needs group:list — this exposes who is
 // working with whom.
 func (s *GroupService) List(ctx context.Context) ([]dto.GroupResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.GroupList); err != nil {
 		return nil, err
 	}
 	groups, err := s.groups.FindAll(ctx)
@@ -392,7 +393,7 @@ func (s *GroupMemberService) Update(ctx context.Context, groupID, userID string,
 	if err != nil {
 		return nil, err
 	}
-	if group.OwnedBy(userID) && !(principal.IsAdmin() || group.OwnedBy(principal.Name)) {
+	if group.OwnedBy(userID) && !(principal.Can(permission.GroupManageAny) || group.OwnedBy(principal.Name)) {
 		return nil, httpx.Forbidden("Access denied: only the group owner may change their own membership")
 	}
 

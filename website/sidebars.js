@@ -8,13 +8,13 @@ const sidebars = {
       type: 'category',
       label: 'Concepts',
       collapsed: false,
-      items: ['application', 'data-product', 'virtual-data', 'batch-clusters'],
+      items: ['application', 'data-product', 'virtual-data', 'batch-clusters', 'notebooks'],
     },
     {
       type: 'category',
       label: 'Security',
       collapsed: false,
-      items: ['auth', 'interactive-auth', 'sharing'],
+      items: ['auth', 'interactive-auth', 'sharing', 'audit'],
     },
     {
       type: 'category',

@@ -28,6 +28,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
@@ -131,10 +132,10 @@ func NewDataProductService(
 	}
 }
 
-// List returns every product across every owner. Admin only — it names who holds what
+// List returns every product across every owner. Needs dataproduct:list — it names who holds what
 // data.
 func (s *DataProductService) List(ctx context.Context) ([]dto.DataProductResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.DataProductList); err != nil {
 		return nil, err
 	}
 	products, err := s.products.FindAll(ctx)

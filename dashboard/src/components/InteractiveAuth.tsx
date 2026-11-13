@@ -80,7 +80,7 @@ export function AnswerForm({ auth, onDone }: { auth: InteractiveAuth; onDone?: (
 }
 
 // InteractiveAuthDialog pops the oldest waiting login over whatever page is open. "Later"
-// hides that one auth until a different one arrives; the sidebar badge still shows it.
+// hides that one auth until a different one arrives; the navigation rail still flags it.
 export function InteractiveAuthDialog() {
   const { current } = useInteractiveAuth();
   const [snoozed, setSnoozed] = useState<string | null>(null);

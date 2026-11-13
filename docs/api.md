@@ -99,6 +99,7 @@ echo "$SSH_CREDENTIAL_ID"
 | `publicKey` | string | required, cannot be blank |
 | `privateKey` | string \| null | required on create; omit on update to keep the stored secret |
 | `passphrase` | string \| null | optional |
+| `password` | string \| null | optional, write-only; answers the login's password prompt; ignored unless `fullInteractive` |
 | `fullInteractive` | boolean | optional, default `false`; also answer keyboard-interactive prompts (OTP, Duo) after the key |
 
 ```json
@@ -2217,6 +2218,8 @@ Both take the shared fields plus an optional `jobId`, and a submission task take
 
 `workingDir` is filled in by [launching the process](#launch-a-process), which sets it to the run's work directory, and a task created there carries it without the caller supplying anything. It is writable so that a submission task recorded by hand can name one too: a task that reaches submission without a working directory is refused rather than submitted from the login user's home, since that is not where its inputs were staged.
 
+A submission task's response also carries `script`: the batch script the task built and submitted. The server sets it and it cannot be written. It is `null` until the task first runs, is recorded before the script is submitted (so it is there to inspect even when submission fails), and is replaced each time a [retry](#retry-a-process) runs the task again.
+
 ```bash
 curl -s -X PUT localhost:9095/api/v1/processes/"$PROCESS_ID"/job-submission-tasks/"$TASK_ID" \
   -H "Authorization: Bearer $TOKEN" \
@@ -2232,6 +2235,7 @@ curl -s -X PUT localhost:9095/api/v1/processes/"$PROCESS_ID"/job-submission-task
   "processId": "a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
   "jobId": "4821577",
   "workingDir": "/scratch/alphafold/a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b",
+  "script": null,
   "onFailure": "EXIT",
   "retryCount": 1,
   "taskOrder": 1

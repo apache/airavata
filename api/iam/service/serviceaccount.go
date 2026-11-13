@@ -29,6 +29,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/iam/dto"
 	model "github.com/apache/airavata/api/iam/model"
@@ -40,30 +41,57 @@ import (
 // ServiceAccountService administers service accounts: non-human users that
 // authenticate with an Airavata-issued, expiring token.
 //
-// Every operation is admin only. A service account is otherwise an ordinary user —
-// it owns what it creates, can be shared with and can join groups — but it can never
-// administer anything: its token always resolves to USER authority, and since
-// creating service accounts needs ADMIN, a service account cannot mint another.
+// Every operation needs serviceaccount:read or serviceaccount:manage, which ADMIN holds
+// by default. A service account is otherwise an ordinary user — it owns what it
+// creates, can be shared with and can join groups — and what more it may do is the set
+// of permissions granted to that account alone. It holds no role that grants any.
+//
+// The permissions that manage identities and privileges can never be granted to one, so
+// a service account cannot become an administrator or mint another account. And nobody
+// can grant what they do not hold themselves.
 type ServiceAccountService struct {
 	db       *gorm.DB
 	accounts *repository.ServiceAccountRepository
 	users    *repository.UserRepository
 	shares   *sharingrepo.Repository
+	perms    PermissionInvalidator
 
 	// now is the clock, replaceable in tests.
 	now func() time.Time
 }
 
+// PermissionInvalidator is told when a service account's grants change, so the
+// resolver stops serving the old ones.
+type PermissionInvalidator interface {
+	InvalidateUser(id string)
+}
+
 // NewServiceAccountService returns a service account service.
-func NewServiceAccountService(db *gorm.DB, accounts *repository.ServiceAccountRepository, users *repository.UserRepository, shares *sharingrepo.Repository) *ServiceAccountService {
-	return &ServiceAccountService{db: db, accounts: accounts, users: users, shares: shares, now: time.Now}
+func NewServiceAccountService(db *gorm.DB, accounts *repository.ServiceAccountRepository, users *repository.UserRepository, shares *sharingrepo.Repository, perms PermissionInvalidator) *ServiceAccountService {
+	return &ServiceAccountService{db: db, accounts: accounts, users: users, shares: shares, perms: perms, now: time.Now}
+}
+
+// requireHeld refuses a grant the caller could not make for themselves. Without it, an
+// administrator limited to some permissions could hand an account the rest.
+func requireHeld(grantor *auth.Principal, granted []permission.Permission) error {
+	for _, p := range granted {
+		if !grantor.Can(p) {
+			return httpx.Forbidden("You cannot grant %s because you do not hold it", p)
+		}
+	}
+	return nil
 }
 
 // Create registers a service account and mints its first token. The token is in the
 // response and nowhere else; it cannot be read back later.
 func (s *ServiceAccountService) Create(ctx context.Context, req *dto.ServiceAccountCreate) (*dto.ServiceAccountTokenResponse, error) {
-	admin, err := auth.RequireAdmin(ctx)
+	admin, err := auth.RequirePermission(ctx, permission.ServiceAccountManage)
 	if err != nil {
+		return nil, err
+	}
+
+	granted := dto.ToPermissions(req.Permissions)
+	if err := requireHeld(admin, granted); err != nil {
 		return nil, err
 	}
 
@@ -92,6 +120,10 @@ func (s *ServiceAccountService) Create(ctx context.Context, req *dto.ServiceAcco
 			TokenExpiresAt: expiry(now, dto.ValidityDaysOrDefault(req.ValidityDays)),
 		},
 	}
+	for _, p := range granted {
+		user.ServiceAccount.Permissions = append(user.ServiceAccount.Permissions,
+			model.ServiceAccountPermission{UserID: id, Permission: p})
+	}
 
 	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if _, err := s.users.WithTx(tx).FindByID(ctx, id); err == nil {
@@ -115,7 +147,7 @@ func (s *ServiceAccountService) Create(ctx context.Context, req *dto.ServiceAcco
 
 // List returns every service account.
 func (s *ServiceAccountService) List(ctx context.Context) ([]dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountRead); err != nil {
 		return nil, err
 	}
 	users, err := s.accounts.FindAll(ctx)
@@ -131,7 +163,7 @@ func (s *ServiceAccountService) List(ctx context.Context) ([]dto.ServiceAccountR
 
 // Get returns one service account.
 func (s *ServiceAccountService) Get(ctx context.Context, id string) (*dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountRead); err != nil {
 		return nil, err
 	}
 	user, err := s.require(ctx, s.accounts, id)
@@ -142,19 +174,47 @@ func (s *ServiceAccountService) Get(ctx context.Context, id string) (*dto.Servic
 	return &out, nil
 }
 
-// Update changes a service account's display name, description, email or status.
-// Setting the status to anything but ACTIVE stops its token working immediately,
-// without discarding it, so the account can be re-enabled.
+// Update changes a service account's display name, description, email, status or
+// permissions. Setting the status to anything but ACTIVE stops its token working
+// immediately, without discarding it, so the account can be re-enabled. Setting the
+// permissions replaces the whole set, and takes effect on the account's next request.
 func (s *ServiceAccountService) Update(ctx context.Context, id string, req *dto.ServiceAccountUpdate) (*dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	admin, err := auth.RequirePermission(ctx, permission.ServiceAccountManage)
+	if err != nil {
 		return nil, err
 	}
 
 	var user *model.User
-	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var err error
 		if user, err = s.require(ctx, s.accounts.WithTx(tx), id); err != nil {
 			return err
+		}
+		if req.Permissions != nil {
+			want := dto.ToPermissions(*req.Permissions)
+			// Only what is being added needs the caller to hold it: leaving a grant
+			// the caller could not make themselves in place is not granting it.
+			have := make(map[permission.Permission]bool, len(user.ServiceAccount.Permissions))
+			for _, p := range user.ServiceAccount.Permissions {
+				have[p.Permission] = true
+			}
+			var added []permission.Permission
+			for _, p := range want {
+				if !have[p] {
+					added = append(added, p)
+				}
+			}
+			if err := requireHeld(admin, added); err != nil {
+				return err
+			}
+			if err := s.accounts.WithTx(tx).ReplacePermissions(ctx, id, want); err != nil {
+				return err
+			}
+			user.ServiceAccount.Permissions = user.ServiceAccount.Permissions[:0]
+			for _, p := range want {
+				user.ServiceAccount.Permissions = append(user.ServiceAccount.Permissions,
+					model.ServiceAccountPermission{UserID: id, Permission: p})
+			}
 		}
 		if req.DisplayName != nil {
 			user.FirstName = req.DisplayName
@@ -176,6 +236,9 @@ func (s *ServiceAccountService) Update(ctx context.Context, id string, req *dto.
 	if err != nil {
 		return nil, err
 	}
+	// After the commit, so a request racing the change cannot cache the old grants
+	// after the invalidation and keep them for a whole TTL.
+	s.perms.InvalidateUser(id)
 	out := dto.ToServiceAccountResponse(user)
 	return &out, nil
 }
@@ -184,7 +247,7 @@ func (s *ServiceAccountService) Update(ctx context.Context, id string, req *dto.
 // itself is unchanged, so whatever holds it keeps working. An expired token can be
 // renewed back into use.
 func (s *ServiceAccountService) RenewToken(ctx context.Context, id string, req *dto.ServiceAccountTokenRequest) (*dto.ServiceAccountResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountManage); err != nil {
 		return nil, err
 	}
 
@@ -207,7 +270,7 @@ func (s *ServiceAccountService) RenewToken(ctx context.Context, id string, req *
 // RegenerateToken replaces the token with a new one. The old token stops working in
 // the same write; this is how a leaked token is revoked.
 func (s *ServiceAccountService) RegenerateToken(ctx context.Context, id string, req *dto.ServiceAccountTokenRequest) (*dto.ServiceAccountTokenResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountManage); err != nil {
 		return nil, err
 	}
 
@@ -244,7 +307,7 @@ func (s *ServiceAccountService) RegenerateToken(ctx context.Context, id string, 
 // transferred implicitly — and gets 409. Disabling it (status INACTIVE) revokes its
 // access while keeping what it owns.
 func (s *ServiceAccountService) Delete(ctx context.Context, id string) error {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ServiceAccountManage); err != nil {
 		return err
 	}
 
@@ -259,6 +322,9 @@ func (s *ServiceAccountService) Delete(ctx context.Context, id string) error {
 		// Memberships, roles and the token row cascade with the user.
 		return tx.Delete(&model.User{}, "user_id = ?", user.ID).Error
 	})
+	if err == nil {
+		s.perms.InvalidateUser(id)
+	}
 	if isForeignKeyViolation(s.db, err) {
 		return httpx.Conflict("Service account %s still owns records and cannot be deleted; set its status to INACTIVE to revoke its access instead", id)
 	}

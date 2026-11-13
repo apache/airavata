@@ -16,6 +16,7 @@ import {
 } from "@/components/ui";
 import { api, errorText } from "@/lib/api";
 import { CreateCredential } from "@/components/CreateCredential";
+import { ShareDialog } from "@/components/ShareDialog";
 import { useAction, useResource } from "@/lib/hooks";
 import { useSession } from "@/lib/session";
 import type { ClusterPartition, SlurmCluster, SlurmClusterConfig, SSHCredential } from "@/lib/types";
@@ -492,6 +493,7 @@ function Configs() {
   const mine = useResource(() => api.get<SlurmClusterConfig[]>("/api/v1/slurm-cluster-configs/me"));
   const shared = useResource(() => api.get<SlurmClusterConfig[]>("/api/v1/slurm-cluster-configs/shared-with-me"));
   const [creating, setCreating] = useState(false);
+  const [sharing, setSharing] = useState<SlurmClusterConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const columns = (owned: boolean) => [
@@ -509,19 +511,24 @@ function Configs() {
           header: "",
           className: "actions",
           cell: (c: SlurmClusterConfig) => (
-            <ConfirmButton
-              onConfirm={async () => {
-                setError(null);
-                try {
-                  await api.del(`/api/v1/slurm-cluster-configs/${c.slurmClusterConfigId}`);
-                  await mine.reload();
-                } catch (e) {
-                  setError(errorText(e));
-                }
-              }}
-            >
-              Delete
-            </ConfirmButton>
+            <div className="row" style={{ justifyContent: "flex-end", flexWrap: "nowrap" }}>
+              <button className="small" onClick={() => setSharing(c)}>
+                Share
+              </button>
+              <ConfirmButton
+                onConfirm={async () => {
+                  setError(null);
+                  try {
+                    await api.del(`/api/v1/slurm-cluster-configs/${c.slurmClusterConfigId}`);
+                    await mine.reload();
+                  } catch (e) {
+                    setError(errorText(e));
+                  }
+                }}
+              >
+                Delete
+              </ConfirmButton>
+            </div>
           ),
         }
       : { header: "Permission", cell: (c: SlurmClusterConfig) => <span className="badge">{c.permission ?? "READ"}</span> },
@@ -556,6 +563,17 @@ function Configs() {
             setCreating(false);
             void mine.reload();
           }}
+        />
+      )}
+      {sharing && (
+        <ShareDialog
+          title={sharing.name || sharing.slurmCluster?.clusterName || "cluster config"}
+          resourcePath={`/api/v1/slurm-cluster-configs/${sharing.slurmClusterConfigId}`}
+          permissionHelp={{
+            READ: "can run jobs through this config, using its login and SSH credential.",
+            WRITE: "can also edit it.",
+          }}
+          onClose={() => setSharing(null)}
         />
       )}
     </>

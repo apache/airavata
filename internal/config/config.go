@@ -49,7 +49,10 @@ type Config struct {
 	// CORSAllowedOrigins is airavata.cors.allowed-origins.
 	CORSAllowedOrigins []string
 
-	// CILogon
+	// CILogon. Issuer is where the dashboard's sign-in discovers the authorization
+	// and token endpoints; the client id and secret serve both sign-in and
+	// introspection.
+	Issuer           string
 	IntrospectionURI string
 	UserInfoURI      string
 	ClientID         string
@@ -71,6 +74,10 @@ type Config struct {
 
 	// DocsEnabled serves Swagger UI under /docs/. Defaults to false.
 	DocsEnabled bool
+
+	// PublicURL is where compute nodes reach this server, http(s)://host[:port]. A
+	// job's Linkspan dials its ws(s) form to link back; see internal/link.
+	PublicURL string
 }
 
 // Load reads configuration from the environment, applying the same defaults the Java
@@ -84,6 +91,7 @@ func load() (Config, error) {
 
 		CORSAllowedOrigins: strings.Split(env("AIRAVATA_CORS_ALLOWED_ORIGINS", "*"), ","),
 
+		Issuer:           env("CILOGON_ISSUER", "https://cilogon.org"),
 		IntrospectionURI: env("CILOGON_INTROSPECTION_URI", "https://cilogon.org/oauth2/introspect"),
 		UserInfoURI:      env("CILOGON_USERINFO_URI", "https://cilogon.org/oauth2/userinfo"),
 		ClientID:         env("CILOGON_CLIENT_ID", ""),
@@ -97,6 +105,7 @@ func load() (Config, error) {
 		WorkflowBackendSqlitePath: env("AIRAVATA_WORKFLOW_BACKEND_SQLITE_PATH", "/tmp/airavataorchestrator.sqlite"),
 		DashboardDir:              dashboardDir(),
 		DocsEnabled:               envBool("AIRAVATA_DOCS_ENABLED", false),
+		PublicURL:                 env("AIRAVATA_PUBLIC_URL", "http://localhost:"+env("SERVER_PORT", "9095")),
 	}
 
 	// Without a root account and without CILogon credentials there is no way to

@@ -268,6 +268,9 @@ func TestSeedCoversAllConfigEntities(t *testing.T) {
 		"data_products":                    "registered when user uploads or imports datasets",
 		"virtual_data_directories":         "user-created virtual dataset hierarchy",
 		"virtual_data_files":               "file nodes in user-created virtual datasets",
+		"service_account_permissions":      "optional granular permission grants for service accounts",
+		"process_links":                    "runtime secrets for running jobs linking back via linkspan",
+		"audit_events":                     "append-only audit log records created when actions happen",
 	}
 
 	for _, entity := range db.Entities() {

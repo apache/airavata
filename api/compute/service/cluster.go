@@ -31,6 +31,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	model "github.com/apache/airavata/api/compute/model"
@@ -100,7 +101,7 @@ func (s *SlurmClusterService) Get(ctx context.Context, id string) (*dto.SlurmClu
 // that gains partitions later adds them through
 // POST /api/v1/slurm-clusters/{slurmClusterId}/partitions instead.
 func (s *SlurmClusterService) Create(ctx context.Context, req *dto.SlurmClusterRequest) (*dto.SlurmClusterResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ClusterManage); err != nil {
 		return nil, err
 	}
 
@@ -144,7 +145,7 @@ func (s *SlurmClusterService) Create(ctx context.Context, req *dto.SlurmClusterR
 // caller never mentioned, and ignoring it would silently drop what the caller asked
 // for. The partition endpoints are where a cluster's layout changes.
 func (s *SlurmClusterService) Update(ctx context.Context, id string, req *dto.SlurmClusterRequest) (*dto.SlurmClusterResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ClusterManage); err != nil {
 		return nil, err
 	}
 	if len(req.Partitions) > 0 {
@@ -183,7 +184,7 @@ func (s *SlurmClusterService) Update(ctx context.Context, id string, req *dto.Sl
 // configs still point at it. Their owners have to retire them, since an admin deleting
 // the cluster out from under them would silently strand every share on those configs.
 func (s *SlurmClusterService) Delete(ctx context.Context, id string) error {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ClusterManage); err != nil {
 		return err
 	}
 	cluster, err := s.clusters.FindByID(ctx, id)
@@ -244,7 +245,7 @@ func (s *ClusterPartitionService) Get(ctx context.Context, clusterID, partitionI
 
 // Create adds a partition to a cluster.
 func (s *ClusterPartitionService) Create(ctx context.Context, clusterID string, req *dto.ClusterPartitionRequest) (*dto.ClusterPartitionResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ClusterManage); err != nil {
 		return nil, err
 	}
 	cluster, err := s.requireCluster(ctx, clusterID)
@@ -263,7 +264,7 @@ func (s *ClusterPartitionService) Create(ctx context.Context, clusterID string, 
 
 // Update changes a partition of a cluster.
 func (s *ClusterPartitionService) Update(ctx context.Context, clusterID, partitionID string, req *dto.ClusterPartitionRequest) (*dto.ClusterPartitionResponse, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ClusterManage); err != nil {
 		return nil, err
 	}
 	partition, err := s.requirePartition(ctx, clusterID, partitionID)
@@ -280,7 +281,7 @@ func (s *ClusterPartitionService) Update(ctx context.Context, clusterID, partiti
 
 // Delete removes a partition from a cluster.
 func (s *ClusterPartitionService) Delete(ctx context.Context, clusterID, partitionID string) error {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ClusterManage); err != nil {
 		return err
 	}
 	partition, err := s.requirePartition(ctx, clusterID, partitionID)

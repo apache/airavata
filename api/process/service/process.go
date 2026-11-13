@@ -31,6 +31,7 @@ import (
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/permission"
 
 	applicationdto "github.com/apache/airavata/api/application/dto"
 	applicationmodel "github.com/apache/airavata/api/application/model"
@@ -88,9 +89,9 @@ func NewProcessService(
 	}
 }
 
-// List returns every process across every user. Admin only.
+// List returns every process across every user. Needs process:list.
 func (s *ProcessService) List(ctx context.Context) ([]dto.Response, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ProcessList); err != nil {
 		return nil, err
 	}
 	found, err := s.processes.FindAll(ctx)
@@ -192,7 +193,7 @@ func (s *ProcessService) Create(ctx context.Context, req *dto.Request) (*dto.Res
 // BATCH_JOB turned into something else would strand its batch process with no way to
 // reach it.
 func (s *ProcessService) Update(ctx context.Context, id string, req *dto.Request) (*dto.Response, error) {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ProcessUpdate); err != nil {
 		return nil, err
 	}
 
@@ -229,7 +230,7 @@ func (s *ProcessService) Update(ctx context.Context, id string, req *dto.Request
 // section's resource request, its status history, its tasks and its mappings. Admin
 // only.
 func (s *ProcessService) Delete(ctx context.Context, id string) error {
-	if _, err := auth.RequireAdmin(ctx); err != nil {
+	if _, err := auth.RequirePermission(ctx, permission.ProcessDelete); err != nil {
 		return err
 	}
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {

@@ -37,10 +37,11 @@ If CILogon cannot be reached, the request fails with `502 Unable to validate bea
 
 A service account is an identity for software rather than a person. An admin creates it, and Airavata issues it a token. The token expires, and an admin can renew or regenerate it.
 
-A service account is an ordinary user in every way but two:
+A service account is an ordinary user in every way but three:
 
-- **It is never an admin.** Its token always authenticates with `USER` authority. Rows in `user_roles` are ignored for service accounts, so it can't be promoted. Because of this, a service account can't create or manage other service accounts.
-- **Only admins create and manage it.** Every `/api/v1/service-accounts` endpoint requires `ADMIN` or `SUPER_ADMIN`.
+- **It is never an admin.** Its token always authenticates with `USER` authority. Rows in `user_roles` are ignored for service accounts, so it can't be promoted. A service account can't create or manage other service accounts either.
+- **Only admins create and manage it.** Every `/api/v1/service-accounts` endpoint needs `serviceaccount:read` or `serviceaccount:manage`, which `ADMIN` and `SUPER_ADMIN` hold.
+- **Its permissions are its own.** See [Permissions for a service account](#permissions-for-a-service-account).
 
 Apart from that, it does what a user does. It owns the SSH credentials, cluster configs, storages and runs it creates. Other users can share records with it, by user id or through a group, and add it to groups.
 
@@ -80,6 +81,26 @@ curl -s localhost:9095/api/v1/ssh-credentials -H "Authorization: Bearer $SA_TOKE
 
 Service account tokens start with `airavata_sa_`. The server checks them against its own database and never sends them to CILogon. The `airavata_sa_` prefix also helps secret scanners recognise a leaked token.
 
+#### Permissions for a service account
+
+By default a service account can do only what any user can do with their own records and what is shared with them. To let it do more, grant it [permissions](#permissions). Each account has its own set, so one can read every process while another can only use its own.
+
+```bash
+curl -X POST https://airavata.example.org/api/v1/service-accounts \
+  -H "Authorization: Bearer $ADMIN_TOKEN" -H 'Content-Type: application/json' \
+  -d '{"name": "monitor", "permissions": ["process:list", "cluster:discover"]}'
+```
+
+On the dashboard, the **Service accounts** page has a permission picker in both the create and edit dialogs. It lists the permissions a service account may hold, grouped by what they act on, with a description of each. A permission you don't hold yourself is shown but can't be ticked, and the table shows how many permissions each account has. The picker is filled from `GET /api/v1/permissions`, which lists every permission with its description and whether a service account may hold it, for any signed-in caller.
+
+Change the set later with `PUT /api/v1/service-accounts/{id}`. A `permissions` list **replaces** the whole set, an empty list removes every grant, and leaving it out changes nothing. The change applies on the account's next request. `GET /api/v1/service-accounts/{id}` and `GET /api/v1/users/me` (called with the account's token) both list what it holds.
+
+Three rules keep this from becoming a way round the limits above:
+
+- **A service account holds only what was granted to it.** It gets nothing from a role. Granting a permission to `USER` reaches people, not service accounts.
+- **Some permissions can never be granted to one:** `admin:manage`, `user:update_any` and `serviceaccount:manage`. A token holding them could appoint administrators, rewrite another user's profile, or mint service accounts, which would widen its own access. The API refuses them with `400`, and a row inserted into the database by hand is ignored. `user:create` and `user:set_status` can be granted, for an onboarding integration, but they don't reach administrators: changing an administrator's status still needs `admin:manage`.
+- **You can only grant what you hold yourself.** An admin missing a permission can't hand it out. The API answers `403`.
+
 #### Manage the token
 
 Each service account has one token at a time.
@@ -112,7 +133,7 @@ ROOT ACCOUNT TOKEN (Super Admin):
 
 This token authenticates as the user `root` with `SUPER_ADMIN` authority. The server creates the `root` user record at startup if it is missing, so `root` can own resources straight away. The token is a new random value on every restart unless you set it with `AIRAVATA_ROOT_ACCOUNT_TOKEN`.
 
-The root account lets a fresh deployment be used before an identity provider is set up. Use it to install and try Airavata, and to register the first users and administrators.
+The root account lets a fresh deployment be used before an identity provider is set up. Use it to install and try Airavata, and to set up the first administrator.
 
 > **Disable the root account in production.** It is a single shared secret with full administrative power. It is not tied to a person, carries no second factor and leaves no record of who used it. Once CILogon is configured and at least one real user has `SUPER_ADMIN`, set `AIRAVATA_ROOT_ACCOUNT_ENABLED=false`.
 
@@ -127,8 +148,8 @@ The [MCP server](mcp.md) refuses the root token, because it checks every token's
 Register a client at <https://cilogon.org/oauth2/register>:
 
 - **Client type:** confidential (with a secret). The server needs the secret to call the introspection endpoint.
-- **Scopes:** `openid`, `email`, `profile`, `org.cilogon.userinfo`. Add `offline_access` if clients should get refresh tokens.
-- **Callback URLs:** the redirect URIs of the applications that will sign users in: the dashboard's CILogon callback, and `http://localhost:8082/callback` if you will use the [web-api-client](#programmatic-access-web-api-client).
+- **Scopes:** `openid`, `email`, `profile`, `org.cilogon.userinfo` and `offline_access`. The dashboard asks for `offline_access` so it gets a refresh token and can renew a user's access token without another sign-in.
+- **Callback URLs:** the redirect URIs of the applications that will sign users in: the dashboard's CILogon callback, `https://<dashboard host>/dashboard/login/callback/` (and `http://localhost:9095/dashboard/login/callback/` for a local server), and `http://localhost:8082/callback` if you will use the [web-api-client](#programmatic-access-web-api-client).
 
 CILogon approves new clients manually. Once your client is approved, you will have a **client id** (`cilogon:/client_id/…`) and a **client secret**.
 
@@ -140,7 +161,8 @@ The server can only introspect tokens that its client is allowed to see. The sim
 |---|---|---|
 | `CILOGON_CLIENT_ID` | *(empty)* | The client id from step 1. Setting it turns on CILogon authentication. |
 | `CILOGON_CLIENT_SECRET` | *(empty)* | The client secret. Keep it in a secret store, not in a committed file. |
-| `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | Change this only for a non-production CILogon instance (e.g. `test.cilogon.org`). |
+| `CILOGON_ISSUER` | `https://cilogon.org` | Where the dashboard's sign-in finds CILogon's authorization and token endpoints, through OIDC discovery. Change this only for a non-production CILogon instance (e.g. `test.cilogon.org`). |
+| `CILOGON_INTROSPECTION_URI` | `https://cilogon.org/oauth2/introspect` | Same. |
 | `CILOGON_USERINFO_URI` | `https://cilogon.org/oauth2/userinfo` | Same. |
 | `AIRAVATA_ROOT_ACCOUNT_ENABLED` | `true` | Set to `false` in production. |
 | `AIRAVATA_ROOT_ACCOUNT_TOKEN` | *(random per start)* | Fixes the root token to a known value, for repeatable test environments. |
@@ -160,27 +182,46 @@ no authentication configured: enable the root account or set CILOGON_CLIENT_ID
 
 Tokens travel in every request, so put TLS in front of the server in any deployment that is reachable over a network. See [INSTALL.md](https://github.com/apache/airavata/blob/master/INSTALL.md#production-notes).
 
-### 3. Bootstrap the first administrator
+### 3. New users start suspended
 
-A CILogon user needs a **user record** in Airavata before they can own anything (credentials, cluster configs, storages, runs). Without one they get `404 No user record found for authenticated principal`. Only a `SUPER_ADMIN` can create records. To give a new deployment its first real administrator:
+Signing in with CILogon creates the user's **user record** on their first request, with their name and email taken from CILogon. A new record is **suspended**: until an administrator activates it, the server refuses the account everything except `GET /api/v1/users/me`, and the dashboard tells the user their account is waiting for approval. A record that already exists is never changed by signing in. New users get the `USER` role.
 
-1. Start with the root account **enabled**.
-2. Have the administrator sign in to CILogon and find their user id (see [Find your user id](#find-your-user-id)).
-3. Register them using the root token:
+### 4. Activate users
 
-   ```bash
-   curl -s -X POST localhost:9095/api/v1/users \
-     -H "Authorization: Bearer $ROOT_TOKEN" -H 'Content-Type: application/json' \
-     -d '{"userId":"cilogon:12345","firstName":"Ada","lastName":"Lovelace","email":"ada@example.edu","authMethod":"CILOGON"}'
-   ```
+Administrators activate, suspend and deactivate users on the dashboard's **Users** page. It opens on the suspended accounts, so new users waiting for approval are the first thing an administrator sees. The change applies from the user's next request. Only `ACTIVE` accounts can use Airavata.
 
-4. Grant the role. No API endpoint changes roles, so do this in the database:
+| Route | Who | Purpose |
+|---|---|---|
+| `GET /api/v1/users/me` | Any signed-in caller, active or not | `{userId, status, authorities, permissions, admin, user}`: who the server thinks the caller is |
+| `GET /api/v1/users` | `ADMIN`, `SUPER_ADMIN` | Every user, with email, sign-in method, roles and status |
+| `POST /api/v1/users/{userId}/status` | `ADMIN`, `SUPER_ADMIN` | `{"status": "ACTIVE" \| "SUSPENDED" \| "INACTIVE"}` |
+
+An administrator can't change their own status. Only a `SUPER_ADMIN` can change another administrator's. Service accounts have their own lifecycle under `/api/v1/service-accounts`, and the root account has no status.
+
+A `SUPER_ADMIN` can also create a record ahead of a user's first sign-in with `POST /api/v1/users`. A record created that way is active straight away.
+
+### 5. Bootstrap the first administrator
+
+To give a new deployment its first real administrator:
+
+1. Have the administrator sign in once, through the dashboard or any CILogon token, so their record exists.
+2. Sign in to the dashboard with the root token and activate them on the **Users** page.
+3. Grant the role. No API endpoint changes roles, so do this in the database:
 
    ```sql
    INSERT INTO user_roles (user_id, role) VALUES ('cilogon:12345', 'SUPER_ADMIN');
    ```
 
-5. Restart with `AIRAVATA_ROOT_ACCOUNT_ENABLED=false`. From then on, the new administrator registers other users with their own CILogon token.
+   Their user id is shown on the Users page and on their own waiting-for-approval screen.
+
+4. Restart with `AIRAVATA_ROOT_ACCOUNT_ENABLED=false`. From then on, the new administrator activates other users.
+
+Without the root account, do steps 2 and 3 in the database:
+
+```sql
+UPDATE users SET status = 'ACTIVE' WHERE user_id = 'cilogon:12345';
+INSERT INTO user_roles (user_id, role) VALUES ('cilogon:12345', 'SUPER_ADMIN');
+```
 
 ---
 
@@ -196,7 +237,19 @@ How you sign in depends on how you use Airavata:
 
 ### Dashboard
 
-The dashboard signs users in with CILogon directly. Open it and choose CILogon sign-in, pick your identity provider, and you are signed in. You don't need to handle a token. During initial setup, before CILogon is configured, you can sign in with the root token instead.
+The dashboard signs users in with CILogon directly. Open it and choose **Sign in with CILogon**, pick your identity provider, and you are signed in. You don't need to handle a token. During initial setup, before CILogon is configured, you can sign in with the root token instead. The token form stays available under **Sign in with a token instead**.
+
+Sign-in is the authorization code flow with PKCE. The browser goes to CILogon and returns to `/dashboard/login/callback/` with a code. The Airavata server redeems the code using its client secret, which never reaches the browser, and returns the access and refresh tokens. The dashboard keeps both in the browser's local storage and renews the access token shortly before it expires, so a session lasts as long as CILogon honours the refresh token. Signing out forgets both.
+
+The server's sign-in routes take no bearer token:
+
+| Route | Purpose |
+|---|---|
+| `GET /api/v1/auth/cilogon` | `{enabled, authorizationEndpoint, clientId, scope}`. `enabled` is `false` unless both `CILOGON_CLIENT_ID` and `CILOGON_CLIENT_SECRET` are set. |
+| `POST /api/v1/auth/cilogon/token` | `{code, codeVerifier, redirectUri}` → `{accessToken, refreshToken, expiresIn}`. `redirectUri` must be a `/dashboard/login/callback/` URL. |
+| `POST /api/v1/auth/cilogon/refresh` | `{refreshToken}` → new tokens |
+
+A user's first sign-in creates their account, suspended. The dashboard shows a new user that they are waiting for approval until an administrator activates them (see [Activate users](#4-activate-users)).
 
 ### Programmatic access: web-api-client
 
@@ -264,8 +317,52 @@ Roles are stored in Airavata's `user_roles` table and looked up on every request
 | Role | Adds |
 |---|---|
 | `USER` | The default for anyone with no role row, and the only role a service account ever has. Self-service: register SSH credentials, cluster configs, storages, data products, templates, deployments and runs; manage and share what you own. |
-| `ADMIN` | Platform-wide listings (every process, config, storage and user) and administration of other users' records. |
-| `SUPER_ADMIN` | Everything `ADMIN` can do, plus registering users. The root account has this role. |
+| `ADMIN` | Platform-wide listings (every process, config, storage and user), and activating and suspending users other than administrators. |
+| `SUPER_ADMIN` | Everything `ADMIN` can do, plus changing administrators' status and creating user records ahead of a first sign-in. The root account has this role. |
+
+### Permissions
+
+Actions that need privilege are gated by a **permission** such as `audit:read`, not by a role name. Each role is granted a set of permissions in Airavata's `role_permissions` table, and a caller holds the union of what their roles grant. Which roles may do something is therefore data, not code. `GET /api/v1/users/me` lists the caller's permissions.
+
+| Permission | Allows | Default |
+|---|---|---|
+| `audit:read` | Reading the [audit log](audit.md) | `ADMIN` |
+| `user:list` | Listing every user | `ADMIN` |
+| `user:read_any` | Reading another user's record | `ADMIN` |
+| `user:set_status` | Activating, suspending and deactivating users | `ADMIN` |
+| `user:create` | Creating a user record ahead of the user's first sign-in | `SUPER_ADMIN` only |
+| `user:update_any` | Editing another user's profile | `SUPER_ADMIN` only |
+| `admin:manage` | Appointing and removing administrators, and changing an administrator's status | `SUPER_ADMIN` only |
+| `group:list` | Listing every group | `ADMIN` |
+| `group:read_any` | Reading a group the caller is not in | `ADMIN` |
+| `group:manage_any` | Renaming, deleting and managing the members of any group | `ADMIN` |
+| `serviceaccount:read` | Listing and reading service accounts | `ADMIN` |
+| `serviceaccount:manage` | Creating, editing and deleting service accounts, and re-issuing their tokens | `ADMIN` |
+| `cluster:manage` | Creating, editing and deleting clusters and their partitions | `ADMIN` |
+| `cluster:discover` | Discovering a cluster's partitions over SSH | `ADMIN` |
+| `clusterconfig:list` | Listing every cluster config | `ADMIN` |
+| `template:manage` | Creating, editing and deleting application templates | `ADMIN` |
+| `deployment:manage` | Creating, editing and deleting batch deployments | `ADMIN` |
+| `storage:list` | Listing every data storage | `ADMIN` |
+| `dataproduct:list` | Listing every data product | `ADMIN` |
+| `virtualdirectory:list` | Listing every virtual data directory | `ADMIN` |
+| `resource:manage_any` | Acting as the owner of any cluster config, data storage, data product or virtual data directory. SSH credentials are not included: they stay visible to their owner only | `ADMIN` |
+| `process:list` | Listing every process | `ADMIN` |
+| `process:update` | Editing any process directly | `ADMIN` |
+| `process:delete` | Deleting any process | `ADMIN` |
+| `process:manage_any` | Reading, launching and editing the tasks, statuses and workflows of any process | `ADMIN` |
+
+A name ending in `_any` is an override that reaches records the caller does not own. A caller can always act on their own records, and on records shared with them, without any permission. Granting only one of these permissions grants exactly that: a role holding `process:update` can edit a process, but still needs access to the cluster config the process names.
+
+Where the API reference says an endpoint is "admin only", read it as "needs the permission listed here, which `ADMIN` holds by default".
+
+`SUPER_ADMIN` holds every permission by definition and is never looked up in the table, so no change to `role_permissions` can lock the last administrator out. To let another role read the audit log, for example:
+
+```sql
+INSERT INTO role_permissions (role, permission) VALUES ('USER', 'audit:read');
+```
+
+Grants are cached for a minute, so a change made directly in the database reaches every request within that time.
 
 ### Ownership
 
@@ -280,8 +377,8 @@ Owners grant other users or groups `READ` or `WRITE` on their records, such as c
 | Status | Meaning |
 |---|---|
 | `401 Unauthorized` | No token, or a token that is invalid, expired, or an old root token from before a restart. A service account token also gets `401` once it has been regenerated, or when its account is disabled. |
-| `403 Forbidden` | Authenticated, but not allowed: missing role, not the owner, or no share. |
-| `404 Not Found` | The record doesn't exist. Also returned when the caller has no user record and tries to create something they would own. |
+| `403 Forbidden` | Authenticated, but not allowed: missing role, not the owner, or no share. Also returned for everything but `GET /api/v1/users/me` while the caller's account is suspended or inactive. |
+| `404 Not Found` | The record doesn't exist. Also returned when a caller who isn't a CILogon user, and has no user record, tries to create something they would own. |
 | `502 Bad Gateway` | CILogon could not be reached to validate the token. |
 
 ---
