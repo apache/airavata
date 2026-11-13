@@ -1273,7 +1273,7 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `defaultBatchJobConfig.cpusPerGpu` | string \| null | optional |
 | `defaultBatchJobConfig.gpusPerNode` | integer \| null | optional |
 | `defaultBatchJobConfig.constraints` | string \| null | optional |
-| `defaultBatchJobConfig.partition` | string \| null | optional; given to a run that names no partition |
+| `defaultBatchJobConfig.partition` | string \| null | optional |
 | `defaultBatchJobConfig.qos` | string \| null | optional |
 
 ```json
@@ -1862,8 +1862,7 @@ There is no `userId`: ownership comes from the token.
 
 The resource request is carried here rather than copied from the deployment's
 `defaultBatchJobConfig`, which is what lets a caller ask for different resources for a
-particular run. Only `partition` is taken from the deployment's default, when the run
-names none. Each run owns its own `batchJobConfig` row, distinct from the
+particular run. Each run owns its own `batchJobConfig` row, distinct from the
 deployment's, and deleting the process deletes it.
 
 `baseWorkDir` is carried here for the same reason, and used the same way: the run works

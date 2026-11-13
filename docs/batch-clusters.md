@@ -213,4 +213,4 @@ Deployments refer to a partition by **name**, not by id. Deleting or renaming a 
 
 ## How runs use this
 
-When a run is launched, Airavata logs in to the cluster's head node under the run's **cluster config**. It creates the work directory under the config's work root, stages the run's data into it, writes the batch script and submits it with `sbatch` to the run's partition. A run that names none is given its deployment's default partition when it is saved, and if that names none either, Slurm uses the cluster's default. The `#SBATCH` header is built from the run's resource request, including its allocation. See [application.md](application.md) for how deployments and runs are put together.
+When a run is launched, Airavata logs in to the cluster's head node under the run's **cluster config**. It creates the work directory under the config's work root, stages the run's data into it, writes the batch script and submits it with `sbatch` to the run's partition. The `#SBATCH` header is built from the run's resource request, including its allocation. See [application.md](application.md) for how deployments and runs are put together.

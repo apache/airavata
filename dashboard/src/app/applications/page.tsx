@@ -570,6 +570,7 @@ function DeploymentEditor({
             <BatchJobConfigFields
               value={config}
               onChange={setConfig}
+              partitions={clusters.find((c) => c.slurmClusterId === clusterId)?.partitions.map((p) => p.name)}
               discover={{
                 configId: discoverWith,
                 hint: !clusterId

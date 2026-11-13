@@ -20,6 +20,7 @@ import {
   type InputType,
   type Process,
   type SCPDataStorage,
+  type SlurmCluster,
   type SlurmClusterConfig,
   type TemplateInput,
   type TemplateOutput,
@@ -61,6 +62,9 @@ export default function NewProcessPage() {
     ]);
     return [...mine, ...shared];
   });
+
+  const clusters = useResource(() => api.get<SlurmCluster[]>("/api/v1/slurm-clusters"));
+  const cluster = (d?: BatchDeployment) => clusters.data?.find((c) => c.slurmClusterId === d?.slurmClusterId);
 
   const [deploymentId, setDeploymentId] = useState("");
   const [configId, setConfigId] = useState("");
@@ -210,7 +214,7 @@ export default function NewProcessPage() {
               {deployments.data?.map((d) => (
                 <option key={d.deploymentId} value={d.deploymentId}>
                   {names.appName(d.deploymentId) ?? d.deploymentId}
-                  {d.defaultBatchJobConfig?.partition ? ` (${d.defaultBatchJobConfig.partition})` : ""}
+                  {cluster(d)?.clusterName ? ` — ${cluster(d)?.clusterName}` : ""}
                 </option>
               ))}
             </select>
@@ -265,6 +269,7 @@ export default function NewProcessPage() {
             <BatchJobConfigFields
               value={jobConfig}
               onChange={setJobConfig}
+              partitions={cluster(deployment)?.partitions.map((p) => p.name)}
               discover={{
                 configId: configId || null,
                 hint: "Choose a cluster config above to discover the allocations it may charge.",

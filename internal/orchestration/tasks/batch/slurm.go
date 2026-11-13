@@ -120,7 +120,11 @@ func buildSlurmScript(
 
 	jobConfig := batchProcess.BatchJobConfig
 	if jobConfig == nil {
-		return "", fmt.Errorf("process %s names no batch job config", process.ID)
+		jobConfig = deployment.DefaultBatchJobConfig
+	}
+	if jobConfig == nil {
+		return "", fmt.Errorf("process %s names no batch job config and deployment %s declares no default",
+			process.ID, deployment.ID)
 	}
 
 	workDir, err := workDirFor(batchProcess, clusterConfig, process.ID)

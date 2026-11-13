@@ -351,14 +351,14 @@ func correctedPlan(ctx context.Context, d *tk.Deps, st statusOut, walltime int64
 	if err != nil {
 		return "", "", err
 	}
-	job := estimate.FromResponse(bp.BatchJobConfig)
 	note := ""
 	if cluster, err := d.Cluster(ctx, uuidStr(dep.SlurmClusterId)); err == nil {
-		if p := tk.Partition(cluster, tk.Str(job.Partition)); p != nil && p.MaxRunTime != nil && *p.MaxRunTime > 0 && walltime > int64(*p.MaxRunTime) {
+		if p := tk.Partition(cluster, tk.Str(estimate.FromResponse(bp.BatchJobConfig).Partition)); p != nil && p.MaxRunTime != nil && *p.MaxRunTime > 0 && walltime > int64(*p.MaxRunTime) {
 			walltime = int64(*p.MaxRunTime)
-			note = fmt.Sprintf("Capped at the partition's max run time of %d minutes; if that is not enough the job needs a partition with a longer limit, or checkpointing.", walltime)
+			note = fmt.Sprintf("Capped at the partition's max run time of %d minutes; if that is not enough the job needs a deployment on a partition with a longer limit, or checkpointing.", walltime)
 		}
 	}
+	job := estimate.FromResponse(bp.BatchJobConfig)
 	job.WallTimeMinutes = walltime
 	plan, err := buildPlan(ctx, d, dep, cfg, planRunIn{Resources: job, BaseWorkDir: tk.Str(bp.BaseWorkDir), reuse: bp})
 	if err != nil {

@@ -73,7 +73,7 @@ type PlannedValue struct {
 
 type planRunIn struct {
 	TemplateID      string            `json:"application_id,omitempty" jsonschema:"application (template) id from list_applications"`
-	DeploymentID    string            `json:"deployment_id,omitempty" jsonschema:"a specific deployment from get_application; picks the cluster and default partition"`
+	DeploymentID    string            `json:"deployment_id,omitempty" jsonschema:"a specific deployment from get_application; picks the cluster and partition"`
 	ClusterID       string            `json:"cluster_id,omitempty" jsonschema:"prefer this application's deployment on this cluster"`
 	ClusterConfigID string            `json:"cluster_config_id,omitempty" jsonschema:"login config from list_cluster_configs; inferred when only one fits"`
 	Inputs          map[string]string `json:"inputs,omitempty" jsonschema:"input name -> value. FILE inputs take a data product id from list_data_products"`

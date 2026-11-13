@@ -4095,8 +4095,7 @@ components:
       description: |
         The `batchProcess` section of a process request. The resource request is
         carried here rather than copied from the deployment's default, which is what
-        lets a caller ask for different resources for a particular run. Only
-        `partition` is taken from the deployment's default, when the run names none.
+        lets a caller ask for different resources for a particular run.
       properties:
         deploymentId: { type: string, format: uuid }
         jobId:

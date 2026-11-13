@@ -308,8 +308,8 @@ type BatchDeploymentRequest struct {
 	SlurmClusterID  *string `json:"slurmClusterId"`
 	SlurmRunSection string  `json:"slurmRunSection"`
 
-	// The resource request a run of this deployment starts from. A run
-	// carries its own copy and may depart from it, so it is a default rather than
+	// The resource request and partition a run of this deployment starts from. A run
+	// carries its own copy and may depart from both, so these are defaults rather than
 	// what any particular job is submitted with.
 	DefaultBatchJobConfig *BatchJobConfigRequest `json:"defaultBatchJobConfig"`
 }

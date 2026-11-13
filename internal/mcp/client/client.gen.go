@@ -716,8 +716,7 @@ type BatchJobStatusType string
 
 // BatchProcessRequest The `batchProcess` section of a process request. The resource request is
 // carried here rather than copied from the deployment's default, which is what
-// lets a caller ask for different resources for a particular run. Only
-// `partition` is taken from the deployment's default, when the run names none.
+// lets a caller ask for different resources for a particular run.
 type BatchProcessRequest struct {
 	// BaseWorkDir The parent directory on the cluster this run works under; it gets a
 	// subdirectory of its own beneath it, named for the process id, which is

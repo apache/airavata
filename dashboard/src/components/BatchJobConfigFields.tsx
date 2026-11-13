@@ -64,10 +64,12 @@ export function BatchJobConfigFields({
   value,
   onChange,
   discover,
+  partitions,
 }: {
   value: BatchJobConfigDraft;
   onChange: (v: BatchJobConfigDraft) => void;
   discover?: AllocationDiscovery;
+  partitions?: string[];
 }) {
   return (
     <div className="form-grid">
@@ -84,10 +86,12 @@ export function BatchJobConfigFields({
             type={NUMERIC.has(f.key) ? "number" : "text"}
             value={value[f.key]}
             placeholder={f.placeholder}
+            list={f.key === "partition" ? "job-partitions" : undefined}
             onChange={(e) => onChange({ ...value, [f.key]: e.target.value })}
           />
         </Field>
       ))}
+      <datalist id="job-partitions">{partitions?.map((p) => <option key={p} value={p} />)}</datalist>
     </div>
   );
 }
