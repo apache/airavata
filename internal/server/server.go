@@ -62,14 +62,16 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	applicationctl.NewTemplateController(svcs.Template).Register(mux)
 	applicationctl.NewBatchDeploymentController(svcs.BatchDeployment).Register(mux)
 	datactl.NewSCPDataStorageController(svcs.SCPDataStorage).Register(mux)
+	datactl.NewS3DataStorageController(svcs.S3DataStorage).Register(mux)
 	datactl.NewDataProductController(svcs.DataProduct).Register(mux)
 	datactl.NewDataTransferController(svcs.DataTransfer).Register(mux)
 	datactl.NewVirtualDataDirectoryController(svcs.VirtualDataDirectory).Register(mux)
 	datactl.NewVirtualDataFileController(svcs.VirtualDataFile).Register(mux)
-	// One sharing controller per shareable record, all four over the same service type
+	// One sharing controller per shareable record, all five over the same service type
 	// and the same table. Adding a shareable record adds a line here, not a vertical's
 	// worth of sharing code.
 	sharingctl.New(svcs.SCPDataStorageSharing, "/api/v1/scp-data-storages", "dataStorageId").Register(mux)
+	sharingctl.New(svcs.S3DataStorageSharing, "/api/v1/s3-data-storages", "dataStorageId").Register(mux)
 	sharingctl.New(svcs.DataProductSharing, "/api/v1/data-products", "dataProductId").Register(mux)
 	sharingctl.New(svcs.VirtualDataDirectorySharing, "/api/v1/virtual-data-directories", "virtualDataDirectoryId").Register(mux)
 	sharingctl.New(svcs.SlurmClusterConfigSharing, "/api/v1/slurm-cluster-configs", "slurmClusterConfigId").Register(mux)

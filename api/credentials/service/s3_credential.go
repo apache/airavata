@@ -24,6 +24,8 @@ import (
 	"context"
 	"strings"
 
+	"gorm.io/gorm"
+
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 	"github.com/apache/airavata/internal/ptr"
@@ -41,6 +43,50 @@ import (
 // imported here.
 type S3CredentialReferrer interface {
 	CountByS3CredentialID(ctx context.Context, credentialID string) (int64, error)
+}
+
+// S3CredentialAccess answers "may this caller present this S3 credential?" for services
+// outside the credentials package, as KeyAccess does for SSH credentials: its owner may,
+// nobody else.
+type S3CredentialAccess struct {
+	creds *repository.S3CredentialRepository
+}
+
+// NewS3CredentialAccess returns a checker over the S3 credential table.
+func NewS3CredentialAccess(creds *repository.S3CredentialRepository) *S3CredentialAccess {
+	return &S3CredentialAccess{creds: creds}
+}
+
+// WithTx returns a checker bound to tx.
+func (a *S3CredentialAccess) WithTx(tx *gorm.DB) *S3CredentialAccess {
+	return &S3CredentialAccess{creds: a.creds.WithTx(tx)}
+}
+
+// Find loads a credential without asking who owns it, for a record re-presenting the
+// credential it already holds. See KeyAccess.Find.
+func (a *S3CredentialAccess) Find(ctx context.Context, id string) (*model.S3Credential, error) {
+	cred, err := a.creds.FindByID(ctx, id)
+	if err != nil {
+		return nil, notFoundAs(err, "S3 credential not found: %s", id)
+	}
+	return cred, nil
+}
+
+// RequireOwned loads a credential the caller may assign: 404 when there is no such
+// credential, 403 when it belongs to somebody else.
+func (a *S3CredentialAccess) RequireOwned(ctx context.Context, id string) (*model.S3Credential, error) {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	cred, err := a.Find(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if !cred.OwnedBy(principal.Name) {
+		return nil, httpx.Forbidden("Access denied: S3 credential %s belongs to another user", id)
+	}
+	return cred, nil
 }
 
 // S3CredentialService manages registered S3 access keys.

@@ -4,7 +4,7 @@ Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via
 
 This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.\n\nSharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [S3 credentials](#s3-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but credentials, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [S3 credentials](#s3-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products), [SCP data storages](#scp-data-storages) and [S3 data storages](#s3-data-storages) are the exception on both counts — they are reached through ownership (and, for all but credentials, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
 ## Error responses
 
@@ -516,8 +516,9 @@ Takes the same body as create. The access key ID, secret and session token are t
 | `401 Unauthorized` | no token — every route here needs one, reads included |
 | `403 Forbidden` | the credential belongs to another user |
 | `404 Not Found` | no such credential, or the caller has no `users` row |
+| `409 Conflict` | on delete, an [S3 data storage](#s3-data-storages) still presents the credential |
 
-`DELETE` returns `204 No Content`. Nothing presents an S3 credential yet; once the S3 data storages that use one exist, deleting a credential still in use will be `409 Conflict`.
+`DELETE` returns `204 No Content`.
 
 ## Slurm Clusters
 
@@ -1489,6 +1490,100 @@ curl -s -X POST localhost:9095/api/v1/scp-data-storages/"$STORAGE_ID"/shares \
   -H "Content-Type: application/json" \
   -d '{ "principalType": "GROUP", "principalId": "'"$GROUP_ID"'", "permission": "READ" }'
 ```
+
+## S3 Data Storages
+
+An S3 data storage is a bucket on an S3-compatible object store — AWS S3, MinIO, Ceph and the like. It names where the bucket is (endpoint, region, bucket name and addressing style) and the [S3 credential](#s3-credentials) presented for it, and belongs to whoever registered it.
+
+It follows the [SCP data storage](#scp-data-storages) rules: the same standings, the same `/me` and `/shared-with-me` listings, the same admin-only unfiltered listing, and the same sharing sub-resource. Putting a credential on a storage requires owning it, while a `WRITE` grantee may edit a storage and keep the credential already on it — the rule [SSH credentials](#ssh-credentials) follow on SCP storages.
+
+The credential stays on the server: no response carries its secret, and a cluster is never handed it. Registering a storage records where a bucket is and who may reach it; [data products](#data-products) cannot live on one yet, since a product's `dataStorageType` is still `SCP` only.
+
+```
+GET    /api/v1/s3-data-storages                                   (admin)
+GET    /api/v1/s3-data-storages/me
+GET    /api/v1/s3-data-storages/shared-with-me
+POST   /api/v1/s3-data-storages
+GET    /api/v1/s3-data-storages/{dataStorageId}                   (READ)
+PUT    /api/v1/s3-data-storages/{dataStorageId}                   (WRITE)
+DELETE /api/v1/s3-data-storages/{dataStorageId}                   (owner)
+
+GET    /api/v1/s3-data-storages/{dataStorageId}/shares            (owner)
+POST   /api/v1/s3-data-storages/{dataStorageId}/shares            (owner)
+PUT    /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (owner)
+DELETE /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (owner)
+```
+
+### Create S3 Data Storage
+
+```
+POST /api/v1/s3-data-storages
+```
+
+Requires an authenticated principal with a `users` row. The owner is taken from the token and is not transferable afterwards. Uses `$S3_CREDENTIAL_ID` from [Create S3 Credential](#create-s3-credential).
+
+```bash
+S3_STORAGE_ID=$(curl -s -X POST localhost:9095/api/v1/s3-data-storages \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "dataName": "research-results",
+    "endpointUrl": "https://minio.example.edu:9000",
+    "region": "us-east-1",
+    "bucketName": "research-results",
+    "pathStyle": true,
+    "s3CredentialId": "'"$S3_CREDENTIAL_ID"'"
+  }' | jq -r '.dataId')
+```
+
+**Request body**
+
+| Field | Type | Notes |
+|---|---|---|
+| `dataName` | string | required, cannot be blank |
+| `endpointUrl` | string \| null | optional; scheme, host and optional port only (`http://` or `https://`). Omitted or blank means AWS S3. A trailing `/` is dropped |
+| `region` | string \| null | optional, defaults to `us-east-1`; letters, digits, `-` and `_` |
+| `bucketName` | string | required; 3-63 lower-case letters, digits, `.` and `-`, starting and ending with a letter or digit, no `..` |
+| `pathStyle` | boolean \| null | optional, defaults to `false`; `true` addresses the bucket as `endpoint/bucket`, which most MinIO and Ceph setups need |
+| `s3CredentialId` | string | required, must reference an existing [S3 credential](#s3-credentials) **the caller owns** — assigning someone else's is `403` |
+
+The endpoint URL may not carry credentials (`https://key:secret@…`), a path, a query or a fragment: credentials belong in an S3 credential, where they are never read back.
+
+**Response — `201 Created`**
+
+The credential is inlined as its safe summary — the secret access key and session token are never returned.
+
+```json
+{
+  "dataId": "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a6b7c8d",
+  "dataName": "research-results",
+  "ownerId": "cilogon:12345",
+  "endpointUrl": "https://minio.example.edu:9000",
+  "region": "us-east-1",
+  "bucketName": "research-results",
+  "pathStyle": true,
+  "s3CredentialId": "3f2c9a1e-7b4d-4e8a-9c1f-2d3e4f5a6b7c",
+  "s3Credential": {
+    "s3CredentialId": "3f2c9a1e-7b4d-4e8a-9c1f-2d3e4f5a6b7c",
+    "name": "minio-research",
+    "accessKeyId": "AKIAIOSFODNN7EXAMPLE",
+    "ownerId": "cilogon:12345"
+  },
+  "permission": "WRITE"
+}
+```
+
+**Errors**
+
+| Status | Cause |
+|---|---|
+| `400 Bad Request` | a field fails the rules above |
+| `401 Unauthorized` | no token |
+| `403 Forbidden` | the credential belongs to another user, or the caller's standing on the storage is too low |
+| `404 Not Found` | no such storage or credential, or the caller has no `users` row |
+| `409 Conflict` | on delete, data products are still registered on the storage |
+
+`DELETE` returns `204 No Content`. Deleting a storage takes its shares with it. Sharing works exactly as for [SCP data storages](#share-an-scp-data-storage), under `/api/v1/s3-data-storages/{dataStorageId}/shares`.
 
 ## Data Products
 

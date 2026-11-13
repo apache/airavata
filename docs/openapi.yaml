@@ -98,6 +98,8 @@ tags:
     description: A template bound to a cluster, with the resource request a run starts from.
   - name: SCP Data Storages
     description: Hosts data is staged to and from over SCP.
+  - name: S3 Data Storages
+    description: Buckets on S3-compatible object stores that data can live in.
   - name: Data Products
     description: Registered datasets on a storage.
   - name: Sharing
@@ -928,13 +930,14 @@ paths:
     delete:
       tags: [S3 Credentials]
       summary: Delete an S3 credential
-      description: Owner only.
+      description: Owner only. Refused with 409 while an S3 data storage presents it.
       operationId: deleteS3Credential
       responses:
         "204": { $ref: "#/components/responses/NoContent" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
@@ -1828,6 +1831,149 @@ paths:
       summary: Delete an SCP data storage
       description: Owner or admin.
       operationId: deleteSCPDataStorage
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/s3-data-storages:
+    get:
+      tags: [S3 Data Storages]
+      summary: List all S3 data storages
+      description: Requires `ADMIN` or `SUPER_ADMIN` authority.
+      operationId: listS3DataStorages
+      responses:
+        "200":
+          description: Every storage.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/S3DataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [S3 Data Storages]
+      summary: Register an S3 data storage
+      description: |
+        The owner comes from the token. The credential must be one the caller owns.
+        An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+        and an omitted `pathStyle` means virtual-hosted addressing.
+      operationId: createS3DataStorage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/S3DataStorageRequest" }
+      responses:
+        "201":
+          description: The registered storage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/S3DataStorageResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/s3-data-storages/me:
+    get:
+      tags: [S3 Data Storages]
+      summary: List the caller's S3 data storages
+      operationId: listMyS3DataStorages
+      responses:
+        "200":
+          description: The storages the caller owns.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/S3DataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/s3-data-storages/shared-with-me:
+    get:
+      tags: [S3 Data Storages]
+      summary: List S3 data storages shared with the caller
+      description: |
+        Each entry carries `permission`, the caller's effective standing. `WRITE`
+        implies `READ`, and where several shares reach the same caller the strongest
+        applies.
+      operationId: listS3DataStoragesSharedWithMe
+      responses:
+        "200":
+          description: The storages shared with the caller.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/S3DataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/s3-data-storages/{dataStorageId}:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+    get:
+      tags: [S3 Data Storages]
+      summary: Read an S3 data storage
+      description: |
+        Requires a `READ` standing. The credential is inlined as its safe summary;
+        its secret is never returned.
+      operationId: getS3DataStorage
+      responses:
+        "200":
+          description: The storage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/S3DataStorageResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [S3 Data Storages]
+      summary: Update an S3 data storage
+      description: |
+        Requires a `WRITE` standing. Keeping the credential already on the storage
+        needs no standing on it; assigning a different one requires owning it.
+      operationId: updateS3DataStorage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/S3DataStorageRequest" }
+      responses:
+        "200":
+          description: The updated storage.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/S3DataStorageResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [S3 Data Storages]
+      summary: Delete an S3 data storage
+      description: Owner or admin. Its shares are deleted with it.
+      operationId: deleteS3DataStorage
       responses:
         "204": { $ref: "#/components/responses/NoContent" }
         "401": { $ref: "#/components/responses/Unauthorized" }
@@ -2838,6 +2984,90 @@ paths:
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
+  /api/v1/s3-data-storages/{dataStorageId}/shares:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+    get:
+      tags: [Sharing]
+      summary: List who has access to this S3 data storage
+      description: >-
+        Both principal kinds together. Restricted to the owner and platform admins:
+        the list names who holds the record, which is more than a grantee needs to
+        know.
+      responses:
+        "200":
+          description: The grants made on this record.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShareResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [Sharing]
+      summary: Grant a principal access to this S3 data storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareRequest" }
+      responses:
+        "201":
+          description: The grant that was created.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId}:
+    parameters:
+      - $ref: "#/components/parameters/DataStorageId"
+      - $ref: "#/components/parameters/SharingId"
+    put:
+      tags: [Sharing]
+      summary: Change what a grant confers
+      description: >-
+        Only the permission is editable. The subject is fixed when the grant is
+        created, because moving it to a different principal would be a revoke and a
+        grant wearing one id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareUpdate" }
+      responses:
+        "200":
+          description: The updated grant.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [Sharing]
+      summary: Revoke a grant
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
   /api/v1/data-products/{dataProductId}/shares:
     parameters:
       - $ref: "#/components/parameters/DataProductId"
@@ -3297,7 +3527,7 @@ components:
         resourceSharingId: { type: string }
         resourceType:
           type: string
-          enum: [DATA_PRODUCT, SCP_DATA_STORAGE, VIRTUAL_DATA_DIRECTORY, SLURM_CLUSTER_CONFIG]
+          enum: [DATA_PRODUCT, SCP_DATA_STORAGE, S3_DATA_STORAGE, VIRTUAL_DATA_DIRECTORY, SLURM_CLUSTER_CONFIG]
         resourceId: { type: string }
         principalType:
           type: string
@@ -4083,6 +4313,58 @@ components:
             it (`/shared-with-me`).
           enum: [READ, WRITE]
       required: [dataId]
+
+    S3DataStorageRequest:
+      type: object
+      description: |
+        The create/update payload for an S3 storage. There is no owner field.
+      properties:
+        dataName: { type: string }
+        endpointUrl:
+          type: [string, "null"]
+          description: |
+            Scheme, host and optional port only, such as
+            `https://minio.example.edu:9000`. Omitted or blank means AWS S3. No
+            credentials, path, query or fragment.
+          maxLength: 2048
+        region:
+          type: [string, "null"]
+          default: us-east-1
+          pattern: "^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$"
+        bucketName:
+          type: string
+          description: S3 bucket naming rules; no consecutive dots.
+          pattern: "^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$"
+        pathStyle:
+          type: [boolean, "null"]
+          default: false
+          description: Address the bucket as `endpoint/bucket`. Most MinIO and Ceph setups need it.
+        s3CredentialId:
+          type: string
+          format: uuid
+          description: Must be a credential the caller owns.
+      required: [dataName, bucketName, s3CredentialId]
+
+    S3DataStorageResponse:
+      type: object
+      properties:
+        dataId: { type: string, format: uuid }
+        dataName: { type: [string, "null"] }
+        ownerId: { type: [string, "null"] }
+        endpointUrl: { type: [string, "null"] }
+        region: { type: string }
+        bucketName: { type: string }
+        pathStyle: { type: boolean }
+        s3CredentialId: { type: [string, "null"], format: uuid }
+        s3Credential:
+          oneOf:
+            - { $ref: "#/components/schemas/S3CredentialResponse" }
+            - { type: "null" }
+        permission:
+          type: string
+          description: The caller's effective standing.
+          enum: [READ, WRITE]
+      required: [dataId, region, bucketName, pathStyle]
 
     DataProductRequest:
       type: object

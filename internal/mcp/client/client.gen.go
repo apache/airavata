@@ -330,6 +330,24 @@ func (e ProvisionStatus) Valid() bool {
 	}
 }
 
+// Defines values for S3DataStorageResponsePermission.
+const (
+	S3DataStorageResponsePermissionREAD  S3DataStorageResponsePermission = "READ"
+	S3DataStorageResponsePermissionWRITE S3DataStorageResponsePermission = "WRITE"
+)
+
+// Valid indicates whether the value is a known member of the S3DataStorageResponsePermission enum.
+func (e S3DataStorageResponsePermission) Valid() bool {
+	switch e {
+	case S3DataStorageResponsePermissionREAD:
+		return true
+	case S3DataStorageResponsePermissionWRITE:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for SCPDataStorageResponsePermission.
 const (
 	SCPDataStorageResponsePermissionREAD  SCPDataStorageResponsePermission = "READ"
@@ -426,6 +444,7 @@ func (e ShareResponsePrincipalType) Valid() bool {
 // Defines values for ShareResponseResourceType.
 const (
 	DATAPRODUCT          ShareResponseResourceType = "DATA_PRODUCT"
+	S3DATASTORAGE        ShareResponseResourceType = "S3_DATA_STORAGE"
 	SCPDATASTORAGE       ShareResponseResourceType = "SCP_DATA_STORAGE"
 	SLURMCLUSTERCONFIG   ShareResponseResourceType = "SLURM_CLUSTER_CONFIG"
 	VIRTUALDATADIRECTORY ShareResponseResourceType = "VIRTUAL_DATA_DIRECTORY"
@@ -435,6 +454,8 @@ const (
 func (e ShareResponseResourceType) Valid() bool {
 	switch e {
 	case DATAPRODUCT:
+		return true
+	case S3DATASTORAGE:
 		return true
 	case SCPDATASTORAGE:
 		return true
@@ -1127,6 +1148,44 @@ type S3CredentialResponse struct {
 	S3CredentialId openapi_types.UUID `json:"s3CredentialId"`
 }
 
+// S3DataStorageRequest The create/update payload for an S3 storage. There is no owner field.
+type S3DataStorageRequest struct {
+	// BucketName S3 bucket naming rules; no consecutive dots.
+	BucketName string `json:"bucketName"`
+	DataName   string `json:"dataName"`
+
+	// EndpointUrl Scheme, host and optional port only, such as
+	// `https://minio.example.edu:9000`. Omitted or blank means AWS S3. No
+	// credentials, path, query or fragment.
+	EndpointUrl *string `json:"endpointUrl,omitempty"`
+
+	// PathStyle Address the bucket as `endpoint/bucket`. Most MinIO and Ceph setups need it.
+	PathStyle *bool   `json:"pathStyle,omitempty"`
+	Region    *string `json:"region,omitempty"`
+
+	// S3CredentialId Must be a credential the caller owns.
+	S3CredentialId openapi_types.UUID `json:"s3CredentialId"`
+}
+
+// S3DataStorageResponse defines model for S3DataStorageResponse.
+type S3DataStorageResponse struct {
+	BucketName  string             `json:"bucketName"`
+	DataId      openapi_types.UUID `json:"dataId"`
+	DataName    *string            `json:"dataName,omitempty"`
+	EndpointUrl *string            `json:"endpointUrl,omitempty"`
+	OwnerId     *string            `json:"ownerId,omitempty"`
+	PathStyle   bool               `json:"pathStyle"`
+
+	// Permission The caller's effective standing.
+	Permission     *S3DataStorageResponsePermission `json:"permission,omitempty"`
+	Region         string                           `json:"region"`
+	S3Credential   *S3CredentialResponse            `json:"s3Credential,omitempty"`
+	S3CredentialId *openapi_types.UUID              `json:"s3CredentialId,omitempty"`
+}
+
+// S3DataStorageResponsePermission The caller's effective standing.
+type S3DataStorageResponsePermission string
+
 // SCPDataStorageRequest The create/update payload for a storage. There is no owner field.
 type SCPDataStorageRequest struct {
 	DataName  string `json:"dataName"`
@@ -1671,6 +1730,18 @@ type CreateS3CredentialJSONRequestBody = S3CredentialRequest
 
 // UpdateS3CredentialJSONRequestBody defines body for UpdateS3Credential for application/json ContentType.
 type UpdateS3CredentialJSONRequestBody = S3CredentialRequest
+
+// CreateS3DataStorageJSONRequestBody defines body for CreateS3DataStorage for application/json ContentType.
+type CreateS3DataStorageJSONRequestBody = S3DataStorageRequest
+
+// UpdateS3DataStorageJSONRequestBody defines body for UpdateS3DataStorage for application/json ContentType.
+type UpdateS3DataStorageJSONRequestBody = S3DataStorageRequest
+
+// PostApiV1S3DataStoragesDataStorageIdSharesJSONRequestBody defines body for PostApiV1S3DataStoragesDataStorageIdShares for application/json ContentType.
+type PostApiV1S3DataStoragesDataStorageIdSharesJSONRequestBody = ShareRequest
+
+// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdJSONRequestBody defines body for PutApiV1S3DataStoragesDataStorageIdSharesSharingId for application/json ContentType.
+type PutApiV1S3DataStoragesDataStorageIdSharesSharingIdJSONRequestBody = ShareUpdate
 
 // CreateSCPDataStorageJSONRequestBody defines body for CreateSCPDataStorage for application/json ContentType.
 type CreateSCPDataStorageJSONRequestBody = SCPDataStorageRequest
@@ -2513,7 +2584,7 @@ type ClientInterface interface {
 
 	// DeleteS3Credential Delete an S3 credential
 	//
-	// Owner only.
+	// Owner only. Refused with 409 while an S3 data storage presents it.
 	//
 	// Corresponds with DELETE /api/v1/s3-credentials/{s3CredentialId} (the `DeleteS3Credential` operationId).
 	DeleteS3Credential(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2546,6 +2617,128 @@ type ClientInterface interface {
 	//
 	// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
 	UpdateS3Credential(ctx context.Context, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListS3DataStorages List all S3 data storages
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	//
+	// Corresponds with GET /api/v1/s3-data-storages (the `ListS3DataStorages` operationId).
+	ListS3DataStorages(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateS3DataStorageWithBody Register an S3 data storage
+	//
+	// The owner comes from the token. The credential must be one the caller owns.
+	// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+	// and an omitted `pathStyle` means virtual-hosted addressing.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+	CreateS3DataStorageWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateS3DataStorage Register an S3 data storage
+	//
+	// The owner comes from the token. The credential must be one the caller owns.
+	// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+	// and an omitted `pathStyle` means virtual-hosted addressing.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+	CreateS3DataStorage(ctx context.Context, body CreateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListMyS3DataStorages List the caller's S3 data storages
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/me (the `ListMyS3DataStorages` operationId).
+	ListMyS3DataStorages(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListS3DataStoragesSharedWithMe List S3 data storages shared with the caller
+	//
+	// Each entry carries `permission`, the caller's effective standing. `WRITE`
+	// implies `READ`, and where several shares reach the same caller the strongest
+	// applies.
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/shared-with-me (the `ListS3DataStoragesSharedWithMe` operationId).
+	ListS3DataStoragesSharedWithMe(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteS3DataStorage Delete an S3 data storage
+	//
+	// Owner or admin. Its shares are deleted with it.
+	//
+	// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId} (the `DeleteS3DataStorage` operationId).
+	DeleteS3DataStorage(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetS3DataStorage Read an S3 data storage
+	//
+	// Requires a `READ` standing. The credential is inlined as its safe summary;
+	// its secret is never returned.
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId} (the `GetS3DataStorage` operationId).
+	GetS3DataStorage(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateS3DataStorageWithBody Update an S3 data storage
+	//
+	// Requires a `WRITE` standing. Keeping the credential already on the storage
+	// needs no standing on it; assigning a different one requires owning it.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+	UpdateS3DataStorageWithBody(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateS3DataStorage Update an S3 data storage
+	//
+	// Requires a `WRITE` standing. Keeping the credential already on the storage
+	// needs no standing on it; assigning a different one requires owning it.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+	UpdateS3DataStorage(ctx context.Context, dataStorageId DataStorageId, body UpdateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetApiV1S3DataStoragesDataStorageIdShares List who has access to this S3 data storage
+	//
+	// Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId}/shares (the `GetApiV1S3DataStoragesDataStorageIdShares` operationId).
+	GetApiV1S3DataStoragesDataStorageIdShares(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiV1S3DataStoragesDataStorageIdSharesWithBody Grant a principal access to this S3 data storage
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+	PostApiV1S3DataStoragesDataStorageIdSharesWithBody(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PostApiV1S3DataStoragesDataStorageIdShares Grant a principal access to this S3 data storage
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+	PostApiV1S3DataStoragesDataStorageIdShares(ctx context.Context, dataStorageId DataStorageId, body PostApiV1S3DataStoragesDataStorageIdSharesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId Revoke a grant
+	//
+	// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+	DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBody Change what a grant confers
+	//
+	// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+	PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBody(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// PutApiV1S3DataStoragesDataStorageIdSharesSharingId Change what a grant confers
+	//
+	// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+	PutApiV1S3DataStoragesDataStorageIdSharesSharingId(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1S3DataStoragesDataStorageIdSharesSharingIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListSCPDataStorages List all SCP data storages
 	//
@@ -4935,7 +5128,7 @@ func (c *Client) CreateS3Credential(ctx context.Context, body CreateS3Credential
 
 // DeleteS3Credential Delete an S3 credential
 //
-// Owner only.
+// Owner only. Refused with 409 while an S3 data storage presents it.
 //
 // Corresponds with DELETE /api/v1/s3-credentials/{s3CredentialId} (the `DeleteS3Credential` operationId).
 func (c *Client) DeleteS3Credential(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -4999,6 +5192,278 @@ func (c *Client) UpdateS3CredentialWithBody(ctx context.Context, s3CredentialId 
 // Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
 func (c *Client) UpdateS3Credential(ctx context.Context, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateS3CredentialRequest(c.Server, s3CredentialId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListS3DataStorages List all S3 data storages
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority.
+//
+// Corresponds with GET /api/v1/s3-data-storages (the `ListS3DataStorages` operationId).
+func (c *Client) ListS3DataStorages(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListS3DataStoragesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateS3DataStorageWithBody Register an S3 data storage
+//
+// The owner comes from the token. The credential must be one the caller owns.
+// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+// and an omitted `pathStyle` means virtual-hosted addressing.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+func (c *Client) CreateS3DataStorageWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateS3DataStorageRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateS3DataStorage Register an S3 data storage
+//
+// The owner comes from the token. The credential must be one the caller owns.
+// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+// and an omitted `pathStyle` means virtual-hosted addressing.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+func (c *Client) CreateS3DataStorage(ctx context.Context, body CreateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateS3DataStorageRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListMyS3DataStorages List the caller's S3 data storages
+//
+// Corresponds with GET /api/v1/s3-data-storages/me (the `ListMyS3DataStorages` operationId).
+func (c *Client) ListMyS3DataStorages(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMyS3DataStoragesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListS3DataStoragesSharedWithMe List S3 data storages shared with the caller
+//
+// Each entry carries `permission`, the caller's effective standing. `WRITE`
+// implies `READ`, and where several shares reach the same caller the strongest
+// applies.
+//
+// Corresponds with GET /api/v1/s3-data-storages/shared-with-me (the `ListS3DataStoragesSharedWithMe` operationId).
+func (c *Client) ListS3DataStoragesSharedWithMe(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListS3DataStoragesSharedWithMeRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteS3DataStorage Delete an S3 data storage
+//
+// Owner or admin. Its shares are deleted with it.
+//
+// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId} (the `DeleteS3DataStorage` operationId).
+func (c *Client) DeleteS3DataStorage(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteS3DataStorageRequest(c.Server, dataStorageId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetS3DataStorage Read an S3 data storage
+//
+// Requires a `READ` standing. The credential is inlined as its safe summary;
+// its secret is never returned.
+//
+// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId} (the `GetS3DataStorage` operationId).
+func (c *Client) GetS3DataStorage(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetS3DataStorageRequest(c.Server, dataStorageId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateS3DataStorageWithBody Update an S3 data storage
+//
+// Requires a `WRITE` standing. Keeping the credential already on the storage
+// needs no standing on it; assigning a different one requires owning it.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+func (c *Client) UpdateS3DataStorageWithBody(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateS3DataStorageRequestWithBody(c.Server, dataStorageId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateS3DataStorage Update an S3 data storage
+//
+// Requires a `WRITE` standing. Keeping the credential already on the storage
+// needs no standing on it; assigning a different one requires owning it.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+func (c *Client) UpdateS3DataStorage(ctx context.Context, dataStorageId DataStorageId, body UpdateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateS3DataStorageRequest(c.Server, dataStorageId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetApiV1S3DataStoragesDataStorageIdShares List who has access to this S3 data storage
+//
+// Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
+//
+// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId}/shares (the `GetApiV1S3DataStoragesDataStorageIdShares` operationId).
+func (c *Client) GetApiV1S3DataStoragesDataStorageIdShares(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetApiV1S3DataStoragesDataStorageIdSharesRequest(c.Server, dataStorageId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiV1S3DataStoragesDataStorageIdSharesWithBody Grant a principal access to this S3 data storage
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+func (c *Client) PostApiV1S3DataStoragesDataStorageIdSharesWithBody(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiV1S3DataStoragesDataStorageIdSharesRequestWithBody(c.Server, dataStorageId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PostApiV1S3DataStoragesDataStorageIdShares Grant a principal access to this S3 data storage
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+func (c *Client) PostApiV1S3DataStoragesDataStorageIdShares(ctx context.Context, dataStorageId DataStorageId, body PostApiV1S3DataStoragesDataStorageIdSharesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostApiV1S3DataStoragesDataStorageIdSharesRequest(c.Server, dataStorageId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId Revoke a grant
+//
+// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+func (c *Client) DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdRequest(c.Server, dataStorageId, sharingId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBody Change what a grant confers
+//
+// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+func (c *Client) PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBody(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiV1S3DataStoragesDataStorageIdSharesSharingIdRequestWithBody(c.Server, dataStorageId, sharingId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// PutApiV1S3DataStoragesDataStorageIdSharesSharingId Change what a grant confers
+//
+// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+func (c *Client) PutApiV1S3DataStoragesDataStorageIdSharesSharingId(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1S3DataStoragesDataStorageIdSharesSharingIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutApiV1S3DataStoragesDataStorageIdSharesSharingIdRequest(c.Server, dataStorageId, sharingId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9515,6 +9980,418 @@ func NewUpdateS3CredentialRequestWithBody(server string, s3CredentialId S3Creden
 	return req, nil
 }
 
+// NewListS3DataStoragesRequest constructs an http.Request for the ListS3DataStorages method
+func NewListS3DataStoragesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateS3DataStorageRequest calls the generic CreateS3DataStorage builder with application/json body
+func NewCreateS3DataStorageRequest(server string, body CreateS3DataStorageJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateS3DataStorageRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateS3DataStorageRequestWithBody constructs an http.Request for the CreateS3DataStorage method, with any body, and a specified content type
+func NewCreateS3DataStorageRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewListMyS3DataStoragesRequest constructs an http.Request for the ListMyS3DataStorages method
+func NewListMyS3DataStoragesRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/me")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListS3DataStoragesSharedWithMeRequest constructs an http.Request for the ListS3DataStoragesSharedWithMe method
+func NewListS3DataStoragesSharedWithMeRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/shared-with-me")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewDeleteS3DataStorageRequest constructs an http.Request for the DeleteS3DataStorage method
+func NewDeleteS3DataStorageRequest(server string, dataStorageId DataStorageId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataStorageId", dataStorageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetS3DataStorageRequest constructs an http.Request for the GetS3DataStorage method
+func NewGetS3DataStorageRequest(server string, dataStorageId DataStorageId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataStorageId", dataStorageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateS3DataStorageRequest calls the generic UpdateS3DataStorage builder with application/json body
+func NewUpdateS3DataStorageRequest(server string, dataStorageId DataStorageId, body UpdateS3DataStorageJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateS3DataStorageRequestWithBody(server, dataStorageId, "application/json", bodyReader)
+}
+
+// NewUpdateS3DataStorageRequestWithBody constructs an http.Request for the UpdateS3DataStorage method, with any body, and a specified content type
+func NewUpdateS3DataStorageRequestWithBody(server string, dataStorageId DataStorageId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataStorageId", dataStorageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetApiV1S3DataStoragesDataStorageIdSharesRequest constructs an http.Request for the GetApiV1S3DataStoragesDataStorageIdShares method
+func NewGetApiV1S3DataStoragesDataStorageIdSharesRequest(server string, dataStorageId DataStorageId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataStorageId", dataStorageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/%s/shares", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostApiV1S3DataStoragesDataStorageIdSharesRequest calls the generic PostApiV1S3DataStoragesDataStorageIdShares builder with application/json body
+func NewPostApiV1S3DataStoragesDataStorageIdSharesRequest(server string, dataStorageId DataStorageId, body PostApiV1S3DataStoragesDataStorageIdSharesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostApiV1S3DataStoragesDataStorageIdSharesRequestWithBody(server, dataStorageId, "application/json", bodyReader)
+}
+
+// NewPostApiV1S3DataStoragesDataStorageIdSharesRequestWithBody constructs an http.Request for the PostApiV1S3DataStoragesDataStorageIdShares method, with any body, and a specified content type
+func NewPostApiV1S3DataStoragesDataStorageIdSharesRequestWithBody(server string, dataStorageId DataStorageId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataStorageId", dataStorageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/%s/shares", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdRequest constructs an http.Request for the DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId method
+func NewDeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdRequest(server string, dataStorageId DataStorageId, sharingId SharingId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataStorageId", dataStorageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "sharingId", sharingId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/%s/shares/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPutApiV1S3DataStoragesDataStorageIdSharesSharingIdRequest calls the generic PutApiV1S3DataStoragesDataStorageIdSharesSharingId builder with application/json body
+func NewPutApiV1S3DataStoragesDataStorageIdSharesSharingIdRequest(server string, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1S3DataStoragesDataStorageIdSharesSharingIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutApiV1S3DataStoragesDataStorageIdSharesSharingIdRequestWithBody(server, dataStorageId, sharingId, "application/json", bodyReader)
+}
+
+// NewPutApiV1S3DataStoragesDataStorageIdSharesSharingIdRequestWithBody constructs an http.Request for the PutApiV1S3DataStoragesDataStorageIdSharesSharingId method, with any body, and a specified content type
+func NewPutApiV1S3DataStoragesDataStorageIdSharesSharingIdRequestWithBody(server string, dataStorageId DataStorageId, sharingId SharingId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "dataStorageId", dataStorageId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "sharingId", sharingId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-data-storages/%s/shares/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewListSCPDataStoragesRequest constructs an http.Request for the ListSCPDataStorages method
 func NewListSCPDataStoragesRequest(server string) (*http.Request, error) {
 	var err error
@@ -12862,7 +13739,7 @@ type ClientWithResponsesInterface interface {
 
 	// DeleteS3CredentialWithResponse Delete an S3 credential
 	//
-	// Owner only.
+	// Owner only. Refused with 409 while an S3 data storage presents it.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -12899,6 +13776,142 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
 	UpdateS3CredentialWithResponse(ctx context.Context, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateS3CredentialResponse, error)
+
+	// ListS3DataStoragesWithResponse List all S3 data storages
+	//
+	// Requires `ADMIN` or `SUPER_ADMIN` authority.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/s3-data-storages (the `ListS3DataStorages` operationId).
+	ListS3DataStoragesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListS3DataStoragesResponse, error)
+
+	// CreateS3DataStorageWithBodyWithResponse Register an S3 data storage
+	//
+	// The owner comes from the token. The credential must be one the caller owns.
+	// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+	// and an omitted `pathStyle` means virtual-hosted addressing.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+	CreateS3DataStorageWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateS3DataStorageResponse, error)
+
+	// CreateS3DataStorageWithResponse Register an S3 data storage
+	//
+	// The owner comes from the token. The credential must be one the caller owns.
+	// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+	// and an omitted `pathStyle` means virtual-hosted addressing.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+	CreateS3DataStorageWithResponse(ctx context.Context, body CreateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateS3DataStorageResponse, error)
+
+	// ListMyS3DataStoragesWithResponse List the caller's S3 data storages
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/me (the `ListMyS3DataStorages` operationId).
+	ListMyS3DataStoragesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListMyS3DataStoragesResponse, error)
+
+	// ListS3DataStoragesSharedWithMeWithResponse List S3 data storages shared with the caller
+	//
+	// Each entry carries `permission`, the caller's effective standing. `WRITE`
+	// implies `READ`, and where several shares reach the same caller the strongest
+	// applies.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/shared-with-me (the `ListS3DataStoragesSharedWithMe` operationId).
+	ListS3DataStoragesSharedWithMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListS3DataStoragesSharedWithMeResponse, error)
+
+	// DeleteS3DataStorageWithResponse Delete an S3 data storage
+	//
+	// Owner or admin. Its shares are deleted with it.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId} (the `DeleteS3DataStorage` operationId).
+	DeleteS3DataStorageWithResponse(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*DeleteS3DataStorageResponse, error)
+
+	// GetS3DataStorageWithResponse Read an S3 data storage
+	//
+	// Requires a `READ` standing. The credential is inlined as its safe summary;
+	// its secret is never returned.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId} (the `GetS3DataStorage` operationId).
+	GetS3DataStorageWithResponse(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*GetS3DataStorageResponse, error)
+
+	// UpdateS3DataStorageWithBodyWithResponse Update an S3 data storage
+	//
+	// Requires a `WRITE` standing. Keeping the credential already on the storage
+	// needs no standing on it; assigning a different one requires owning it.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+	UpdateS3DataStorageWithBodyWithResponse(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateS3DataStorageResponse, error)
+
+	// UpdateS3DataStorageWithResponse Update an S3 data storage
+	//
+	// Requires a `WRITE` standing. Keeping the credential already on the storage
+	// needs no standing on it; assigning a different one requires owning it.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+	UpdateS3DataStorageWithResponse(ctx context.Context, dataStorageId DataStorageId, body UpdateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateS3DataStorageResponse, error)
+
+	// GetApiV1S3DataStoragesDataStorageIdSharesWithResponse List who has access to this S3 data storage
+	//
+	// Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId}/shares (the `GetApiV1S3DataStoragesDataStorageIdShares` operationId).
+	GetApiV1S3DataStoragesDataStorageIdSharesWithResponse(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*GetApiV1S3DataStoragesDataStorageIdSharesResponse, error)
+
+	// PostApiV1S3DataStoragesDataStorageIdSharesWithBodyWithResponse Grant a principal access to this S3 data storage
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+	PostApiV1S3DataStoragesDataStorageIdSharesWithBodyWithResponse(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiV1S3DataStoragesDataStorageIdSharesResponse, error)
+
+	// PostApiV1S3DataStoragesDataStorageIdSharesWithResponse Grant a principal access to this S3 data storage
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+	PostApiV1S3DataStoragesDataStorageIdSharesWithResponse(ctx context.Context, dataStorageId DataStorageId, body PostApiV1S3DataStoragesDataStorageIdSharesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiV1S3DataStoragesDataStorageIdSharesResponse, error)
+
+	// DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse Revoke a grant
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+	DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, reqEditors ...RequestEditorFn) (*DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error)
+
+	// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBodyWithResponse Change what a grant confers
+	//
+	// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+	PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBodyWithResponse(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error)
+
+	// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse Change what a grant confers
+	//
+	// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+	PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1S3DataStoragesDataStorageIdSharesSharingIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error)
 
 	// ListSCPDataStoragesWithResponse List all SCP data storages
 	//
@@ -19257,6 +20270,8 @@ type DeleteS3CredentialResponse struct {
 	JSON403 *Forbidden
 	// JSON404 the response for an HTTP 404 `application/json` response
 	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
 	// JSON500 the response for an HTTP 500 `application/json` response
 	JSON500 *InternalError
 	// JSON502 the response for an HTTP 502 `application/json` response
@@ -19278,6 +20293,11 @@ func (r DeleteS3CredentialResponse) GetJSON403() *Forbidden {
 // GetJSON404 returns the response for an HTTP 404 `application/json` response
 func (r DeleteS3CredentialResponse) GetJSON404() *NotFound {
 	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteS3CredentialResponse) GetJSON409() *Conflict {
+	return r.JSON409
 }
 
 // GetJSON500 returns the response for an HTTP 500 `application/json` response
@@ -19486,6 +20506,926 @@ func (r UpdateS3CredentialResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateS3CredentialResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListS3DataStoragesResponse401Headers the declared response headers of an HTTP 401 response for ListS3DataStorages
+type ListS3DataStoragesResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListS3DataStoragesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]S3DataStorageResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListS3DataStoragesResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListS3DataStoragesResponse) GetJSON200() *[]S3DataStorageResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListS3DataStoragesResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListS3DataStoragesResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListS3DataStoragesResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListS3DataStoragesResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListS3DataStoragesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListS3DataStoragesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListS3DataStoragesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListS3DataStoragesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// CreateS3DataStorageResponse401Headers the declared response headers of an HTTP 401 response for CreateS3DataStorage
+type CreateS3DataStorageResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type CreateS3DataStorageResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *S3DataStorageResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *CreateS3DataStorageResponse401Headers
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateS3DataStorageResponse) GetJSON201() *S3DataStorageResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateS3DataStorageResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateS3DataStorageResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateS3DataStorageResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r CreateS3DataStorageResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateS3DataStorageResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r CreateS3DataStorageResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateS3DataStorageResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateS3DataStorageResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateS3DataStorageResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateS3DataStorageResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListMyS3DataStoragesResponse401Headers the declared response headers of an HTTP 401 response for ListMyS3DataStorages
+type ListMyS3DataStoragesResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListMyS3DataStoragesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]S3DataStorageResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListMyS3DataStoragesResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListMyS3DataStoragesResponse) GetJSON200() *[]S3DataStorageResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListMyS3DataStoragesResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListMyS3DataStoragesResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListMyS3DataStoragesResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListMyS3DataStoragesResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListMyS3DataStoragesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMyS3DataStoragesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMyS3DataStoragesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListMyS3DataStoragesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListS3DataStoragesSharedWithMeResponse401Headers the declared response headers of an HTTP 401 response for ListS3DataStoragesSharedWithMe
+type ListS3DataStoragesSharedWithMeResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListS3DataStoragesSharedWithMeResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]S3DataStorageResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListS3DataStoragesSharedWithMeResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListS3DataStoragesSharedWithMeResponse) GetJSON200() *[]S3DataStorageResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListS3DataStoragesSharedWithMeResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListS3DataStoragesSharedWithMeResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListS3DataStoragesSharedWithMeResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListS3DataStoragesSharedWithMeResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListS3DataStoragesSharedWithMeResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListS3DataStoragesSharedWithMeResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListS3DataStoragesSharedWithMeResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListS3DataStoragesSharedWithMeResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// DeleteS3DataStorageResponse401Headers the declared response headers of an HTTP 401 response for DeleteS3DataStorage
+type DeleteS3DataStorageResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type DeleteS3DataStorageResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *DeleteS3DataStorageResponse401Headers
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteS3DataStorageResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteS3DataStorageResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteS3DataStorageResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r DeleteS3DataStorageResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteS3DataStorageResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r DeleteS3DataStorageResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteS3DataStorageResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteS3DataStorageResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteS3DataStorageResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteS3DataStorageResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetS3DataStorageResponse401Headers the declared response headers of an HTTP 401 response for GetS3DataStorage
+type GetS3DataStorageResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type GetS3DataStorageResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *S3DataStorageResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *GetS3DataStorageResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetS3DataStorageResponse) GetJSON200() *S3DataStorageResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetS3DataStorageResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetS3DataStorageResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetS3DataStorageResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetS3DataStorageResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r GetS3DataStorageResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r GetS3DataStorageResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetS3DataStorageResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetS3DataStorageResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetS3DataStorageResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// UpdateS3DataStorageResponse401Headers the declared response headers of an HTTP 401 response for UpdateS3DataStorage
+type UpdateS3DataStorageResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type UpdateS3DataStorageResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *S3DataStorageResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *UpdateS3DataStorageResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateS3DataStorageResponse) GetJSON200() *S3DataStorageResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateS3DataStorageResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateS3DataStorageResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateS3DataStorageResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateS3DataStorageResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateS3DataStorageResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r UpdateS3DataStorageResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateS3DataStorageResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateS3DataStorageResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateS3DataStorageResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateS3DataStorageResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetApiV1S3DataStoragesDataStorageIdSharesResponse401Headers the declared response headers of an HTTP 401 response for GetApiV1S3DataStoragesDataStorageIdShares
+type GetApiV1S3DataStoragesDataStorageIdSharesResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type GetApiV1S3DataStoragesDataStorageIdSharesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]ShareResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *GetApiV1S3DataStoragesDataStorageIdSharesResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON200() *[]ShareResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetApiV1S3DataStoragesDataStorageIdSharesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// PostApiV1S3DataStoragesDataStorageIdSharesResponse401Headers the declared response headers of an HTTP 401 response for PostApiV1S3DataStoragesDataStorageIdShares
+type PostApiV1S3DataStoragesDataStorageIdSharesResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type PostApiV1S3DataStoragesDataStorageIdSharesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *ShareResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON409 the response for an HTTP 409 `application/json` response
+	JSON409 *Conflict
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *PostApiV1S3DataStoragesDataStorageIdSharesResponse401Headers
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON201() *ShareResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON409 returns the response for an HTTP 409 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON409() *Conflict {
+	return r.JSON409
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PostApiV1S3DataStoragesDataStorageIdSharesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers the declared response headers of an HTTP 401 response for DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId
+type DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers the declared response headers of an HTTP 401 response for PutApiV1S3DataStoragesDataStorageIdSharesSharingId
+type PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *ShareResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON200() *ShareResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -26235,7 +28175,7 @@ func (c *ClientWithResponses) CreateS3CredentialWithResponse(ctx context.Context
 
 // DeleteS3CredentialWithResponse Delete an S3 credential
 //
-// Owner only.
+// Owner only. Refused with 409 while an S3 data storage presents it.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -26295,6 +28235,232 @@ func (c *ClientWithResponses) UpdateS3CredentialWithResponse(ctx context.Context
 		return nil, err
 	}
 	return ParseUpdateS3CredentialResponse(rsp)
+}
+
+// ListS3DataStoragesWithResponse List all S3 data storages
+//
+// Requires `ADMIN` or `SUPER_ADMIN` authority.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/s3-data-storages (the `ListS3DataStorages` operationId).
+func (c *ClientWithResponses) ListS3DataStoragesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListS3DataStoragesResponse, error) {
+	rsp, err := c.ListS3DataStorages(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListS3DataStoragesResponse(rsp)
+}
+
+// CreateS3DataStorageWithBodyWithResponse Register an S3 data storage
+//
+// The owner comes from the token. The credential must be one the caller owns.
+// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+// and an omitted `pathStyle` means virtual-hosted addressing.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+func (c *ClientWithResponses) CreateS3DataStorageWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateS3DataStorageResponse, error) {
+	rsp, err := c.CreateS3DataStorageWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateS3DataStorageResponse(rsp)
+}
+
+// CreateS3DataStorageWithResponse Register an S3 data storage
+//
+// The owner comes from the token. The credential must be one the caller owns.
+// An omitted `endpointUrl` means AWS S3, an omitted `region` means `us-east-1`
+// and an omitted `pathStyle` means virtual-hosted addressing.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/s3-data-storages (the `CreateS3DataStorage` operationId).
+func (c *ClientWithResponses) CreateS3DataStorageWithResponse(ctx context.Context, body CreateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateS3DataStorageResponse, error) {
+	rsp, err := c.CreateS3DataStorage(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateS3DataStorageResponse(rsp)
+}
+
+// ListMyS3DataStoragesWithResponse List the caller's S3 data storages
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/s3-data-storages/me (the `ListMyS3DataStorages` operationId).
+func (c *ClientWithResponses) ListMyS3DataStoragesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListMyS3DataStoragesResponse, error) {
+	rsp, err := c.ListMyS3DataStorages(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMyS3DataStoragesResponse(rsp)
+}
+
+// ListS3DataStoragesSharedWithMeWithResponse List S3 data storages shared with the caller
+//
+// Each entry carries `permission`, the caller's effective standing. `WRITE`
+// implies `READ`, and where several shares reach the same caller the strongest
+// applies.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/s3-data-storages/shared-with-me (the `ListS3DataStoragesSharedWithMe` operationId).
+func (c *ClientWithResponses) ListS3DataStoragesSharedWithMeWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListS3DataStoragesSharedWithMeResponse, error) {
+	rsp, err := c.ListS3DataStoragesSharedWithMe(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListS3DataStoragesSharedWithMeResponse(rsp)
+}
+
+// DeleteS3DataStorageWithResponse Delete an S3 data storage
+//
+// Owner or admin. Its shares are deleted with it.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId} (the `DeleteS3DataStorage` operationId).
+func (c *ClientWithResponses) DeleteS3DataStorageWithResponse(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*DeleteS3DataStorageResponse, error) {
+	rsp, err := c.DeleteS3DataStorage(ctx, dataStorageId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteS3DataStorageResponse(rsp)
+}
+
+// GetS3DataStorageWithResponse Read an S3 data storage
+//
+// Requires a `READ` standing. The credential is inlined as its safe summary;
+// its secret is never returned.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId} (the `GetS3DataStorage` operationId).
+func (c *ClientWithResponses) GetS3DataStorageWithResponse(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*GetS3DataStorageResponse, error) {
+	rsp, err := c.GetS3DataStorage(ctx, dataStorageId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetS3DataStorageResponse(rsp)
+}
+
+// UpdateS3DataStorageWithBodyWithResponse Update an S3 data storage
+//
+// Requires a `WRITE` standing. Keeping the credential already on the storage
+// needs no standing on it; assigning a different one requires owning it.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+func (c *ClientWithResponses) UpdateS3DataStorageWithBodyWithResponse(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateS3DataStorageResponse, error) {
+	rsp, err := c.UpdateS3DataStorageWithBody(ctx, dataStorageId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateS3DataStorageResponse(rsp)
+}
+
+// UpdateS3DataStorageWithResponse Update an S3 data storage
+//
+// Requires a `WRITE` standing. Keeping the credential already on the storage
+// needs no standing on it; assigning a different one requires owning it.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId} (the `UpdateS3DataStorage` operationId).
+func (c *ClientWithResponses) UpdateS3DataStorageWithResponse(ctx context.Context, dataStorageId DataStorageId, body UpdateS3DataStorageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateS3DataStorageResponse, error) {
+	rsp, err := c.UpdateS3DataStorage(ctx, dataStorageId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateS3DataStorageResponse(rsp)
+}
+
+// GetApiV1S3DataStoragesDataStorageIdSharesWithResponse List who has access to this S3 data storage
+//
+// Both principal kinds together. Restricted to the owner and platform admins: the list names who holds the record, which is more than a grantee needs to know.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/s3-data-storages/{dataStorageId}/shares (the `GetApiV1S3DataStoragesDataStorageIdShares` operationId).
+func (c *ClientWithResponses) GetApiV1S3DataStoragesDataStorageIdSharesWithResponse(ctx context.Context, dataStorageId DataStorageId, reqEditors ...RequestEditorFn) (*GetApiV1S3DataStoragesDataStorageIdSharesResponse, error) {
+	rsp, err := c.GetApiV1S3DataStoragesDataStorageIdShares(ctx, dataStorageId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetApiV1S3DataStoragesDataStorageIdSharesResponse(rsp)
+}
+
+// PostApiV1S3DataStoragesDataStorageIdSharesWithBodyWithResponse Grant a principal access to this S3 data storage
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+func (c *ClientWithResponses) PostApiV1S3DataStoragesDataStorageIdSharesWithBodyWithResponse(ctx context.Context, dataStorageId DataStorageId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostApiV1S3DataStoragesDataStorageIdSharesResponse, error) {
+	rsp, err := c.PostApiV1S3DataStoragesDataStorageIdSharesWithBody(ctx, dataStorageId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiV1S3DataStoragesDataStorageIdSharesResponse(rsp)
+}
+
+// PostApiV1S3DataStoragesDataStorageIdSharesWithResponse Grant a principal access to this S3 data storage
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/s3-data-storages/{dataStorageId}/shares (the `PostApiV1S3DataStoragesDataStorageIdShares` operationId).
+func (c *ClientWithResponses) PostApiV1S3DataStoragesDataStorageIdSharesWithResponse(ctx context.Context, dataStorageId DataStorageId, body PostApiV1S3DataStoragesDataStorageIdSharesJSONRequestBody, reqEditors ...RequestEditorFn) (*PostApiV1S3DataStoragesDataStorageIdSharesResponse, error) {
+	rsp, err := c.PostApiV1S3DataStoragesDataStorageIdShares(ctx, dataStorageId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostApiV1S3DataStoragesDataStorageIdSharesResponse(rsp)
+}
+
+// DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse Revoke a grant
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+func (c *ClientWithResponses) DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, reqEditors ...RequestEditorFn) (*DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error) {
+	rsp, err := c.DeleteApiV1S3DataStoragesDataStorageIdSharesSharingId(ctx, dataStorageId, sharingId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse(rsp)
+}
+
+// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBodyWithResponse Change what a grant confers
+//
+// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+func (c *ClientWithResponses) PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBodyWithResponse(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error) {
+	rsp, err := c.PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithBody(ctx, dataStorageId, sharingId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse(rsp)
+}
+
+// PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse Change what a grant confers
+//
+// Only the permission is editable. The subject is fixed when the grant is created, because moving it to a different principal would be a revoke and a grant wearing one id.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/s3-data-storages/{dataStorageId}/shares/{sharingId} (the `PutApiV1S3DataStoragesDataStorageIdSharesSharingId` operationId).
+func (c *ClientWithResponses) PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse(ctx context.Context, dataStorageId DataStorageId, sharingId SharingId, body PutApiV1S3DataStoragesDataStorageIdSharesSharingIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error) {
+	rsp, err := c.PutApiV1S3DataStoragesDataStorageIdSharesSharingId(ctx, dataStorageId, sharingId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse(rsp)
 }
 
 // ListSCPDataStoragesWithResponse List all SCP data storages
@@ -32683,6 +34849,13 @@ func ParseDeleteS3CredentialResponse(rsp *http.Response) (*DeleteS3CredentialRes
 		}
 		response.JSON404 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest InternalError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -32857,6 +35030,833 @@ func ParseUpdateS3CredentialResponse(rsp *http.Response) (*UpdateS3CredentialRes
 	switch {
 	case rsp.StatusCode == 401:
 		var headers UpdateS3CredentialResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListS3DataStoragesResponse parses an HTTP response from a ListS3DataStoragesWithResponse call
+func ParseListS3DataStoragesResponse(rsp *http.Response) (*ListS3DataStoragesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListS3DataStoragesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []S3DataStorageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListS3DataStoragesResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseCreateS3DataStorageResponse parses an HTTP response from a CreateS3DataStorageWithResponse call
+func ParseCreateS3DataStorageResponse(rsp *http.Response) (*CreateS3DataStorageResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateS3DataStorageResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest S3DataStorageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers CreateS3DataStorageResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListMyS3DataStoragesResponse parses an HTTP response from a ListMyS3DataStoragesWithResponse call
+func ParseListMyS3DataStoragesResponse(rsp *http.Response) (*ListMyS3DataStoragesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMyS3DataStoragesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []S3DataStorageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListMyS3DataStoragesResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListS3DataStoragesSharedWithMeResponse parses an HTTP response from a ListS3DataStoragesSharedWithMeWithResponse call
+func ParseListS3DataStoragesSharedWithMeResponse(rsp *http.Response) (*ListS3DataStoragesSharedWithMeResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListS3DataStoragesSharedWithMeResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []S3DataStorageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListS3DataStoragesSharedWithMeResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseDeleteS3DataStorageResponse parses an HTTP response from a DeleteS3DataStorageWithResponse call
+func ParseDeleteS3DataStorageResponse(rsp *http.Response) (*DeleteS3DataStorageResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteS3DataStorageResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers DeleteS3DataStorageResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetS3DataStorageResponse parses an HTTP response from a GetS3DataStorageWithResponse call
+func ParseGetS3DataStorageResponse(rsp *http.Response) (*GetS3DataStorageResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetS3DataStorageResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest S3DataStorageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers GetS3DataStorageResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseUpdateS3DataStorageResponse parses an HTTP response from a UpdateS3DataStorageWithResponse call
+func ParseUpdateS3DataStorageResponse(rsp *http.Response) (*UpdateS3DataStorageResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateS3DataStorageResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest S3DataStorageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers UpdateS3DataStorageResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetApiV1S3DataStoragesDataStorageIdSharesResponse parses an HTTP response from a GetApiV1S3DataStoragesDataStorageIdSharesWithResponse call
+func ParseGetApiV1S3DataStoragesDataStorageIdSharesResponse(rsp *http.Response) (*GetApiV1S3DataStoragesDataStorageIdSharesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetApiV1S3DataStoragesDataStorageIdSharesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ShareResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers GetApiV1S3DataStoragesDataStorageIdSharesResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParsePostApiV1S3DataStoragesDataStorageIdSharesResponse parses an HTTP response from a PostApiV1S3DataStoragesDataStorageIdSharesWithResponse call
+func ParsePostApiV1S3DataStoragesDataStorageIdSharesResponse(rsp *http.Response) (*PostApiV1S3DataStoragesDataStorageIdSharesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostApiV1S3DataStoragesDataStorageIdSharesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest ShareResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
+		var dest Conflict
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON409 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers PostApiV1S3DataStoragesDataStorageIdSharesResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseDeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse parses an HTTP response from a DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse call
+func ParseDeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse(rsp *http.Response) (*DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers DeleteApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParsePutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse parses an HTTP response from a PutApiV1S3DataStoragesDataStorageIdSharesSharingIdWithResponse call
+func ParsePutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse(rsp *http.Response) (*PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ShareResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers PutApiV1S3DataStoragesDataStorageIdSharesSharingIdResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {

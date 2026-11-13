@@ -85,6 +85,29 @@ func (g storageGuard) RequireControlled(ctx context.Context, id string) ([]strin
 	return []string{*storage.OwnerID}, nil
 }
 
+// s3StorageGuard shares S3 data storages.
+type s3StorageGuard struct{ s3StorageAccess }
+
+func (g s3StorageGuard) ResourceType() sharingmodel.ResourceType {
+	return sharingmodel.ResourceTypeS3DataStorage
+}
+
+func (g s3StorageGuard) Label() string { return "S3 data storage" }
+
+func (g s3StorageGuard) RequireControlled(ctx context.Context, id string) ([]string, error) {
+	storage, err := g.requireStorage(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if err := g.requireControl(ctx, storage); err != nil {
+		return nil, err
+	}
+	if storage.OwnerID == nil {
+		return nil, nil
+	}
+	return []string{*storage.OwnerID}, nil
+}
+
 // directoryGuard shares virtual data directories.
 //
 // A share names a directory and opens the subtree under it, so sharing an interior
@@ -146,6 +169,23 @@ func NewSCPDataStorageSharingService(
 	members *iamrepo.GroupMemberRepository,
 ) *sharingsvc.Service {
 	guard := storageGuard{storageAccess{
+		access:   sharingsvc.NewAccess(members),
+		storages: storages,
+		sharing:  sharing,
+	}}
+	return sharingsvc.NewService(guard, db, sharing, groups, users)
+}
+
+// NewS3DataStorageSharingService returns the sharing service for S3 data storages.
+func NewS3DataStorageSharingService(
+	db *gorm.DB,
+	storages *repository.S3DataStorageRepository,
+	sharing *sharingrepo.Repository,
+	groups *iamrepo.GroupRepository,
+	users *iamrepo.UserRepository,
+	members *iamrepo.GroupMemberRepository,
+) *sharingsvc.Service {
+	guard := s3StorageGuard{s3StorageAccess{
 		access:   sharingsvc.NewAccess(members),
 		storages: storages,
 		sharing:  sharing,
