@@ -213,6 +213,7 @@ type BatchJobConfigRequest struct {
 	CPUsPerGPU      *string `json:"cpusPerGpu"`
 	GPUsPerNode     *int32  `json:"gpusPerNode"`
 	Constraints     *string `json:"constraints"`
+	QOS             *string `json:"qos"`
 }
 
 // Validate implements httpx.Validator.
@@ -243,6 +244,7 @@ type BatchJobConfigResponse struct {
 	CPUsPerGPU       *string `json:"cpusPerGpu"`
 	GPUsPerNode      *int32  `json:"gpusPerNode"`
 	Constraints      *string `json:"constraints"`
+	QOS              *string `json:"qos"`
 }
 
 // ApplyBatchJobConfigRequest copies a request onto a config entity, preserving the
@@ -265,6 +267,7 @@ func ApplyBatchJobConfigRequest(dst *model.BatchJobConfig, src *BatchJobConfigRe
 	dst.CPUsPerGPU = src.CPUsPerGPU
 	dst.GPUsPerNode = src.GPUsPerNode
 	dst.Constraints = src.Constraints
+	dst.QOS = src.QOS
 }
 
 // ToBatchJobConfigResponse renders a config entity.
@@ -289,6 +292,7 @@ func ToBatchJobConfigResponse(c *model.BatchJobConfig) *BatchJobConfigResponse {
 		CPUsPerGPU:       c.CPUsPerGPU,
 		GPUsPerNode:      c.GPUsPerNode,
 		Constraints:      c.Constraints,
+		QOS:              c.QOS,
 	}
 }
 

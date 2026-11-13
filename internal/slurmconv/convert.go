@@ -44,6 +44,7 @@ type JobConfig struct {
 	CpusPerGpu      *string `json:"cpusPerGpu,omitempty"`
 	Gres            *string `json:"gres,omitempty"`
 	Constraints     *string `json:"constraints,omitempty"`
+	Qos             *string `json:"qos,omitempty"`
 }
 
 type ArrayRange struct {
@@ -209,6 +210,8 @@ func Convert(s *Script) *Conversion {
 			setStr(o, &jc.Gres)
 		case "constraint":
 			setStr(o, &jc.Constraints)
+		case "qos":
+			setStr(o, &jc.Qos)
 		case "gpus":
 			gpus = &s.Options[i]
 		case "gpus-per-node":

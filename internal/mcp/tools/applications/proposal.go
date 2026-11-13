@@ -251,5 +251,5 @@ func FromJobConfig(j slurmconv.JobConfig) estimate.Request {
 	return estimate.Request{WallTimeMinutes: j.WallTimeMinutes, Allocation: j.Allocation, Nodes: j.Nodes, Ntasks: j.Ntasks,
 		NtasksPerNode: j.NtasksPerNode, Cpus: j.Cpus, CpusPerTask: j.CpusPerTask, Mem: j.Mem, MemPerCpu: j.MemPerCpu,
 		Gpus: j.Gpus, GpusPerNode: j.GpusPerNode, MemPerGpu: j.MemPerGpu, CpusPerGpu: j.CpusPerGpu, Gres: j.Gres,
-		Constraints: j.Constraints}
+		Constraints: j.Constraints, Qos: j.Qos}
 }

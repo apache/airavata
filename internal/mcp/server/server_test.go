@@ -491,17 +491,17 @@ func TestPolicyConfirmListGatesReadTool(t *testing.T) {
 
 func TestConvertScriptPreview(t *testing.T) {
 	h := newHarness(t, writePolicy(), nil)
-	script := "#!/bin/bash\n#SBATCH -J md\n#SBATCH -p gpu\n#SBATCH -t 02:00:00\n#SBATCH -A abc123\n#SBATCH -N 1\n#SBATCH --qos=high\nmodule load gromacs/2024\ngmx mdrun -s topol.tpr\n"
+	script := "#!/bin/bash\n#SBATCH -J md\n#SBATCH -p gpu\n#SBATCH -t 02:00:00\n#SBATCH -A abc123\n#SBATCH -N 1\n#SBATCH --exclusive\nmodule load gromacs/2024\ngmx mdrun -s topol.tpr\n"
 	out := h.mustCall("convert_sbatch_script", map[string]any{"script": script, "cluster_id": clusterID,
 		"inputs": []any{map[string]any{"name": "tpr", "type": "FILE", "literal": "topol.tpr"}}})
 	if out["registrable"] != false || out["proposal_handle"] != nil {
-		t.Errorf("a script with --qos was offered for registration: %v", out["problems"])
+		t.Errorf("a script with --exclusive was offered for registration: %v", out["problems"])
 	}
 	if out["round_trip_diff"] == "" {
 		t.Error("no round-trip diff")
 	}
 
-	clean := strings.Replace(script, "#SBATCH --qos=high\n", "", 1)
+	clean := strings.Replace(script, "#SBATCH --exclusive\n", "", 1)
 	out = h.mustCall("convert_sbatch_script", map[string]any{"script": clean, "cluster_id": clusterID,
 		"inputs": []any{map[string]any{"name": "tpr", "type": "FILE", "literal": "topol.tpr"}}})
 	if out["proposal_handle"] == nil {

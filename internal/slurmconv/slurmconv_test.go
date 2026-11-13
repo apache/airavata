@@ -233,7 +233,7 @@ srun ./app
 	if got := names(c.Replaced); !reflect.DeepEqual(got, []string{"job-name", "output", "error", "chdir", "mail-user", "mail-type"}) {
 		t.Fatalf("replaced %v", got)
 	}
-	if got := names(c.Unsupported); !reflect.DeepEqual(got, []string{"qos", "exclusive", "signal"}) {
+	if got := names(c.Unsupported); !reflect.DeepEqual(got, []string{"exclusive", "signal"}) {
 		t.Fatalf("unsupported %v", got)
 	}
 	if len(c.Mapped)+len(c.Replaced)+len(c.Unsupported) != len(s.Options) {
@@ -243,7 +243,7 @@ srun ./app
 	if jc.WallTimeMinutes != 1440 || jc.Allocation != "proj" || c.Partition != "gpu" || *jc.Nodes != 2 ||
 		*jc.Ntasks != 8 || *jc.NtasksPerNode != 4 || *jc.CpusPerTask != 2 || *jc.Mem != "16G" ||
 		*jc.MemPerCpu != "2G" || *jc.MemPerGpu != "8G" || *jc.CpusPerGpu != "4" || *jc.Gres != "gpu:1" ||
-		*jc.Constraints != "skylake" || *jc.Gpus != 4 || *jc.GpusPerNode != 2 {
+		*jc.Constraints != "skylake" || *jc.Gpus != 4 || *jc.GpusPerNode != 2 || *jc.Qos != "high" {
 		t.Fatalf("job config %+v", jc)
 	}
 	if c.Registrable {
@@ -416,7 +416,7 @@ run_fold --in protein.fa
 }
 
 func TestRenderUnsupportedAndInputs(t *testing.T) {
-	c := Convert(mustParse(t, "#!/bin/bash\n#SBATCH -t 5\n#SBATCH -A a\n#SBATCH --qos=\"long q\"\n#SBATCH --exclusive\n#SBATCH -Z9\n\nrun --in data.txt\n"))
+	c := Convert(mustParse(t, "#!/bin/bash\n#SBATCH -t 5\n#SBATCH -A a\n#SBATCH --reservation=\"long q\"\n#SBATCH --exclusive\n#SBATCH -Z9\n\nrun --in data.txt\n"))
 	if _, err := ApplyInputs(c, []InputSuggestion{{Name: "data", Type: "FILE", Literal: "data.txt"}}); err != nil {
 		t.Fatal(err)
 	}
@@ -424,7 +424,7 @@ func TestRenderUnsupportedAndInputs(t *testing.T) {
 	want := `#!/bin/bash
 #SBATCH --time=00:05:00
 #SBATCH --account=a
-#SBATCH --qos="long q" # not registrable
+#SBATCH --reservation="long q" # not registrable
 #SBATCH --exclusive # not registrable
 #SBATCH -Z9 # not registrable
 

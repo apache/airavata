@@ -27,6 +27,7 @@ const FIELDS: { key: keyof BatchJobConfigDraft; label: string; placeholder?: str
   { key: "cpusPerGpu", label: "CPUs per GPU" },
   { key: "gres", label: "GRES", placeholder: "gpu:a100:1" },
   { key: "constraints", label: "Constraints" },
+  { key: "qos", label: "QOS", placeholder: "normal" },
 ];
 
 export function draftFrom(c: BatchJobConfig | null | undefined): BatchJobConfigDraft {
