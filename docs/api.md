@@ -1226,6 +1226,7 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `defaultBatchJobConfig.cpusPerGpu` | string \| null | optional |
 | `defaultBatchJobConfig.gpusPerNode` | integer \| null | optional |
 | `defaultBatchJobConfig.constraints` | string \| null | optional |
+| `defaultBatchJobConfig.qos` | string \| null | optional |
 | `defaultPartition` | string \| null | optional |
 
 ```json

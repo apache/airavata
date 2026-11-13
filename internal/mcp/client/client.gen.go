@@ -668,6 +668,7 @@ type BatchJobConfigRequest struct {
 	Nodes           *int32  `json:"nodes,omitempty"`
 	Ntasks          *int32  `json:"ntasks,omitempty"`
 	NtasksPerNode   *int32  `json:"ntasksPerNode,omitempty"`
+	Qos             *string `json:"qos,omitempty"`
 	WallTimeMinutes int64   `json:"wallTimeMinutes"`
 }
 
@@ -688,6 +689,7 @@ type BatchJobConfigResponse struct {
 	Nodes            *int32             `json:"nodes,omitempty"`
 	Ntasks           *int32             `json:"ntasks,omitempty"`
 	NtasksPerNode    *int32             `json:"ntasksPerNode,omitempty"`
+	Qos              *string            `json:"qos,omitempty"`
 	WallTimeMinutes  int64              `json:"wallTimeMinutes"`
 }
 

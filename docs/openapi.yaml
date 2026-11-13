@@ -3906,6 +3906,7 @@ components:
         cpusPerGpu: { type: [string, "null"] }
         gpusPerNode: { type: [integer, "null"], format: int32 }
         constraints: { type: [string, "null"] }
+        qos: { type: [string, "null"], description: "Slurm quality of service (`--qos`)." }
       required: [wallTimeMinutes, allocation]
 
     BatchJobConfigResponse:
@@ -3927,6 +3928,7 @@ components:
         cpusPerGpu: { type: [string, "null"] }
         gpusPerNode: { type: [integer, "null"], format: int32 }
         constraints: { type: [string, "null"] }
+        qos: { type: [string, "null"], description: "Slurm quality of service (`--qos`)." }
       required: [batchJobConfigId, wallTimeMinutes, allocation]
 
     BatchDeploymentRequest:

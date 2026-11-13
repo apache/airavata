@@ -60,6 +60,9 @@ type BatchJobConfig struct {
 	// Constraints is a Slurm feature constraint expression, e.g. "gpu", "highmem".
 	Constraints *string `gorm:"column:constraints;type:varchar(255)" json:"constraints,omitempty"`
 
+	// QOS is the Slurm quality of service the job is submitted under, e.g. "normal".
+	QOS *string `gorm:"column:qos;type:varchar(255)" json:"qos,omitempty"`
+
 	Allocation string `gorm:"column:allocation;type:varchar(255);not null" json:"allocation"`
 }
 

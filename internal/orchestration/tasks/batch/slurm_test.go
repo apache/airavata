@@ -134,7 +134,7 @@ func TestBuildSlurmScript(t *testing.T) {
 
 	// A resource the run did not ask for leaves no directive behind, and no blank line
 	// where one would have been.
-	for _, unwanted := range []string{"--ntasks", "--mem-per-cpu", "--gres", "--constraint", "\n\n\n"} {
+	for _, unwanted := range []string{"--ntasks", "--mem-per-cpu", "--gres", "--constraint", "--qos", "\n\n\n"} {
 		if strings.Contains(script, unwanted) {
 			t.Errorf("script should not contain %q\n---\n%s", unwanted, script)
 		}
@@ -294,5 +294,20 @@ func TestBuildSlurmScriptSourcesTheLinkEnvFile(t *testing.T) {
 	}
 	if strings.Contains(script, "secret") {
 		t.Errorf("script carries a token\n---\n%s", script)
+	}
+}
+
+// A QOS on the run's resource request becomes a --qos directive.
+func TestBuildSlurmScriptQOS(t *testing.T) {
+	process, deployment, template, clusterConfig := scriptFixture()
+	qos := "high"
+	process.BatchProcess.BatchJobConfig.QOS = &qos
+
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &execution.GlobalJobConfigs{}, nil, "")
+	if err != nil {
+		t.Fatalf("buildSlurmScript: %v", err)
+	}
+	if !strings.Contains(script, "#SBATCH --qos=high\n") {
+		t.Errorf("script is missing the qos directive\n---\n%s", script)
 	}
 }

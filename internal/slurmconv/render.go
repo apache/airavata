@@ -73,6 +73,7 @@ func Render(c *Conversion) string {
 	str("mem-per-gpu", jc.MemPerGpu)
 	str("cpus-per-gpu", jc.CpusPerGpu)
 	str("constraint", jc.Constraints)
+	str("qos", jc.Qos)
 	for _, o := range c.Unsupported {
 		name := "--" + o.Name
 		if o.Unknown {

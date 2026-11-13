@@ -89,6 +89,9 @@ const slurmScriptTemplate = `#!/bin/bash
 {% if constraints %}
 #SBATCH --constraint={{ constraints }}
 {% endif %}
+{% if qos %}
+#SBATCH --qos={{ qos }}
+{% endif %}
 
 echo "Airavata process {{ process_id }} starting on $(hostname) at $(date)"
 cd {{ work_dir_quoted }} || exit 1
@@ -165,6 +168,7 @@ func buildSlurmScript(
 		"mem_per_gpu":     optional(jobConfig.MemPerGPU),
 		"cpus_per_gpu":    optional(jobConfig.CPUsPerGPU),
 		"constraints":     optional(jobConfig.Constraints),
+		"qos":             optional(jobConfig.QOS),
 
 		"inputs":  inputs,
 		"outputs": outputs,
@@ -187,7 +191,7 @@ func buildSlurmScript(
 	// are checked here rather than escaped, because none of them has any business
 	// spanning lines.
 	for _, key := range []string{"job_name", "work_dir", "stdout_file", "stderr_file",
-		"wall_time", "account", "partition", "gres", "constraints", "mem", "mem_per_cpu",
+		"wall_time", "account", "partition", "gres", "constraints", "qos", "mem", "mem_per_cpu",
 		"mem_per_gpu", "cpus_per_gpu"} {
 		if value, ok := ctx[key].(string); ok && strings.ContainsAny(value, "\r\n") {
 			return "", fmt.Errorf("process %s: %s contains a line break, which cannot be written into an SBATCH directive", process.ID, key)

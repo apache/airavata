@@ -278,7 +278,7 @@ func buildPlan(ctx context.Context, d *tk.Deps, dep *client.BatchDeploymentRespo
 	if strings.TrimSpace(plan.Job.Allocation) == "" {
 		problems = append(problems, "no allocation (Slurm account): pass resources.allocation")
 	}
-	for _, s := range []*string{plan.Job.Mem, plan.Job.Gres, plan.Job.Constraints, plan.Job.MemPerCpu, plan.Job.MemPerGpu, plan.Job.CpusPerGpu} {
+	for _, s := range []*string{plan.Job.Mem, plan.Job.Gres, plan.Job.Constraints, plan.Job.Qos, plan.Job.MemPerCpu, plan.Job.MemPerGpu, plan.Job.CpusPerGpu} {
 		if s != nil && strings.ContainsAny(*s, "\r\n") {
 			problems = append(problems, "resource values must be on one line")
 		}

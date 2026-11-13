@@ -277,6 +277,7 @@ export interface BatchJobConfig {
   cpusPerGpu?: string | null;
   gpusPerNode?: number | null;
   constraints?: string | null;
+  qos?: string | null;
 }
 
 export interface BatchDeployment {
