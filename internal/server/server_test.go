@@ -2290,6 +2290,7 @@ func TestUnknownResourcesReportNotFound(t *testing.T) {
 		"/api/v1/slurm-clusters/nope",
 		"/api/v1/slurm-cluster-configs/nope",
 		"/api/v1/ssh-credentials/nope",
+		"/api/v1/s3-credentials/nope",
 		"/api/v1/application-templates/nope",
 		"/api/v1/slurm-deployments/nope",
 		"/api/v1/processes/nope",

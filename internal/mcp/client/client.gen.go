@@ -1122,6 +1122,29 @@ type ProcessWorkflowType string
 // on the wire.
 type ProvisionStatus string
 
+// S3CredentialRequest The create/update payload for an S3 access key. `secretAccessKey` is required
+// on create; an update that omits it keeps the stored secret and session token.
+// There is no owner field.
+type S3CredentialRequest struct {
+	AccessKeyId string `json:"accessKeyId"`
+	Name        string `json:"name"`
+
+	// SecretAccessKey Write-only. Never returned by any read endpoint.
+	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
+
+	// SessionToken Write-only. Only for temporary credentials (for example from STS).
+	SessionToken *string `json:"sessionToken,omitempty"`
+}
+
+// S3CredentialResponse The read model for an S3 access key. It has no secret access key or session
+// token field at all. `accessKeyId` is an identifier, not a secret.
+type S3CredentialResponse struct {
+	AccessKeyId    string             `json:"accessKeyId"`
+	Name           string             `json:"name"`
+	OwnerId        string             `json:"ownerId"`
+	S3CredentialId openapi_types.UUID `json:"s3CredentialId"`
+}
+
 // SCPDataStorageRequest The create/update payload for a storage. There is no owner field.
 type SCPDataStorageRequest struct {
 	DataName  string `json:"dataName"`
@@ -1506,6 +1529,9 @@ type PartitionId = openapi_types.UUID
 // ProcessId defines model for ProcessId.
 type ProcessId = openapi_types.UUID
 
+// S3CredentialId defines model for S3CredentialId.
+type S3CredentialId = openapi_types.UUID
+
 // SSHCredentialId defines model for SSHCredentialId.
 type SSHCredentialId = openapi_types.UUID
 
@@ -1666,6 +1692,12 @@ type CreateJobSubmissionTaskJSONRequestBody = JobSubmissionTaskRequest
 
 // UpdateJobSubmissionTaskJSONRequestBody defines body for UpdateJobSubmissionTask for application/json ContentType.
 type UpdateJobSubmissionTaskJSONRequestBody = JobSubmissionTaskRequest
+
+// CreateS3CredentialJSONRequestBody defines body for CreateS3Credential for application/json ContentType.
+type CreateS3CredentialJSONRequestBody = S3CredentialRequest
+
+// UpdateS3CredentialJSONRequestBody defines body for UpdateS3Credential for application/json ContentType.
+type UpdateS3CredentialJSONRequestBody = S3CredentialRequest
 
 // CreateSCPDataStorageJSONRequestBody defines body for CreateSCPDataStorage for application/json ContentType.
 type CreateSCPDataStorageJSONRequestBody = SCPDataStorageRequest
@@ -2486,6 +2518,71 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/workflows/{processWorkflowId} (the `GetProcessWorkflow` operationId).
 	GetProcessWorkflow(ctx context.Context, processId ProcessId, processWorkflowId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListS3Credentials List the caller's S3 credentials
+	//
+	// Returns only the caller's own credentials. Admins are not exempt.
+	//
+	// Corresponds with GET /api/v1/s3-credentials (the `ListS3Credentials` operationId).
+	ListS3Credentials(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateS3CredentialWithBody Register an S3 credential
+	//
+	// Self-service for any authenticated caller with a `users` row.
+	// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+	// are write-only and are never returned by any read endpoint.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+	CreateS3CredentialWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateS3Credential Register an S3 credential
+	//
+	// Self-service for any authenticated caller with a `users` row.
+	// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+	// are write-only and are never returned by any read endpoint.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+	CreateS3Credential(ctx context.Context, body CreateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteS3Credential Delete an S3 credential
+	//
+	// Owner only.
+	//
+	// Corresponds with DELETE /api/v1/s3-credentials/{s3CredentialId} (the `DeleteS3Credential` operationId).
+	DeleteS3Credential(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetS3Credential Read an S3 credential
+	//
+	// Owner only.
+	//
+	// Corresponds with GET /api/v1/s3-credentials/{s3CredentialId} (the `GetS3Credential` operationId).
+	GetS3Credential(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateS3CredentialWithBody Update an S3 credential
+	//
+	// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+	// session token; changing `accessKeyId` then is `400`. An update that sends a new
+	// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+	//
+	// Takes any type of body and a specified content type.
+	//
+	// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+	UpdateS3CredentialWithBody(ctx context.Context, s3CredentialId S3CredentialId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateS3Credential Update an S3 credential
+	//
+	// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+	// session token; changing `accessKeyId` then is `400`. An update that sends a new
+	// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+	//
+	// Takes a body of the `application/json` content type.
+	//
+	// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+	UpdateS3Credential(ctx context.Context, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListSCPDataStorages List all SCP data storages
 	//
@@ -4824,6 +4921,141 @@ func (c *Client) ListProcessWorkflows(ctx context.Context, processId ProcessId, 
 // Corresponds with GET /api/v1/processes/{processId}/workflows/{processWorkflowId} (the `GetProcessWorkflow` operationId).
 func (c *Client) GetProcessWorkflow(ctx context.Context, processId ProcessId, processWorkflowId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetProcessWorkflowRequest(c.Server, processId, processWorkflowId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// ListS3Credentials List the caller's S3 credentials
+//
+// Returns only the caller's own credentials. Admins are not exempt.
+//
+// Corresponds with GET /api/v1/s3-credentials (the `ListS3Credentials` operationId).
+func (c *Client) ListS3Credentials(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListS3CredentialsRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateS3CredentialWithBody Register an S3 credential
+//
+// Self-service for any authenticated caller with a `users` row.
+// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+// are write-only and are never returned by any read endpoint.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+func (c *Client) CreateS3CredentialWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateS3CredentialRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// CreateS3Credential Register an S3 credential
+//
+// Self-service for any authenticated caller with a `users` row.
+// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+// are write-only and are never returned by any read endpoint.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+func (c *Client) CreateS3Credential(ctx context.Context, body CreateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateS3CredentialRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// DeleteS3Credential Delete an S3 credential
+//
+// Owner only.
+//
+// Corresponds with DELETE /api/v1/s3-credentials/{s3CredentialId} (the `DeleteS3Credential` operationId).
+func (c *Client) DeleteS3Credential(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteS3CredentialRequest(c.Server, s3CredentialId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetS3Credential Read an S3 credential
+//
+// Owner only.
+//
+// Corresponds with GET /api/v1/s3-credentials/{s3CredentialId} (the `GetS3Credential` operationId).
+func (c *Client) GetS3Credential(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetS3CredentialRequest(c.Server, s3CredentialId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateS3CredentialWithBody Update an S3 credential
+//
+// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+// session token; changing `accessKeyId` then is `400`. An update that sends a new
+// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+func (c *Client) UpdateS3CredentialWithBody(ctx context.Context, s3CredentialId S3CredentialId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateS3CredentialRequestWithBody(c.Server, s3CredentialId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// UpdateS3Credential Update an S3 credential
+//
+// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+// session token; changing `accessKeyId` then is `400`. An update that sends a new
+// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+func (c *Client) UpdateS3Credential(ctx context.Context, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateS3CredentialRequest(c.Server, s3CredentialId, body)
 	if err != nil {
 		return nil, err
 	}
@@ -9185,6 +9417,188 @@ func NewGetProcessWorkflowRequest(server string, processId ProcessId, processWor
 	return req, nil
 }
 
+// NewListS3CredentialsRequest constructs an http.Request for the ListS3Credentials method
+func NewListS3CredentialsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-credentials")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateS3CredentialRequest calls the generic CreateS3Credential builder with application/json body
+func NewCreateS3CredentialRequest(server string, body CreateS3CredentialJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateS3CredentialRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateS3CredentialRequestWithBody constructs an http.Request for the CreateS3Credential method, with any body, and a specified content type
+func NewCreateS3CredentialRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-credentials")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteS3CredentialRequest constructs an http.Request for the DeleteS3Credential method
+func NewDeleteS3CredentialRequest(server string, s3CredentialId S3CredentialId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "s3CredentialId", s3CredentialId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-credentials/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetS3CredentialRequest constructs an http.Request for the GetS3Credential method
+func NewGetS3CredentialRequest(server string, s3CredentialId S3CredentialId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "s3CredentialId", s3CredentialId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-credentials/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateS3CredentialRequest calls the generic UpdateS3Credential builder with application/json body
+func NewUpdateS3CredentialRequest(server string, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateS3CredentialRequestWithBody(server, s3CredentialId, "application/json", bodyReader)
+}
+
+// NewUpdateS3CredentialRequestWithBody constructs an http.Request for the UpdateS3Credential method, with any body, and a specified content type
+func NewUpdateS3CredentialRequestWithBody(server string, s3CredentialId S3CredentialId, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "s3CredentialId", s3CredentialId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/s3-credentials/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPut, queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewListSCPDataStoragesRequest constructs an http.Request for the ListSCPDataStorages method
 func NewListSCPDataStoragesRequest(server string) (*http.Request, error) {
 	var err error
@@ -12510,6 +12924,77 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/workflows/{processWorkflowId} (the `GetProcessWorkflow` operationId).
 	GetProcessWorkflowWithResponse(ctx context.Context, processId ProcessId, processWorkflowId string, reqEditors ...RequestEditorFn) (*GetProcessWorkflowResponse, error)
+
+	// ListS3CredentialsWithResponse List the caller's S3 credentials
+	//
+	// Returns only the caller's own credentials. Admins are not exempt.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/s3-credentials (the `ListS3Credentials` operationId).
+	ListS3CredentialsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListS3CredentialsResponse, error)
+
+	// CreateS3CredentialWithBodyWithResponse Register an S3 credential
+	//
+	// Self-service for any authenticated caller with a `users` row.
+	// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+	// are write-only and are never returned by any read endpoint.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+	CreateS3CredentialWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateS3CredentialResponse, error)
+
+	// CreateS3CredentialWithResponse Register an S3 credential
+	//
+	// Self-service for any authenticated caller with a `users` row.
+	// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+	// are write-only and are never returned by any read endpoint.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+	CreateS3CredentialWithResponse(ctx context.Context, body CreateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateS3CredentialResponse, error)
+
+	// DeleteS3CredentialWithResponse Delete an S3 credential
+	//
+	// Owner only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with DELETE /api/v1/s3-credentials/{s3CredentialId} (the `DeleteS3Credential` operationId).
+	DeleteS3CredentialWithResponse(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*DeleteS3CredentialResponse, error)
+
+	// GetS3CredentialWithResponse Read an S3 credential
+	//
+	// Owner only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /api/v1/s3-credentials/{s3CredentialId} (the `GetS3Credential` operationId).
+	GetS3CredentialWithResponse(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*GetS3CredentialResponse, error)
+
+	// UpdateS3CredentialWithBodyWithResponse Update an S3 credential
+	//
+	// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+	// session token; changing `accessKeyId` then is `400`. An update that sends a new
+	// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+	//
+	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+	UpdateS3CredentialWithBodyWithResponse(ctx context.Context, s3CredentialId S3CredentialId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateS3CredentialResponse, error)
+
+	// UpdateS3CredentialWithResponse Update an S3 credential
+	//
+	// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+	// session token; changing `accessKeyId` then is `400`. An update that sends a new
+	// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+	//
+	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+	UpdateS3CredentialWithResponse(ctx context.Context, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateS3CredentialResponse, error)
 
 	// ListSCPDataStoragesWithResponse List all SCP data storages
 	//
@@ -18758,6 +19243,414 @@ func (r GetProcessWorkflowResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetProcessWorkflowResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// ListS3CredentialsResponse401Headers the declared response headers of an HTTP 401 response for ListS3Credentials
+type ListS3CredentialsResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type ListS3CredentialsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]S3CredentialResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *ListS3CredentialsResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListS3CredentialsResponse) GetJSON200() *[]S3CredentialResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r ListS3CredentialsResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r ListS3CredentialsResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r ListS3CredentialsResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r ListS3CredentialsResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r ListS3CredentialsResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r ListS3CredentialsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListS3CredentialsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r ListS3CredentialsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// CreateS3CredentialResponse401Headers the declared response headers of an HTTP 401 response for CreateS3Credential
+type CreateS3CredentialResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type CreateS3CredentialResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON201 the response for an HTTP 201 `application/json` response
+	JSON201 *S3CredentialResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *CreateS3CredentialResponse401Headers
+}
+
+// GetJSON201 returns the response for an HTTP 201 `application/json` response
+func (r CreateS3CredentialResponse) GetJSON201() *S3CredentialResponse {
+	return r.JSON201
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r CreateS3CredentialResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r CreateS3CredentialResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r CreateS3CredentialResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r CreateS3CredentialResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r CreateS3CredentialResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateS3CredentialResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateS3CredentialResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateS3CredentialResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateS3CredentialResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// DeleteS3CredentialResponse401Headers the declared response headers of an HTTP 401 response for DeleteS3Credential
+type DeleteS3CredentialResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type DeleteS3CredentialResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *DeleteS3CredentialResponse401Headers
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DeleteS3CredentialResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DeleteS3CredentialResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DeleteS3CredentialResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DeleteS3CredentialResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r DeleteS3CredentialResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r DeleteS3CredentialResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteS3CredentialResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteS3CredentialResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DeleteS3CredentialResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetS3CredentialResponse401Headers the declared response headers of an HTTP 401 response for GetS3Credential
+type GetS3CredentialResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type GetS3CredentialResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *S3CredentialResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *GetS3CredentialResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetS3CredentialResponse) GetJSON200() *S3CredentialResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetS3CredentialResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetS3CredentialResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r GetS3CredentialResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetS3CredentialResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r GetS3CredentialResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r GetS3CredentialResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetS3CredentialResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetS3CredentialResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetS3CredentialResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// UpdateS3CredentialResponse401Headers the declared response headers of an HTTP 401 response for UpdateS3Credential
+type UpdateS3CredentialResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type UpdateS3CredentialResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *S3CredentialResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *BadRequest
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// JSON502 the response for an HTTP 502 `application/json` response
+	JSON502 *BadGateway
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *UpdateS3CredentialResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r UpdateS3CredentialResponse) GetJSON200() *S3CredentialResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r UpdateS3CredentialResponse) GetJSON400() *BadRequest {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r UpdateS3CredentialResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r UpdateS3CredentialResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r UpdateS3CredentialResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r UpdateS3CredentialResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetJSON502 returns the response for an HTTP 502 `application/json` response
+func (r UpdateS3CredentialResponse) GetJSON502() *BadGateway {
+	return r.JSON502
+}
+
+// GetBody returns the raw response body bytes
+func (r UpdateS3CredentialResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateS3CredentialResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateS3CredentialResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r UpdateS3CredentialResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -25474,6 +26367,119 @@ func (c *ClientWithResponses) GetProcessWorkflowWithResponse(ctx context.Context
 	return ParseGetProcessWorkflowResponse(rsp)
 }
 
+// ListS3CredentialsWithResponse List the caller's S3 credentials
+//
+// Returns only the caller's own credentials. Admins are not exempt.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/s3-credentials (the `ListS3Credentials` operationId).
+func (c *ClientWithResponses) ListS3CredentialsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListS3CredentialsResponse, error) {
+	rsp, err := c.ListS3Credentials(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListS3CredentialsResponse(rsp)
+}
+
+// CreateS3CredentialWithBodyWithResponse Register an S3 credential
+//
+// Self-service for any authenticated caller with a `users` row.
+// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+// are write-only and are never returned by any read endpoint.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+func (c *ClientWithResponses) CreateS3CredentialWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateS3CredentialResponse, error) {
+	rsp, err := c.CreateS3CredentialWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateS3CredentialResponse(rsp)
+}
+
+// CreateS3CredentialWithResponse Register an S3 credential
+//
+// Self-service for any authenticated caller with a `users` row.
+// `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+// are write-only and are never returned by any read endpoint.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/s3-credentials (the `CreateS3Credential` operationId).
+func (c *ClientWithResponses) CreateS3CredentialWithResponse(ctx context.Context, body CreateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateS3CredentialResponse, error) {
+	rsp, err := c.CreateS3Credential(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateS3CredentialResponse(rsp)
+}
+
+// DeleteS3CredentialWithResponse Delete an S3 credential
+//
+// Owner only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /api/v1/s3-credentials/{s3CredentialId} (the `DeleteS3Credential` operationId).
+func (c *ClientWithResponses) DeleteS3CredentialWithResponse(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*DeleteS3CredentialResponse, error) {
+	rsp, err := c.DeleteS3Credential(ctx, s3CredentialId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteS3CredentialResponse(rsp)
+}
+
+// GetS3CredentialWithResponse Read an S3 credential
+//
+// Owner only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /api/v1/s3-credentials/{s3CredentialId} (the `GetS3Credential` operationId).
+func (c *ClientWithResponses) GetS3CredentialWithResponse(ctx context.Context, s3CredentialId S3CredentialId, reqEditors ...RequestEditorFn) (*GetS3CredentialResponse, error) {
+	rsp, err := c.GetS3Credential(ctx, s3CredentialId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetS3CredentialResponse(rsp)
+}
+
+// UpdateS3CredentialWithBodyWithResponse Update an S3 credential
+//
+// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+// session token; changing `accessKeyId` then is `400`. An update that sends a new
+// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+func (c *ClientWithResponses) UpdateS3CredentialWithBodyWithResponse(ctx context.Context, s3CredentialId S3CredentialId, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateS3CredentialResponse, error) {
+	rsp, err := c.UpdateS3CredentialWithBody(ctx, s3CredentialId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateS3CredentialResponse(rsp)
+}
+
+// UpdateS3CredentialWithResponse Update an S3 credential
+//
+// Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+// session token; changing `accessKeyId` then is `400`. An update that sends a new
+// `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PUT /api/v1/s3-credentials/{s3CredentialId} (the `UpdateS3Credential` operationId).
+func (c *ClientWithResponses) UpdateS3CredentialWithResponse(ctx context.Context, s3CredentialId S3CredentialId, body UpdateS3CredentialJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateS3CredentialResponse, error) {
+	rsp, err := c.UpdateS3Credential(ctx, s3CredentialId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateS3CredentialResponse(rsp)
+}
+
 // ListSCPDataStoragesWithResponse List all SCP data storages
 //
 // Requires `ADMIN` or `SUPER_ADMIN` authority.
@@ -31728,6 +32734,372 @@ func ParseGetProcessWorkflowResponse(rsp *http.Response) (*GetProcessWorkflowRes
 	switch {
 	case rsp.StatusCode == 401:
 		var headers GetProcessWorkflowResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseListS3CredentialsResponse parses an HTTP response from a ListS3CredentialsWithResponse call
+func ParseListS3CredentialsResponse(rsp *http.Response) (*ListS3CredentialsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListS3CredentialsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []S3CredentialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers ListS3CredentialsResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseCreateS3CredentialResponse parses an HTTP response from a CreateS3CredentialWithResponse call
+func ParseCreateS3CredentialResponse(rsp *http.Response) (*CreateS3CredentialResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateS3CredentialResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		var dest S3CredentialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON201 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers CreateS3CredentialResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseDeleteS3CredentialResponse parses an HTTP response from a DeleteS3CredentialWithResponse call
+func ParseDeleteS3CredentialResponse(rsp *http.Response) (*DeleteS3CredentialResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteS3CredentialResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers DeleteS3CredentialResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseGetS3CredentialResponse parses an HTTP response from a GetS3CredentialWithResponse call
+func ParseGetS3CredentialResponse(rsp *http.Response) (*GetS3CredentialResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetS3CredentialResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest S3CredentialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers GetS3CredentialResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseUpdateS3CredentialResponse parses an HTTP response from a UpdateS3CredentialWithResponse call
+func ParseUpdateS3CredentialResponse(rsp *http.Response) (*UpdateS3CredentialResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateS3CredentialResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest S3CredentialResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest BadRequest
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 502:
+		var dest BadGateway
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON502 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers UpdateS3CredentialResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
