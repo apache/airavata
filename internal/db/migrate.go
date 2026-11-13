@@ -45,6 +45,7 @@ func Entities() []any {
 		// No outbound references.
 		&iammodel.User{},
 		&credentialsmodel.SSHCredential{},
+		&credentialsmodel.S3Credential{},
 		&applicationmodel.Template{},
 		&applicationmodel.BatchJobConfig{},
 
@@ -56,6 +57,7 @@ func Entities() []any {
 		&iammodel.Group{},
 		&computemodel.SlurmCluster{},
 		&datamodel.SCPDataStorage{},
+		&datamodel.S3DataStorage{},
 		&datamodel.DataProduct{},
 		&applicationmodel.TemplateInput{},
 		&applicationmodel.TemplateOutput{},

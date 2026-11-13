@@ -78,6 +78,7 @@ type ResourceType string
 const (
 	ResourceTypeDataProduct          ResourceType = "DATA_PRODUCT"
 	ResourceTypeSCPDataStorage       ResourceType = "SCP_DATA_STORAGE"
+	ResourceTypeS3DataStorage        ResourceType = "S3_DATA_STORAGE"
 	ResourceTypeVirtualDataDirectory ResourceType = "VIRTUAL_DATA_DIRECTORY"
 	ResourceTypeSlurmClusterConfig   ResourceType = "SLURM_CLUSTER_CONFIG"
 )
@@ -85,7 +86,7 @@ const (
 // Valid reports whether t is a recognised resource type.
 func (t ResourceType) Valid() bool {
 	switch t {
-	case ResourceTypeDataProduct, ResourceTypeSCPDataStorage,
+	case ResourceTypeDataProduct, ResourceTypeSCPDataStorage, ResourceTypeS3DataStorage,
 		ResourceTypeVirtualDataDirectory, ResourceTypeSlurmClusterConfig:
 		return true
 	}

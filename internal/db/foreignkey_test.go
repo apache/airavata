@@ -43,6 +43,7 @@ func TestForeignKeyDirections(t *testing.T) {
 	want := []fk{
 		{"user_roles", "user_id", "users", "user_id"},
 		{"ssh_credentials", "owner_id", "users", "user_id"},
+		{"s3_credentials", "owner_id", "users", "user_id"},
 		{"groups", "user_id", "users", "user_id"},
 		{"group_members", "group_id", "groups", "group_id"},
 		{"group_members", "user_id", "users", "user_id"},
@@ -55,6 +56,8 @@ func TestForeignKeyDirections(t *testing.T) {
 		{"slurm_cluster_configs", "user_id", "users", "user_id"},
 		{"scp_data_storages", "ssh_credential_id", "ssh_credentials", "ssh_credential_id"},
 		{"scp_data_storages", "user_id", "users", "user_id"},
+		{"s3_data_storages", "s3_credential_id", "s3_credentials", "s3_credential_id"},
+		{"s3_data_storages", "user_id", "users", "user_id"},
 		{"data_products", "user_id", "users", "user_id"},
 		// resource_sharings names its resource and its principal by (type, id) and so
 		// carries no foreign key at all: a column cannot reference four resource
