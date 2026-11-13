@@ -64,6 +64,8 @@ type BatchJobConfig struct {
 	QOS *string `gorm:"column:qos;type:varchar(255)" json:"qos,omitempty"`
 
 	Allocation string `gorm:"column:allocation;type:varchar(255);not null" json:"allocation"`
+
+	Partition *string `gorm:"column:partition;type:varchar(255)" json:"partition,omitempty"`
 }
 
 // TableName returns the table backing BatchJobConfig.
@@ -107,8 +109,6 @@ type BatchDeployment struct {
 	// depart from it, which is why the run's snapshot is what a job is submitted with.
 	DefaultBatchJobConfigID string          `gorm:"column:default_batch_job_config_id;type:varchar(36);not null;uniqueIndex" json:"defaultBatchJobConfigId"`
 	DefaultBatchJobConfig   *BatchJobConfig `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"defaultBatchJobConfig,omitempty"`
-
-	DefaultPartition *string `gorm:"column:default_partition;type:varchar(255)" json:"defaultPartition,omitempty"`
 }
 
 // TableName returns the table backing BatchDeployment.

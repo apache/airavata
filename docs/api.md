@@ -1244,9 +1244,9 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
       "nodes": 1,
       "ntasks": 1,
       "gres": "gpu:1",
-      "gpus": 1
-    },
-    "defaultPartition": "gpu"
+      "gpus": 1,
+      "partition": "gpu"
+    }
   }' | jq -r '.deploymentId')
 ```
 
@@ -1273,8 +1273,8 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
 | `defaultBatchJobConfig.cpusPerGpu` | string \| null | optional |
 | `defaultBatchJobConfig.gpusPerNode` | integer \| null | optional |
 | `defaultBatchJobConfig.constraints` | string \| null | optional |
+| `defaultBatchJobConfig.partition` | string \| null | optional |
 | `defaultBatchJobConfig.qos` | string \| null | optional |
-| `defaultPartition` | string \| null | optional |
 
 ```json
 {
@@ -1289,9 +1289,9 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "nodes": 1,
     "ntasks": 1,
     "gres": "gpu:1",
-    "gpus": 1
-  },
-  "defaultPartition": "gpu"
+    "gpus": 1,
+    "partition": "gpu"
+  }
 }
 ```
 
@@ -1321,9 +1321,9 @@ DEPLOYMENT_ID=$(curl -s -X POST localhost:9095/api/v1/slurm-deployments \
     "memPerGpu": null,
     "cpusPerGpu": null,
     "gpusPerNode": null,
-    "constraints": null
-  },
-  "defaultPartition": "gpu"
+    "constraints": null,
+    "partition": "gpu"
+  }
 }
 ```
 

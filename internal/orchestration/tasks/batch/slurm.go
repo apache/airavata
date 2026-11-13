@@ -152,7 +152,7 @@ func buildSlurmScript(
 		"stderr_file":     path.Join(workDir, "stderr.txt"),
 		"wall_time":       slurmWallTime(jobConfig.WallTimeMinutes),
 		"account":         strings.TrimSpace(jobConfig.Allocation),
-		"partition":       optional(deployment.DefaultPartition),
+		"partition":       optional(jobConfig.Partition),
 		"mail_user":       globalJobConfigs.MailUser,
 
 		"nodes":           optional(jobConfig.Nodes),

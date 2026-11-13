@@ -48,7 +48,6 @@ type RunPlan struct {
 	DeploymentID    string           `json:"deployment_id"`
 	ClusterID       string           `json:"cluster_id"`
 	ClusterName     string           `json:"cluster"`
-	Partition       string           `json:"partition"`
 	ClusterConfigID string           `json:"cluster_config_id"`
 	LoginUser       string           `json:"login_user"`
 	Interactive     bool             `json:"needs_interactive_ssh_auth,omitempty"`
@@ -79,7 +78,7 @@ type planRunIn struct {
 	ClusterConfigID string            `json:"cluster_config_id,omitempty" jsonschema:"login config from list_cluster_configs; inferred when only one fits"`
 	Inputs          map[string]string `json:"inputs,omitempty" jsonschema:"input name -> value. FILE inputs take a data product id from list_data_products"`
 	Outputs         map[string]string `json:"outputs,omitempty" jsonschema:"FILE output name -> data product id to stage the result to"`
-	Resources       estimate.Request  `json:"resources,omitempty" jsonschema:"overrides of the deployment's default job config (walltime, nodes, cpus, memory, GPUs, allocation)"`
+	Resources       estimate.Request  `json:"resources,omitempty" jsonschema:"overrides of the deployment's default job config (walltime, nodes, cpus, memory, GPUs, allocation, partition)"`
 	BaseWorkDir     string            `json:"base_work_dir,omitempty" jsonschema:"parent directory on the cluster; defaults to the config's work root"`
 
 	reuse *client.BatchProcessResponse
@@ -172,7 +171,7 @@ func resolveTargets(ctx context.Context, d *tk.Deps, req *mcp.CallToolRequest, p
 	var options []option
 	for _, dep := range candidates {
 		for _, c := range configsFor(dep) {
-			label := fmt.Sprintf("%s / %s as %s (%s)", names[uuidStr(dep.SlurmClusterId)], tk.Str(dep.DefaultPartition), c.LoginUser,
+			label := fmt.Sprintf("%s / %s as %s (%s)", names[uuidStr(dep.SlurmClusterId)], tk.Str(estimate.FromResponse(dep.DefaultBatchJobConfig).Partition), c.LoginUser,
 				firstNonEmpty(tk.Str(c.Name), c.SlurmClusterConfigId.String()[:8]))
 			options = append(options, option{label, dep, c})
 		}
@@ -255,7 +254,7 @@ func buildPlan(ctx context.Context, d *tk.Deps, dep *client.BatchDeploymentRespo
 		return nil, err
 	}
 	plan := &RunPlan{TemplateID: tmpl.TemplateId.String(), TemplateName: tk.Str(tmpl.TemplateName), DeploymentID: dep.DeploymentId.String(),
-		ClusterID: cluster.SlurmClusterId.String(), ClusterName: cluster.ClusterName, Partition: tk.Str(dep.DefaultPartition),
+		ClusterID: cluster.SlurmClusterId.String(), ClusterName: cluster.ClusterName,
 		ClusterConfigID: cfg.SlurmClusterConfigId.String(), LoginUser: cfg.LoginUser, BaseWorkDir: in.BaseWorkDir,
 		Inputs: []PlannedValue{}, Outputs: []PlannedValue{}}
 	if cfg.SshCredential != nil && cfg.SshCredential.FullInteractive {
@@ -278,14 +277,14 @@ func buildPlan(ctx context.Context, d *tk.Deps, dep *client.BatchDeploymentRespo
 	if strings.TrimSpace(plan.Job.Allocation) == "" {
 		problems = append(problems, "no allocation (Slurm account): pass resources.allocation")
 	}
-	for _, s := range []*string{plan.Job.Mem, plan.Job.Gres, plan.Job.Constraints, plan.Job.Qos, plan.Job.MemPerCpu, plan.Job.MemPerGpu, plan.Job.CpusPerGpu} {
+	for _, s := range []*string{plan.Job.Partition, plan.Job.Mem, plan.Job.Gres, plan.Job.Constraints, plan.Job.Qos, plan.Job.MemPerCpu, plan.Job.MemPerGpu, plan.Job.CpusPerGpu} {
 		if s != nil && strings.ContainsAny(*s, "\r\n") {
 			problems = append(problems, "resource values must be on one line")
 		}
 	}
-	plan.partition = tk.Partition(cluster, plan.Partition)
-	if plan.partition == nil {
-		plan.Warnings = append(plan.Warnings, fmt.Sprintf("partition %q is not recorded on %s, so its limits could not be checked", plan.Partition, cluster.ClusterName))
+	plan.partition = tk.Partition(cluster, tk.Str(plan.Job.Partition))
+	if plan.partition == nil && tk.Str(plan.Job.Partition) != "" {
+		plan.Warnings = append(plan.Warnings, fmt.Sprintf("partition %q is not recorded on %s, so its limits could not be checked", tk.Str(plan.Job.Partition), cluster.ClusterName))
 	}
 	problems = append(problems, checkJob(d.Policy, plan)...)
 	if len(problems) > 0 {
@@ -461,7 +460,7 @@ func reuseMappings(tmpl *client.TemplateResponse, bp *client.BatchProcessRespons
 // Describe is the confirmation text for a launch.
 func (p *RunPlan) Describe() string {
 	var b strings.Builder
-	fmt.Fprintf(&b, "Launch %s on %s, partition %s, as %s.\n", p.TemplateName, p.ClusterName, p.Partition, p.LoginUser)
+	fmt.Fprintf(&b, "Launch %s on %s, partition %s, as %s.\n", p.TemplateName, p.ClusterName, tk.Str(p.Job.Partition), p.LoginUser)
 	j := p.Job
 	fmt.Fprintf(&b, "Resources: walltime %d min, %d node(s), %d core(s), %d GPU(s)", j.WallTimeMinutes, j.NodeCount(), j.Cores(), j.GPUs())
 	if j.Mem != nil {

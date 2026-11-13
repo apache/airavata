@@ -72,8 +72,8 @@ func (f *fakeAPI) handler() http.Handler {
 		"inputs":  []any{map[string]any{"inputId": inputID, "inputName": "steps", "inputType": "INTEGER", "required": true}},
 		"outputs": []any{}}
 	deployment := map[string]any{"deploymentId": deploymentID, "templateId": templateID, "slurmClusterId": clusterID,
-		"slurmRunSection": "gmx mdrun -nsteps {{ inputs.steps[0] }}", "defaultPartition": "gpu",
-		"defaultBatchJobConfig": map[string]any{"batchJobConfigId": batchID, "wallTimeMinutes": 60, "allocation": "abc123", "nodes": 1, "cpus": 8, "gpus": 1}}
+		"slurmRunSection":       "gmx mdrun -nsteps {{ inputs.steps[0] }}",
+		"defaultBatchJobConfig": map[string]any{"batchJobConfigId": batchID, "wallTimeMinutes": 60, "allocation": "abc123", "nodes": 1, "cpus": 8, "gpus": 1, "partition": "gpu"}}
 	config := map[string]any{"slurmClusterConfigId": configID, "slurmClusterId": clusterID, "loginUser": "alice", "workRoot": "/scratch/alice",
 		"sshCredentialId": credID, "sshCredential": map[string]any{"sshCredentialId": credID, "sshCredentialName": "laptop", "publicKey": "ssh-ed25519 AAAA", "fullInteractive": false, "ownerId": "cilogon:alice"}}
 
@@ -268,8 +268,8 @@ func plan(t *testing.T, h *harness) string {
 		t.Fatalf("plan_run returned no handle: %v", out)
 	}
 	p := out["plan"].(map[string]any)
-	if p["partition"] != "gpu" || p["cluster"] != "expanse" {
-		t.Errorf("plan targets %v/%v", p["cluster"], p["partition"])
+	if partition := p["resources"].(map[string]any)["partition"]; partition != "gpu" || p["cluster"] != "expanse" {
+		t.Errorf("plan targets %v/%v", p["cluster"], partition)
 	}
 	hours := p["hours"].(map[string]any)
 	if hours["requested_core_hours"] != 8.0 || hours["requested_gpu_hours"] != 1.0 {

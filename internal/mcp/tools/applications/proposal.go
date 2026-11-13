@@ -59,7 +59,6 @@ type OutputDraft struct {
 type DeploymentDraft struct {
 	ClusterID   string           `json:"cluster_id"`
 	ClusterName string           `json:"cluster,omitempty"`
-	Partition   string           `json:"partition"`
 	RunSection  string           `json:"run_section"`
 	Job         estimate.Request `json:"default_resources"`
 	Fit         *estimate.Fit    `json:"fit,omitempty"`
@@ -111,7 +110,7 @@ func (p *AppProposal) Validate(ctx context.Context, d *tk.Deps) {
 		}
 	}
 	if len(p.Deployments) == 0 {
-		p.Problems = append(p.Problems, "give at least one deployment (cluster_id, partition, run_section, resources)")
+		p.Problems = append(p.Problems, "give at least one deployment (cluster_id, run_section, resources)")
 	}
 	clusters := map[string]*client.SlurmClusterResponse{}
 	for i := range p.Deployments {
@@ -140,7 +139,8 @@ func (p *AppProposal) Validate(ctx context.Context, d *tk.Deps) {
 		if strings.TrimSpace(dep.Job.Allocation) == "" {
 			p.Problems = append(p.Problems, label+": default_resources.allocation (the Slurm account) is required")
 		}
-		if strings.ContainsAny(dep.Partition, "\r\n,") {
+		name := tk.Str(dep.Job.Partition)
+		if strings.ContainsAny(name, "\r\n,") {
 			p.Problems = append(p.Problems, label+": partition must be a single partition name")
 		}
 		c, ok := clusters[dep.ClusterID]
@@ -156,15 +156,18 @@ func (p *AppProposal) Validate(ctx context.Context, d *tk.Deps) {
 			continue
 		}
 		dep.ClusterName = c.ClusterName
-		part := tk.Partition(c, dep.Partition)
+		if name == "" {
+			continue
+		}
+		part := tk.Partition(c, name)
 		if part == nil {
-			p.Problems = append(p.Problems, fmt.Sprintf("%s: %s has no partition %q", label, c.ClusterName, dep.Partition))
+			p.Problems = append(p.Problems, fmt.Sprintf("%s: %s has no partition %q", label, c.ClusterName, name))
 			continue
 		}
 		fit := estimate.Check(dep.Job, part)
 		dep.Fit = &fit
 		for _, v := range fit.Violations {
-			p.Problems = append(p.Problems, fmt.Sprintf("%s (%s/%s): %s", label, c.ClusterName, dep.Partition, v))
+			p.Problems = append(p.Problems, fmt.Sprintf("%s (%s/%s): %s", label, c.ClusterName, name, v))
 		}
 	}
 }
@@ -194,7 +197,7 @@ func (p *AppProposal) Describe() string {
 	for _, dep := range p.Deployments {
 		j := dep.Job
 		fmt.Fprintf(&b, "Deployment on %s, partition %s: walltime %d min, %d node(s), %d core(s), %d GPU(s), allocation %s\n",
-			dep.ClusterName, dep.Partition, j.WallTimeMinutes, j.NodeCount(), j.Cores(), j.GPUs(), j.Allocation)
+			dep.ClusterName, tk.Str(j.Partition), j.WallTimeMinutes, j.NodeCount(), j.Cores(), j.GPUs(), j.Allocation)
 		run := dep.RunSection
 		if len(run) > 1500 {
 			run = run[:1500] + "\n..."
@@ -241,9 +244,8 @@ func DeploymentRequest(templateID client.TemplateId, dep DeploymentDraft) (clien
 	if err != nil {
 		return client.BatchDeploymentRequest{}, err
 	}
-	part := dep.Partition
 	return client.BatchDeploymentRequest{TemplateId: templateID, SlurmClusterId: &cid, SlurmRunSection: dep.RunSection,
-		DefaultBatchJobConfig: dep.Job.API(), DefaultPartition: &part}, nil
+		DefaultBatchJobConfig: dep.Job.API()}, nil
 }
 
 // FromJobConfig converts a converter job config into a resource request.

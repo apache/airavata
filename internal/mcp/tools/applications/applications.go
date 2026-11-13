@@ -113,7 +113,7 @@ func summarize(t client.TemplateResponse, deps []client.BatchDeploymentResponse,
 		if dep.TemplateId == nil || *dep.TemplateId != t.TemplateId {
 			continue
 		}
-		o := deploymentOut{DeploymentID: dep.DeploymentId.String(), Partition: tk.Str(dep.DefaultPartition)}
+		o := deploymentOut{DeploymentID: dep.DeploymentId.String(), Partition: tk.Str(estimate.FromResponse(dep.DefaultBatchJobConfig).Partition)}
 		if dep.SlurmClusterId != nil {
 			o.ClusterID = dep.SlurmClusterId.String()
 			o.ClusterName = names[o.ClusterID]
@@ -200,7 +200,6 @@ type convertOut struct {
 	Mapped         []optionOut                     `json:"mapped_options"`
 	Replaced       []optionOut                     `json:"replaced_by_airavata"`
 	Unsupported    []optionOut                     `json:"unsupported_options"`
-	Partition      string                          `json:"partition,omitempty"`
 	Resources      estimate.Request                `json:"default_resources"`
 	RunSection     string                          `json:"run_section"`
 	Inputs         []slurmconv.AppliedInput        `json:"inputs"`
@@ -251,9 +250,12 @@ func convert(ctx context.Context, d *tk.Deps, in convertIn) (*mcp.CallToolResult
 		name = "converted_script"
 	}
 	out := convertOut{Mapped: options(conv.Mapped), Replaced: options(conv.Replaced), Unsupported: options(conv.Unsupported),
-		Partition: conv.Partition, Resources: FromJobConfig(conv.JobConfig), RunSection: conv.RunSection, Inputs: applied,
+		Resources: FromJobConfig(conv.JobConfig), RunSection: conv.RunSection, Inputs: applied,
 		Software: conv.Software, Containers: conv.Containers, Diff: slurmconv.Diff(in.Script, slurmconv.Render(conv)),
 		Registrable: conv.Registrable, Problems: conv.Problems, Notes: conv.Notes}
+	if conv.Partition != "" {
+		out.Resources.Partition = &conv.Partition
+	}
 	if conv.Array != nil || len(conv.Dependencies) > 0 {
 		out.Notes = append(out.Notes, "Job arrays and dependency chains cannot be registered yet; they will map to Airavata's sweep and chain workflow recipes.")
 	}
@@ -266,15 +268,12 @@ func convert(ctx context.Context, d *tk.Deps, in convertIn) (*mcp.CallToolResult
 		return nil, out, nil
 	}
 	p := &AppProposal{Name: name, Description: in.Description, Source: "sbatch", Outputs: in.Outputs, Inputs: []InputDraft{},
-		Deployments: []DeploymentDraft{{ClusterID: in.ClusterID, Partition: conv.Partition, RunSection: conv.RunSection, Job: out.Resources}}}
+		Deployments: []DeploymentDraft{{ClusterID: in.ClusterID, RunSection: conv.RunSection, Job: out.Resources}}}
 	if p.Outputs == nil {
 		p.Outputs = []OutputDraft{}
 	}
 	for _, a := range applied {
 		p.Inputs = append(p.Inputs, InputDraft{Name: a.Name, Type: a.Type, Description: a.Description, Default: a.Default})
-	}
-	if conv.Partition == "" {
-		p.Problems = append(p.Problems, "the script names no --partition; draft_application can set one")
 	}
 	out.Proposal = p
 	out.ProposalHandle, out.Next, err = finish(ctx, d, p)
@@ -300,7 +299,6 @@ func finish(ctx context.Context, d *tk.Deps, p *AppProposal) (handle, next strin
 
 type draftDeployment struct {
 	ClusterID  string           `json:"cluster_id"`
-	Partition  string           `json:"partition"`
 	RunSection string           `json:"run_section,omitempty" jsonschema:"the job body; reference inputs as {{ inputs.NAME[0] }}. Optional with container_image + command"`
 	Resources  estimate.Request `json:"default_resources"`
 }
@@ -347,7 +345,7 @@ func draft(ctx context.Context, d *tk.Deps, in draftIn) (*mcp.CallToolResult, dr
 		if run == "" {
 			run = containerRun
 		}
-		p.Deployments = append(p.Deployments, DeploymentDraft{ClusterID: dd.ClusterID, Partition: dd.Partition, RunSection: run, Job: job})
+		p.Deployments = append(p.Deployments, DeploymentDraft{ClusterID: dd.ClusterID, RunSection: run, Job: job})
 	}
 	out := draftOut{Proposal: p}
 	var err error

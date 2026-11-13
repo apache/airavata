@@ -259,7 +259,6 @@ func (s *BatchDeploymentService) Create(ctx context.Context, req *dto.BatchDeplo
 			SlurmRunSection:         req.SlurmRunSection,
 			DefaultBatchJobConfigID: config.ID,
 			DefaultBatchJobConfig:   config,
-			DefaultPartition:        req.DefaultPartition,
 		}
 		if err := deployments.Save(ctx, deployment); err != nil {
 			return err
@@ -307,7 +306,6 @@ func (s *BatchDeploymentService) Update(ctx context.Context, id string, req *dto
 		deployment.SlurmRunSection = req.SlurmRunSection
 		deployment.DefaultBatchJobConfigID = config.ID
 		deployment.DefaultBatchJobConfig = config
-		deployment.DefaultPartition = req.DefaultPartition
 
 		if err := deployments.Save(ctx, deployment); err != nil {
 			return err

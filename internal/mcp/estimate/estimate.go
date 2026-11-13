@@ -46,6 +46,7 @@ type Request struct {
 	CpusPerGpu      *string `json:"cpus_per_gpu,omitempty"`
 	Gres            *string `json:"gres,omitempty"`
 	Constraints     *string `json:"constraints,omitempty"`
+	Partition       *string `json:"partition,omitempty"`
 	Qos             *string `json:"qos,omitempty"`
 }
 
@@ -57,7 +58,7 @@ func FromResponse(c *client.BatchJobConfigResponse) Request {
 	return Request{WallTimeMinutes: c.WallTimeMinutes, Allocation: c.Allocation, Nodes: c.Nodes, Ntasks: c.Ntasks,
 		NtasksPerNode: c.NtasksPerNode, Cpus: c.Cpus, CpusPerTask: c.CpusPerTask, Mem: c.Mem, MemPerCpu: c.MemPerCpu,
 		Gpus: c.Gpus, GpusPerNode: c.GpusPerNode, MemPerGpu: c.MemPerGpu, CpusPerGpu: c.CpusPerGpu, Gres: c.Gres,
-		Constraints: c.Constraints, Qos: c.Qos}
+		Constraints: c.Constraints, Partition: c.Partition, Qos: c.Qos}
 }
 
 // API converts to the request body airavata-server takes.
@@ -65,7 +66,7 @@ func (r Request) API() client.BatchJobConfigRequest {
 	return client.BatchJobConfigRequest{WallTimeMinutes: r.WallTimeMinutes, Allocation: r.Allocation, Nodes: r.Nodes,
 		Ntasks: r.Ntasks, NtasksPerNode: r.NtasksPerNode, Cpus: r.Cpus, CpusPerTask: r.CpusPerTask, Mem: r.Mem,
 		MemPerCpu: r.MemPerCpu, Gpus: r.Gpus, GpusPerNode: r.GpusPerNode, MemPerGpu: r.MemPerGpu,
-		CpusPerGpu: r.CpusPerGpu, Gres: r.Gres, Constraints: r.Constraints, Qos: r.Qos}
+		CpusPerGpu: r.CpusPerGpu, Gres: r.Gres, Constraints: r.Constraints, Partition: r.Partition, Qos: r.Qos}
 }
 
 // Overlay returns r with every field set in o replacing r's.
@@ -99,6 +100,7 @@ func (r Request) Overlay(o Request) Request {
 	pickS(&r.CpusPerGpu, o.CpusPerGpu)
 	pickS(&r.Gres, o.Gres)
 	pickS(&r.Constraints, o.Constraints)
+	pickS(&r.Partition, o.Partition)
 	pickS(&r.Qos, o.Qos)
 	return r
 }

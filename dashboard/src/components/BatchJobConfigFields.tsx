@@ -13,6 +13,7 @@ const NUMERIC = new Set(["wallTimeMinutes", "cpus", "ntasksPerNode", "cpusPerTas
 
 const FIELDS: { key: keyof BatchJobConfigDraft; label: string; placeholder?: string }[] = [
   { key: "allocation", label: "Allocation (account)" },
+  { key: "partition", label: "Partition", placeholder: "default" },
   { key: "wallTimeMinutes", label: "Wall time (minutes)" },
   { key: "nodes", label: "Nodes" },
   { key: "ntasks", label: "Tasks" },
@@ -63,10 +64,12 @@ export function BatchJobConfigFields({
   value,
   onChange,
   discover,
+  partitions,
 }: {
   value: BatchJobConfigDraft;
   onChange: (v: BatchJobConfigDraft) => void;
   discover?: AllocationDiscovery;
+  partitions?: string[];
 }) {
   return (
     <div className="form-grid">
@@ -74,7 +77,7 @@ export function BatchJobConfigFields({
         <AllocationField
           value={value.allocation}
           onChange={(allocation) => onChange({ ...value, allocation })}
-          discover={discover}
+          discover={{ ...discover, partition: value.partition }}
         />
       )}
       {FIELDS.filter((f) => !(discover && f.key === "allocation")).map((f) => (
@@ -83,10 +86,12 @@ export function BatchJobConfigFields({
             type={NUMERIC.has(f.key) ? "number" : "text"}
             value={value[f.key]}
             placeholder={f.placeholder}
+            list={f.key === "partition" ? "job-partitions" : undefined}
             onChange={(e) => onChange({ ...value, [f.key]: e.target.value })}
           />
         </Field>
       ))}
+      <datalist id="job-partitions">{partitions?.map((p) => <option key={p} value={p} />)}</datalist>
     </div>
   );
 }

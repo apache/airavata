@@ -50,9 +50,8 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 	}
 
 	deployment := &appmodel.BatchDeployment{
-		ID:               "dep-1",
-		TemplateID:       ptr("tpl-1"),
-		DefaultPartition: ptr("gpu"),
+		ID:         "dep-1",
+		TemplateID: ptr("tpl-1"),
 		SlurmRunSection: "module load alphafold\n" +
 			"run_fold --in {{ inputs.protein[0] }} --iterations {{ inputs.iterations[0] }} " +
 			"--files {{ inputs.files[0] }} {{ inputs.files[1] }} {{ inputs.files[2] }} " +
@@ -76,6 +75,7 @@ func scriptFixture() (*model.Process, *appmodel.BatchDeployment, *appmodel.Templ
 				GPUs:            ptr(int32(4)),
 				WallTimeMinutes: 1500,
 				Allocation:      "alloc-123",
+				Partition:       ptr("gpu"),
 			},
 			InputMappings: []*model.TemplateInputMapping{
 				{TemplateInputID: ptr("in-file"), Value: ptr("data-product-9")},

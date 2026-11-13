@@ -42,7 +42,7 @@ A partition records one Slurm partition's limits and defaults. Clients use them 
 
 | Field | Unit | Meaning |
 |---|---|---|
-| `name` | | The Slurm partition name, e.g. `gpu`. Required. A deployment's `defaultPartition` refers to a partition by this name. |
+| `name` | | The Slurm partition name, e.g. `gpu`. Required. A job config's `partition` refers to a partition by this name. |
 | `description` | | Free text. |
 | `maxRunTime` | minutes | The longest wall time a job may request. |
 | `defaultWalltime` | minutes | The wall time a job gets if it asks for none. |
@@ -130,7 +130,7 @@ The account a job is charged to (`allocation`, the Slurm account) is also detect
 - `sacctmgr -nP show associations where user=<loginUser> format=Account,Partition,QOS`
 - `sshare -h -P -U -u <loginUser> -o Account` if `sacctmgr` is closed to ordinary users. This lists the same accounts without their limits.
 
-Each account the login may charge appears as a button you can click to choose it. Hovering shows its description, the partitions it is limited to and its QOS. If an account is limited to partitions other than the deployment's partition, it is marked **other partitions** and a warning appears when you select it. If only one account is found and the field is empty, it is filled in automatically.
+Each account the login may charge appears as a button you can click to choose it. Hovering shows its description, the partitions it is limited to and its QOS. If an account is limited to partitions other than the requested partition, it is marked **other partitions** and a warning appears when you select it. If only one account is found and the field is empty, it is filled in automatically.
 
 On the deployment form, **Discover allocations as** picks which of your logins on the cluster to ask.
 
@@ -191,7 +191,7 @@ DELETE /api/v1/slurm-clusters/{clusterId}/partitions/{partitionId}    # remove o
 
 To refresh a cluster's layout after the site changes it, run **discover-partitions** again and compare the result with the stored partitions. Then add, update or remove partitions one at a time.
 
-Deployments refer to a partition by **name**, not by id. Deleting or renaming a partition is not checked against the deployments that use it, so update those deployments' `defaultPartition` as well.
+Deployments refer to a partition by **name**, not by id. Deleting or renaming a partition is not checked against the deployments that use it, so update those deployments' `defaultBatchJobConfig.partition` as well.
 
 ### Deleting
 
@@ -213,4 +213,4 @@ Deployments refer to a partition by **name**, not by id. Deleting or renaming a 
 
 ## How runs use this
 
-When a run is launched, Airavata logs in to the cluster's head node under the run's **cluster config**. It creates the work directory under the config's work root, stages the run's data into it, writes the batch script and submits it with `sbatch` to the deployment's partition. The `#SBATCH` header is built from the run's resource request, including its allocation. See [application.md](application.md) for how deployments and runs are put together.
+When a run is launched, Airavata logs in to the cluster's head node under the run's **cluster config**. It creates the work directory under the config's work root, stages the run's data into it, writes the batch script and submits it with `sbatch` to the run's partition. The `#SBATCH` header is built from the run's resource request, including its allocation. See [application.md](application.md) for how deployments and runs are put together.
