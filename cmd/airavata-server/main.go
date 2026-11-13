@@ -97,6 +97,10 @@ Environment variables:
 		return err
 	}
 
+	if err := audit.Register(gdb); err != nil {
+		return fmt.Errorf("register audit log: %w", err)
+	}
+
 	if err := db.AutoMigrate(gdb); err != nil {
 		return fmt.Errorf("auto-migrate schema before seeding: %w", err)
 	}

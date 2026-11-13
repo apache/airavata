@@ -110,6 +110,13 @@ func TestSeedPopulatesAllResources(t *testing.T) {
 	if sa.ExpiredAt(time.Now().UnixMilli()) {
 		t.Errorf("service account token should not be expired")
 	}
+	var saPermCount int64
+	if err := gdb.Model(&iammodel.ServiceAccountPermission{}).Where("user_id = ?", saID).Count(&saPermCount).Error; err != nil {
+		t.Fatalf("count service account permissions: %v", err)
+	}
+	if saPermCount == 0 {
+		t.Errorf("expected permissions to be seeded for service account %s", saID)
+	}
 
 	// Verify Slurm Cluster
 	var cluster computemodel.SlurmCluster
@@ -236,12 +243,18 @@ func TestSeedIsIdempotent(t *testing.T) {
 	if saCount != 1 {
 		t.Errorf("service account count = %d, want 1", saCount)
 	}
+
+	saID := auth.ServiceAccountIDPrefix + db.DefaultDevServiceAccountName
+	var saPermCount int64
+	if err := gdb.Model(&iammodel.ServiceAccountPermission{}).Where("user_id = ?", saID).Count(&saPermCount).Error; err != nil {
+		t.Fatalf("count service account permissions: %v", err)
+	}
+	if saPermCount == 0 {
+		t.Errorf("expected permissions to be seeded for service account %s", saID)
+	}
 }
 
-// TestSeedCoversAllConfigEntities guarantees that any new table added to the entity
-// model (internal/db/migrate.go Entities()) is consciously evaluated for database seeding:
-// it must either have at least one row seeded by db.Seed(), or be explicitly documented
-// in the unseededTables allowlist as runtime-only or user-generated state.
+// TestSeedCoversAllConfigEntities verifies all schema tables are consciously evaluated for seeding.
 func TestSeedCoversAllConfigEntities(t *testing.T) {
 	gdb := newTestDB(t)
 	ctx := context.Background()
@@ -268,7 +281,6 @@ func TestSeedCoversAllConfigEntities(t *testing.T) {
 		"data_products":                    "registered when user uploads or imports datasets",
 		"virtual_data_directories":         "user-created virtual dataset hierarchy",
 		"virtual_data_files":               "file nodes in user-created virtual datasets",
-		"service_account_permissions":      "optional granular permission grants for service accounts",
 		"process_links":                    "runtime secrets for running jobs linking back via linkspan",
 		"audit_events":                     "append-only audit log records created when actions happen",
 	}

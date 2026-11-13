@@ -249,7 +249,7 @@ airavata-server seed
 
 This seeds:
 - **Users & Roles**: `root` (`SUPER_ADMIN`) and `dev-user` (`ADMIN`)
-- **Service Account**: `sa:dev-agent` with static token `airavata_sa_dev_secret_token_for_local_testing_only` (`USER` role)
+- **Service Account**: `sa:dev-agent` with static token `airavata_sa_dev_secret_token_for_local_testing_only` (with developer service account permissions)
 - **SSH Credential**: `mock-slurm-key` using the pre-seeded development ed25519 key pair
 - **Slurm Cluster**: `local-mock-cluster` on `localhost:12222` (configurable via `MOCK_SLURM_HOST` and `MOCK_SLURM_PORT`)
 - **Partitions**: `debug` (default queue, 1 node, 4 CPUs) and `compute` (4 nodes, 16 CPUs, gpu:1)

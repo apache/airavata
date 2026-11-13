@@ -37,6 +37,7 @@ import (
 	iammodel "github.com/apache/airavata/api/iam/model"
 	sharingmodel "github.com/apache/airavata/api/sharing/model"
 	"github.com/apache/airavata/internal/auth"
+	"github.com/apache/airavata/internal/permission"
 	"github.com/apache/airavata/internal/ptr"
 	"github.com/apache/airavata/internal/role"
 )
@@ -87,81 +88,54 @@ type SeedResult struct {
 	Storages        []string
 }
 
-// Seed idempotently populates the database with initial development resources:
-// - Root and dev admin users with corresponding roles
-// - Default development service account (sa:dev-agent) and static bearer token
-// - Default development group with memberships
-// - Mock Slurm SSH credential (ed25519)
-// - Slurm cluster pointing to the mock Slurm container
-// - Debug (default) and compute partitions
-// - Slurm cluster configuration for slurmuser
-// - Demonstration application template ("Echo App") with default input and output
-// - Batch deployment for the template on the mock cluster
-// - SCP data storage configuration
-// - Resource sharing grants for the dev user and service account
+// Seed idempotently populates initial development resources.
 func Seed(ctx context.Context, gdb *gorm.DB) (*SeedResult, error) {
 	result := &SeedResult{}
 
-	// 1. Users & Roles
-	if err := seedUsers(ctx, gdb, result); err != nil {
-		return nil, fmt.Errorf("seed users: %w", err)
-	}
-
-	// 2. Service Accounts
-	if err := seedServiceAccount(ctx, gdb, result); err != nil {
-		return nil, fmt.Errorf("seed service account: %w", err)
-	}
-
-	// 3. Groups & Memberships
-	if err := seedGroups(ctx, gdb, result); err != nil {
-		return nil, fmt.Errorf("seed groups: %w", err)
-	}
-
-	// 4. SSH Credential
-	cred, err := seedSSHCredential(ctx, gdb, result)
+	err := gdb.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := seedUsers(ctx, tx, result); err != nil {
+			return fmt.Errorf("seed users: %w", err)
+		}
+		if err := seedServiceAccount(ctx, tx, result); err != nil {
+			return fmt.Errorf("seed service account: %w", err)
+		}
+		if err := seedGroups(ctx, tx, result); err != nil {
+			return fmt.Errorf("seed groups: %w", err)
+		}
+		cred, err := seedSSHCredential(ctx, tx, result)
+		if err != nil {
+			return fmt.Errorf("seed ssh credential: %w", err)
+		}
+		cluster, err := seedSlurmCluster(ctx, tx, result)
+		if err != nil {
+			return fmt.Errorf("seed slurm cluster: %w", err)
+		}
+		if err := seedPartitions(ctx, tx, cluster, result); err != nil {
+			return fmt.Errorf("seed cluster partitions: %w", err)
+		}
+		config, err := seedClusterConfig(ctx, tx, cluster, cred, result)
+		if err != nil {
+			return fmt.Errorf("seed cluster config: %w", err)
+		}
+		tmpl, err := seedTemplate(ctx, tx, result)
+		if err != nil {
+			return fmt.Errorf("seed template: %w", err)
+		}
+		if _, err := seedDeployment(ctx, tx, tmpl, cluster, result); err != nil {
+			return fmt.Errorf("seed deployment: %w", err)
+		}
+		storage, err := seedDataStorage(ctx, tx, cred, result)
+		if err != nil {
+			return fmt.Errorf("seed data storage: %w", err)
+		}
+		if err := seedSharing(ctx, tx, config, storage); err != nil {
+			return fmt.Errorf("seed sharing: %w", err)
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("seed ssh credential: %w", err)
+		return nil, err
 	}
-
-	// 5. Slurm Cluster
-	cluster, err := seedSlurmCluster(ctx, gdb, result)
-	if err != nil {
-		return nil, fmt.Errorf("seed slurm cluster: %w", err)
-	}
-
-	// 6. Cluster Partitions
-	if err := seedPartitions(ctx, gdb, cluster, result); err != nil {
-		return nil, fmt.Errorf("seed cluster partitions: %w", err)
-	}
-
-	// 7. Cluster Configuration
-	config, err := seedClusterConfig(ctx, gdb, cluster, cred, result)
-	if err != nil {
-		return nil, fmt.Errorf("seed cluster config: %w", err)
-	}
-
-	// 8. Application Template
-	tmpl, err := seedTemplate(ctx, gdb, result)
-	if err != nil {
-		return nil, fmt.Errorf("seed template: %w", err)
-	}
-
-	// 9. Batch Deployment
-	if _, err := seedDeployment(ctx, gdb, tmpl, cluster, result); err != nil {
-		return nil, fmt.Errorf("seed deployment: %w", err)
-	}
-
-	// 10. Data Storage
-	storage, err := seedDataStorage(ctx, gdb, cred, result)
-	if err != nil {
-		return nil, fmt.Errorf("seed data storage: %w", err)
-	}
-
-	// 11. Grant sharing permissions to dev-user and service account
-	if err := seedSharing(ctx, gdb, config, storage); err != nil {
-		return nil, fmt.Errorf("seed sharing: %w", err)
-	}
-
 	return result, nil
 }
 
@@ -283,6 +257,25 @@ func seedServiceAccount(ctx context.Context, gdb *gorm.DB, res *SeedResult) erro
 		}
 	} else if err != nil {
 		return err
+	}
+
+	for _, p := range permission.All() {
+		if !p.GrantableToServiceAccount() {
+			continue
+		}
+		var perm iammodel.ServiceAccountPermission
+		err = gdb.WithContext(ctx).Where("user_id = ? AND permission = ?", saID, p).First(&perm).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			perm = iammodel.ServiceAccountPermission{
+				UserID:     saID,
+				Permission: p,
+			}
+			if err := gdb.WithContext(ctx).Create(&perm).Error; err != nil {
+				return err
+			}
+		} else if err != nil {
+			return err
+		}
 	}
 
 	res.ServiceAccounts = append(res.ServiceAccounts, fmt.Sprintf("%s (%s)", saID, DefaultDevServiceAccountToken))
@@ -530,26 +523,30 @@ func seedTemplate(ctx context.Context, gdb *gorm.DB, res *SeedResult) (*applicat
 		tmpl = applicationmodel.Template{
 			TemplateName:        ptr.To(DefaultTemplateName),
 			TemplateDescription: ptr.To("Demonstration echo application for local development"),
-			Inputs: []applicationmodel.TemplateInput{
-				{
-					InputName:        ptr.To("message"),
-					DisplayName:      ptr.To("Greeting Message"),
-					InputDescription: ptr.To("Message printed by the echo application"),
-					InputType:        &inType,
-					IsRequired:       false,
-					DefaultValue:     ptr.To(`{"value":"Hello from Airavata"}`),
-				},
-			},
-			Outputs: []applicationmodel.TemplateOutput{
-				{
-					OutputName:        ptr.To("output.txt"),
-					DisplayName:       ptr.To("Output File"),
-					OutputDescription: ptr.To("Captured computation output"),
-					OutputType:        &outType,
-				},
-			},
 		}
 		if err := gdb.WithContext(ctx).Create(&tmpl).Error; err != nil {
+			return nil, err
+		}
+		in := applicationmodel.TemplateInput{
+			TemplateID:       ptr.To(tmpl.ID),
+			InputName:        ptr.To("message"),
+			DisplayName:      ptr.To("Greeting Message"),
+			InputDescription: ptr.To("Message printed by the echo application"),
+			InputType:        &inType,
+			IsRequired:       false,
+			DefaultValue:     ptr.To(`{"value":"Hello from Airavata"}`),
+		}
+		if err := gdb.WithContext(ctx).Create(&in).Error; err != nil {
+			return nil, err
+		}
+		out := applicationmodel.TemplateOutput{
+			TemplateID:        ptr.To(tmpl.ID),
+			OutputName:        ptr.To("output.txt"),
+			DisplayName:       ptr.To("Output File"),
+			OutputDescription: ptr.To("Captured computation output"),
+			OutputType:        &outType,
+		}
+		if err := gdb.WithContext(ctx).Create(&out).Error; err != nil {
 			return nil, err
 		}
 	} else if err != nil {
