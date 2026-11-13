@@ -142,16 +142,16 @@ func refreshFailure(err error) string {
 }
 
 func NewTokenSource(ctx context.Context, cfg Config) (TokenSource, *Principal, error) {
-	cfg, err := cfg.withDefaults()
-	if err != nil {
-		return nil, nil, err
-	}
 	if tok := strings.TrimSpace(os.Getenv(EnvToken)); tok != "" {
 		p, err := Identify(ctx, cfg, tok)
 		if err != nil {
 			return nil, nil, fmt.Errorf("%s: %w", EnvToken, err)
 		}
 		return staticSource(tok), p, nil
+	}
+	cfg, err := cfg.withDefaults()
+	if err != nil {
+		return nil, nil, err
 	}
 	e, err := loadEntry(cfg)
 	if err != nil {

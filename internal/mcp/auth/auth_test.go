@@ -359,3 +359,204 @@ func TestNormalizeSubject(t *testing.T) {
 		t.Fatalf("got %q", got)
 	}
 }
+
+func TestServiceAccountIdentifiedViaAiravataServer(t *testing.T) {
+	const saToken = "airavata_sa_abcdef1234567890abcdef1234567890"
+	var receivedAuthHeader string
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v1/users/me" {
+			http.NotFound(w, r)
+			return
+		}
+		receivedAuthHeader = r.Header.Get("Authorization")
+		if receivedAuthHeader != "Bearer "+saToken {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		firstName := "Pipeline Worker"
+		json.NewEncoder(w).Encode(map[string]any{
+			"userId":    "sa:pipeline-worker",
+			"firstName": firstName,
+			"status":    "ACTIVE",
+		})
+	}))
+	defer mockServer.Close()
+
+	cfg := Config{
+		APIURL:     mockServer.URL,
+		HTTPClient: mockServer.Client(),
+	}
+
+	p, err := Identify(context.Background(), cfg, saToken)
+	if err != nil {
+		t.Fatalf("Identify error: %v", err)
+	}
+	if p.Subject != "sa:pipeline-worker" {
+		t.Errorf("p.Subject = %q, want sa:pipeline-worker", p.Subject)
+	}
+	if p.RawSubject != "sa:pipeline-worker" {
+		t.Errorf("p.RawSubject = %q, want sa:pipeline-worker", p.RawSubject)
+	}
+	if p.Name != "Pipeline Worker" {
+		t.Errorf("p.Name = %q, want Pipeline Worker", p.Name)
+	}
+	if receivedAuthHeader != "Bearer "+saToken {
+		t.Errorf("Authorization header = %q, want Bearer %s", receivedAuthHeader, saToken)
+	}
+}
+
+func TestServiceAccountIdentifiedViaCurrentUserResponse(t *testing.T) {
+	const saToken = "airavata_sa_abcdef1234567890abcdef1234567890"
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v1/users/me" {
+			http.NotFound(w, r)
+			return
+		}
+		if r.Header.Get("Authorization") != "Bearer "+saToken {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		firstName := "Pipeline Worker"
+		json.NewEncoder(w).Encode(map[string]any{
+			"userId": "sa:pipeline-worker",
+			"status": "ACTIVE",
+			"user": map[string]any{
+				"userId":    "sa:pipeline-worker",
+				"firstName": firstName,
+			},
+		})
+	}))
+	defer mockServer.Close()
+
+	cfg := Config{
+		APIURL:     mockServer.URL,
+		HTTPClient: mockServer.Client(),
+	}
+
+	p, err := Identify(context.Background(), cfg, saToken)
+	if err != nil {
+		t.Fatalf("Identify error: %v", err)
+	}
+	if p.Subject != "sa:pipeline-worker" {
+		t.Errorf("p.Subject = %q, want sa:pipeline-worker", p.Subject)
+	}
+	if p.Name != "Pipeline Worker" {
+		t.Errorf("p.Name = %q, want Pipeline Worker", p.Name)
+	}
+}
+
+func TestServiceAccountRejectedByServer(t *testing.T) {
+	const saToken = "airavata_sa_revokedorinvalid"
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer mockServer.Close()
+
+	cfg := Config{
+		APIURL:     mockServer.URL,
+		HTTPClient: mockServer.Client(),
+	}
+
+	_, err := Identify(context.Background(), cfg, saToken)
+	if err == nil || !strings.Contains(err.Error(), "rejected by airavata-server (HTTP 401)") {
+		t.Fatalf("expected 401 error, got: %v", err)
+	}
+}
+
+func TestServiceAccountNonServiceAccountIDRejected(t *testing.T) {
+	const saToken = "airavata_sa_impersonating"
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]any{
+			"userId":    "root",
+			"firstName": "Root",
+			"status":    "ACTIVE",
+		})
+	}))
+	defer mockServer.Close()
+
+	cfg := Config{
+		APIURL:     mockServer.URL,
+		HTTPClient: mockServer.Client(),
+	}
+
+	_, err := Identify(context.Background(), cfg, saToken)
+	if err == nil || !strings.Contains(err.Error(), "not a service account") {
+		t.Fatalf("expected non-service-account error, got: %v", err)
+	}
+}
+
+func TestNewTokenSourceWithServiceAccountEnvToken(t *testing.T) {
+	const saToken = "airavata_sa_fromenv"
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v1/users/me" && r.Header.Get("Authorization") == "Bearer "+saToken {
+			json.NewEncoder(w).Encode(map[string]any{
+				"userId":    "sa:ci-bot",
+				"firstName": "CI Bot",
+				"status":    "ACTIVE",
+			})
+			return
+		}
+		w.WriteHeader(http.StatusUnauthorized)
+	}))
+	defer mockServer.Close()
+
+	t.Setenv(EnvToken, saToken)
+	cfg := Config{
+		APIURL:     mockServer.URL,
+		HTTPClient: mockServer.Client(),
+	}
+
+	ts, p, err := NewTokenSource(context.Background(), cfg)
+	if err != nil {
+		t.Fatalf("NewTokenSource error: %v", err)
+	}
+	tok, err := ts.Token(context.Background())
+	if err != nil {
+		t.Fatalf("Token() error: %v", err)
+	}
+	if tok != saToken {
+		t.Errorf("tok = %q, want %q", tok, saToken)
+	}
+	if p.Subject != "sa:ci-bot" {
+		t.Errorf("p.Subject = %q, want sa:ci-bot", p.Subject)
+	}
+}
+
+func TestServiceAccountNeverQueriesIdP(t *testing.T) {
+	idpHits := 0
+	fakeIdpSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		idpHits++
+		http.Error(w, "should never be reached", http.StatusInternalServerError)
+	}))
+	defer fakeIdpSrv.Close()
+
+	const saToken = "airavata_sa_secrettoken"
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v1/users/me" {
+			json.NewEncoder(w).Encode(map[string]any{
+				"userId": "sa:bot",
+				"status": "ACTIVE",
+			})
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer mockServer.Close()
+
+	cfg := Config{
+		Issuer:     fakeIdpSrv.URL,
+		APIURL:     mockServer.URL,
+		HTTPClient: http.DefaultClient,
+	}
+
+	p, err := Identify(context.Background(), cfg, saToken)
+	if err != nil {
+		t.Fatalf("Identify error: %v", err)
+	}
+	if p.Subject != "sa:bot" {
+		t.Errorf("Subject = %q, want sa:bot", p.Subject)
+	}
+	if idpHits != 0 {
+		t.Errorf("IdP was contacted %d times; service account tokens must never be sent to IdP", idpHits)
+	}
+}

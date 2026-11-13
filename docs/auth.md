@@ -118,7 +118,7 @@ An expired, regenerated-away or disabled token gets `401` with `WWW-Authenticate
 
 `GET /api/v1/service-accounts` lists all service accounts and `GET /api/v1/service-accounts/{id}` reads one. Neither returns a token. Use `tokenExpiresAt` (milliseconds since the epoch) to find tokens that need renewing.
 
-[airavata-mcp](mcp.md) signs in through CILogon only, so service account tokens can't be used with it.
+[airavata-mcp](mcp.md) accepts service account tokens via the `AIRAVATA_MCP_TOKEN` environment variable, validating them directly against the Airavata server.
 
 ### Root account
 

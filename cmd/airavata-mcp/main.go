@@ -56,6 +56,7 @@ Usage:
 
 Every flag can also be set with the environment variable shown in its help.
 The token can be given in AIRAVATA_MCP_TOKEN instead of logging in; it is never a flag.
+Accepts both CILogon and Airavata service account tokens.
 `
 
 func main() {
