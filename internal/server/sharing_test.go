@@ -34,6 +34,7 @@ func TestSharingIsUniformAcrossResources(t *testing.T) {
 	h := newHarness(t)
 
 	_, storageID := h.seedStorage("uniform", tokenAlice)
+	_, s3StorageID := h.seedS3Storage("uniform", tokenAlice)
 	productOut := h.mustDo(http.MethodPost, "/api/v1/data-products", tokenAlice, map[string]any{
 		"dataName": "uniform", "isFile": true, "path": "/scratch/uniform", "dataStorageId": storageID,
 	}, http.StatusCreated)
@@ -51,6 +52,7 @@ func TestSharingIsUniformAcrossResources(t *testing.T) {
 		id       string
 	}{
 		{"/api/v1/scp-data-storages/" + storageID, sharingmodel.ResourceTypeSCPDataStorage, storageID},
+		{"/api/v1/s3-data-storages/" + s3StorageID, sharingmodel.ResourceTypeS3DataStorage, s3StorageID},
 		{"/api/v1/data-products/" + productID, sharingmodel.ResourceTypeDataProduct, productID},
 		{"/api/v1/virtual-data-directories/" + directoryID, sharingmodel.ResourceTypeVirtualDataDirectory, directoryID},
 		{"/api/v1/slurm-cluster-configs/" + configID, sharingmodel.ResourceTypeSlurmClusterConfig, configID},

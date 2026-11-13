@@ -6,16 +6,17 @@ Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`).
 
 ## What can be shared
 
-Four kinds of record, each reached under its own collection:
+Five kinds of record, each reached under its own collection:
 
 | Resource | `resourceType` | Shares live under |
 |---|---|---|
 | [SCP data storage](api.md#scp-data-storages) | `SCP_DATA_STORAGE` | `/api/v1/scp-data-storages/{dataStorageId}/shares` |
+| [S3 data storage](api.md#s3-data-storages) | `S3_DATA_STORAGE` | `/api/v1/s3-data-storages/{dataStorageId}/shares` |
 | [Data product](api.md#data-products) | `DATA_PRODUCT` | `/api/v1/data-products/{dataProductId}/shares` |
 | Virtual data directory | `VIRTUAL_DATA_DIRECTORY` | `/api/v1/virtual-data-directories/{virtualDataDirectoryId}/shares` |
 | [Slurm cluster config](api.md#slurm-cluster-configs) | `SLURM_CLUSTER_CONFIG` | `/api/v1/slurm-cluster-configs/{slurmClusterConfigId}/shares` |
 
-[SSH credentials](api.md#ssh-credentials) are deliberately **not** shareable. A credential *is* the secret material rather than something reached with it, so lending it out is what sharing a cluster config or a data storage is *for* — the credential stays with its owner while other people submit and stage under it.
+[SSH credentials](api.md#ssh-credentials) and [S3 credentials](api.md#s3-credentials) are deliberately **not** shareable. A credential *is* the secret material rather than something reached with it, so lending it out is what sharing a cluster config or a data storage is *for* — the credential stays with its owner while other people submit and stage under it.
 
 ## The model
 
