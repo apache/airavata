@@ -4,7 +4,7 @@ Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via
 
 This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.\n\nSharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Privileged operations require an `Authorization: Bearer <token>` header for a principal holding the required [permission](auth.md#permissions) (held by `ADMIN` or `SUPER_ADMIN` by default); catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 
 ## Error responses
 
@@ -2274,4 +2274,404 @@ Runs a command on the remote host — filtering the output of a running job, for
 | `401 Unauthorized` | no token — these routes are never anonymous |
 | `403 Forbidden` | the process is not the caller's |
 | `404 Not Found` | no such process, or a `taskId` that belongs to a different process |
+
+---
+
+## Process Links and Jupyter Server
+
+Airavata acts as a control plane for interactive compute sessions, such as Jupyter servers running inside cluster jobs connected via [Linkspan](https://github.com/cyber-shuttle/linkspan).
+
+### Get Jupyter Server Access Details
+
+```
+GET /api/v1/processes/{processId}/jupyter-server
+```
+
+Returns the proxy URL and token needed to connect to the Jupyter Server of a running process. Requires the caller to own the process or hold `process:manage_any`.
+
+```bash
+curl -s localhost:9095/api/v1/processes/"$PROCESS_ID"/jupyter-server \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "url": "http://localhost:9095/api/v1/processes/a1b2c3d4-e5f6-4708-9a1b-2c3d4e5f6a7b/jupyter/",
+  "token": "jup_sec_EXAMPLETOKEN"
+}
+```
+
+### Jupyter Reverse Proxy
+
+```
+/api/v1/processes/{processId}/jupyter/
+```
+
+Transparent reverse proxy forwarding HTTP and WebSocket traffic to the remote Jupyter Server over the process's link. Clients authenticate using the Jupyter token (`Authorization: token <token>` or `?token=<token>`).
+
+### Linkspan Dial Target
+
+```
+GET /api/v1/processes/{processId}/link
+```
+
+WebSocket endpoint dialed by Linkspan running on a compute node. Linkspan authenticates by offering the process's link token as a WebSocket subprotocol (`airavata.link.<token>`).
+
+---
+
+## Users
+
+User profiles and platform administration. See [docs/auth.md](auth.md) for concepts and role definitions.
+
+### Get Current User Profile
+
+```
+GET /api/v1/users/me
+```
+
+Returns the authenticated caller's identity, standing, roles, and effective permission set. Accessible to any signed-in user, including newly registered suspended users.
+
+```bash
+curl -s localhost:9095/api/v1/users/me \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "userId": "cilogon:12345",
+  "status": "ACTIVE",
+  "authorities": ["USER", "ADMIN"],
+  "permissions": ["cluster:manage", "template:manage", "process:list"],
+  "admin": true,
+  "user": {
+    "userId": "cilogon:12345",
+    "firstName": "Ada",
+    "lastName": "Lovelace",
+    "email": "ada@example.edu",
+    "authMethod": "CILOGON",
+    "status": "ACTIVE",
+    "createdAt": 1767225600000
+  }
+}
+```
+
+### List Users
+
+```
+GET /api/v1/users
+```
+
+Lists every registered user. Requires `user:list` (held by `ADMIN` and `SUPER_ADMIN`).
+
+```bash
+curl -s localhost:9095/api/v1/users \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### Register User Ahead of Sign-in
+
+```
+POST /api/v1/users
+```
+
+Creates a user record before their first CILogon sign-in (e.g. to pre-assign group memberships). Requires `user:create` (`SUPER_ADMIN` only).
+
+| Field | Type | Notes |
+|---|---|---|
+| `userId` | string | required; normalized CILogon subject or username |
+| `firstName` | string \| null | optional |
+| `lastName` | string \| null | optional |
+| `email` | string \| null | optional |
+| `authMethod` | string | required; `CILOGON` |
+
+```bash
+curl -s -X POST localhost:9095/api/v1/users \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"userId":"cilogon:54321","firstName":"Charles","lastName":"Babbage","email":"babbage@example.edu","authMethod":"CILOGON"}'
+```
+
+### Set User Status
+
+```
+POST /api/v1/users/{userId}/status
+```
+
+Activates, suspends, or deactivates a user account. Requires `user:set_status` (`ADMIN` or `SUPER_ADMIN`). An administrator cannot change their own status, and only a `SUPER_ADMIN` can modify an administrator's status.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/users/cilogon:54321/status \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"ACTIVE"}'
+```
+
+### Grant or Revoke Admin Role
+
+```
+POST /api/v1/users/{userId}/admin
+```
+
+Grants or revokes the `ADMIN` role for a user. Requires `admin:manage` (`SUPER_ADMIN` only).
+
+```bash
+curl -s -X POST localhost:9095/api/v1/users/cilogon:54321/admin \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"admin": true}'
+```
+
+---
+
+## Service Accounts
+
+Non-human accounts for automation and CI/CD pipelines. Managed by administrators; each account authenticates using an Airavata-issued token and holds a dedicated permission set. See [docs/auth.md](auth.md#service-accounts).
+
+### Create Service Account
+
+```
+POST /api/v1/service-accounts
+```
+
+Registers a new service account and issues its first token. Requires `serviceaccount:manage`. **The token is returned only once in this response.**
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string | required; 2–64 characters (`[a-z0-9._-]`), becomes `sa:<name>` |
+| `displayName` | string \| null | optional |
+| `description` | string \| null | optional |
+| `email` | string \| null | optional |
+| `validityDays` | integer \| null | optional (1–365, default 90) |
+| `permissions` | array of string | optional; specific permissions to grant to this service account |
+
+```bash
+curl -s -X POST localhost:9095/api/v1/service-accounts \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "ci-builder",
+    "displayName": "CI Builder",
+    "description": "Automated workflow runner",
+    "validityDays": 90,
+    "permissions": ["cluster:discover", "process:list"]
+  }'
+```
+
+**Response — `201 Created`**
+
+```json
+{
+  "serviceAccount": {
+    "serviceAccountId": "sa:ci-builder",
+    "name": "ci-builder",
+    "displayName": "CI Builder",
+    "description": "Automated workflow runner",
+    "status": "ACTIVE",
+    "createdBy": "cilogon:12345",
+    "tokenIssuedAt": 1767225600000,
+    "tokenExpiresAt": 1774998000000,
+    "permissions": ["cluster:discover", "process:list"]
+  },
+  "token": "airavata_sa_3q2-EXAMPLETOKEN"
+}
+```
+
+### List Service Accounts
+
+```
+GET /api/v1/service-accounts
+```
+
+Lists all service accounts. Requires `serviceaccount:read` or `serviceaccount:manage`.
+
+### Get Service Account
+
+```
+GET /api/v1/service-accounts/{serviceAccountId}
+```
+
+Reads one service account by ID (`sa:<name>`). Does not return the secret token.
+
+### Update Service Account
+
+```
+PUT /api/v1/service-accounts/{serviceAccountId}
+```
+
+Updates display name, description, status (`ACTIVE` or `INACTIVE`), or permissions list. A supplied `permissions` array replaces the entire existing set.
+
+### Renew or Regenerate Token
+
+```
+POST /api/v1/service-accounts/{serviceAccountId}/token/renew
+POST /api/v1/service-accounts/{serviceAccountId}/token/regenerate
+```
+
+* `renew` extends the expiry of the existing token by `validityDays` (default 90).
+* `regenerate` invalidates the previous token immediately and returns a new token once.
+
+Body is optional: `{"validityDays": 60}`.
+
+### Delete Service Account
+
+```
+DELETE /api/v1/service-accounts/{serviceAccountId}
+```
+
+Deletes the service account, its token, group memberships, and shares. Returns `409 Conflict` if the account still owns persistent records (disable with status `INACTIVE` instead).
+
+---
+
+## Permissions
+
+Granular capabilities gating API actions. Roles and service accounts map to sets of permissions.
+
+### List Permissions
+
+```
+GET /api/v1/permissions
+```
+
+Returns all permissions defined in the platform, their human-readable descriptions, and whether they can be granted to service accounts. Accessible to any authenticated caller.
+
+```bash
+curl -s localhost:9095/api/v1/permissions \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+```json
+[
+  {
+    "permission": "audit:read",
+    "description": "Read the audit log",
+    "grantableToServiceAccount": true
+  },
+  {
+    "permission": "cluster:manage",
+    "description": "Create, edit and delete Slurm clusters and partitions",
+    "grantableToServiceAccount": true
+  },
+  {
+    "permission": "admin:manage",
+    "description": "Appoint and remove administrators",
+    "grantableToServiceAccount": false
+  }
+]
+```
+
+---
+
+## Audit Events
+
+The audit log records create, update, delete, and status change actions performed by users, service accounts, and system workers. See [docs/audit.md](audit.md).
+
+### Query Audit Events
+
+```
+GET /api/v1/audit-events
+```
+
+Returns paginated audit log entries. Requires `audit:read`.
+
+| Query Parameter | Type | Description |
+|---|---|---|
+| `userId` | string | filter by actor user ID |
+| `entityType` | string | filter by entity type (e.g. `users`, `groups`, `slurm_clusters`) |
+| `entityId` | string | filter by entity primary key |
+| `action` | string | filter by action (`CREATE`, `UPDATE`, `DELETE`) |
+| `from` | integer | timestamp in milliseconds |
+| `to` | integer | timestamp in milliseconds |
+| `limit` | integer | maximum items to return (1–100, default 20) |
+| `cursor` | string | pagination cursor |
+
+```bash
+curl -s "localhost:9095/api/v1/audit-events?entityType=groups&limit=5" \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "items": [
+    {
+      "id": "e1f2a3b4-5678-4abc-9def-0123456789ab",
+      "timestamp": 1767225600000,
+      "actor": "cilogon:12345",
+      "entityType": "groups",
+      "entityId": "g1a2b3c4-5678-4abc-9def-0123456789ab",
+      "action": "CREATE",
+      "changedFields": ""
+    }
+  ],
+  "cursor": "MTc2NzIyNTYwMDAwMF9lMWYyYTN...",
+  "hasMore": false
+}
+```
+
+### List Audit Entity Types
+
+```
+GET /api/v1/audit-events/entity-types
+```
+
+Returns the list of distinct entity type names currently recorded in the audit log. Requires `audit:read`.
+
+```bash
+curl -s localhost:9095/api/v1/audit-events/entity-types \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+---
+
+## Authentication (CILogon)
+
+Endpoints supporting browser-based OAuth/OIDC authorization code exchange with PKCE and token refresh for the web dashboard.
+
+### Get CILogon Configuration
+
+```
+GET /api/v1/auth/cilogon
+```
+
+Public endpoint returning whether CILogon authentication is enabled, the authorization endpoint, client ID, and required scopes.
+
+```bash
+curl -s localhost:9095/api/v1/auth/cilogon
+```
+
+### Exchange Authorization Code
+
+```
+POST /api/v1/auth/cilogon/token
+```
+
+Exchanges an authorization code and PKCE code verifier for CILogon access and refresh tokens.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/auth/cilogon/token \
+  -H "Content-Type: application/json" \
+  -d '{"code":"OAUTH_CODE","codeVerifier":"PKCE_VERIFIER","redirectUri":"http://localhost:9095/dashboard/login/callback/"}'
+```
+
+### Refresh CILogon Token
+
+```
+POST /api/v1/auth/cilogon/refresh
+```
+
+Refreshes an expiring CILogon access token using a refresh token.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/auth/cilogon/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"REFRESH_TOKEN"}'
+```
+
 
