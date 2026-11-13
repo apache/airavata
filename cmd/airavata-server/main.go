@@ -52,16 +52,110 @@ func main() {
 	}
 }
 
-// run dispatches to the migrate subcommand when invoked as
-// "airavata-migrate migrate <up|status>", or otherwise starts the server. Keeping
-// migrations behind an explicit subcommand rather than a flag on the server itself
-// matches INSTALL.md's production guidance to disable AIRAVATA_DB_AUTO_MIGRATE and
-// apply schema changes as a reviewed, separate step.
+// run dispatches to the migrate or seed subcommand when invoked as
+// "airavata-server migrate <up|status>" or "airavata-server seed", or otherwise starts the server.
 func run() error {
-	if len(os.Args) > 1 && os.Args[1] == "migrate" {
-		return runMigrate(os.Args[2:])
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "migrate":
+			return runMigrate(os.Args[2:])
+		case "seed":
+			return runSeed(os.Args[2:])
+		}
 	}
 	return runServer()
+}
+
+// runSeed populates the database with development and mock Slurm resources, then exits.
+func runSeed(args []string) error {
+	for _, arg := range args {
+		if arg == "-h" || arg == "--help" || arg == "help" {
+			fmt.Println(`airavata-server seed: populate the database with development and mock Slurm resources.
+
+Usage:
+  airavata-server seed [flags]
+
+Flags:
+  -h, --help    Show this help message
+
+Environment variables:
+  AIRAVATA_DB_DSN              PostgreSQL connection string
+  MOCK_SLURM_HOST              Mock Slurm cluster host (default: localhost)
+  MOCK_SLURM_PORT              Mock Slurm cluster SSH port (default: 12222)
+  MOCK_SLURM_PRIVATE_KEY_PATH  Path to dev SSH private key (default: embedded/compose key)
+  MOCK_SLURM_PUBLIC_KEY_PATH   Path to dev SSH public key (default: embedded/compose key)`)
+			return nil
+		}
+	}
+
+	cfg, err := config.FetchSystemConfigs()
+	if err != nil {
+		return err
+	}
+	gdb, err := db.Open(db.DefaultConfig(cfg.DSN))
+	if err != nil {
+		return err
+	}
+
+	if err := audit.Register(gdb); err != nil {
+		return fmt.Errorf("register audit log: %w", err)
+	}
+
+	if err := db.AutoMigrate(gdb); err != nil {
+		return fmt.Errorf("auto-migrate schema before seeding: %w", err)
+	}
+
+	ctx := context.Background()
+	result, err := db.Seed(ctx, gdb)
+	if err != nil {
+		return fmt.Errorf("seed database: %w", err)
+	}
+
+	fmt.Println("========================================")
+	fmt.Println("AIRAVATA DATABASE SEEDING COMPLETED")
+	fmt.Println("========================================")
+	fmt.Println("Users:")
+	for _, u := range result.Users {
+		fmt.Printf("  ✓ %s\n", u)
+	}
+	fmt.Println("Service Accounts:")
+	for _, sa := range result.ServiceAccounts {
+		fmt.Printf("  ✓ %s\n", sa)
+	}
+	fmt.Println("Groups:")
+	for _, g := range result.Groups {
+		fmt.Printf("  ✓ %s\n", g)
+	}
+	fmt.Println("Credentials:")
+	for _, c := range result.Credentials {
+		fmt.Printf("  ✓ %s\n", c)
+	}
+	fmt.Println("Clusters:")
+	for _, cl := range result.Clusters {
+		fmt.Printf("  ✓ %s\n", cl)
+	}
+	fmt.Println("Partitions:")
+	for _, p := range result.Partitions {
+		fmt.Printf("  ✓ %s\n", p)
+	}
+	fmt.Println("Cluster Configs:")
+	for _, cc := range result.Configs {
+		fmt.Printf("  ✓ %s\n", cc)
+	}
+	fmt.Println("Application Templates:")
+	for _, t := range result.Templates {
+		fmt.Printf("  ✓ %s\n", t)
+	}
+	fmt.Println("Deployments:")
+	for _, d := range result.Deployments {
+		fmt.Printf("  ✓ %s\n", d)
+	}
+	fmt.Println("Data Storages:")
+	for _, s := range result.Storages {
+		fmt.Printf("  ✓ %s\n", s)
+	}
+	fmt.Println("========================================")
+	return nil
 }
 
 // runMigrate applies or reports on versioned migrations (internal/db/migrations)
@@ -139,6 +233,13 @@ func runServer() error {
 			return fmt.Errorf("migrate schema: %w", err)
 		}
 		slog.Info("schema is up to date")
+	}
+
+	if cfg.AutoSeed {
+		if _, err := db.Seed(context.Background(), gdb); err != nil {
+			return fmt.Errorf("auto-seed database: %w", err)
+		}
+		slog.Info("database seeded successfully")
 	}
 
 	// Roles come from the database rather than the hardcoded mock: the schema already

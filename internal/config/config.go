@@ -43,6 +43,9 @@ type Config struct {
 	// updated from the entity model at startup.
 	AutoMigrate bool
 
+	// AutoSeed, when enabled, runs database seeding on server startup.
+	AutoSeed bool
+
 	// CORSAllowedOrigins is airavata.cors.allowed-origins.
 	CORSAllowedOrigins []string
 
@@ -69,6 +72,9 @@ type Config struct {
 	// build"), served under /dashboard/ alongside the API. Empty disables it.
 	DashboardDir string
 
+	// DocsEnabled serves Swagger UI under /docs/. Defaults to false.
+	DocsEnabled bool
+
 	// PublicURL is where compute nodes reach this server, http(s)://host[:port]. A
 	// job's Linkspan dials its ws(s) form to link back; see internal/link.
 	PublicURL string
@@ -81,6 +87,7 @@ func load() (Config, error) {
 		HTTPAddr:    ":" + env("SERVER_PORT", "9095"),
 		DSN:         env("AIRAVATA_DB_DSN", defaultDSN()),
 		AutoMigrate: envBool("AIRAVATA_DB_AUTO_MIGRATE", true),
+		AutoSeed:    envBool("AIRAVATA_DB_AUTO_SEED", false),
 
 		CORSAllowedOrigins: strings.Split(env("AIRAVATA_CORS_ALLOWED_ORIGINS", "*"), ","),
 
@@ -97,6 +104,7 @@ func load() (Config, error) {
 		WorkflowBackendType:       env("AIRAVATA_WORKFLOW_BACKEND_TYPE", "sqlite"),
 		WorkflowBackendSqlitePath: env("AIRAVATA_WORKFLOW_BACKEND_SQLITE_PATH", "/tmp/airavataorchestrator.sqlite"),
 		DashboardDir:              dashboardDir(),
+		DocsEnabled:               envBool("AIRAVATA_DOCS_ENABLED", false),
 		PublicURL:                 env("AIRAVATA_PUBLIC_URL", "http://localhost:"+env("SERVER_PORT", "9095")),
 	}
 

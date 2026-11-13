@@ -25,17 +25,20 @@ by the build.
 From a clean checkout, this brings up a database and a running API:
 
 ```bash
-# 1. Start PostgreSQL (listens on host port 15432)
-docker compose -f dev-tools/compose/compose.yml up -d postgres
+# 1. Start PostgreSQL and mock SSH/Slurm cluster (listens on 15432 and 12222)
+docker compose -f dev-tools/compose/compose.yml up -d
 
 # 2. Build
 gofmt -w .
 go build -o bin/airavata-server ./cmd/airavata-server
 
-# 3. Build the dashboard (optional; needs Node.js)
+# 3. Seed initial development resources (mock Slurm cluster, keys, template & deployment)
+./bin/airavata-server seed
+
+# 4. Build the dashboard (optional; needs Node.js)
 npm --prefix dashboard ci && npm --prefix dashboard run build
 
-# 4. Run
+# 5. Run
 ./bin/airavata-server
 ```
 
@@ -97,6 +100,7 @@ compose database.
 | `SERVER_PORT` | `9095` | Port the HTTP API listens on. |
 | `AIRAVATA_DASHBOARD_ENABLED` | `true` | Serve the [dashboard](#dashboard) under `/dashboard/`. |
 | `AIRAVATA_DASHBOARD_DIR` | `dashboard/out` | The dashboard's built static export, relative to the working directory. |
+| `AIRAVATA_DOCS_ENABLED` | `false` | Serve Swagger UI under `/docs/`. Disabled by default for security. |
 | `AIRAVATA_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origins. The server echoes the caller's origin rather than sending `*`, because every authenticated call carries an `Authorization` header and browsers reject the wildcard for credentialed requests. |
 | `AIRAVATA_PUBLIC_URL` | `http://localhost:<SERVER_PORT>` | Where compute nodes reach this server. A job running [Linkspan](https://github.com/cyber-shuttle/linkspan) links back to its `ws(s)` form so the dashboard can open the job's Jupyter Server ([docs/notebooks.md](docs/notebooks.md)). Set it to the public `https://` URL in production. |
 
@@ -112,6 +116,7 @@ compose database.
 | `AIRAVATA_DB_SSLMODE` | `disable` | libpq TLS mode: `disable`, `require`, `verify-ca`, `verify-full`. **Set at least `require` for anything but a loopback database.** |
 | `AIRAVATA_DB_DSN` | *(built from the above)* | Full PostgreSQL connection URL. Set this to override the six variables above entirely — useful for extra TLS options or a managed database. |
 | `AIRAVATA_DB_AUTO_MIGRATE` | `true` | Create/update tables from the entity model at startup. |
+| `AIRAVATA_DB_AUTO_SEED` | `false` | Automatically seed development resources (mock Slurm cluster, partitions, credentials, template, deployment) on startup. |
 
 The assembled default DSN is:
 
@@ -163,12 +168,13 @@ is configured. It is intended for initial setup and testing.
 ### With Docker
 
 ```bash
-docker compose -f dev-tools/compose/compose.yml up -d postgres
+docker compose -f dev-tools/compose/compose.yml up -d
 ```
 
-This starts PostgreSQL 17 on host port `15432` with the database, user and password
-matching the defaults above. Adminer is also available (`up -d adminer`,
-`http://localhost:18080`) for browsing the schema.
+This starts:
+- PostgreSQL 17 on host port `15432` with database, user and password matching defaults.
+- Adminer on host port `18080` (`http://localhost:18080`) for browsing the schema.
+- Mock SSH/Slurm cluster on host port `12222` (`dev-tools/compose/mock-slurm/`) for local process launch and cluster discovery.
 
 ### Without Docker
 
@@ -231,6 +237,31 @@ AIRAVATA_TEST_POSTGRES_DSN='postgres://airavata:123456@localhost:15432/airavata?
 
 Those tests skip without that variable, so `go test ./...` stays green on a machine
 with no database.
+
+### Database seeding (`seed` command)
+
+To eliminate manual resource registration on every clean run, Airavata includes an
+idempotent database seeder:
+
+```bash
+airavata-server seed
+```
+
+This seeds:
+- **Users & Roles**: `root` (`SUPER_ADMIN`) and `dev-user` (`ADMIN`)
+- **Service Account**: `sa:dev-agent` with static token `airavata_sa_dev_secret_token_for_local_testing_only` (with developer service account permissions)
+- **SSH Credential**: `mock-slurm-key` using the pre-seeded development ed25519 key pair
+- **Slurm Cluster**: `local-mock-cluster` on `localhost:12222` (configurable via `MOCK_SLURM_HOST` and `MOCK_SLURM_PORT`)
+- **Partitions**: `debug` (default queue, 1 node, 4 CPUs) and `compute` (4 nodes, 16 CPUs, gpu:1)
+- **Cluster Config**: `mock-slurm-root-config` for `slurmuser` with scratch directory `/home/slurmuser/scratch`
+- **Application Template**: `Echo App` with default input message and output file
+- **Batch Deployment**: `Echo App` deployed to `local-mock-cluster` on partition `debug`
+- **Data Storage**: `mock-slurm-storage` (SCP storage on `localhost:12222`)
+- **Sharing**: Grants write permission on the cluster config and storage to `dev-user` and `sa:dev-agent`
+
+Seeding is safe to re-run at any time — existing rows are reused or updated rather than
+duplicated. Alternatively, set `AIRAVATA_DB_AUTO_SEED=true` to seed automatically whenever
+the server starts.
 
 ---
 
@@ -397,6 +428,8 @@ the Airavata mark is shown.
   management" above.
 - **Terminate TLS in front of the server.** It speaks plain HTTP; bearer tokens must
   not cross an untrusted network unencrypted.
+- **Swagger UI (`/docs/`) is disabled by default.** Set `AIRAVATA_DOCS_ENABLED=true`
+  when running in development or when API documentation should be exposed.
 
 ---
 

@@ -2,7 +2,9 @@
 
 Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via the `SERVER_PORT` env var).
 
-This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.\n\nSharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
+This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and served interactively via Swagger UI at `/docs` (with the raw specification at `/docs/openapi.yaml`).
+
+Sharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
 
 All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
 

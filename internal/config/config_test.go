@@ -39,7 +39,7 @@ func isolate(t *testing.T) {
 	t.Helper()
 	for _, key := range []string{
 		"SERVER_PORT",
-		"AIRAVATA_DB_DSN", "AIRAVATA_DB_AUTO_MIGRATE",
+		"AIRAVATA_DB_DSN", "AIRAVATA_DB_AUTO_MIGRATE", "AIRAVATA_DB_AUTO_SEED",
 		"AIRAVATA_DB_HOST", "AIRAVATA_DB_PORT", "AIRAVATA_DB_NAME",
 		"AIRAVATA_DB_USER", "AIRAVATA_DB_PASSWORD",
 		"AIRAVATA_CORS_ALLOWED_ORIGINS",
@@ -47,6 +47,7 @@ func isolate(t *testing.T) {
 		"CILOGON_INTROSPECTION_URI", "CILOGON_USERINFO_URI",
 		"AIRAVATA_ROOT_ACCOUNT_ENABLED", "AIRAVATA_ROOT_ACCOUNT_TOKEN",
 		"AIRAVATA_DASHBOARD_ENABLED", "AIRAVATA_DASHBOARD_DIR",
+		"AIRAVATA_DOCS_ENABLED",
 	} {
 		t.Setenv(key, "")
 	}
@@ -65,6 +66,9 @@ func TestDefaults(t *testing.T) {
 	}
 	if !cfg.AutoMigrate {
 		t.Error("AutoMigrate = false, want true by default")
+	}
+	if cfg.AutoSeed {
+		t.Error("AutoSeed = true, want false by default")
 	}
 	if !cfg.RootAccountEnabled {
 		t.Error("RootAccountEnabled = false, want true by default")
@@ -185,5 +189,22 @@ func TestDashboardDir(t *testing.T) {
 	t.Setenv("AIRAVATA_DASHBOARD_ENABLED", "false")
 	if cfg, _ := load(); cfg.DashboardDir != "" {
 		t.Errorf("DashboardDir = %q, want empty when disabled", cfg.DashboardDir)
+	}
+}
+
+func TestDocsConfig(t *testing.T) {
+	isolate(t)
+	if cfg, _ := load(); cfg.DocsEnabled {
+		t.Error("DocsEnabled = true, want false by default")
+	}
+
+	t.Setenv("AIRAVATA_DOCS_ENABLED", "true")
+	if cfg, _ := load(); !cfg.DocsEnabled {
+		t.Error("DocsEnabled = false, want true when AIRAVATA_DOCS_ENABLED=true")
+	}
+
+	t.Setenv("AIRAVATA_DOCS_ENABLED", "false")
+	if cfg, _ := load(); cfg.DocsEnabled {
+		t.Error("DocsEnabled = true, want false when AIRAVATA_DOCS_ENABLED=false")
 	}
 }

@@ -29,5 +29,25 @@ services:
       postgres:
         condition: service_healthy
 
+  mock-slurm:
+    build:
+      context: ./mock-slurm
+      dockerfile: Dockerfile
+    image: airavata-mock-slurm:latest
+    container_name: mock-slurm
+    restart: unless-stopped
+    ports:
+      - "12222:22"
+    volumes:
+      - mock_slurm_scratch:/home/slurmuser/scratch
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/22' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 2s
+
 volumes:
   postgres_data:
+  mock_slurm_scratch:
+

@@ -113,7 +113,7 @@ func newHarness(t *testing.T) *harness {
 		}
 	}
 
-	cfg := config.Config{CORSAllowedOrigins: []string{"*"}, PublicURL: "https://airavata.example.org"}
+	cfg := config.Config{CORSAllowedOrigins: []string{"*"}, DocsEnabled: true, PublicURL: "https://airavata.example.org"}
 	introspector := stubIntrospector{
 		tokenAdmin: {Name: "admin-user", Authorities: []string{string(role.Admin)}},
 		tokenAlice: {Name: "alice", Authorities: []string{string(role.User)}},
