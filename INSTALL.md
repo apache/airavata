@@ -267,21 +267,29 @@ created on their first authenticated request, filled from their CILogon profile 
 `POST /api/v1/users/{userId}/status`); until then the server answers the account with
 `403` on everything but `GET /api/v1/users/me`.
 
-### Granting a role requires a manual insert
+### Granting roles
 
-Authorities are read from `user_roles`, but no endpoint writes to that table — user
-registration sets a status and timestamp, and updates deliberately cannot change roles.
-Promote a user directly:
+Authorities are read from `user_roles`. An administrator holding `admin:manage` (`SUPER_ADMIN` by default) can grant or revoke the `ADMIN` role from the dashboard's **Users** page or through the API:
+
+```bash
+curl -s -X POST localhost:9095/api/v1/users/cilogon:12345/admin \
+  -H "Authorization: Bearer $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"admin": true}'
+```
+
+To grant `SUPER_ADMIN` (or bootstrap the first administrator without the root account), insert the row directly into `user_roles`:
 
 ```sql
-INSERT INTO user_roles (user_id, role) VALUES ('cilogon:12345', 'ADMIN');
+INSERT INTO user_roles (user_id, role) VALUES ('cilogon:12345', 'SUPER_ADMIN');
 ```
 
 Valid roles are `SUPER_ADMIN`, `ADMIN` and `USER`. A user with no rows is treated as
 `USER`.
 
 CILogon subjects are normalised to `cilogon:<id>` before lookup, so that is the form
-the `user_id` column must hold.
+the `user_id` column must hold. Permissions associated with each role are managed via
+`role_permissions` (see [docs/auth.md](docs/auth.md)).
 
 ### Registering users ahead of sign-in
 
@@ -408,7 +416,7 @@ the Airavata mark is shown.
 | `no authentication configured` at startup | Root account disabled with no `CILOGON_CLIENT_ID`. Set one or re-enable the root account. |
 | `401` with `WWW-Authenticate: Bearer error="invalid_token"` | The token was rejected by introspection, or it is a stale root token from a previous start. Restart and use the newly printed token, or pin it with `AIRAVATA_ROOT_ACCOUNT_TOKEN`. |
 | `502 Unable to validate bearer token` | CILogon is unreachable. This is reported separately from `401` because it is not the caller's fault. |
-| `403 Access denied` on a write | The caller authenticated but lacks `ADMIN`/`SUPER_ADMIN`. Grant the role in `user_roles`. |
+| `403 Access denied` on a write | The caller authenticated but lacks the required permission (or `ADMIN`/`SUPER_ADMIN`). Grant the role or permission (see [docs/auth.md](docs/auth.md)). |
 | `404 No user record found for authenticated principal` | The caller has no `users` row. CILogon users get one on their first request. The `root` row is created automatically on startup. |
 | `403 Your account is suspended` | The caller's account hasn't been activated. Activate it on the dashboard's Users page. |
 | `409 SSH credential <id> is still presented by N record(s)` | A credential cannot be deleted while a cluster config or a data storage still presents it. Repoint or delete those first. |
