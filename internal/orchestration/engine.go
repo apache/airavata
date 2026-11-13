@@ -32,6 +32,7 @@ import (
 
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/client"
+	"github.com/cschleiden/go-workflows/core"
 	"github.com/cschleiden/go-workflows/worker"
 	"github.com/cschleiden/go-workflows/workflow"
 	"github.com/google/uuid"
@@ -53,11 +54,14 @@ import (
 // ExecutionEngine runs the workflows that carry out a process, and starts them when a
 // process is launched or the scheduler reports its job has finished.
 type ExecutionEngine struct {
-	workflows     *workflows.Workflows
-	orchestrator  *worker.WorkflowOrchestrator
-	processes     *processrepo.ProcessRepository
-	batchStatus   *processrepo.BatchJobStatusRepository
-	processStatus *processrepo.StatusRepository
+	workflows        *workflows.Workflows
+	batch            *batch.Tasks
+	tracker          *execution.TaskTracker
+	orchestrator     *worker.WorkflowOrchestrator
+	processes        *processrepo.ProcessRepository
+	batchStatus      *processrepo.BatchJobStatusRepository
+	processStatus    *processrepo.StatusRepository
+	processWorkflows *processrepo.WorkflowRepository
 }
 
 // NewExecutionEngine returns the workflow set scheduling acts.
@@ -85,20 +89,24 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 		orchestrator = worker.NewWorkflowOrchestrator(workflowBackend, nil)
 	}
 
-	tracker := execution.NewTaskTracker(taskStatus)
+	tracker := execution.NewTaskTracker(taskStatus, processes)
 
+	batchTasks := batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker, links)
 	return &ExecutionEngine{
+		batch:   batchTasks,
+		tracker: tracker,
 		workflows: workflows.New(
 			data.New(processes, dataStagingTasks, scpStorages, slurmClusterConfigs, sshContext, tracker),
-			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker, links),
+			batchTasks,
 			monitoring.New(processes, jobMonitoringTasks, tracker),
 			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,
-			processWorkflows,
+			processWorkflows, processes,
 		),
-		orchestrator:  orchestrator,
-		processes:     processes,
-		batchStatus:   batchStatus,
-		processStatus: processStatus,
+		orchestrator:     orchestrator,
+		processes:        processes,
+		batchStatus:      batchStatus,
+		processStatus:    processStatus,
+		processWorkflows: processWorkflows,
 	}
 }
 
@@ -143,6 +151,9 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 
 	if process == nil {
 		slog.Error("Processing batch email: Process is nil", "processID", parsed.JobName)
+		return nil
+	}
+	if execution.Stopped(ctx, w.processes, process.ID) {
 		return nil
 	}
 
@@ -234,4 +245,43 @@ func (w *ExecutionEngine) LaunchWorkflow(ctx context.Context, workflowID, proces
 		InstanceID: workflowID,
 	}, wf, processID)
 	return err
+}
+
+func (w *ExecutionEngine) Stop(ctx context.Context, processID string) error {
+	if err := w.processStatus.Create(ctx, &model.ProcessStatus{ProcessID: &processID,
+		Status: internalptr.To(model.ProcessStatusTypeStopped), Timestamp: internalptr.To(time.Now().UnixMilli())}); err != nil {
+		return err
+	}
+	// Not recorded, so the process had already completed.
+	if !execution.Stopped(ctx, w.processes, processID) {
+		return nil
+	}
+	// Workflows first, so a workflow sees its cancellation before its interrupted task.
+	err := w.cancelWorkflows(ctx, processID)
+	w.tracker.Stop(processID)
+	return errors.Join(err, w.batch.CancelBatchJob(ctx, processID))
+}
+
+func (w *ExecutionEngine) cancelWorkflows(ctx context.Context, processID string) error {
+	if w.orchestrator == nil {
+		return nil
+	}
+	recorded, err := w.processWorkflows.FindByProcessID(ctx, processID)
+	if err != nil {
+		return err
+	}
+	for _, wf := range recorded {
+		if wf.ExecutionID == nil || wf.Status == nil || *wf.Status != model.ProcessWorkflowStatusTypeRunning {
+			continue
+		}
+		err := w.orchestrator.Client.CancelWorkflowInstance(ctx, core.NewWorkflowInstance(wf.WorkflowID, *wf.ExecutionID))
+		// A workflow the engine no longer has will never record its own outcome.
+		if errors.Is(err, backend.ErrInstanceNotFound) {
+			err = w.processWorkflows.UpdateStatus(ctx, wf.ID, model.ProcessWorkflowStatusTypeStopped)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

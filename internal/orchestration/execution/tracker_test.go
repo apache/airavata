@@ -47,7 +47,7 @@ func newTracker(t *testing.T) (*execution.TaskTracker, *processrepo.TaskStatusRe
 		t.Fatalf("automigrate: %v", err)
 	}
 	statuses := processrepo.NewTaskStatusRepository(gdb)
-	return execution.NewTaskTracker(statuses), statuses, gdb
+	return execution.NewTaskTracker(statuses, processrepo.NewProcessRepository(gdb)), statuses, gdb
 }
 
 func statusesOf(t *testing.T, repo *processrepo.TaskStatusRepository, taskID string) []model.TaskStatusType {
@@ -72,7 +72,7 @@ func TestTrackRecordsExecutingThenCompleted(t *testing.T) {
 
 	want := &execution.Context{SomeData: "carried"}
 	got, err := tracker.Track(context.Background(), proc.ID, "task-1", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { return want, nil })
+		func(context.Context) (*execution.Context, error) { return want, nil })
 	if err != nil {
 		t.Fatalf("track: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestTrackRecordsFailureWithItsError(t *testing.T) {
 
 	boom := errors.New("scp refused")
 	_, err := tracker.Track(context.Background(), proc.ID, "task-2", model.TaskTypeJobSubmission, nil,
-		func() (*execution.Context, error) { return nil, boom })
+		func(context.Context) (*execution.Context, error) { return nil, boom })
 	if !errors.Is(err, boom) {
 		t.Fatalf("Track error = %v, want the run's own error", err)
 	}
@@ -121,7 +121,7 @@ func TestTrackSurvivesUnwritableStatus(t *testing.T) {
 
 	// No such process, so the foreign key rejects every status row.
 	_, err := tracker.Track(context.Background(), "missing-process", "task-3", model.TaskTypeJobMonitoring, nil,
-		func() (*execution.Context, error) { return &execution.Context{}, nil })
+		func(context.Context) (*execution.Context, error) { return &execution.Context{}, nil })
 	if err != nil {
 		t.Fatalf("Track error = %v, want the run's success to stand", err)
 	}
@@ -162,14 +162,14 @@ func TestTrackSkipsCompletedTask(t *testing.T) {
 	}
 	ctx := context.Background()
 	if _, err := tracker.Track(ctx, proc.ID, "task-4", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { return &execution.Context{}, nil }); err != nil {
+		func(context.Context) (*execution.Context, error) { return &execution.Context{}, nil }); err != nil {
 		t.Fatalf("first run: %v", err)
 	}
 
 	in := &execution.Context{SomeData: "handed on"}
 	ran := false
 	got, err := tracker.Track(ctx, proc.ID, "task-4", model.TaskTypeDataStaging, in,
-		func() (*execution.Context, error) { ran = true; return nil, errors.New("must not run") })
+		func(context.Context) (*execution.Context, error) { ran = true; return nil, errors.New("must not run") })
 	if err != nil {
 		t.Fatalf("second run: %v", err)
 	}
@@ -185,12 +185,12 @@ func TestTrackSkipsCompletedTask(t *testing.T) {
 
 	// A failed task is not completed, so it runs again.
 	if _, err := tracker.Track(ctx, proc.ID, "task-5", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { return nil, errors.New("boom") }); err == nil {
+		func(context.Context) (*execution.Context, error) { return nil, errors.New("boom") }); err == nil {
 		t.Fatal("failing run returned no error")
 	}
 	ran = false
 	if _, err := tracker.Track(ctx, proc.ID, "task-5", model.TaskTypeDataStaging, nil,
-		func() (*execution.Context, error) { ran = true; return &execution.Context{}, nil }); err != nil {
+		func(context.Context) (*execution.Context, error) { ran = true; return &execution.Context{}, nil }); err != nil {
 		t.Fatalf("rerun of failed task: %v", err)
 	}
 	if !ran {

@@ -24,7 +24,9 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
+	"github.com/cschleiden/go-workflows/registry"
 	"github.com/cschleiden/go-workflows/tester"
 	workflow "github.com/cschleiden/go-workflows/workflow"
 	"github.com/glebarez/sqlite"
@@ -34,12 +36,14 @@ import (
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
 	"github.com/apache/airavata/internal/db"
+	"github.com/apache/airavata/internal/ptr"
 )
 
 // runRecorded runs a workflow whose body returns bodyErr under recordingOutcome, with
 // the real RecordWorkflowStatus activity writing to an in-memory database, and returns
-// the workflow's error and the record it left.
-func runRecorded(t *testing.T, bodyErr error) (error, model.ProcessWorkflow) {
+// the workflow's error and the record it left. With stop, the process is stopped and
+// the workflow cancelled while its body waits.
+func runRecorded(t *testing.T, bodyErr error, stop bool) (error, model.ProcessWorkflow) {
 	t.Helper()
 	gdb, err := gorm.Open(sqlite.Open("file::memory:?_pragma=foreign_keys(1)"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
@@ -55,13 +59,34 @@ func runRecorded(t *testing.T, bodyErr error) (error, model.ProcessWorkflow) {
 		t.Fatalf("create process: %v", err)
 	}
 
-	w := New(nil, nil, nil, nil, nil, nil, nil, processrepo.NewWorkflowRepository(gdb))
+	w := New(nil, nil, nil, nil, nil, nil, nil, processrepo.NewWorkflowRepository(gdb), processrepo.NewProcessRepository(gdb))
 	wf := func(ctx workflow.Context, processID string) error {
 		return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission,
-			func() error { return bodyErr })
+			func() error {
+				if stop {
+					return workflow.Sleep(ctx, time.Hour)
+				}
+				return bodyErr
+			})
 	}
 
 	wft := tester.NewWorkflowTester[any](wf)
+	if stop {
+		if err := gdb.Create(&model.ProcessStatus{ProcessID: &proc.ID, Status: ptr.To(model.ProcessStatusTypeStopped)}).Error; err != nil {
+			t.Fatalf("stop process: %v", err)
+		}
+		cancelled := false
+		if err := wft.Registry().RegisterActivity(func(context.Context, string) error { cancelled = true; return nil },
+			registry.WithName("CancelBatchJob")); err != nil {
+			t.Fatalf("register activity: %v", err)
+		}
+		wft.ScheduleCallback(time.Minute, wft.CancelWorkflow)
+		defer func() {
+			if !cancelled {
+				t.Error("the job of the stopped process was not cancelled")
+			}
+		}()
+	}
 	if err := wft.Registry().RegisterActivity(w.RecordWorkflowStatus); err != nil {
 		t.Fatalf("register activity: %v", err)
 	}
@@ -82,24 +107,31 @@ func runRecorded(t *testing.T, bodyErr error) (error, model.ProcessWorkflow) {
 }
 
 func TestRecordingOutcomeMarksSuccess(t *testing.T) {
-	wfErr, rec := runRecorded(t, nil)
+	wfErr, rec := runRecorded(t, nil, false)
 	if wfErr != nil {
 		t.Fatalf("workflow error = %v, want nil", wfErr)
 	}
 	if rec.Status == nil || *rec.Status != model.ProcessWorkflowStatusTypeSucceeded {
 		t.Errorf("status = %v, want SUCCEEDED", rec.Status)
 	}
-	if rec.WorkflowID == "" {
-		t.Error("record names no workflow instance")
+	if rec.WorkflowID == "" || rec.ExecutionID == nil || *rec.ExecutionID == "" {
+		t.Error("record does not name the workflow instance and its execution")
 	}
 }
 
 func TestRecordingOutcomeMarksFailure(t *testing.T) {
-	wfErr, rec := runRecorded(t, errors.New("staging failed"))
+	wfErr, rec := runRecorded(t, errors.New("staging failed"), false)
 	if wfErr == nil {
 		t.Fatal("workflow error = nil, want the body's error passed through")
 	}
 	if rec.Status == nil || *rec.Status != model.ProcessWorkflowStatusTypeFailed {
 		t.Errorf("status = %v, want FAILED", rec.Status)
+	}
+}
+
+func TestACancelledWorkflowCancelsTheJobAndIsRecordedStopped(t *testing.T) {
+	_, rec := runRecorded(t, nil, true)
+	if rec.Status == nil || *rec.Status != model.ProcessWorkflowStatusTypeStopped {
+		t.Errorf("status = %v, want STOPPED", rec.Status)
 	}
 }

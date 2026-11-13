@@ -1294,6 +1294,18 @@ func TestProcessTasksAreOwnerScoped(t *testing.T) {
 	h.mustDo(http.MethodGet, base+"/"+taskID, tokenAdmin, nil, http.StatusOK)
 }
 
+func TestStoppingAProcessIsOwnerScopedAndRecordsStopped(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("stop", tokenAlice)
+	path := "/api/v1/processes/" + processID + "/stop"
+	h.mustDo(http.MethodPost, path, tokenBob, nil, http.StatusForbidden)
+	h.mustDo(http.MethodPost, path, tokenAlice, nil, http.StatusNoContent)
+	if statuses := h.list("/api/v1/processes/"+processID+"/statuses", tokenAlice); statuses[len(statuses)-1]["status"] != "STOPPED" {
+		t.Fatalf("statuses after stop = %v", statuses)
+	}
+	h.mustDo(http.MethodPost, "/api/v1/processes/"+processID+"/launch", tokenAlice, nil, http.StatusConflict)
+}
+
 // Ordering is what a client reads the list for: explicit orders first, unordered last.
 func TestProcessTasksListInExecutionOrder(t *testing.T) {
 	h := newHarness(t)

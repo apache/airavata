@@ -29,7 +29,7 @@ import (
 // The backend refers to a workflow or activity by name alone, so each must register,
 // under the name a running instance was started with.
 func TestRegister(t *testing.T) {
-	w := New(nil, nil, nil, nil, nil, nil, nil, nil)
+	w := New(nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	r := registry.New()
 	if err := w.Register(r); err != nil {
 		t.Fatal(err)

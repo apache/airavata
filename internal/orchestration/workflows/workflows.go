@@ -56,6 +56,7 @@ type Workflows struct {
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository
 	processStatus      *processrepo.StatusRepository
 	processWorkflows   *processrepo.WorkflowRepository
+	processes          *processrepo.ProcessRepository
 }
 
 // New returns the workflows over the given tasks and the repositories they are
@@ -66,6 +67,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository,
 	processStatus *processrepo.StatusRepository,
 	processWorkflows *processrepo.WorkflowRepository,
+	processes *processrepo.ProcessRepository,
 ) *Workflows {
 	return &Workflows{
 		data:               data,
@@ -76,6 +78,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 		jobMonitoringTasks: jobMonitoringTasks,
 		processStatus:      processStatus,
 		processWorkflows:   processWorkflows,
+		processes:          processes,
 	}
 }
 
@@ -88,7 +91,7 @@ func (w *Workflows) Register(r Registrar) error {
 			return err
 		}
 	}
-	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.CompleteProcess, w.RecordWorkflowStatus} {
+	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.batch.CancelBatchJob, w.CompleteProcess, w.RecordWorkflowStatus} {
 		if err := r.RegisterActivity(a); err != nil {
 			return err
 		}

@@ -194,6 +194,7 @@ const (
 	ProcessStatusTypeRunning   ProcessStatusType = "RUNNING"
 	ProcessStatusTypeCompleted ProcessStatusType = "COMPLETED"
 	ProcessStatusTypeFailed    ProcessStatusType = "FAILED"
+	ProcessStatusTypeStopped   ProcessStatusType = "STOPPED"
 )
 
 type ProcessStatus struct {
@@ -242,6 +243,7 @@ const (
 	ProcessWorkflowStatusTypeRunning   ProcessWorkflowStatusType = "RUNNING"
 	ProcessWorkflowStatusTypeSucceeded ProcessWorkflowStatusType = "SUCCEEDED"
 	ProcessWorkflowStatusTypeFailed    ProcessWorkflowStatusType = "FAILED"
+	ProcessWorkflowStatusTypeStopped   ProcessWorkflowStatusType = "STOPPED"
 )
 
 // ProcessWorkflow records one workflow run started on behalf of a process — the job
@@ -254,9 +256,10 @@ type ProcessWorkflow struct {
 	Process   *Process `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
 	// Workflow id or monitoring task id
 	WorkflowID   string               `gorm:"column:workflow_id;type:varchar(36)" json:"workflowId"`
+	ExecutionID  *string              `gorm:"column:execution_id;type:varchar(36)" json:"-"`
 	WorkflowType *ProcessWorkflowType `gorm:"column:workflow_type;type:varchar(255)" json:"workflowType,omitempty"`
 
-	// Where the run stands: RUNNING once started, then SUCCEEDED or FAILED.
+	// Where the run stands: RUNNING once started, then SUCCEEDED, FAILED or STOPPED.
 	Status *ProcessWorkflowStatusType `gorm:"column:status;type:varchar(255)" json:"status,omitempty"`
 
 	// The time the workflow was recorded, in milliseconds since the epoch.

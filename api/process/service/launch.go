@@ -131,6 +131,9 @@ func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*d
 	if err := s.requireOwnership(ctx, proc); err != nil {
 		return nil, err
 	}
+	if err := s.requireNotStopped(ctx, processID); err != nil {
+		return nil, err
+	}
 	if err := s.requireNotLaunched(ctx, proc.ProcessID); err != nil {
 		return nil, err
 	}
@@ -160,6 +163,14 @@ func (s *LaunchService) requireOwnership(ctx context.Context, proc *dto.Response
 		return httpx.Forbidden("Access denied: you may only launch your own processes")
 	}
 	return nil
+}
+
+func (s *LaunchService) requireNotStopped(ctx context.Context, processID string) error {
+	stopped, err := s.processService.processes.HasStatus(ctx, processID, procmodel.ProcessStatusTypeStopped)
+	if stopped {
+		return httpx.Conflict("Process %s is stopped", processID)
+	}
+	return err
 }
 
 // requireNotLaunched reports a conflict when a process already carries the tasks a
@@ -461,4 +472,23 @@ func findTemplateOutput(template *appdto.TemplateResponse, outputID string) *app
 		}
 	}
 	return nil
+}
+
+func (s *LaunchService) Stop(ctx context.Context, processID string) error {
+	proc, err := s.processService.Get(ctx, processID)
+	if err != nil {
+		return notFoundAs(err, "Process not found: %s", processID)
+	}
+	if err := s.requireOwnership(ctx, proc); err != nil {
+		return err
+	}
+	// A failed run has nothing left to stop, and stays retryable.
+	recorded, err := s.processWorkflows.FindByProcessID(ctx, processID)
+	if err != nil {
+		return err
+	}
+	if _, err := workflowToRetry(processID, recorded); err == nil {
+		return nil
+	}
+	return s.executionEngine.Stop(context.WithoutCancel(ctx), processID)
 }

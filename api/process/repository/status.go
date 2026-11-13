@@ -24,6 +24,7 @@ import (
 	"context"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	model "github.com/apache/airavata/api/process/model"
 )
@@ -63,6 +64,21 @@ func (r *StatusRepository) FindByIDAndProcessID(ctx context.Context, id, process
 
 // Create inserts a status row. BeforeCreate assigns its id and AfterCreate repoints
 // the owning process's LastStatusID at it.
+//
+// COMPLETED and STOPPED are final; the row lock keeps a racing stop and completion
+// from both landing.
 func (r *StatusRepository) Create(ctx context.Context, s *model.ProcessStatus) error {
-	return r.db.WithContext(ctx).Create(s).Error
+	return r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var locked []string
+		if err := tx.Model(&model.Process{}).Clauses(clause.Locking{Strength: "UPDATE"}).
+			Where("process_id = ?", s.ProcessID).Pluck("process_id", &locked).Error; err != nil {
+			return err
+		}
+		var ended int64
+		if err := tx.Model(&model.ProcessStatus{}).Where("process_id = ? AND status IN ?", s.ProcessID,
+			[]model.ProcessStatusType{model.ProcessStatusTypeCompleted, model.ProcessStatusTypeStopped}).Count(&ended).Error; err != nil || ended > 0 {
+			return err
+		}
+		return tx.Create(s).Error
+	})
 }

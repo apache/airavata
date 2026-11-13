@@ -219,6 +219,7 @@ const (
 	ProcessStatusTypeCREATED   ProcessStatusType = "CREATED"
 	ProcessStatusTypeFAILED    ProcessStatusType = "FAILED"
 	ProcessStatusTypeRUNNING   ProcessStatusType = "RUNNING"
+	ProcessStatusTypeSTOPPED   ProcessStatusType = "STOPPED"
 	ProcessStatusTypeSUBMITTED ProcessStatusType = "SUBMITTED"
 )
 
@@ -232,6 +233,8 @@ func (e ProcessStatusType) Valid() bool {
 	case ProcessStatusTypeFAILED:
 		return true
 	case ProcessStatusTypeRUNNING:
+		return true
+	case ProcessStatusTypeSTOPPED:
 		return true
 	case ProcessStatusTypeSUBMITTED:
 		return true
@@ -262,6 +265,7 @@ func (e ProcessType) Valid() bool {
 const (
 	ProcessWorkflowStatusTypeFAILED    ProcessWorkflowStatusType = "FAILED"
 	ProcessWorkflowStatusTypeRUNNING   ProcessWorkflowStatusType = "RUNNING"
+	ProcessWorkflowStatusTypeSTOPPED   ProcessWorkflowStatusType = "STOPPED"
 	ProcessWorkflowStatusTypeSUCCEEDED ProcessWorkflowStatusType = "SUCCEEDED"
 )
 
@@ -271,6 +275,8 @@ func (e ProcessWorkflowStatusType) Valid() bool {
 	case ProcessWorkflowStatusTypeFAILED:
 		return true
 	case ProcessWorkflowStatusTypeRUNNING:
+		return true
+	case ProcessWorkflowStatusTypeSTOPPED:
 		return true
 	case ProcessWorkflowStatusTypeSUCCEEDED:
 		return true
@@ -1476,7 +1482,7 @@ type WorkflowResponse struct {
 	ProcessId         *openapi_types.UUID `json:"processId,omitempty"`
 	ProcessWorkflowId openapi_types.UUID  `json:"processWorkflowId"`
 
-	// Status `RUNNING` once the workflow is started, then `SUCCEEDED` or `FAILED`. `null`
+	// Status `RUNNING` once the workflow is started, then `SUCCEEDED`, `FAILED` or `STOPPED`. `null`
 	// for workflows recorded before the server tracked it.
 	Status *ProcessWorkflowStatusType `json:"status,omitempty"`
 
@@ -2470,6 +2476,13 @@ type ClientInterface interface {
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 	GetProcessStatus(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// StopProcess Stop the process
+	//
+	// Owner only. Records `STOPPED`, ends the tasks of its workflows and cancels its job.
+	//
+	// Corresponds with POST /api/v1/processes/{processId}/stop (the `StopProcess` operationId).
+	StopProcess(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListProcessWorkflows List the workflows started for a process
 	//
@@ -4788,6 +4801,23 @@ func (c *Client) ListProcessStatuses(ctx context.Context, processId ProcessId, r
 // Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 func (c *Client) GetProcessStatus(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetProcessStatusRequest(c.Server, processId, statusId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// StopProcess Stop the process
+//
+// Owner only. Records `STOPPED`, ends the tasks of its workflows and cancels its job.
+//
+// Corresponds with POST /api/v1/processes/{processId}/stop (the `StopProcess` operationId).
+func (c *Client) StopProcess(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewStopProcessRequest(c.Server, processId)
 	if err != nil {
 		return nil, err
 	}
@@ -9110,6 +9140,40 @@ func NewGetProcessStatusRequest(server string, processId ProcessId, statusId str
 	return req, nil
 }
 
+// NewStopProcessRequest constructs an http.Request for the StopProcess method
+func NewStopProcessRequest(server string, processId ProcessId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "processId", processId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/processes/%s/stop", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListProcessWorkflowsRequest constructs an http.Request for the ListProcessWorkflows method
 func NewListProcessWorkflowsRequest(server string, processId ProcessId) (*http.Request, error) {
 	var err error
@@ -12490,6 +12554,15 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 	GetProcessStatusWithResponse(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*GetProcessStatusResponse, error)
+
+	// StopProcessWithResponse Stop the process
+	//
+	// Owner only. Records `STOPPED`, ends the tasks of its workflows and cancels its job.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/processes/{processId}/stop (the `StopProcess` operationId).
+	StopProcessWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*StopProcessResponse, error)
 
 	// ListProcessWorkflowsWithResponse List the workflows started for a process
 	//
@@ -18606,6 +18679,75 @@ func (r GetProcessStatusResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetProcessStatusResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// StopProcessResponse401Headers the declared response headers of an HTTP 401 response for StopProcess
+type StopProcessResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type StopProcessResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *StopProcessResponse401Headers
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r StopProcessResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r StopProcessResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r StopProcessResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r StopProcessResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r StopProcessResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r StopProcessResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r StopProcessResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r StopProcessResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -25442,6 +25584,21 @@ func (c *ClientWithResponses) GetProcessStatusWithResponse(ctx context.Context, 
 	return ParseGetProcessStatusResponse(rsp)
 }
 
+// StopProcessWithResponse Stop the process
+//
+// Owner only. Records `STOPPED`, ends the tasks of its workflows and cancels its job.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/processes/{processId}/stop (the `StopProcess` operationId).
+func (c *ClientWithResponses) StopProcessWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*StopProcessResponse, error) {
+	rsp, err := c.StopProcess(ctx, processId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseStopProcessResponse(rsp)
+}
+
 // ListProcessWorkflowsWithResponse List the workflows started for a process
 //
 // Read-only, oldest first. Workflows are recorded by the server when it starts a
@@ -31594,6 +31751,69 @@ func ParseGetProcessStatusResponse(rsp *http.Response) (*GetProcessStatusRespons
 	switch {
 	case rsp.StatusCode == 401:
 		var headers GetProcessStatusResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseStopProcessResponse parses an HTTP response from a StopProcessWithResponse call
+func ParseStopProcessResponse(rsp *http.Response) (*StopProcessResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &StopProcessResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case rsp.StatusCode == 204:
+		break // No content-type
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers StopProcessResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {

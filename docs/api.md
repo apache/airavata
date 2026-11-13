@@ -2090,6 +2090,14 @@ curl -s -X POST localhost:9095/api/v1/processes/"$PROCESS_ID"/retry \
 | `404 Not Found` | no such process |
 | `409 Conflict` | a workflow of the run is still running; the run has not been launched; or no workflow's latest run failed |
 
+### Stop a Process
+
+```
+POST /api/v1/processes/{processId}/stop
+```
+
+Records `STOPPED`, cancels its workflows, tasks and job, and answers `204`. Owner-scoped like [launching](#launch-a-process). A completed or failed run is unchanged. A stopped run answers `409` to launch and retry. If the job cannot be cancelled the answer is `500`, and stopping again retries.
+
 ## Process Statuses
 
 A run's status history, read-only and nested under the process:
@@ -2119,7 +2127,7 @@ Statuses come back oldest first. The newest one is also cached on the process it
 ]
 ```
 
-`status` is one of `CREATED`, `SUBMITTED`, `RUNNING`, `COMPLETED`, `FAILED`.
+`status` is one of `CREATED`, `SUBMITTED`, `RUNNING`, `COMPLETED`, `FAILED`, `STOPPED`.
 
 A `statusId` from one process is not reachable through another process's path: the
 mismatch is a `404`, not another run's status.
@@ -2156,7 +2164,7 @@ as `lastWorkflowId`, which stays `null` until the first workflow is started.
 
 `workflowType` is one of `BATCH_JOB_SUBMISSION`, `JOB_MONITORING`,
 `BATCH_JOB_COMPLETION`. `status` is `RUNNING` once the workflow is started, then
-`SUCCEEDED` or `FAILED` when it finishes; it is `null` for workflows recorded before
+`SUCCEEDED`, `FAILED` or `STOPPED` when it finishes; it is `null` for workflows recorded before
 the server tracked it. `timestamp` is when the workflow was started and does not
 change with its status. The `{processWorkflowId}` in the path is the entry's
 `processWorkflowId`, not the workflow engine's `workflowId`.

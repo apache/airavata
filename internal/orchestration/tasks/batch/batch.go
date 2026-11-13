@@ -29,6 +29,7 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -102,7 +103,7 @@ type SubmitBatchJobParameters struct {
 // SubmitBatchJob builds the process's submission script, uploads it and submits it,
 // recording the task's status as it goes.
 func (a *Tasks) SubmitBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
-	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, executionContext, func() (*execution.Context, error) {
+	return a.tracker.Track(ctx, processID, taskID, model.TaskTypeJobSubmission, executionContext, func(ctx context.Context) (*execution.Context, error) {
 		return a.submitBatchJob(ctx, executionContext, processID, taskID)
 	})
 }
@@ -204,10 +205,11 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 
 	slog.Info("Submitting slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath)
 
-	sbatchPath := "sbatch"
-	if clusterConfig.SlurmCluster.SlurmHome != nil && strings.TrimSpace(*clusterConfig.SlurmCluster.SlurmHome) != "" {
-		sbatchPath = path.Join(*clusterConfig.SlurmCluster.SlurmHome, "sbatch")
-	}
+	// From here a stop no longer interrupts: a job submitted but not recorded could
+	// never be cancelled.
+	ctx = context.WithoutCancel(ctx)
+
+	sbatchPath := slurmCommand(clusterConfig.SlurmCluster.SlurmHome, "sbatch")
 
 	// sbatch is run from the working directory so that a script writing relative paths —
 	// and the job's own stdout and stderr files — land beside the staged inputs rather
@@ -346,18 +348,39 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs, issued, envFilePath)
 }
 
-func (a *Tasks) CancelBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
-	slog.Info("Starting to cancel batch job", "taskId", taskID, "processId", processID)
-	process, err := execution.FindBatchProcess(ctx, a.processes, processID)
-	if err != nil {
-		slog.Error("Failed to retrieve process for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
+func slurmCommand(slurmHome *string, name string) string {
+	if slurmHome != nil && strings.TrimSpace(*slurmHome) != "" {
+		return path.Join(*slurmHome, name)
 	}
-	jst, err := a.jobSubmissionTasks.FindByIDAndProcessID(ctx, taskID, processID)
+	return name
+}
+
+var jobGone = regexp.MustCompile(`(?i)invalid job id specified|already completing or completed`)
+
+func (a *Tasks) CancelBatchJob(ctx context.Context, processID string) error {
+	process, err := a.processes.FindByID(ctx, processID)
 	if err != nil {
-		slog.Error("Failed to retrieve job submission task for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
+		return err
 	}
-	slog.Info("Completed cancelling batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JST Id", jst.ID)
-	return executionContext, nil
+	if process.BatchProcess == nil || process.BatchProcess.JobID == nil ||
+		slices.ContainsFunc(process.BatchProcess.BatchJobStatuses, func(s *model.BatchJobStatus) bool {
+			return slices.Contains([]model.BatchJobStatusType{model.BatchJobStatusCancelled, model.BatchJobStatusEnded,
+				model.BatchJobStatusFailed, model.BatchJobStatusTimeLimit}, s.Status)
+		}) {
+		return nil
+	}
+	clusterConfig, err := a.slurmClusterConfigs.FindByID(ctx, process.BatchProcess.SlurmClusterConfigID)
+	if err != nil {
+		return err
+	}
+	cluster := clusterConfig.SlurmCluster
+	scancel := slurmCommand(cluster.SlurmHome, "scancel")
+	dialConfig := ssh.NewSSHDialConfig(cluster.HeadnodeHost, cluster.HeadnodePort, clusterConfig.LoginUser, *clusterConfig.SSHCredential, *process.OwnerID)
+	sshCtx, cancel := context.WithTimeout(ctx, time.Minute)
+	defer cancel()
+	if _, stderr, err := ssh.RunSSHCommand(sshCtx, dialConfig, a.sshContext, ssh.ShellQuote(scancel)+" "+ssh.ShellQuote(*process.BatchProcess.JobID),
+		fmt.Sprintf("ssh scancel %s@%s", clusterConfig.LoginUser, cluster.HeadnodeHost)); err != nil && !jobGone.MatchString(stderr) {
+		return err
+	}
+	return a.batchStatus.Create(ctx, &model.BatchJobStatus{BatchProcessID: process.BatchProcess.ID, Status: model.BatchJobStatusCancelled, UpdatedAt: time.Now()})
 }

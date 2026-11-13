@@ -212,7 +212,7 @@ func status(ctx context.Context, d *tk.Deps, processID string) (statusOut, error
 		if bp.LatestBatchJobStatus != nil {
 			out.LatestJobState = string(bp.LatestBatchJobStatus.Status)
 		}
-		if out.Status != "COMPLETED" && out.Status != "FAILED" {
+		if out.Status != "COMPLETED" && out.Status != "FAILED" && out.Status != "STOPPED" {
 			out.WaitingOnSSH = waitingOnSSH(ctx, d, bp.SlurmClusterConfigId.String())
 			if out.WaitingOnSSH {
 				out.WaitingHowTo = "Tell the user to run `airavata-mcp ssh-auth` in a terminal. Never ask for the code or password in the conversation."

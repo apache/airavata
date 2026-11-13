@@ -143,3 +143,11 @@ func (r *ProcessRepository) ReplaceOutputMappings(ctx context.Context, batchProc
 	}
 	return db.Create(mappings).Error
 }
+
+// HasStatus reports whether the process was ever given status.
+func (r *ProcessRepository) HasStatus(ctx context.Context, processID string, status model.ProcessStatusType) (bool, error) {
+	var n int64
+	err := r.db.WithContext(ctx).Model(&model.ProcessStatus{}).
+		Where("process_id = ? AND status = ?", processID, status).Count(&n).Error
+	return n > 0, err
+}

@@ -50,6 +50,9 @@ func (s *LaunchService) RetryProcess(ctx context.Context, processID string) (*dt
 	if err := s.requireOwnership(ctx, proc); err != nil {
 		return nil, err
 	}
+	if err := s.requireNotStopped(ctx, processID); err != nil {
+		return nil, err
+	}
 
 	recorded, err := s.processWorkflows.FindByProcessID(ctx, processID)
 	if err != nil {
