@@ -86,6 +86,8 @@ tags:
       Admin only. See docs/auth.md.
   - name: SSH Credentials
     description: Registered keypairs. Private material is write-only.
+  - name: S3 Credentials
+    description: Access keys for S3-compatible object stores. Secrets are write-only.
   - name: Slurm Clusters
     description: The machine catalogue and its partitions.
   - name: Slurm Cluster Configs
@@ -833,6 +835,106 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/s3-credentials:
+    get:
+      tags: [S3 Credentials]
+      summary: List the caller's S3 credentials
+      description: Returns only the caller's own credentials. Admins are not exempt.
+      operationId: listS3Credentials
+      responses:
+        "200":
+          description: The caller's credentials.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/S3CredentialResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    post:
+      tags: [S3 Credentials]
+      summary: Register an S3 credential
+      description: |
+        Self-service for any authenticated caller with a `users` row.
+        `secretAccessKey` is required on create; `secretAccessKey` and `sessionToken`
+        are write-only and are never returned by any read endpoint.
+      operationId: createS3Credential
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/S3CredentialRequest" }
+      responses:
+        "201":
+          description: The registered credential, without its secrets.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/S3CredentialResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+
+  /api/v1/s3-credentials/{s3CredentialId}:
+    parameters:
+      - $ref: "#/components/parameters/S3CredentialId"
+    get:
+      tags: [S3 Credentials]
+      summary: Read an S3 credential
+      description: Owner only.
+      operationId: getS3Credential
+      responses:
+        "200":
+          description: The credential, without its secrets.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/S3CredentialResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    put:
+      tags: [S3 Credentials]
+      summary: Update an S3 credential
+      description: |
+        Owner only. An update that omits `secretAccessKey` keeps the stored secret and
+        session token; changing `accessKeyId` then is `400`. An update that sends a new
+        `secretAccessKey` also replaces `sessionToken`, clearing it when none is sent.
+      operationId: updateS3Credential
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/S3CredentialRequest" }
+      responses:
+        "200":
+          description: The updated credential.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/S3CredentialResponse" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "502": { $ref: "#/components/responses/BadGateway" }
+        "500": { $ref: "#/components/responses/InternalError" }
+    delete:
+      tags: [S3 Credentials]
+      summary: Delete an S3 credential
+      description: Owner only.
+      operationId: deleteS3Credential
+      responses:
+        "204": { $ref: "#/components/responses/NoContent" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
 
@@ -3019,6 +3121,11 @@ components:
       in: path
       required: true
       schema: { type: string, format: uuid }
+    S3CredentialId:
+      name: s3CredentialId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
     SlurmClusterId:
       name: slurmClusterId
       in: path
@@ -3596,6 +3703,36 @@ components:
         fullInteractive: { type: boolean }
         ownerId: { type: string }
       required: [sshCredentialId, sshCredentialName, publicKey, fullInteractive, ownerId]
+
+    S3CredentialRequest:
+      type: object
+      description: |
+        The create/update payload for an S3 access key. `secretAccessKey` is required
+        on create; an update that omits it keeps the stored secret and session token.
+        There is no owner field.
+      properties:
+        name: { type: string }
+        accessKeyId: { type: string }
+        secretAccessKey:
+          type: [string, "null"]
+          description: Write-only. Never returned by any read endpoint.
+        sessionToken:
+          type: [string, "null"]
+          description: |
+            Write-only. Only for temporary credentials (for example from STS).
+      required: [name, accessKeyId]
+
+    S3CredentialResponse:
+      type: object
+      description: |
+        The read model for an S3 access key. It has no secret access key or session
+        token field at all. `accessKeyId` is an identifier, not a secret.
+      properties:
+        s3CredentialId: { type: string, format: uuid }
+        name: { type: string }
+        accessKeyId: { type: string }
+        ownerId: { type: string }
+      required: [s3CredentialId, name, accessKeyId, ownerId]
 
     InteractivePrompt:
       type: object
