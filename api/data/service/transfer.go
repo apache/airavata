@@ -34,6 +34,7 @@ import (
 
 	"github.com/apache/airavata/internal/httpx"
 
+	computerepo "github.com/apache/airavata/api/compute/repository"
 	credmodel "github.com/apache/airavata/api/credentials/model"
 	dto "github.com/apache/airavata/api/data/dto"
 	model "github.com/apache/airavata/api/data/model"
@@ -84,6 +85,7 @@ type DataTransferService struct {
 	productAccess
 	db        *gorm.DB
 	storages  *repository.SCPDataStorageRepository
+	clusters  *computerepo.SlurmClusterConfigRepository
 	transport Transport
 }
 
@@ -93,6 +95,7 @@ func NewDataTransferService(
 	products *repository.DataProductRepository,
 	sharing *sharingrepo.Repository,
 	storages *repository.SCPDataStorageRepository,
+	clusters *computerepo.SlurmClusterConfigRepository,
 	members *iamrepo.GroupMemberRepository,
 	transport Transport,
 ) *DataTransferService {
@@ -104,6 +107,7 @@ func NewDataTransferService(
 		},
 		db:        db,
 		storages:  storages,
+		clusters:  clusters,
 		transport: transport,
 	}
 }
@@ -239,13 +243,31 @@ func (s *DataTransferService) locate(ctx context.Context, product *model.DataPro
 	if product.Path == nil || *product.Path == "" {
 		return "", ep, httpx.Conflict("Data product %s names no path to transfer", product.ID)
 	}
-	if product.DataStorageType != model.DataStorageTypeSCP {
-		return "", ep, httpx.BadRequest(
-			"Data product %s lives on %s storage, which cannot be transferred through this API",
-			product.ID, product.DataStorageType)
-	}
 	if product.DataStorageID == nil {
 		return "", ep, httpx.Conflict("Data product %s names no storage to transfer through", product.ID)
+	}
+
+	// A product on HPC storage — an output tracked in place — is reached through the
+	// cluster config the run submitted under, which its storage id names.
+	if product.DataStorageType == model.DataStorageTypeHPC {
+		config, err := s.clusters.FindByID(ctx, *product.DataStorageID)
+		if err != nil {
+			return "", ep, notFoundAs(err, "Slurm cluster config not found: %s", *product.DataStorageID)
+		}
+		if config.SlurmCluster == nil || config.SSHCredential == nil {
+			return "", ep, httpx.Conflict(
+				"Slurm cluster config %s is missing the cluster or key a transfer needs", config.ID)
+		}
+		port := config.SlurmCluster.HeadnodePort
+		if port == 0 {
+			port = 22
+		}
+		return *product.Path, Endpoint{
+			Host:      config.SlurmCluster.HeadnodeHost,
+			Port:      port,
+			LoginUser: config.LoginUser,
+			Key:       *config.SSHCredential,
+		}, nil
 	}
 
 	storage, err := s.storages.FindByID(ctx, *product.DataStorageID)
