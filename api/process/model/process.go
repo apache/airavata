@@ -61,6 +61,11 @@ type TemplateOutputMapping struct {
 	Value *string `gorm:"column:value;type:text" json:"value,omitempty"`
 }
 
+// TrackInPlace is the value a file output mapping carries to ask that the output be
+// registered where the job writes it, rather than copied to an existing data product.
+// Launching swaps it for the id of the data product it registers.
+const TrackInPlace = "TRACK_IN_PLACE"
+
 type ProcessType string
 
 const (

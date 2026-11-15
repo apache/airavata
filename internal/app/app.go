@@ -246,7 +246,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	linkSvc := processsvc.NewLinkService(repos.Links, processes, link.NewRegistry(), cfg.PublicURL)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext, linkSvc)
+		monitoringTasks, products, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext, linkSvc)
 	executionEngine.StartEngine()
 
 	return &Services{

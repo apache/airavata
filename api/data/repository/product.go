@@ -96,6 +96,13 @@ func (r *DataProductRepository) Save(ctx context.Context, p *model.DataProduct) 
 	return r.db.WithContext(ctx).Save(p).Error
 }
 
+// DeleteByLocation removes the products registered at one path on one storage.
+func (r *DataProductRepository) DeleteByLocation(ctx context.Context, storageID string, storageType model.DataStorageType, path string) error {
+	return r.db.WithContext(ctx).
+		Where("data_storage_id = ? AND data_storage_type = ? AND path = ?", storageID, storageType, path).
+		Delete(&model.DataProduct{}).Error
+}
+
 // Delete removes a product.
 func (r *DataProductRepository) Delete(ctx context.Context, p *model.DataProduct) error {
 	return r.db.WithContext(ctx).Delete(p).Error
