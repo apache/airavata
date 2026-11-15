@@ -24,6 +24,7 @@ import (
 	"context"
 	"log/slog"
 	"strings"
+	"time"
 
 	"github.com/apache/airavata/api/process/repository"
 	"gorm.io/gorm"
@@ -260,7 +261,7 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 		return err
 	}
 
-	if err := s.createOutputStagingTasks(ctx, process.ProcessID, workingDir, batchProcess, template, clusterConfig); err != nil {
+	if err := s.createOutputStagingTasks(ctx, process.ProcessID, process.UserID, workingDir, batchProcess, template, clusterConfig); err != nil {
 		return err
 	}
 
@@ -324,7 +325,7 @@ func (s *LaunchService) createJobSubmissionTask(ctx context.Context, processId s
 	return nil
 }
 
-func (s *LaunchService) createOutputStagingTasks(ctx context.Context, processId string, workingDir string,
+func (s *LaunchService) createOutputStagingTasks(ctx context.Context, processId string, ownerID *string, workingDir string,
 	batchProcess *processdto.BatchProcessResponse, template *appdto.TemplateResponse, clusterConfig *computedto.SlurmClusterConfigResponse) error {
 
 	outputMapping := batchProcess.OutputMappings
@@ -348,15 +349,41 @@ func (s *LaunchService) createOutputStagingTasks(ctx context.Context, processId 
 				return fmt.Errorf("Output mapping %s has no value", output.TemplateOutputMappingID)
 			}
 
-			dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
-			if err != nil {
-				return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
+			sourcePath := workingDir + "/" + *&tempOutput.OutputName
+			destStorageID, destStorageType, destPath := &clusterConfig.SlurmClusterConfigID, hpcStorageType, &sourcePath
+
+			if *dataProductId == procmodel.TrackInPlace {
+				// Tracked in place: register a data product at the path the job writes to
+				// and point the mapping at it. The staging task then has the same source and
+				// destination, which it reads as "nothing to copy".
+				status := datamodel.ProvisionStatusRegistered
+				product := &datamodel.DataProduct{
+					DataName:        &tempOutput.OutputName,
+					IsFile:          true,
+					Path:            &sourcePath,
+					ProvisionStatus: &status,
+					OwnerID:         ownerID,
+					DataStorageID:   destStorageID,
+					DataStorageType: destStorageType,
+					CreatedAt:       time.Now().UnixMilli(),
+				}
+				db := s.db.WithContext(ctx)
+				if err := db.Create(product).Error; err != nil {
+					return err
+				}
+				if err := db.Model(&procmodel.TemplateOutputMapping{}).
+					Where("template_output_mapping_id = ?", output.TemplateOutputMappingID).
+					Update("value", product.ID).Error; err != nil {
+					return err
+				}
+			} else {
+				dataProduct, err := s.dataProductService.Get(ctx, *dataProductId)
+				if err != nil {
+					return fmt.Errorf("Failed to find data product %s: %v", *dataProductId, err)
+				}
+				destStorageID, destStorageType, destPath = dataProduct.DataStorageID, datamodel.DataStorageTypeSCP, dataProduct.Path
 			}
 
-			// Create a data staging task for the file output
-
-			sourcePath := workingDir + "/" + *&tempOutput.OutputName
-			destStorageType := datamodel.DataStorageTypeSCP
 			failureAction := procmodel.OnFailureActionRetry
 			retryCount := 3
 			taskOrder := 4
@@ -366,9 +393,9 @@ func (s *LaunchService) createOutputStagingTasks(ctx context.Context, processId 
 				SourcePath:            &sourcePath,
 				SourceDataStorageType: &hpcStorageType,
 
-				DestinationDataStorageID:   dataProduct.DataStorageID,
+				DestinationDataStorageID:   destStorageID,
 				DestinationDataStorageType: &destStorageType,
-				DestinationPath:            dataProduct.Path,
+				DestinationPath:            destPath,
 				OnFailure:                  &failureAction,
 				RetryCount:                 &retryCount,
 				TaskOrder:                  &taskOrder,

@@ -104,7 +104,7 @@ func (h *harness) withFakeTransport() *fakeTransport {
 	fake := newFakeTransport()
 	repos := app.NewRepositories(h.db)
 	h.svcs.DataTransfer = datasvc.NewDataTransferService(
-		h.db, repos.DataProducts, repos.Shares, repos.SCPDataStorages, repos.GroupMembers, fake)
+		h.db, repos.DataProducts, repos.Shares, repos.SCPDataStorages, repos.SlurmClusterConfigs, repos.GroupMembers, fake)
 	h.rebuild()
 	return fake
 }

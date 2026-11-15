@@ -1882,7 +1882,7 @@ it is rejected rather than keeping what the run was created with.
 | Field | Type | Notes |
 |---|---|---|
 | `templateInputId` / `templateOutputId` | string | required, cannot be blank. Names a declaration on the deployment's template |
-| `value` | string \| null | for a `STRING`, `INTEGER`, `FLOAT` or `BOOLEAN` declaration, a JSON document: `{"value": "…"}` for a single value, `{"values": [...]}` for a list. For a `FILE`, `FILE_LIST` or `DIRECTORY` declaration, the `dataId` of a registered [data product](#register-the-runs-data-products) |
+| `value` | string \| null | for a `STRING`, `INTEGER`, `FLOAT` or `BOOLEAN` declaration, a JSON document: `{"value": "…"}` for a single value, `{"values": [...]}` for a list. For a `FILE`, `FILE_LIST` or `DIRECTORY` declaration, the `dataId` of a registered [data product](#register-the-runs-data-products). A `FILE` output may instead carry `TRACK_IN_PLACE`: launching registers a data product at the path the job writes the file to and swaps the value for its `dataId`, nothing is copied, and the product is removed again if the job did not produce the file |
 | `templateInputMappingId` / `templateOutputMappingId` | string | echoed on reads, ignored on writes |
 
 Which of those two a mapping carries follows from the type of the declaration it names,

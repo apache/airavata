@@ -139,6 +139,7 @@ export default function NewProcessPage() {
     <div className="row" style={{ flexWrap: "nowrap" }}>
       <select value={value} onChange={(e) => set(e.target.value)}>
         <option value="">{kind === "input" ? "Select a data product…" : "Not collected"}</option>
+        {kind === "output" && type === "FILE" && <option value="TRACK_IN_PLACE">Track in place (no copy)</option>}
         {productOptions(type).map((p) => (
           <option key={p.dataId} value={p.dataId}>
             {p.dataName} — {p.path}
@@ -259,7 +260,8 @@ export default function NewProcessPage() {
             ) : (
               <div className="form">
                 <span className="small muted">
-                  Choose the data product each output is copied to after the job finishes.
+                  Choose the data product each output is copied to after the job finishes, or track a file in place to
+                  register it as a data product where the job writes it.
                 </span>
                 <div className="form-grid">{template.outputs.map(outputField)}</div>
               </div>

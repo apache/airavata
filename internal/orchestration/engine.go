@@ -64,6 +64,7 @@ type ExecutionEngine struct {
 func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	jobSubmissionTasks *processrepo.JobSubmissionTaskRepository,
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository,
+	dataProducts *datastorerepo.DataProductRepository,
 	scpStorages *datastorerepo.SCPDataStorageRepository,
 	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository,
 	processes *processrepo.ProcessRepository,
@@ -89,7 +90,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 
 	return &ExecutionEngine{
 		workflows: workflows.New(
-			data.New(processes, dataStagingTasks, scpStorages, slurmClusterConfigs, sshContext, tracker),
+			data.New(processes, dataStagingTasks, dataProducts, scpStorages, slurmClusterConfigs, sshContext, tracker),
 			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker, links),
 			monitoring.New(processes, jobMonitoringTasks, tracker),
 			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,

@@ -26,6 +26,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/google/uuid"
 	"path/filepath"
@@ -44,6 +45,7 @@ import (
 type Tasks struct {
 	processes           *processrepo.ProcessRepository
 	dataStagingTasks    *processrepo.DataStagingTaskRepository
+	dataProducts        *datastorerepo.DataProductRepository
 	scpStorages         *datastorerepo.SCPDataStorageRepository
 	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository
 	sshContext          *ssh.GlobalSSHContext
@@ -53,6 +55,7 @@ type Tasks struct {
 // New returns the data staging tasks over the given repositories.
 func New(processes *processrepo.ProcessRepository,
 	dataStagingTasks *processrepo.DataStagingTaskRepository,
+	dataProducts *datastorerepo.DataProductRepository,
 	scpStorages *datastorerepo.SCPDataStorageRepository,
 	slurmClusterConfigs *computerepo.SlurmClusterConfigRepository,
 	sshContext *ssh.GlobalSSHContext,
@@ -61,6 +64,7 @@ func New(processes *processrepo.ProcessRepository,
 	return &Tasks{
 		processes:           processes,
 		dataStagingTasks:    dataStagingTasks,
+		dataProducts:        dataProducts,
 		scpStorages:         scpStorages,
 		slurmClusterConfigs: slurmClusterConfigs,
 		sshContext:          sshContext,
@@ -89,6 +93,33 @@ func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Contex
 		return nil, err
 	}
 	slog.Info("Starting data staging task", "taskId", dataStagingTaskId, "processId", processId)
+
+	// A file tracked in place has a data product registered at the very path the job
+	// wrote it to, so there is nothing to copy. All that is left is to check the job
+	// really produced it, and to drop the product if it did not.
+	if t := dataStagingTask; *t.SourceDataStorageType == datamodel.DataStorageTypeHPC &&
+		*t.DestinationDataStorageType == datamodel.DataStorageTypeHPC &&
+		*t.SourceDataStorageID == *t.DestinationDataStorageID && *t.SourcePath == *t.DestinationPath {
+		s, err := a.slurmClusterConfigs.FindByID(ctx, *t.SourceDataStorageID)
+		if err != nil {
+			return nil, err
+		}
+		dialConfig := ssh.NewSSHDialConfig(s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser, *s.SSHCredential, *process.OwnerID)
+		// The answer is printed rather than left to the exit status, so that a failed
+		// connection is retried instead of being taken for a missing file.
+		out, _, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext,
+			"test -e "+ssh.ShellQuote(*t.SourcePath)+" && echo found || echo missing", "ssh stat "+*t.SourcePath)
+		if err != nil {
+			return nil, err
+		}
+		if strings.TrimSpace(out) == "missing" {
+			slog.Warn("Output tracked in place was not produced; removing its data product", "taskId", t.ID, "processId", processId, "path", *t.SourcePath)
+			if err := a.dataProducts.DeleteByLocation(ctx, *t.SourceDataStorageID, datamodel.DataStorageTypeHPC, *t.SourcePath); err != nil {
+				return nil, err
+			}
+		}
+		return executionContext, nil
+	}
 
 	localTempDataPath := "/tmp/" + dataStagingTask.ID + "-" + uuid.New().String()
 	defer os.RemoveAll(localTempDataPath) // Make sure to clean up the temporary data path after the function completes
