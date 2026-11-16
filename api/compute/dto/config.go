@@ -84,6 +84,9 @@ type SlurmClusterConfigResponse struct {
 	SSHCredentialID *string                        `json:"sshCredentialId"`
 	SSHCredential   *creddto.SSHCredentialResponse `json:"sshCredential"`
 
+	// Disabled reports that no new process may be created or launched under the config.
+	Disabled bool `json:"disabled"`
+
 	Permission *string `json:"permission,omitempty"`
 }
 
@@ -97,6 +100,7 @@ func ToSlurmClusterConfigResponse(c *model.SlurmClusterConfig) SlurmClusterConfi
 		LoginUser:            c.LoginUser,
 		WorkRoot:             c.WorkRoot,
 		SSHCredentialID:      c.SSHCredentialID,
+		Disabled:             c.Disabled,
 	}
 	if c.SlurmCluster != nil {
 		cluster := ToSlurmClusterResponse(c.SlurmCluster)

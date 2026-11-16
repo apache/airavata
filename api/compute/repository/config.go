@@ -118,6 +118,13 @@ func (r *SlurmClusterConfigRepository) Save(ctx context.Context, c *model.SlurmC
 	return r.db.WithContext(ctx).Save(c).Error
 }
 
+// SetDisabled writes only the disabled flag, so it cannot overwrite an edit to the
+// config's other fields made at the same time.
+func (r *SlurmClusterConfigRepository) SetDisabled(ctx context.Context, id string, disabled bool) error {
+	return r.db.WithContext(ctx).Model(&model.SlurmClusterConfig{}).
+		Where("slurm_cluster_config_id = ?", id).Update("disabled", disabled).Error
+}
+
 // Delete removes a config.
 func (r *SlurmClusterConfigRepository) Delete(ctx context.Context, c *model.SlurmClusterConfig) error {
 	return r.db.WithContext(ctx).Delete(c).Error

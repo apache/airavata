@@ -213,6 +213,8 @@ export interface SlurmClusterConfig {
   workRoot: string;
   sshCredentialId: string | null;
   sshCredential: SSHCredential | null;
+  // True while the config accepts no new processes.
+  disabled: boolean;
   permission?: Permission;
 }
 

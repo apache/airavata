@@ -1311,9 +1311,10 @@ type SlurmClusterConfigRequest struct {
 // machine it logs in to. The key is inlined as its safe summary.
 type SlurmClusterConfigResponse struct {
 	Description *string `json:"description,omitempty"`
-	LoginUser   string  `json:"loginUser"`
-	Name        *string `json:"name,omitempty"`
-	OwnerId     *string `json:"ownerId,omitempty"`
+	Disabled  *bool   `json:"disabled,omitempty"`
+	LoginUser string  `json:"loginUser"`
+	Name      *string `json:"name,omitempty"`
+	OwnerId   *string `json:"ownerId,omitempty"`
 
 	// Permission The caller's effective standing, present only on the listings that compute
 	// it (`/shared-with-me`).
@@ -2807,6 +2808,15 @@ type ClientInterface interface {
 	// Corresponds with PUT /api/v1/slurm-cluster-configs/{slurmClusterConfigId} (the `UpdateSlurmClusterConfig` operationId).
 	UpdateSlurmClusterConfig(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, body UpdateSlurmClusterConfigJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DisableSlurmClusterConfig Disable a cluster config
+	//
+	// Stops new processes starting under the config: creating a process that names it
+	// and launching one that names it are both 409 until it is enabled again.
+	// Processes already launched are unaffected. Owner and admins only.
+	//
+	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/disable (the `DisableSlurmClusterConfig` operationId).
+	DisableSlurmClusterConfig(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// DiscoverAllocations Discover the allocations a config's login may charge
 	//
 	// Logs in under the config and lists the Slurm accounts its login may charge,
@@ -2815,6 +2825,14 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations (the `DiscoverAllocations` operationId).
 	DiscoverAllocations(ctx context.Context, slurmClusterConfigId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// EnableSlurmClusterConfig Enable a cluster config
+	//
+	// Lets processes be created and launched under a disabled config again. Owner and
+	// admins only.
+	//
+	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/enable (the `EnableSlurmClusterConfig` operationId).
+	EnableSlurmClusterConfig(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApiV1SlurmClusterConfigsSlurmClusterConfigIdShares List who has access to this Slurm cluster config
 	//
@@ -5504,6 +5522,25 @@ func (c *Client) UpdateSlurmClusterConfig(ctx context.Context, slurmClusterConfi
 	return c.Client.Do(req)
 }
 
+// DisableSlurmClusterConfig Disable a cluster config
+//
+// Stops new processes starting under the config: creating a process that names it
+// and launching one that names it are both 409 until it is enabled again.
+// Processes already launched are unaffected. Owner and admins only.
+//
+// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/disable (the `DisableSlurmClusterConfig` operationId).
+func (c *Client) DisableSlurmClusterConfig(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDisableSlurmClusterConfigRequest(c.Server, slurmClusterConfigId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // DiscoverAllocations Discover the allocations a config's login may charge
 //
 // Logs in under the config and lists the Slurm accounts its login may charge,
@@ -5513,6 +5550,24 @@ func (c *Client) UpdateSlurmClusterConfig(ctx context.Context, slurmClusterConfi
 // Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations (the `DiscoverAllocations` operationId).
 func (c *Client) DiscoverAllocations(ctx context.Context, slurmClusterConfigId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDiscoverAllocationsRequest(c.Server, slurmClusterConfigId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// EnableSlurmClusterConfig Enable a cluster config
+//
+// Lets processes be created and launched under a disabled config again. Owner and
+// admins only.
+//
+// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/enable (the `EnableSlurmClusterConfig` operationId).
+func (c *Client) EnableSlurmClusterConfig(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewEnableSlurmClusterConfigRequest(c.Server, slurmClusterConfigId)
 	if err != nil {
 		return nil, err
 	}
@@ -10109,6 +10164,40 @@ func NewUpdateSlurmClusterConfigRequestWithBody(server string, slurmClusterConfi
 	return req, nil
 }
 
+// NewDisableSlurmClusterConfigRequest constructs an http.Request for the DisableSlurmClusterConfig method
+func NewDisableSlurmClusterConfigRequest(server string, slurmClusterConfigId SlurmClusterConfigId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "slurmClusterConfigId", slurmClusterConfigId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/slurm-cluster-configs/%s/disable", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewDiscoverAllocationsRequest constructs an http.Request for the DiscoverAllocations method
 func NewDiscoverAllocationsRequest(server string, slurmClusterConfigId string) (*http.Request, error) {
 	var err error
@@ -10126,6 +10215,40 @@ func NewDiscoverAllocationsRequest(server string, slurmClusterConfigId string) (
 	}
 
 	operationPath := fmt.Sprintf("/api/v1/slurm-cluster-configs/%s/discover-allocations", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewEnableSlurmClusterConfigRequest constructs an http.Request for the EnableSlurmClusterConfig method
+func NewEnableSlurmClusterConfigRequest(server string, slurmClusterConfigId SlurmClusterConfigId) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "slurmClusterConfigId", slurmClusterConfigId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: "uuid"})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/v1/slurm-cluster-configs/%s/enable", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -12861,6 +12984,17 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with PUT /api/v1/slurm-cluster-configs/{slurmClusterConfigId} (the `UpdateSlurmClusterConfig` operationId).
 	UpdateSlurmClusterConfigWithResponse(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, body UpdateSlurmClusterConfigJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateSlurmClusterConfigResponse, error)
 
+	// DisableSlurmClusterConfigWithResponse Disable a cluster config
+	//
+	// Stops new processes starting under the config: creating a process that names it
+	// and launching one that names it are both 409 until it is enabled again.
+	// Processes already launched are unaffected. Owner and admins only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/disable (the `DisableSlurmClusterConfig` operationId).
+	DisableSlurmClusterConfigWithResponse(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*DisableSlurmClusterConfigResponse, error)
+
 	// DiscoverAllocationsWithResponse Discover the allocations a config's login may charge
 	//
 	// Logs in under the config and lists the Slurm accounts its login may charge,
@@ -12871,6 +13005,16 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/discover-allocations (the `DiscoverAllocations` operationId).
 	DiscoverAllocationsWithResponse(ctx context.Context, slurmClusterConfigId string, reqEditors ...RequestEditorFn) (*DiscoverAllocationsResponse, error)
+
+	// EnableSlurmClusterConfigWithResponse Enable a cluster config
+	//
+	// Lets processes be created and launched under a disabled config again. Owner and
+	// admins only.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/enable (the `EnableSlurmClusterConfig` operationId).
+	EnableSlurmClusterConfigWithResponse(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*EnableSlurmClusterConfigResponse, error)
 
 	// GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesWithResponse List who has access to this Slurm cluster config
 	//
@@ -20860,6 +21004,82 @@ func (r UpdateSlurmClusterConfigResponse) ContentType() string {
 	return ""
 }
 
+// DisableSlurmClusterConfigResponse401Headers the declared response headers of an HTTP 401 response for DisableSlurmClusterConfig
+type DisableSlurmClusterConfigResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type DisableSlurmClusterConfigResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SlurmClusterConfigResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *DisableSlurmClusterConfigResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r DisableSlurmClusterConfigResponse) GetJSON200() *SlurmClusterConfigResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r DisableSlurmClusterConfigResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r DisableSlurmClusterConfigResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r DisableSlurmClusterConfigResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r DisableSlurmClusterConfigResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r DisableSlurmClusterConfigResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r DisableSlurmClusterConfigResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DisableSlurmClusterConfigResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r DisableSlurmClusterConfigResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 // DiscoverAllocationsResponse401Headers the declared response headers of an HTTP 401 response for DiscoverAllocations
 type DiscoverAllocationsResponse401Headers struct {
 	WWWAuthenticate *string
@@ -20962,6 +21182,82 @@ func (r DiscoverAllocationsResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DiscoverAllocationsResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// EnableSlurmClusterConfigResponse401Headers the declared response headers of an HTTP 401 response for EnableSlurmClusterConfig
+type EnableSlurmClusterConfigResponse401Headers struct {
+	WWWAuthenticate *string
+}
+
+type EnableSlurmClusterConfigResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *SlurmClusterConfigResponse
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *Unauthorized
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *Forbidden
+	// JSON404 the response for an HTTP 404 `application/json` response
+	JSON404 *NotFound
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *InternalError
+	// Headers401 the parsed response headers for an HTTP 401 response
+	Headers401 *EnableSlurmClusterConfigResponse401Headers
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r EnableSlurmClusterConfigResponse) GetJSON200() *SlurmClusterConfigResponse {
+	return r.JSON200
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r EnableSlurmClusterConfigResponse) GetJSON401() *Unauthorized {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r EnableSlurmClusterConfigResponse) GetJSON403() *Forbidden {
+	return r.JSON403
+}
+
+// GetJSON404 returns the response for an HTTP 404 `application/json` response
+func (r EnableSlurmClusterConfigResponse) GetJSON404() *NotFound {
+	return r.JSON404
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r EnableSlurmClusterConfigResponse) GetJSON500() *InternalError {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r EnableSlurmClusterConfigResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r EnableSlurmClusterConfigResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r EnableSlurmClusterConfigResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r EnableSlurmClusterConfigResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -26034,6 +26330,23 @@ func (c *ClientWithResponses) UpdateSlurmClusterConfigWithResponse(ctx context.C
 	return ParseUpdateSlurmClusterConfigResponse(rsp)
 }
 
+// DisableSlurmClusterConfigWithResponse Disable a cluster config
+//
+// Stops new processes starting under the config: creating a process that names it
+// and launching one that names it are both 409 until it is enabled again.
+// Processes already launched are unaffected. Owner and admins only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/disable (the `DisableSlurmClusterConfig` operationId).
+func (c *ClientWithResponses) DisableSlurmClusterConfigWithResponse(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*DisableSlurmClusterConfigResponse, error) {
+	rsp, err := c.DisableSlurmClusterConfig(ctx, slurmClusterConfigId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDisableSlurmClusterConfigResponse(rsp)
+}
+
 // DiscoverAllocationsWithResponse Discover the allocations a config's login may charge
 //
 // Logs in under the config and lists the Slurm accounts its login may charge,
@@ -26049,6 +26362,22 @@ func (c *ClientWithResponses) DiscoverAllocationsWithResponse(ctx context.Contex
 		return nil, err
 	}
 	return ParseDiscoverAllocationsResponse(rsp)
+}
+
+// EnableSlurmClusterConfigWithResponse Enable a cluster config
+//
+// Lets processes be created and launched under a disabled config again. Owner and
+// admins only.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/enable (the `EnableSlurmClusterConfig` operationId).
+func (c *ClientWithResponses) EnableSlurmClusterConfigWithResponse(ctx context.Context, slurmClusterConfigId SlurmClusterConfigId, reqEditors ...RequestEditorFn) (*EnableSlurmClusterConfigResponse, error) {
+	rsp, err := c.EnableSlurmClusterConfig(ctx, slurmClusterConfigId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseEnableSlurmClusterConfigResponse(rsp)
 }
 
 // GetApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesWithResponse List who has access to this Slurm cluster config
@@ -33624,6 +33953,73 @@ func ParseUpdateSlurmClusterConfigResponse(rsp *http.Response) (*UpdateSlurmClus
 	return response, nil
 }
 
+// ParseDisableSlurmClusterConfigResponse parses an HTTP response from a DisableSlurmClusterConfigWithResponse call
+func ParseDisableSlurmClusterConfigResponse(rsp *http.Response) (*DisableSlurmClusterConfigResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DisableSlurmClusterConfigResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SlurmClusterConfigResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers DisableSlurmClusterConfigResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
 // ParseDiscoverAllocationsResponse parses an HTTP response from a DiscoverAllocationsWithResponse call
 func ParseDiscoverAllocationsResponse(rsp *http.Response) (*DiscoverAllocationsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -33701,6 +34097,73 @@ func ParseDiscoverAllocationsResponse(rsp *http.Response) (*DiscoverAllocationsR
 	switch {
 	case rsp.StatusCode == 401:
 		var headers DiscoverAllocationsResponse401Headers
+		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
+			var value string
+			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			}
+			headers.WWWAuthenticate = &value
+		}
+		response.Headers401 = &headers
+	}
+
+	return response, nil
+}
+
+// ParseEnableSlurmClusterConfigResponse parses an HTTP response from a EnableSlurmClusterConfigWithResponse call
+func ParseEnableSlurmClusterConfigResponse(rsp *http.Response) (*EnableSlurmClusterConfigResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &EnableSlurmClusterConfigResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest SlurmClusterConfigResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest Unauthorized
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest Forbidden
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
+		var dest NotFound
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest InternalError
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	switch {
+	case rsp.StatusCode == 401:
+		var headers EnableSlurmClusterConfigResponse401Headers
 		if values := rsp.Header.Values("WWW-Authenticate"); len(values) > 0 {
 			var value string
 			if err := runtime.BindStyledParameterWithOptions("simple", "WWW-Authenticate", values[0], &value, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""}); err != nil {

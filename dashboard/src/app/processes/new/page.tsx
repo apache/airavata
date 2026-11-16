@@ -84,7 +84,10 @@ export default function NewProcessPage() {
   const config = configs.data?.find((c) => c.slurmClusterConfigId === configId);
   const eligibleConfigs = useMemo(
     () =>
-      (configs.data ?? []).filter((c) => !deployment?.slurmClusterId || c.slurmClusterId === deployment.slurmClusterId),
+      // A disabled config accepts no new processes, so it is not offered.
+      (configs.data ?? []).filter(
+        (c) => !c.disabled && (!deployment?.slurmClusterId || c.slurmClusterId === deployment.slurmClusterId),
+      ),
     [configs.data, deployment?.slurmClusterId],
   );
 

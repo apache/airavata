@@ -51,6 +51,19 @@ func (h *SlurmClusterConfigController) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/slurm-cluster-configs/{slurmClusterConfigId}", h.get)
 	mux.HandleFunc("PUT /api/v1/slurm-cluster-configs/{slurmClusterConfigId}", h.update)
 	mux.HandleFunc("DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}", h.delete)
+	mux.HandleFunc("POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/disable", h.setDisabled(true))
+	mux.HandleFunc("POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/enable", h.setDisabled(false))
+}
+
+func (h *SlurmClusterConfigController) setDisabled(disabled bool) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		config, err := h.svc.SetDisabled(r.Context(), r.PathValue("slurmClusterConfigId"), disabled)
+		if err != nil {
+			httpx.WriteError(w, r, err)
+			return
+		}
+		httpx.WriteJSON(w, http.StatusOK, config)
+	}
 }
 
 func (h *SlurmClusterConfigController) list(w http.ResponseWriter, r *http.Request) {

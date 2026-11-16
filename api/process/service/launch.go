@@ -244,6 +244,10 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 		return fmt.Errorf("Batch process %s has no cluster config", batchProcess.SlurmClusterConfigID)
 	}
 
+	if err := computesev.RequireEnabled(clusterConfig.SlurmClusterConfigID, clusterConfig.Disabled); err != nil {
+		return err
+	}
+
 	workRoot := batchProcess.BaseWorkDir
 	if workRoot == nil || strings.TrimSpace(*workRoot) == "" {
 		workRoot = &clusterConfig.WorkRoot

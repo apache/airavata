@@ -132,6 +132,9 @@ func (a *ConfigAccess) WithTx(tx *gorm.DB) *ConfigAccess {
 //
 // READ is the bar rather than WRITE: a config is shared precisely so the people it
 // reaches can run under it, and running under one does not change it.
+//
+// A disabled config is still returned: whether that refuses the caller depends on
+// what they are doing with it, which RequireEnabled answers.
 func (a *ConfigAccess) RequireUsable(ctx context.Context, id string) (*model.SlurmClusterConfig, error) {
 	config, err := a.requireConfig(ctx, id)
 	if err != nil {
@@ -141,6 +144,15 @@ func (a *ConfigAccess) RequireUsable(ctx context.Context, id string) (*model.Slu
 		return nil, err
 	}
 	return config, nil
+}
+
+// RequireEnabled reports a 409 when the config has been disabled, which is what stops a
+// new process being created or launched under it.
+func RequireEnabled(configID string, disabled bool) error {
+	if disabled {
+		return httpx.Conflict("Slurm cluster config %s is disabled and accepts no new processes", configID)
+	}
+	return nil
 }
 
 // SlurmClusterConfigService manages the login configs jobs are submitted through.
@@ -357,6 +369,30 @@ func (s *SlurmClusterConfigService) Update(ctx context.Context, id string, req *
 	if err != nil {
 		return nil, err
 	}
+	return &out, nil
+}
+
+// SetDisabled disables or re-enables a config. A disabled config accepts no new
+// processes: none can be created under it and none can be launched under it. Processes
+// already launched are left alone, and everything else about the config — reading,
+// editing, sharing — works as before.
+//
+// Owner and admins only, like Delete: it decides whether anyone may submit under the
+// identity, which is not a grantee's call. Setting the state a config is already in is
+// not an error.
+func (s *SlurmClusterConfigService) SetDisabled(ctx context.Context, id string, disabled bool) (*dto.SlurmClusterConfigResponse, error) {
+	config, err := s.requireConfig(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.requireControl(ctx, config); err != nil {
+		return nil, err
+	}
+	if err := s.configs.SetDisabled(ctx, config.ID, disabled); err != nil {
+		return nil, err
+	}
+	config.Disabled = disabled
+	out := dto.ToSlurmClusterConfigResponseWith(config, string(sharingmodel.AccessPermissionWrite))
 	return &out, nil
 }
 

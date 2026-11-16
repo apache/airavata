@@ -751,6 +751,62 @@ func TestDeletingAClusterInUseIsRefused(t *testing.T) {
 	}
 }
 
+// A disabled config takes no new processes — none created under it, none launched under
+// it — until it is enabled again. A process that already names it can still be edited.
+func TestDisabledClusterConfigTakesNoNewProcesses(t *testing.T) {
+	h := newHarness(t)
+	configID, clusterID := h.seedClusterConfig(tokenAlice, "expanse")
+	base := "/api/v1/slurm-cluster-configs/" + configID
+
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "expanse"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run",
+		"slurmClusterId":        clusterID,
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "DEFAULT"},
+	}, http.StatusCreated)
+	body := map[string]any{
+		"processType": "BATCH_JOB",
+		"batchProcess": map[string]any{
+			"deploymentId":         deployment["deploymentId"],
+			"slurmClusterConfigId": configID,
+			"batchJobConfig":       map[string]any{"wallTimeMinutes": 60, "allocation": "ALLOC"},
+		},
+	}
+	proc := h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, body, http.StatusCreated)
+	processPath := "/api/v1/processes/" + proc["processId"].(string)
+
+	// Disabling is the owner's call, not a grantee's.
+	h.mustDo(http.MethodPost, base+"/shares", tokenAlice,
+		map[string]any{"principalType": "USER", "principalId": "bob", "permission": "WRITE"}, http.StatusCreated)
+	if rec := h.do(http.MethodPost, base+"/disable", tokenBob, nil); rec.Code != http.StatusForbidden {
+		t.Errorf("grantee disable: status = %d, want 403", rec.Code)
+	}
+
+	got := h.mustDo(http.MethodPost, base+"/disable", tokenAlice, nil, http.StatusOK)
+	if got["disabled"] != true {
+		t.Errorf("after disable, disabled = %v, want true", got["disabled"])
+	}
+	if got := h.mustDo(http.MethodGet, base, tokenBob, nil, http.StatusOK); got["disabled"] != true {
+		t.Errorf("grantee read, disabled = %v, want true", got["disabled"])
+	}
+
+	if rec := h.do(http.MethodPost, "/api/v1/processes", tokenAlice, body); rec.Code != http.StatusConflict {
+		t.Errorf("create under disabled config: status = %d, want 409", rec.Code)
+	}
+	if rec := h.do(http.MethodPost, processPath+"/launch", tokenAlice, nil); rec.Code != http.StatusConflict {
+		t.Errorf("launch under disabled config: status = %d, want 409: %s", rec.Code, rec.Body.String())
+	}
+	// Editing a process is an admin operation; it keeps the config it already has.
+	h.mustDo(http.MethodPut, processPath, tokenAdmin, body, http.StatusOK)
+
+	got = h.mustDo(http.MethodPost, base+"/enable", tokenAlice, nil, http.StatusOK)
+	if got["disabled"] != false {
+		t.Errorf("after enable, disabled = %v, want false", got["disabled"])
+	}
+	h.mustDo(http.MethodPost, "/api/v1/processes", tokenAlice, body, http.StatusCreated)
+}
+
 // The strongest grant reaching a caller is the one that applies: a READ user share
 // does not cap what a WRITE group share gives them.
 func TestStrongestShareWins(t *testing.T) {
