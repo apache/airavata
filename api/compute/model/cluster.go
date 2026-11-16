@@ -100,6 +100,11 @@ type SlurmClusterConfig struct {
 	// deleted out from under them.
 	OwnerID *string        `gorm:"column:user_id;type:varchar(255);index" json:"ownerId,omitempty"`
 	Owner   *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+
+	// Disabled stops new processes being created or launched under this config. What
+	// was already launched keeps running and can still be retried. It is stored as
+	// "disabled" rather than "enabled" so the zero value is the usable state.
+	Disabled bool `gorm:"column:disabled;not null;default:false" json:"disabled"`
 }
 
 // TableName returns the table backing SlurmClusterConfig.

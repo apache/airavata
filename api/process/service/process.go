@@ -36,6 +36,7 @@ import (
 	applicationdto "github.com/apache/airavata/api/application/dto"
 	applicationmodel "github.com/apache/airavata/api/application/model"
 	applicationrepo "github.com/apache/airavata/api/application/repository"
+	computemodel "github.com/apache/airavata/api/compute/model"
 	computesvc "github.com/apache/airavata/api/compute/service"
 	iamrepo "github.com/apache/airavata/api/iam/repository"
 	dto "github.com/apache/airavata/api/process/dto"
@@ -262,10 +263,18 @@ func (s *ProcessService) saveBatchProcess(
 	if err != nil {
 		return nil, notFoundAs(err, "Deployment not found: %s", req.DeploymentID)
 	}
-	clusterConfigID, err := s.resolveClusterConfig(ctx, tx, req)
+	clusterConfig, err := s.resolveClusterConfig(ctx, tx, req)
 	if err != nil {
 		return nil, err
 	}
+	// A disabled config takes no new processes. An edit that keeps the config a
+	// process already has is not a new one, so it is let through.
+	if existing == nil || existing.SlurmClusterConfigID != clusterConfig.ID {
+		if err := computesvc.RequireEnabled(clusterConfig.ID, clusterConfig.Disabled); err != nil {
+			return nil, err
+		}
+	}
+	clusterConfigID := clusterConfig.ID
 
 	batch := &model.BatchJobProcess{ProcessID: &processID}
 	config := &applicationmodel.BatchJobConfig{}
@@ -305,15 +314,11 @@ func (s *ProcessService) resolveClusterConfig(
 	ctx context.Context,
 	tx *gorm.DB,
 	req *dto.BatchProcessRequest,
-) (string, error) {
+) (*computemodel.SlurmClusterConfig, error) {
 	if req.SlurmClusterConfigID == nil || strings.TrimSpace(*req.SlurmClusterConfigID) == "" {
-		return "", httpx.BadRequest("Slurm cluster config id cannot be blank")
+		return nil, httpx.BadRequest("Slurm cluster config id cannot be blank")
 	}
-	config, err := s.configs.WithTx(tx).RequireUsable(ctx, *req.SlurmClusterConfigID)
-	if err != nil {
-		return "", err
-	}
-	return config.ID, nil
+	return s.configs.WithTx(tx).RequireUsable(ctx, *req.SlurmClusterConfigID)
 }
 
 // saveMappings replaces a batch process's template input and output mapping sets.

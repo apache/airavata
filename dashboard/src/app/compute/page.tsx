@@ -499,7 +499,16 @@ function Configs() {
   const columns = (owned: boolean) => [
     {
       header: "Name",
-      cell: (c: SlurmClusterConfig) => <strong>{c.name || c.slurmCluster?.clusterName || "Unnamed"}</strong>,
+      cell: (c: SlurmClusterConfig) => (
+        <>
+          <strong>{c.name || c.slurmCluster?.clusterName || "Unnamed"}</strong>
+          {c.disabled && (
+            <span className="badge" style={{ marginLeft: 8 }} title="No new processes can start under this config">
+              Disabled
+            </span>
+          )}
+        </>
+      ),
     },
     { header: "ID", cell: (c: SlurmClusterConfig) => <Id value={c.slurmClusterConfigId} /> },
     { header: "Cluster", cell: (c: SlurmClusterConfig) => c.slurmCluster?.clusterName ?? <Id value={c.slurmClusterId} /> },
@@ -514,6 +523,23 @@ function Configs() {
             <div className="row" style={{ justifyContent: "flex-end", flexWrap: "nowrap" }}>
               <button className="small" onClick={() => setSharing(c)}>
                 Share
+              </button>
+              <button
+                className="small"
+                title={c.disabled ? "Allow new processes under this config" : "Stop new processes starting under this config"}
+                onClick={async () => {
+                  setError(null);
+                  try {
+                    await api.post(
+                      `/api/v1/slurm-cluster-configs/${c.slurmClusterConfigId}/${c.disabled ? "enable" : "disable"}`,
+                    );
+                    await mine.reload();
+                  } catch (e) {
+                    setError(errorText(e));
+                  }
+                }}
+              >
+                {c.disabled ? "Enable" : "Disable"}
               </button>
               <ConfirmButton
                 onConfirm={async () => {

@@ -1337,6 +1337,47 @@ paths:
         "409": { $ref: "#/components/responses/Conflict" }
         "502": { $ref: "#/components/responses/BadGateway" }
         "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/disable:
+    post:
+      tags: [Slurm Cluster Configs]
+      summary: Disable a cluster config
+      description: |
+        Stops new processes starting under the config: creating a process that names it
+        and launching one that names it are both 409 until it is enabled again.
+        Processes already launched are unaffected. Owner and admins only.
+      operationId: disableSlurmClusterConfig
+      parameters:
+        - $ref: "#/components/parameters/SlurmClusterConfigId"
+      responses:
+        "200":
+          description: The config, now disabled.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
+  /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/enable:
+    post:
+      tags: [Slurm Cluster Configs]
+      summary: Enable a cluster config
+      description: |
+        Lets processes be created and launched under a disabled config again. Owner and
+        admins only.
+      operationId: enableSlurmClusterConfig
+      parameters:
+        - $ref: "#/components/parameters/SlurmClusterConfigId"
+      responses:
+        "200":
+          description: The config, now enabled.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SlurmClusterConfigResponse" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "500": { $ref: "#/components/responses/InternalError" }
   /api/v1/slurm-cluster-configs/{slurmClusterConfigId}:
     parameters:
       - $ref: "#/components/parameters/SlurmClusterConfigId"
@@ -3817,6 +3858,11 @@ components:
           oneOf:
             - { $ref: "#/components/schemas/SSHCredentialResponse" }
             - { type: "null" }
+        disabled:
+          type: boolean
+          description: |
+            True while the config accepts no new processes: none can be created or
+            launched under it.
         permission:
           type: string
           description: |

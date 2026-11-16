@@ -928,6 +928,7 @@ The cluster is inlined, since a config is only meaningful together with the mach
     "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIExampleKeyDoNotUse airavata@hpc",
     "ownerId": "cilogon:12345"
   },
+  "disabled": false,
   "permission": "WRITE"
 }
 ```
@@ -953,6 +954,32 @@ DELETE /api/v1/slurm-cluster-configs/{slurmClusterConfigId}
 |---|---|
 | `403 Forbidden` | the config is not shared with the caller for what they asked to do; or a grantee tried to delete it or read its share list |
 | `404 Not Found` | no such config, cluster or credential |
+
+### Disable and Enable a Slurm Cluster Config
+
+```
+POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/disable
+POST /api/v1/slurm-cluster-configs/{slurmClusterConfigId}/enable
+```
+
+Disabling a config stops new processes starting under it without deleting it. While `disabled` is `true`:
+
+- [creating a process](#create-process) that names the config is `409 Conflict`, as is updating a process to move it onto the config;
+- [launching](#launch-a-process) a process that names the config is `409 Conflict`, even one created before it was disabled.
+
+Processes already launched are left alone: they keep running, their status is still tracked, and a failed one can still be retried. Reading, editing, sharing and allocation discovery work as before, and every read of the config carries `disabled` so a caller can tell before submitting. `enable` lifts the restriction.
+
+Both are owner-and-admin only, like `DELETE` — whether anyone may submit under the identity is not a grantee's call. There is no body, the response is the config as a read returns it, and asking for the state a config is already in is not an error.
+
+```bash
+curl -s -X POST localhost:9095/api/v1/slurm-cluster-configs/"$CLUSTER_CONFIG_ID"/disable \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+| Status | When |
+|---|---|
+| `403 Forbidden` | the caller is neither the config's owner nor an admin |
+| `404 Not Found` | no such config |
 
 ### Discover a Config's Allocations
 
@@ -1872,7 +1899,8 @@ former `workDir`, so two runs of one deployment can work under different directo
 
 `slurmClusterConfigId` is the one field of a self-service submission that names an
 identity to act under, so it is authorized against the caller: a config that does not
-exist is `404`, and one that is neither theirs nor shared with them is `403`. A
+exist is `404`, one that is neither theirs nor shared with them is `403`, and one that
+has been [disabled](#disable-and-enable-a-slurm-cluster-config) is `409`. A
 deployment names the machine but nobody's identity on it, which is why the field is
 required rather than optional. A `PUT` re-resolves it the same way, so a body that omits
 it is rejected rather than keeping what the run was created with.
@@ -2042,7 +2070,7 @@ returns. The tasks themselves are read back through the run's task collections.
 | `401 Unauthorized` | no token |
 | `403 Forbidden` | the run belongs to another user |
 | `404 Not Found` | no such process, or a `dataId` in a file mapping resolves to nothing |
-| `409 Conflict` | the run has already been launched; or it cannot be launched as it stands — its deployment names no cluster or no template, or nothing supplies a work directory |
+| `409 Conflict` | the run has already been launched; its [cluster config is disabled](#disable-and-enable-a-slurm-cluster-config); or it cannot be launched as it stands — its deployment names no cluster or no template, or nothing supplies a work directory |
 
 Launching is **not idempotent** — it writes a task per staged file — so a second call is
 refused with `409` rather than doubling the work. Only `FILE` declarations are staged
