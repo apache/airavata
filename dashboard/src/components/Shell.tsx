@@ -62,9 +62,13 @@ const CONNECTION_LABEL = {
   off: "Off",
 } as const;
 
+// The landing page, under the basePath of next.config.mjs. index.html is named so the
+// dev server, which does not resolve directories in public/, finds it too.
+const LANDING_URL = "/dashboard/landing/index.html";
+
 // Shell is the signed-in frame: the navigation rail, the interactive-auth subscription
 // status, and the dialog that surfaces a waiting SSH login on any page. Signed-out
-// visitors are sent to /login.
+// visitors see the landing page at the root and are sent to /login from anywhere else.
 //
 // The rail shows icons only. Each item's name is its accessible label and appears as a
 // tooltip on hover or keyboard focus.
@@ -92,9 +96,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
       return !c;
     });
 
+  // A signed-out visitor to the root is sent to the landing page, a static page outside
+  // this app (public/landing/, or the directory AIRAVATA_LANDING_DIR names); anywhere
+  // else they are sent to sign in.
   useEffect(() => {
-    if (token === null && !onLogin) router.replace("/login/");
-  }, [token, onLogin, router]);
+    if (token !== null || onLogin) return;
+    if (pathname === "/") window.location.replace(LANDING_URL);
+    else router.replace("/login/");
+  }, [token, onLogin, pathname, router]);
 
   if (onLogin) return <>{children}</>;
   if (!token) return null;

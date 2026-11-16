@@ -89,7 +89,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
 		httpx.WriteJSON(w, http.StatusOK, map[string]string{"status": "UP"})
 	})
-	registerDashboard(mux, cfg.DashboardDir)
+	registerDashboard(mux, cfg.DashboardDir, cfg.LandingDir)
 
 	// Outermost first: CORS answers preflights before authentication runs, since a
 	// preflight carries no credentials by definition.

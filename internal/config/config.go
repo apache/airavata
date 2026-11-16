@@ -69,6 +69,11 @@ type Config struct {
 	// build"), served under /dashboard/ alongside the API. Empty disables it.
 	DashboardDir string
 
+	// LandingDir is a directory holding the landing page signed-out visitors see
+	// (index.html and whatever it links to), served under /dashboard/landing/ in place
+	// of the one built into the dashboard. Empty keeps the built-in page.
+	LandingDir string
+
 	// PublicURL is where compute nodes reach this server, http(s)://host[:port]. A
 	// job's Linkspan dials its ws(s) form to link back; see internal/link.
 	PublicURL string
@@ -97,6 +102,7 @@ func load() (Config, error) {
 		WorkflowBackendType:       env("AIRAVATA_WORKFLOW_BACKEND_TYPE", "sqlite"),
 		WorkflowBackendSqlitePath: env("AIRAVATA_WORKFLOW_BACKEND_SQLITE_PATH", "/tmp/airavataorchestrator.sqlite"),
 		DashboardDir:              dashboardDir(),
+		LandingDir:                env("AIRAVATA_LANDING_DIR", ""),
 		PublicURL:                 env("AIRAVATA_PUBLIC_URL", "http://localhost:"+env("SERVER_PORT", "9095")),
 	}
 

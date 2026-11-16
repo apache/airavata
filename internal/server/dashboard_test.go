@@ -35,17 +35,7 @@ import (
 func newDashboardHarness(t *testing.T, files map[string]string) *harness {
 	t.Helper()
 	h := newHarness(t)
-	dir := t.TempDir()
-	for name, body := range files {
-		p := filepath.Join(dir, name)
-		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(p, []byte(body), 0o644); err != nil {
-			t.Fatal(err)
-		}
-	}
-	h.cfg.DashboardDir = dir
+	h.cfg.DashboardDir = writeFiles(t, files)
 	h.srv = server.New(h.cfg, h.svcs, h.introspector)
 	return h
 }
@@ -106,5 +96,67 @@ func TestUnbuiltDashboardExplainsItself(t *testing.T) {
 	rec := h.do(http.MethodGet, "/dashboard/", "", nil)
 	if rec.Code != http.StatusServiceUnavailable || !strings.Contains(rec.Body.String(), "npm --prefix dashboard") {
 		t.Errorf("GET /dashboard/ = %d %q, want 503 with build instructions", rec.Code, rec.Body.String())
+	}
+}
+
+// writeFiles writes files, keyed by slash-separated path, under a new directory.
+func writeFiles(t *testing.T, files map[string]string) string {
+	t.Helper()
+	dir := t.TempDir()
+	for name, body := range files {
+		p := filepath.Join(dir, name)
+		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, []byte(body), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return dir
+}
+
+var exportWithLanding = map[string]string{
+	"index.html":         "home",
+	"404.html":           "missing",
+	"landing/index.html": "standard landing",
+}
+
+func TestLandingDirReplacesStandardLanding(t *testing.T) {
+	h := newDashboardHarness(t, exportWithLanding)
+	if rec := h.do(http.MethodGet, "/dashboard/landing/", "", nil); rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), "standard landing") {
+		t.Fatalf("GET /dashboard/landing/ = %d %q, want the export's landing page", rec.Code, rec.Body.String())
+	}
+
+	h.cfg.LandingDir = writeFiles(t, map[string]string{
+		"index.html":      "external landing",
+		"images/logo.png": "logo",
+	})
+	h.srv = server.New(h.cfg, h.svcs, h.introspector)
+
+	for _, tc := range []struct {
+		path       string
+		wantStatus int
+		wantBody   string
+	}{
+		{"/dashboard/landing/", http.StatusOK, "external landing"},
+		{"/dashboard/landing/images/logo.png", http.StatusOK, "logo"},
+		{"/dashboard/landing/no-such-file.png", http.StatusNotFound, ""},
+		// The rest of the dashboard is untouched.
+		{"/dashboard/", http.StatusOK, "home"},
+	} {
+		rec := h.do(http.MethodGet, tc.path, "", nil)
+		if rec.Code != tc.wantStatus || !strings.Contains(rec.Body.String(), tc.wantBody) {
+			t.Errorf("GET %s = %d %q, want %d containing %q", tc.path, rec.Code, rec.Body.String(), tc.wantStatus, tc.wantBody)
+		}
+	}
+}
+
+func TestLandingDirWithoutIndexKeepsStandardLanding(t *testing.T) {
+	h := newDashboardHarness(t, exportWithLanding)
+	h.cfg.LandingDir = writeFiles(t, map[string]string{"README.md": "not a page"})
+	h.srv = server.New(h.cfg, h.svcs, h.introspector)
+
+	if rec := h.do(http.MethodGet, "/dashboard/landing/", "", nil); rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), "standard landing") {
+		t.Errorf("GET /dashboard/landing/ = %d %q, want the export's landing page", rec.Code, rec.Body.String())
 	}
 }
