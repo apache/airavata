@@ -1311,6 +1311,9 @@ type SlurmClusterConfigRequest struct {
 // machine it logs in to. The key is inlined as its safe summary.
 type SlurmClusterConfigResponse struct {
 	Description *string `json:"description,omitempty"`
+
+	// Disabled True while the config accepts no new processes: none can be created or
+	// launched under it.
 	Disabled  *bool   `json:"disabled,omitempty"`
 	LoginUser string  `json:"loginUser"`
 	Name      *string `json:"name,omitempty"`
