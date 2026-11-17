@@ -22,6 +22,7 @@ package auth
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"sync"
 	"time"
 )
@@ -93,9 +94,12 @@ func (c *ClaimsCache) Get(token string) (map[string]any, bool) {
 // claim, whichever is sooner; a token already past its exp is not cached. When the cache
 // is full even after dropping expired entries, the claims are simply not cached: the
 // next request introspects again, which is slower but never wrong.
-func (c *ClaimsCache) Put(token string, claims map[string]any) {
+//
+// It reports what it did — one of the PutOutcome values — so a deployment where the
+// cache never hits can tell why from the request log.
+func (c *ClaimsCache) Put(token string, claims map[string]any) PutOutcome {
 	if c == nil || c.ttl <= 0 {
-		return
+		return PutDisabled
 	}
 	now := c.now()
 	expires := now.Add(c.ttl)
@@ -105,7 +109,7 @@ func (c *ClaimsCache) Put(token string, claims map[string]any) {
 		}
 	}
 	if !now.Before(expires) {
-		return
+		return PutExpired
 	}
 
 	key := sha256.Sum256([]byte(token))
@@ -118,10 +122,29 @@ func (c *ClaimsCache) Put(token string, claims map[string]any) {
 			}
 		}
 		if len(c.entries) >= c.maxEntries {
-			return
+			return PutFull
 		}
 	}
 	c.entries[key] = claimsEntry{claims: copyClaims(claims), expires: expires}
+	return PutStored
+}
+
+// PutOutcome is what ClaimsCache.Put did with an entry.
+type PutOutcome string
+
+// The outcomes of ClaimsCache.Put.
+const (
+	PutStored   PutOutcome = "stored"
+	PutDisabled PutOutcome = "disabled"      // nil cache or a TTL of zero
+	PutExpired  PutOutcome = "token_expired" // the exp claim is not in the future
+	PutFull     PutOutcome = "full"          // at capacity with nothing expired to sweep
+)
+
+// TokenID is a short, non-reversible fingerprint of token, for telling in a log whether
+// two requests carried the same token without logging the token.
+func TokenID(token string) string {
+	sum := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(sum[:4])
 }
 
 // copyClaims is shallow: the top-level map is what callers might add to, and claim

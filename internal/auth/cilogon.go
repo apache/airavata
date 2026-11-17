@@ -144,6 +144,7 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 // filling in the profile. A cached answer is used when there is one, so only the first
 // request with a token in each cache period makes the two round trips.
 func (c *CILogonIntrospector) claims(ctx context.Context, token string) (map[string]any, error) {
+	timing.Note(ctx, "auth.token_id", TokenID(token))
 	if cached, ok := c.Cache.Get(token); ok {
 		timing.Note(ctx, "auth.claims_cache", "hit")
 		return cached, nil
@@ -167,7 +168,12 @@ func (c *CILogonIntrospector) claims(ctx context.Context, token string) (map[str
 		}
 	}
 
-	c.Cache.Put(token, attributes)
+	outcome := c.Cache.Put(token, attributes)
+	timing.Note(ctx, "auth.claims_cache_put", string(outcome))
+	// The raw exp claim and the server's clock, so a cache that refuses every token as
+	// already expired shows why: a skewed clock, or an exp CILogon reports in other units.
+	timing.Note(ctx, "auth.token_exp", attributes["exp"])
+	timing.Note(ctx, "auth.server_unix", time.Now().Unix())
 	return attributes, nil
 }
 
