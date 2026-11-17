@@ -29,6 +29,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime/pprof"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -46,9 +48,43 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
+	stopProfile := startCPUProfile()
+	err := run()
+	// Stop explicitly rather than via defer: os.Exit below skips deferred calls,
+	// which would leave the profile unflushed on a failed run.
+	stopProfile()
+	if err != nil {
 		slog.Error("server failed", "error", err)
 		os.Exit(1)
+	}
+}
+
+// startCPUProfile enables CPU profiling when AIRAVATA_CPU_PROFILE is true, writing
+// to AIRAVATA_CPU_PROFILE_PATH (default "cpu.prof"). It returns a function that
+// stops profiling and flushes the file; that function is a no-op when profiling is off.
+func startCPUProfile() func() {
+	enabled, _ := strconv.ParseBool(os.Getenv("AIRAVATA_CPU_PROFILE"))
+	if !enabled {
+		return func() {}
+	}
+	path := os.Getenv("AIRAVATA_CPU_PROFILE_PATH")
+	if path == "" {
+		path = "cpu.prof"
+	}
+	f, err := os.Create(path)
+	if err != nil {
+		slog.Error("cpu profile: create file failed", "path", path, "error", err)
+		return func() {}
+	}
+	if err := pprof.StartCPUProfile(f); err != nil {
+		slog.Error("cpu profile: start failed", "path", path, "error", err)
+		f.Close()
+		return func() {}
+	}
+	slog.Info("cpu profiling enabled", "path", path)
+	return func() {
+		pprof.StopCPUProfile()
+		f.Close()
 	}
 }
 
