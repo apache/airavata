@@ -24,6 +24,7 @@ import (
 	"net/http"
 
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/timing"
 
 	"github.com/apache/airavata/api/process/service"
 )
@@ -48,19 +49,25 @@ func (h *StatusController) Register(mux *http.ServeMux) {
 }
 
 func (h *StatusController) list(w http.ResponseWriter, r *http.Request) {
+	stop := timing.Start(r.Context(), "status.service")
 	statuses, err := h.svc.ListForProcess(r.Context(), r.PathValue("processId"))
+	stop()
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
+	defer timing.Start(r.Context(), "status.write_response")()
 	httpx.WriteJSON(w, http.StatusOK, statuses)
 }
 
 func (h *StatusController) get(w http.ResponseWriter, r *http.Request) {
+	stop := timing.Start(r.Context(), "status.service")
 	status, err := h.svc.Get(r.Context(), r.PathValue("processId"), r.PathValue("statusId"))
+	stop()
 	if err != nil {
 		httpx.WriteError(w, r, err)
 		return
 	}
+	defer timing.Start(r.Context(), "status.write_response")()
 	httpx.WriteJSON(w, http.StatusOK, status)
 }

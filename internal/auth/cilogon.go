@@ -29,6 +29,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/apache/airavata/internal/timing"
 )
 
 // Introspector validates a bearer token and resolves it to a principal.
@@ -117,15 +119,19 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 		return nil, ErrInvalidToken
 	}
 
+	stopRoles := timing.Start(ctx, "auth.roles")
 	principal := &Principal{
 		Name:        username,
 		Authorities: c.Roles.Roles(ctx, username),
 		Attributes:  attributes,
 	}
+	stopRoles()
 	if c.Users != nil {
 		// Without the record's status there is no telling whether the caller may come
 		// in, so a failure here fails the request rather than letting them through.
+		stopProvision := timing.Start(ctx, "auth.provision_user")
 		status, err := c.Users.ProvisionUser(ctx, principal)
+		stopProvision()
 		if err != nil {
 			return nil, fmt.Errorf("resolve the user record for %s: %w", username, err)
 		}
@@ -139,16 +145,23 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 // request with a token in each cache period makes the two round trips.
 func (c *CILogonIntrospector) claims(ctx context.Context, token string) (map[string]any, error) {
 	if cached, ok := c.Cache.Get(token); ok {
+		timing.Note(ctx, "auth.claims_cache", "hit")
 		return cached, nil
 	}
+	timing.Note(ctx, "auth.claims_cache", "miss")
 
+	stopIntrospect := timing.Start(ctx, "auth.cilogon_introspect")
 	attributes, err := c.introspect(ctx, token)
+	stopIntrospect()
 	if err != nil {
 		return nil, err
 	}
 
+	stopUserInfo := timing.Start(ctx, "auth.cilogon_userinfo")
+	profile := c.userInfo(ctx, token)
+	stopUserInfo()
 	// Introspection claims win on conflict; userinfo only fills in gaps.
-	for k, v := range c.userInfo(ctx, token) {
+	for k, v := range profile {
 		if _, exists := attributes[k]; !exists {
 			attributes[k] = v
 		}

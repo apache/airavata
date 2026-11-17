@@ -27,6 +27,7 @@ import (
 	"strings"
 
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/timing"
 )
 
 // Middleware resolves the bearer token, if any, onto the request context.
@@ -50,7 +51,9 @@ func Middleware(introspector Introspector, opts ...Option) func(http.Handler) ht
 				return
 			}
 
+			stop := timing.Start(r.Context(), "auth.introspect")
 			principal, err := introspector.Introspect(r.Context(), token)
+			stop()
 			if err != nil {
 				if errors.Is(err, ErrInvalidToken) {
 					w.Header().Set("WWW-Authenticate", `Bearer error="invalid_token"`)
@@ -75,7 +78,9 @@ func Middleware(introspector Introspector, opts ...Option) func(http.Handler) ht
 			}
 
 			if cfg.permissions != nil {
+				stop := timing.Start(r.Context(), "auth.permissions")
 				principal.Permissions = cfg.permissions.Permissions(r.Context(), principal.Name, principal.Authorities)
+				stop()
 			}
 
 			next.ServeHTTP(w, r.WithContext(WithPrincipal(r.Context(), principal)))

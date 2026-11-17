@@ -22,6 +22,7 @@
 package server
 
 import (
+	"database/sql"
 	"net/http"
 	"strings"
 
@@ -29,6 +30,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/config"
 	"github.com/apache/airavata/internal/httpx"
+	"github.com/apache/airavata/internal/timing"
 
 	applicationctl "github.com/apache/airavata/api/application/controller"
 	auditctl "github.com/apache/airavata/api/audit/controller"
@@ -91,9 +93,17 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	})
 	registerDashboard(mux, cfg.DashboardDir, cfg.LandingDir)
 
-	// Outermost first: CORS answers preflights before authentication runs, since a
-	// preflight carries no credentials by definition.
-	return cors(cfg.CORSAllowedOrigins)(auth.Middleware(introspector, auth.WithPermissions(svcs.Permissions))(mux))
+	// Outermost first. Timing wraps everything so its total is the whole request. CORS
+	// answers preflights before authentication runs, since a preflight carries no
+	// credentials by definition.
+	var pool func() sql.DBStats
+	if svcs.DB != nil {
+		if sqlDB, err := svcs.DB.DB(); err == nil {
+			pool = sqlDB.Stats
+		}
+	}
+	return timing.Middleware(pool)(
+		cors(cfg.CORSAllowedOrigins)(auth.Middleware(introspector, auth.WithPermissions(svcs.Permissions))(mux)))
 }
 
 // cors applies the airavata.cors.allowed-origins policy.

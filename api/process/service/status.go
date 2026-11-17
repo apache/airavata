@@ -27,6 +27,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/ptr"
+	"github.com/apache/airavata/internal/timing"
 
 	dto "github.com/apache/airavata/api/process/dto"
 	model "github.com/apache/airavata/api/process/model"
@@ -101,10 +102,15 @@ func (s *StatusService) RecordTx(ctx context.Context, tx *gorm.DB, processID str
 // Not owner-scoped, matching the rest of this package's reads (see ProcessService's doc
 // comment) — the Java service carried no authorisation on process status either.
 func (s *StatusService) ListForProcess(ctx context.Context, processID string) ([]dto.StatusResponse, error) {
-	if _, err := s.processes.FindByID(ctx, processID); err != nil {
+	stop := timing.Start(ctx, "status.db.find_process")
+	_, err := s.processes.FindByID(ctx, processID)
+	stop()
+	if err != nil {
 		return nil, notFoundAs(err, "Process not found: %s", processID)
 	}
+	stop = timing.Start(ctx, "status.db.find_statuses")
 	found, err := s.statuses.FindByProcessID(ctx, processID)
+	stop()
 	if err != nil {
 		return nil, err
 	}
@@ -113,10 +119,15 @@ func (s *StatusService) ListForProcess(ctx context.Context, processID string) ([
 
 // Get returns one status, scoped to the process it must belong to.
 func (s *StatusService) Get(ctx context.Context, processID, statusID string) (*dto.StatusResponse, error) {
-	if _, err := s.processes.FindByID(ctx, processID); err != nil {
+	stop := timing.Start(ctx, "status.db.find_process")
+	_, err := s.processes.FindByID(ctx, processID)
+	stop()
+	if err != nil {
 		return nil, notFoundAs(err, "Process not found: %s", processID)
 	}
+	stop = timing.Start(ctx, "status.db.find_status")
 	found, err := s.statuses.FindByIDAndProcessID(ctx, statusID, processID)
+	stop()
 	if err != nil {
 		return nil, notFoundAs(err, "Status not found: %s in process %s", statusID, processID)
 	}

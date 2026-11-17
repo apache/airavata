@@ -43,6 +43,7 @@ import (
 	"github.com/apache/airavata/internal/db"
 	"github.com/apache/airavata/internal/orchestration/tasks/monitoring"
 	"github.com/apache/airavata/internal/server"
+	"github.com/apache/airavata/internal/timing"
 	"github.com/cschleiden/go-workflows/backend"
 	"github.com/cschleiden/go-workflows/backend/sqlite"
 )
@@ -169,6 +170,10 @@ func runServer() error {
 	// Before anything writes, including the migration below and the root user.
 	if err := audit.Register(gdb); err != nil {
 		return fmt.Errorf("register audit log: %w", err)
+	}
+	// Counts each request's database round trips for the request timing log.
+	if err := timing.RegisterGorm(gdb); err != nil {
+		return fmt.Errorf("register request timing: %w", err)
 	}
 	if cfg.AutoMigrate {
 		if err := db.AutoMigrate(gdb); err != nil {
