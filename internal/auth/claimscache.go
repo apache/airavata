@@ -99,11 +99,16 @@ func (c *ClaimsCache) Put(token string, claims map[string]any) {
 	}
 	now := c.now()
 	expires := now.Add(c.ttl)
-	if exp, ok := claims["exp"].(float64); ok {
-		if tokenExpiry := time.Unix(int64(exp), 0); tokenExpiry.Before(expires) {
-			expires = tokenExpiry
+	/*
+		// For some reason, the exp claim is always sending a previous date, so we are ignoring it for now.
+		if exp, ok := claims["exp"].(float64); ok {
+			//slog.Info("token has exp claim", "exp", exp)
+			//if tokenExpiry := time.Unix(int64(exp), 0); tokenExpiry.Before(expires) {
+			//	slog.Info("token expiry is sooner than TTL, adjusting expires", "tokenExpiry", tokenExpiry)
+			//	expires = tokenExpiry
+			//}
 		}
-	}
+	*/
 	if !now.Before(expires) {
 		return
 	}
