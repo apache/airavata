@@ -72,6 +72,10 @@ type CILogonIntrospector struct {
 	// authenticates, and sets the principal's Status from it. The root account and
 	// service accounts never reach it.
 	Users UserProvisioner
+
+	// Cache, when set, remembers CILogon's answer for a token for a short while. Nil
+	// means every request introspects.
+	Cache *ClaimsCache
 }
 
 // NewCILogonIntrospector builds an introspector with a bounded HTTP client, so a
@@ -85,6 +89,7 @@ func NewCILogonIntrospector(introspectionURI, userInfoURI, clientID, clientSecre
 		ClientSecret:     clientSecret,
 		Roles:            roles,
 		Root:             root,
+		Cache:            NewClaimsCache(DefaultClaimsCacheTTL, DefaultClaimsCacheMaxEntries),
 	}
 }
 
@@ -100,16 +105,9 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 		return c.ServiceAccounts.ResolveServiceAccount(ctx, token)
 	}
 
-	attributes, err := c.introspect(ctx, token)
+	attributes, err := c.claims(ctx, token)
 	if err != nil {
 		return nil, err
-	}
-
-	// Introspection claims win on conflict; userinfo only fills in gaps.
-	for k, v := range c.userInfo(ctx, token) {
-		if _, exists := attributes[k]; !exists {
-			attributes[k] = v
-		}
 	}
 
 	username := NormalizeUsername(firstString(attributes, "username", "preferred_username", "sub"))
@@ -134,6 +132,30 @@ func (c *CILogonIntrospector) Introspect(ctx context.Context, token string) (*Pr
 		principal.Status = status
 	}
 	return principal, nil
+}
+
+// claims returns what CILogon says about token: the introspection claims, with userinfo
+// filling in the profile. A cached answer is used when there is one, so only the first
+// request with a token in each cache period makes the two round trips.
+func (c *CILogonIntrospector) claims(ctx context.Context, token string) (map[string]any, error) {
+	if cached, ok := c.Cache.Get(token); ok {
+		return cached, nil
+	}
+
+	attributes, err := c.introspect(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+
+	// Introspection claims win on conflict; userinfo only fills in gaps.
+	for k, v := range c.userInfo(ctx, token) {
+		if _, exists := attributes[k]; !exists {
+			attributes[k] = v
+		}
+	}
+
+	c.Cache.Put(token, attributes)
+	return attributes, nil
 }
 
 func (c *CILogonIntrospector) introspect(ctx context.Context, token string) (map[string]any, error) {
