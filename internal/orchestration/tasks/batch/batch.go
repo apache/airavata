@@ -38,15 +38,16 @@ import (
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
-	"github.com/apache/airavata/internal/link"
 	"github.com/apache/airavata/internal/orchestration/execution"
+	"github.com/apache/airavata/internal/slurm"
 	ssh "github.com/apache/airavata/internal/ssh"
+	"github.com/apache/airavata/internal/transport"
 )
 
 // LinkIssuer mints the secrets a submission's job is handed so a Linkspan it runs can
 // link back to Airavata. It is process/service.LinkService.
 type LinkIssuer interface {
-	Issue(ctx context.Context, processID string) (*link.Issued, error)
+	Issue(ctx context.Context, processID string) (*transport.IssuedLink, error)
 }
 
 // linkEnvFile is the file, in the job's working directory, that carries the issued
@@ -129,7 +130,7 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 
 	// Each submission is issued fresh link secrets, so a job from an earlier
 	// submission of the process can no longer link.
-	var issued *link.Issued
+	var issued *transport.IssuedLink
 	envFilePath := ""
 	if a.links != nil {
 		issued, err = a.links.Issue(ctx, processID)
@@ -171,13 +172,7 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 
 	slog.Info("Retrieved slurm cluster config for batch job", "taskId", taskID, "processId", processID, "clusterConfigId", clusterConfig.ID)
 
-	dialConfig := ssh.NewSSHDialConfig(
-		clusterConfig.SlurmCluster.HeadnodeHost,
-		clusterConfig.SlurmCluster.HeadnodePort,
-		clusterConfig.LoginUser,
-		*clusterConfig.SSHCredential,
-		*process.OwnerID,
-	)
+	dialConfig := transport.SSHDialConfig(clusterConfig, *process.OwnerID)
 
 	slog.Info("Creating job working directory through SSH", "taskId", taskID, "processId", processID, "destinationDirectory", *jst.WorkingDir)
 	if err := ssh.CreateDirectorySSH(ctx, dialConfig, a.sshContext, *jst.WorkingDir); err != nil {
@@ -204,15 +199,10 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 
 	slog.Info("Submitting slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath)
 
-	sbatchPath := "sbatch"
-	if clusterConfig.SlurmCluster.SlurmHome != nil && strings.TrimSpace(*clusterConfig.SlurmCluster.SlurmHome) != "" {
-		sbatchPath = path.Join(*clusterConfig.SlurmCluster.SlurmHome, "sbatch")
-	}
-
 	// sbatch is run from the working directory so that a script writing relative paths —
 	// and the job's own stdout and stderr files — land beside the staged inputs rather
 	// than in the login user's home.
-	submitCommand := "cd " + ssh.ShellQuote(*jst.WorkingDir) + " && " + ssh.ShellQuote(sbatchPath) + " " + ssh.ShellQuote(scriptUploadPath)
+	submitCommand := "cd " + ssh.ShellQuote(*jst.WorkingDir) + " && " + slurm.Command(clusterConfig.SlurmCluster.SlurmHome, "sbatch") + " " + ssh.ShellQuote(scriptUploadPath)
 
 	stdout, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, submitCommand,
 		fmt.Sprintf("ssh sbatch %s@%s:%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost, scriptUploadPath))
@@ -282,7 +272,7 @@ func parseSbatchJobID(out string) (string, error) {
 // uploadLinkEnv writes the issued link secrets to remotePath as shell exports, mode
 // 0600. scp keeps the local file's mode on a file it creates, and the remote file is
 // removed first so an existing one's wider mode is not inherited.
-func (a *Tasks) uploadLinkEnv(ctx context.Context, dialConfig ssh.SSHDialConfig, issued *link.Issued, remotePath string) error {
+func (a *Tasks) uploadLinkEnv(ctx context.Context, dialConfig ssh.SSHDialConfig, issued *transport.IssuedLink, remotePath string) error {
 	env := issued.Env()
 	names := make([]string, 0, len(env))
 	for name := range env {
@@ -318,7 +308,7 @@ func (a *Tasks) uploadLinkEnv(ctx context.Context, dialConfig ssh.SSHDialConfig,
 	return ssh.UploadFileToSCP(ctx, dialConfig, a.sshContext, local.Name(), remotePath)
 }
 
-func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *execution.GlobalJobConfigs, issued *link.Issued, envFilePath string) (string, error) {
+func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *execution.GlobalJobConfigs, issued *transport.IssuedLink, envFilePath string) (string, error) {
 	batch := process.BatchProcess
 
 	if batch.DeploymentID == nil {
@@ -344,20 +334,4 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 
 	slog.Info("Building slurm script for process", "processId", process.ID)
 	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs, issued, envFilePath)
-}
-
-func (a *Tasks) CancelBatchJob(ctx context.Context, executionContext *execution.Context, processID string, taskID string) (*execution.Context, error) {
-	slog.Info("Starting to cancel batch job", "taskId", taskID, "processId", processID)
-	process, err := execution.FindBatchProcess(ctx, a.processes, processID)
-	if err != nil {
-		slog.Error("Failed to retrieve process for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
-	}
-	jst, err := a.jobSubmissionTasks.FindByIDAndProcessID(ctx, taskID, processID)
-	if err != nil {
-		slog.Error("Failed to retrieve job submission task for cancelling batch job", "taskId", taskID, "processId", processID, "error", err)
-		return nil, err
-	}
-	slog.Info("Completed cancelling batch job", "taskId", taskID, "processId", processID, "jobId", process.BatchProcess.JobID, "JST Id", jst.ID)
-	return executionContext, nil
 }
