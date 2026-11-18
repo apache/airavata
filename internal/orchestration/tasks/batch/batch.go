@@ -44,10 +44,11 @@ import (
 	"github.com/apache/airavata/internal/transport"
 )
 
-// LinkIssuer mints the secrets a submission's job is handed so a Linkspan it runs can
-// link back to Airavata. It is process/service.LinkService.
-type LinkIssuer interface {
+// LinkSecrets issues the secrets a submission's job is handed so a Linkspan it runs can
+// link back to Airavata, and revokes them. It is process/service.LinkService.
+type LinkSecrets interface {
 	Issue(ctx context.Context, processID string) (*transport.IssuedLink, error)
+	Revoke(ctx context.Context, processID string) error
 }
 
 // linkEnvFile is the file, in the job's working directory, that carries the issued
@@ -65,8 +66,9 @@ type Tasks struct {
 	templates           *applicationrepo.TemplateRepository
 	batchStatus         *processrepo.BatchJobStatusRepository
 	sshContext          *ssh.GlobalSSHContext
+	run                 ssh.CommandRunner
 	tracker             *execution.TaskTracker
-	links               LinkIssuer
+	links               LinkSecrets
 }
 
 // New returns the batch tasks over the given repositories.
@@ -78,7 +80,7 @@ func New(processes *processrepo.ProcessRepository,
 	batchStatus *processrepo.BatchJobStatusRepository,
 	sshContext *ssh.GlobalSSHContext,
 	tracker *execution.TaskTracker,
-	links LinkIssuer,
+	links LinkSecrets,
 ) *Tasks {
 	return &Tasks{
 		processes:           processes,
@@ -88,6 +90,7 @@ func New(processes *processrepo.ProcessRepository,
 		templates:           templates,
 		batchStatus:         batchStatus,
 		sshContext:          sshContext,
+		run:                 ssh.NewCommandRunner(sshContext),
 		tracker:             tracker,
 		links:               links,
 	}
@@ -204,7 +207,7 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 	// than in the login user's home.
 	submitCommand := "cd " + ssh.ShellQuote(*jst.WorkingDir) + " && " + slurm.Command(clusterConfig.SlurmCluster.SlurmHome, "sbatch") + " " + ssh.ShellQuote(scriptUploadPath)
 
-	stdout, stderr, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, submitCommand,
+	stdout, stderr, err := a.run(ctx, dialConfig, submitCommand,
 		fmt.Sprintf("ssh sbatch %s@%s:%s", clusterConfig.LoginUser, clusterConfig.SlurmCluster.HeadnodeHost, scriptUploadPath))
 	if err != nil {
 		slog.Error("Failed to submit slurm script to cluster", "taskId", taskID, "processId", processID, "remotePath", scriptUploadPath, "stdout", stdout, "stderr", stderr, "error", err)
@@ -301,7 +304,7 @@ func (a *Tasks) uploadLinkEnv(ctx context.Context, dialConfig ssh.SSHDialConfig,
 		return err
 	}
 
-	if _, _, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext, "rm -f "+ssh.ShellQuote(remotePath),
+	if _, _, err := a.run(ctx, dialConfig, "rm -f "+ssh.ShellQuote(remotePath),
 		"ssh rm "+remotePath); err != nil {
 		return err
 	}
@@ -334,4 +337,38 @@ func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJ
 
 	slog.Info("Building slurm script for process", "processId", process.ID)
 	return buildSlurmScript(process, deployment, template, clusterConfig, globalJobConfigs, issued, envFilePath)
+}
+
+// ReleaseBatchResources revokes the process's link secrets, cancels every job it
+// submitted and removes the secrets' file from the cluster. Jobs are found by name,
+// which the script sets to the process id.
+func (a *Tasks) ReleaseBatchResources(ctx context.Context, processID string) error {
+	if a.links != nil {
+		if err := a.links.Revoke(ctx, processID); err != nil {
+			return err
+		}
+	}
+	jsts, err := a.jobSubmissionTasks.FindByProcessID(ctx, processID)
+	if err != nil || len(jsts) == 0 {
+		return err
+	}
+	process, err := execution.FindBatchProcess(ctx, a.processes, processID)
+	if err != nil {
+		return err
+	}
+	clusterConfig, err := a.slurmClusterConfigs.FindByID(ctx, process.BatchProcess.SlurmClusterConfigID)
+	if err != nil {
+		return err
+	}
+	cluster := clusterConfig.SlurmCluster
+	commands := []string{slurm.Command(cluster.SlurmHome, "scancel") + " --name=" + ssh.ShellQuote(processID)}
+	for _, jst := range jsts {
+		if jst.WorkingDir != nil {
+			commands = append(commands, "rm -f "+ssh.ShellQuote(path.Join(*jst.WorkingDir, linkEnvFile)))
+		}
+	}
+	dialConfig := transport.SSHDialConfig(clusterConfig, *process.OwnerID)
+	command := strings.Join(commands, " && ")
+	_, _, err = a.run(ctx, dialConfig, command, "ssh "+command)
+	return err
 }

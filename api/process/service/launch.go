@@ -22,11 +22,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/apache/airavata/api/process/repository"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/orchestration"
@@ -36,6 +38,7 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 	"github.com/apache/airavata/internal/permission"
+	"github.com/apache/airavata/internal/ptr"
 
 	appdto "github.com/apache/airavata/api/application/dto"
 	appmod "github.com/apache/airavata/api/application/model"
@@ -129,6 +132,9 @@ func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*d
 	if err != nil {
 		return nil, err
 	}
+	if err := s.requireNotStopped(ctx, processID); err != nil {
+		return nil, err
+	}
 	if err := s.requireNotLaunched(ctx, proc.ProcessID); err != nil {
 		return nil, err
 	}
@@ -159,9 +165,21 @@ func (s *LaunchService) findOwnedProcess(ctx context.Context, processID string) 
 	}
 	owned := proc.UserID != nil && *proc.UserID == principal.Name
 	if !owned && !principal.Can(permission.ProcessManageAny) {
-		return nil, httpx.Forbidden("Access denied: you may only launch your own processes")
+		return nil, httpx.Forbidden("Access denied: you may only manage your own processes")
 	}
 	return proc, nil
+}
+
+// requireNotStopped reports a conflict once a process is stopped: a stop is final.
+func (s *LaunchService) requireNotStopped(ctx context.Context, processID string) error {
+	stopped, err := s.statusService.statuses.IsProcessStopped(ctx, processID)
+	if err != nil {
+		return err
+	}
+	if stopped {
+		return httpx.Conflict("Process %s is stopped", processID)
+	}
+	return nil
 }
 
 // requireNotLaunched reports a conflict when a process already carries the tasks a
@@ -278,19 +296,22 @@ func (s *LaunchService) launchBatchProcess(ctx context.Context, process *dto.Res
 		return err
 	}
 
-	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
-	workflowId, err := s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
-
-	if err != nil {
-		slog.Error("Failed to launch batch job submission", "processId", process.ProcessID, "error", err)
-		return err
-	}
-
-	slog.Info("Launched batch job submission", "processId", process.ProcessID, "workflowId", workflowId)
-
+	// Recorded before the workflow starts, so a stop's STOPPED always lands after it.
 	if _, err := s.statusService.Record(ctx, process.ProcessID, procmodel.ProcessStatusTypeSubmitted, nil); err != nil {
 		return err
 	}
+
+	slog.Info("Created tasks for process. Now launching those", "processId", process.ProcessID)
+	workflowId, err := s.executionEngine.LaunchBatchJobSubmission(ctx, process.ProcessID)
+	if err != nil {
+		slog.Error("Failed to launch batch job submission", "processId", process.ProcessID, "error", err)
+		// Otherwise the SUBMITTED above would stand with nothing running.
+		if _, recErr := s.statusService.Record(ctx, process.ProcessID, procmodel.ProcessStatusTypeFailed, ptr.To(err.Error())); recErr != nil {
+			slog.Error("Failed to record process status", "processId", process.ProcessID, "error", recErr)
+		}
+		return err
+	}
+	slog.Info("Launched batch job submission", "processId", process.ProcessID, "workflowId", workflowId)
 	return nil
 }
 
@@ -493,4 +514,28 @@ func findTemplateOutput(template *appdto.TemplateResponse, outputID string) *app
 		}
 	}
 	return nil
+}
+
+func (s *LaunchService) StopProcess(ctx context.Context, processID string) error {
+	proc, err := s.findOwnedProcess(ctx, processID)
+	if err != nil {
+		return err
+	}
+	if proc.LastStatusID != nil {
+		latest, err := s.statusService.Get(ctx, processID, *proc.LastStatusID)
+		if err != nil {
+			return err
+		}
+		if status := ptr.From(latest.Status); status == procmodel.ProcessStatusTypeCompleted || status == procmodel.ProcessStatusTypeFailed {
+			return nil
+		}
+	}
+	if _, err := s.statusService.Record(ctx, processID, procmodel.ProcessStatusTypeStopped, nil); err != nil {
+		return err
+	}
+	err = s.executionEngine.LaunchWorkflow(ctx, uuid.NewString(), processID, procmodel.ProcessWorkflowTypeStop)
+	if errors.Is(err, orchestration.ErrNoWorkflowBackend) {
+		return nil
+	}
+	return err
 }

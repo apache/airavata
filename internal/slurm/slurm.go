@@ -29,7 +29,7 @@ import (
 )
 
 // Command names a Slurm binary for the login shell, under slurmHome when the cluster
-// sets one, so discovery and submission find the same binaries.
+// sets one, so discovery, submission and cancellation find the same binaries.
 func Command(slurmHome *string, name string) string {
 	if slurmHome != nil && strings.TrimSpace(*slurmHome) != "" {
 		return ssh.ShellQuote(path.Join(strings.TrimSpace(*slurmHome), name))

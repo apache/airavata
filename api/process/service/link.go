@@ -107,6 +107,11 @@ func (s *LinkService) Issue(ctx context.Context, processID string) (*transport.I
 	return &transport.IssuedLink{URL: linkURL, LinkToken: linkToken, JupyterToken: jupyterToken, ControlPort: control, JupyterPort: jupyter}, nil
 }
 
+// Revoke removes the process's link secrets, so its job can no longer link.
+func (s *LinkService) Revoke(ctx context.Context, processID string) error {
+	return s.links.DeleteByProcessID(ctx, processID)
+}
+
 // Authenticate reports whether token is the link token last issued to the process.
 func (s *LinkService) Authenticate(ctx context.Context, processID, token string) bool {
 	if token == "" {

@@ -24,9 +24,13 @@ package workflows
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
+	"github.com/cschleiden/go-workflows/backend"
+	"github.com/cschleiden/go-workflows/client"
 	"github.com/cschleiden/go-workflows/registry"
 	workflow "github.com/cschleiden/go-workflows/workflow"
 
@@ -36,6 +40,7 @@ import (
 	"github.com/apache/airavata/internal/orchestration/tasks/batch"
 	"github.com/apache/airavata/internal/orchestration/tasks/data"
 	"github.com/apache/airavata/internal/orchestration/tasks/monitoring"
+	"github.com/apache/airavata/internal/ptr"
 )
 
 // Registrar is where the workflows and the activities they run are registered:
@@ -56,6 +61,7 @@ type Workflows struct {
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository
 	processStatus      *processrepo.StatusRepository
 	processWorkflows   *processrepo.WorkflowRepository
+	client             *client.Client
 }
 
 // New returns the workflows over the given tasks and the repositories they are
@@ -66,6 +72,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 	jobMonitoringTasks *processrepo.JobMonitoringTaskRepository,
 	processStatus *processrepo.StatusRepository,
 	processWorkflows *processrepo.WorkflowRepository,
+	client *client.Client,
 ) *Workflows {
 	return &Workflows{
 		data:               data,
@@ -76,6 +83,7 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 		jobMonitoringTasks: jobMonitoringTasks,
 		processStatus:      processStatus,
 		processWorkflows:   processWorkflows,
+		client:             client,
 	}
 }
 
@@ -83,12 +91,12 @@ func New(data *data.Tasks, batch *batch.Tasks, monitoring *monitoring.Tasks,
 // registered under its function name, which is also how a running instance refers to
 // it, so renaming one strands the instances already in the backend.
 func (w *Workflows) Register(r Registrar) error {
-	for _, wf := range []workflow.Workflow{w.HandleBatchJobSubmission, w.HandleBatchJobCompletion} {
+	for _, wf := range []workflow.Workflow{w.HandleBatchJobSubmission, w.HandleBatchJobCompletion, w.TearDownStoppedProcess} {
 		if err := r.RegisterWorkflow(wf); err != nil {
 			return err
 		}
 	}
-	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.CompleteProcess, w.RecordWorkflowStatus} {
+	for _, a := range []workflow.Activity{w.data.CopyData, w.batch.SubmitBatchJob, w.monitoring.MonitorBatchJob, w.RecordProcessStatus, w.RecordWorkflowStatus, w.SignalRunningWorkflowsToStop, w.batch.ReleaseBatchResources} {
 		if err := r.RegisterActivity(a); err != nil {
 			return err
 		}
@@ -99,9 +107,7 @@ func (w *Workflows) Register(r Registrar) error {
 // HandleBatchJobCompletion runs once the scheduler reports a job finished: it checks
 // the job's outcome, stages its outputs back and marks the process complete.
 func (w *Workflows) HandleBatchJobCompletion(ctx workflow.Context, processID string) error {
-	return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeJobCompletion, func() error {
-		return w.handleBatchJobCompletion(ctx, processID)
-	})
+	return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeJobCompletion, w.handleBatchJobCompletion)
 }
 
 func (w *Workflows) handleBatchJobCompletion(ctx workflow.Context, processID string) error {
@@ -168,23 +174,17 @@ func (w *Workflows) handleBatchJobCompletion(ctx workflow.Context, processID str
 		}
 	}
 
-	executionContext, err = workflow.ExecuteActivity[*execution.Context](
-		ctx, workflow.ActivityOptions{RetryOptions: retryOptions(model.OnFailureActionExit, 0)},
-		w.CompleteProcess, executionContext, processID).Get(ctx)
-	if err != nil {
+	if err := w.recordProcessStatus(ctx, processID, model.ProcessStatusTypeCompleted, "Process has completed"); err != nil {
 		slog.Error("Failed completing process", "processId", processID, "error", err)
 		return err
 	}
-
 	return nil
 }
 
 // HandleBatchJobSubmission stages a process's inputs onto its cluster and submits the
 // job. This is an async call and will not block the caller.
 func (w *Workflows) HandleBatchJobSubmission(ctx workflow.Context, processID string) error {
-	return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission, func() error {
-		return w.handleBatchJobSubmission(ctx, processID)
-	})
+	return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission, w.handleBatchJobSubmission)
 }
 
 func (w *Workflows) handleBatchJobSubmission(ctx workflow.Context, processID string) error {
@@ -262,4 +262,55 @@ func retryOptions(onFailure model.OnFailureAction, retryCount int) workflow.Retr
 	opts.MaxAttempts = 1 + retryCount
 	opts.BackoffCoefficient = workflow.DefaultRetryOptions.BackoffCoefficient
 	return opts
+}
+
+// stopSignal asks a running process workflow to stop after the task it is running.
+const stopSignal = "stop"
+
+const ProcessStoppedLog = "Process was stopped"
+
+// stopRetries retry a stop's steps for about an hour, so a cluster that is briefly
+// unreachable does not leak the job.
+var stopRetries = workflow.ActivityOptions{RetryOptions: workflow.RetryOptions{MaxAttempts: 10, FirstRetryInterval: 30 * time.Second, MaxRetryInterval: 10 * time.Minute, BackoffCoefficient: 2}}
+
+// TearDownStoppedProcess releases the process's resources at once, then signals its
+// running workflows to stop. A hung task cannot hold the release up, and a job that a task
+// in flight submits afterwards is released by its workflow once that task finishes.
+func (w *Workflows) TearDownStoppedProcess(ctx workflow.Context, processID string) error {
+	releaseErr := w.releaseStoppedProcess(ctx, processID)
+	_, signalErr := workflow.ExecuteActivity[any](ctx, stopRetries, w.SignalRunningWorkflowsToStop, processID).Get(ctx)
+	return errors.Join(releaseErr, signalErr)
+}
+
+// releaseStoppedProcess releases the process's resources, then records STOPPED as its
+// latest status, with the failure as the log if the release failed.
+func (w *Workflows) releaseStoppedProcess(ctx workflow.Context, processID string) error {
+	_, err := workflow.ExecuteActivity[any](ctx, stopRetries, w.batch.ReleaseBatchResources, processID).Get(ctx)
+	log := ProcessStoppedLog
+	if err != nil {
+		log = "Releasing the stopped process failed: " + err.Error()
+	}
+	return errors.Join(err, w.recordProcessStatus(ctx, processID, model.ProcessStatusTypeStopped, log))
+}
+
+// SignalRunningWorkflowsToStop signals each of the process's running workflows to stop,
+// going on past a failure so one unreachable workflow does not leave the rest running.
+func (w *Workflows) SignalRunningWorkflowsToStop(ctx context.Context, processID string) error {
+	recorded, err := w.processWorkflows.FindByProcessID(ctx, processID)
+	if err != nil {
+		return err
+	}
+	var errs []error
+	for _, wf := range recorded {
+		if ptr.From(wf.Status) != model.ProcessWorkflowStatusTypeRunning {
+			continue
+		}
+		err := w.client.SignalWorkflow(ctx, wf.WorkflowID, stopSignal, struct{}{})
+		// Not active: it ended without recording it, or starts later and sees the stop.
+		if errors.Is(err, backend.ErrInstanceNotFound) {
+			err = w.processWorkflows.UpdateStatus(ctx, wf.ID, model.ProcessWorkflowStatusTypeStopped)
+		}
+		errs = append(errs, err)
+	}
+	return errors.Join(errs...)
 }

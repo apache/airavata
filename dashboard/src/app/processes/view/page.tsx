@@ -21,7 +21,7 @@ import {
   type TaskType,
 } from "@/lib/types";
 
-const TERMINAL = new Set(["COMPLETED", "FAILED"]);
+const TERMINAL = new Set(["COMPLETED", "FAILED", "STOPPED"]);
 const POLL_MS = 5000;
 
 const TASK_KINDS: readonly { path: string; label: string; type: TaskType }[] = [
@@ -749,9 +749,9 @@ function FieldRow({ name, value }: { name: string; value: unknown }) {
   );
 }
 
-type StepState = "done" | "running" | "failed" | "pending";
+type StepState = "done" | "running" | "failed" | "stopped" | "pending";
 
-const WORKFLOW_STATE: Record<string, StepState> = { SUCCEEDED: "done", RUNNING: "running", FAILED: "failed" };
+const WORKFLOW_STATE: Record<string, StepState> = { SUCCEEDED: "done", RUNNING: "running", FAILED: "failed", STOPPED: "stopped" };
 const TASK_STATE: Record<string, StepState> = {
   COMPLETED: "done",
   EXECUTING: "running",
