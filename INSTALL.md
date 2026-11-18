@@ -97,6 +97,7 @@ compose database.
 | `SERVER_PORT` | `9095` | Port the HTTP API listens on. |
 | `AIRAVATA_DASHBOARD_ENABLED` | `true` | Serve the [dashboard](#dashboard) under `/dashboard/`. |
 | `AIRAVATA_DASHBOARD_DIR` | `dashboard/out` | The dashboard's built static export, relative to the working directory. |
+| `AIRAVATA_LANDING_DIR` | *(unset)* | A directory holding your own [landing page](#landing-page), served in place of the standard one. |
 | `AIRAVATA_CORS_ALLOWED_ORIGINS` | `*` | Comma-separated allowed origins. The server echoes the caller's origin rather than sending `*`, because every authenticated call carries an `Authorization` header and browsers reject the wildcard for credentialed requests. |
 | `AIRAVATA_PUBLIC_URL` | `http://localhost:<SERVER_PORT>` | Where compute nodes reach this server. A job running [Linkspan](https://github.com/cyber-shuttle/linkspan) links back to its `ws(s)` form so the dashboard can open the job's Jupyter Server ([docs/notebooks.md](docs/notebooks.md)). Set it to the public `https://` URL in production. |
 
@@ -406,6 +407,31 @@ file beside it; the browser reads it on load, so no rebuild is needed:
 
 Either field may be left out, and the file overrides the build-time values. With no logo
 the Airavata mark is shown.
+
+### Landing page
+
+A signed-out visitor to `/dashboard/` is sent to the landing page at `/dashboard/landing/`,
+whose sign-in link leads to `/dashboard/login/`. The dashboard ships a standard Airavata
+page (`dashboard/public/landing/index.html`).
+
+To use your own, set `AIRAVATA_LANDING_DIR` to a directory that holds it and restart the
+server; the dashboard is not rebuilt. The directory can be a clone of a separate
+repository:
+
+```bash
+git clone https://git.example.edu/portal/landing.git /srv/airavata/landing
+AIRAVATA_LANDING_DIR=/srv/airavata/landing ./bin/airavata-server
+```
+
+The directory is served as static files and must contain:
+
+- `index.html`, the page. Without it the server logs a warning and keeps the standard page.
+- Everything the page uses (stylesheets, scripts, images), linked by relative path, such
+  as `images/logo.png`.
+- A sign-in link to `../login/`.
+
+[dev-tools/cybershuttle-landing](dev-tools/cybershuttle-landing) is an example of such a
+directory: `AIRAVATA_LANDING_DIR=dev-tools/cybershuttle-landing`.
 
 ---
 

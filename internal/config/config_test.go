@@ -46,7 +46,7 @@ func isolate(t *testing.T) {
 		"CILOGON_CLIENT_ID", "CILOGON_CLIENT_SECRET",
 		"CILOGON_INTROSPECTION_URI", "CILOGON_USERINFO_URI",
 		"AIRAVATA_ROOT_ACCOUNT_ENABLED", "AIRAVATA_ROOT_ACCOUNT_TOKEN",
-		"AIRAVATA_DASHBOARD_ENABLED", "AIRAVATA_DASHBOARD_DIR",
+		"AIRAVATA_DASHBOARD_ENABLED", "AIRAVATA_DASHBOARD_DIR", "AIRAVATA_LANDING_DIR",
 	} {
 		t.Setenv(key, "")
 	}
@@ -168,6 +168,18 @@ func TestUnparseableBooleanFallsBackToDefault(t *testing.T) {
 	}
 	if !cfg.RootAccountEnabled {
 		t.Error("RootAccountEnabled = false, want the default to survive an unparseable value")
+	}
+}
+
+func TestLandingDir(t *testing.T) {
+	isolate(t)
+	if cfg, _ := load(); cfg.LandingDir != "" {
+		t.Errorf("LandingDir = %q, want empty by default", cfg.LandingDir)
+	}
+
+	t.Setenv("AIRAVATA_LANDING_DIR", "/srv/airavata/landing")
+	if cfg, _ := load(); cfg.LandingDir != "/srv/airavata/landing" {
+		t.Errorf("LandingDir = %q, want the override", cfg.LandingDir)
 	}
 }
 

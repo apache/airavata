@@ -34,12 +34,19 @@ import (
 // dashboard/next.config.mjs, which every asset URL in the export is built against.
 const dashboardPrefix = "/dashboard"
 
+// landingPrefix is where the landing page is served: the page a signed-out visitor to
+// the dashboard is sent to. The export carries a standard one at this path.
+const landingPrefix = dashboardPrefix + "/landing"
+
 // registerDashboard serves the Next.js dashboard's static export from dir.
 //
 // The dashboard is a static export rather than a Node server of its own so it starts
 // and stops with this process, on the same origin as the API: no second port, no CORS,
 // and nothing to run beyond the binary. Every page is a client of the API below it.
-func registerDashboard(mux *http.ServeMux, dir string) {
+//
+// landingDir, when set, replaces the export's landing page with a directory of the
+// deployment's own, such as a clone of another repository, without a rebuild.
+func registerDashboard(mux *http.ServeMux, dir, landingDir string) {
 	if dir == "" {
 		return
 	}
@@ -60,6 +67,32 @@ func registerDashboard(mux *http.ServeMux, dir string) {
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, dashboardPrefix+"/", http.StatusFound)
 	})
+	registerLanding(mux, landingDir)
+}
+
+// registerLanding serves dir under landingPrefix, shadowing the landing page in the
+// export. A directory without an index.html is ignored, so a mistyped path leaves the
+// standard page in place rather than a broken one.
+func registerLanding(mux *http.ServeMux, dir string) {
+	if dir == "" {
+		return
+	}
+	if _, err := os.Stat(path.Join(dir, "index.html")); err != nil {
+		slog.Warn("landing page directory has no index.html; serving the standard landing page",
+			"dir", dir, "variable", "AIRAVATA_LANDING_DIR")
+		return
+	}
+	slog.Info("serving landing page", "path", landingPrefix+"/", "dir", dir)
+	files := http.StripPrefix(landingPrefix, dashboardHandler(os.DirFS(dir)))
+	mux.Handle("GET "+landingPrefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for _, segment := range strings.Split(path.Clean(r.URL.Path), "/") {
+			if segment == ".git" {
+				http.NotFound(w, r)
+				return
+			}
+		}
+		files.ServeHTTP(w, r)
+	}))
 }
 
 // dashboardHandler serves files from the export, answering a path the export has no

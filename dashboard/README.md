@@ -31,6 +31,9 @@ src/lib/session.tsx  the signed-in token and whether it is an admin
 src/lib/interactive-auth.tsx
                      subscription to waiting SSH logins (socket, polling fallback)
 src/lib/types.ts     wire shapes, mirroring api/*/dto
+public/landing/      the standard landing page signed-out visitors are sent to: static
+                     HTML, replaceable per deployment with AIRAVATA_LANDING_DIR
+                     (INSTALL.md#landing-page)
 src/components/NotebookView.tsx, NotebookFiles.tsx
                      the Notebooks page: a file browser and a @datalayer/jupyter-react
                      notebook, either on an in-browser Pyodide kernel with files in
