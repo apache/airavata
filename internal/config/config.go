@@ -75,7 +75,7 @@ type Config struct {
 	LandingDir string
 
 	// PublicURL is where compute nodes reach this server, http(s)://host[:port]. A
-	// job's Linkspan dials its ws(s) form to link back; see internal/link.
+	// job's Linkspan dials its ws(s) form to link back; see internal/transport/link.go.
 	PublicURL string
 }
 

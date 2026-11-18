@@ -38,6 +38,7 @@ import (
 	processrepo "github.com/apache/airavata/api/process/repository"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
+	"github.com/apache/airavata/internal/transport"
 )
 
 // Tasks carries out the data staging tasks of a process. Its methods are workflow
@@ -104,7 +105,7 @@ func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Contex
 		if err != nil {
 			return nil, err
 		}
-		dialConfig := ssh.NewSSHDialConfig(s.SlurmCluster.HeadnodeHost, s.SlurmCluster.HeadnodePort, s.LoginUser, *s.SSHCredential, *process.OwnerID)
+		dialConfig := transport.SSHDialConfig(s, *process.OwnerID)
 		// The answer is printed rather than left to the exit status, so that a failed
 		// connection is retried instead of being taken for a missing file.
 		out, _, err := ssh.RunSSHCommand(ctx, dialConfig, a.sshContext,
@@ -131,13 +132,7 @@ func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Contex
 			return nil, err
 		}
 
-		dialConfig := ssh.NewSSHDialConfig(
-			*s.HostName,
-			*s.Port,
-			*s.LoginUser,
-			*s.SSHCredential,
-			*process.OwnerID,
-		)
+		dialConfig := transport.SCPDialConfig(s, *process.OwnerID)
 
 		err = ssh.DownloadFileFromSCP(ctx, dialConfig, a.sshContext, *dataStagingTask.SourcePath, localTempDataPath)
 		if err != nil {
@@ -155,13 +150,7 @@ func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Contex
 			return nil, err
 		}
 
-		dialConfig := ssh.NewSSHDialConfig(
-			s.SlurmCluster.HeadnodeHost,
-			s.SlurmCluster.HeadnodePort,
-			s.LoginUser,
-			*s.SSHCredential,
-			*process.OwnerID,
-		)
+		dialConfig := transport.SSHDialConfig(s, *process.OwnerID)
 
 		err = ssh.DownloadFileFromSCP(ctx, dialConfig, a.sshContext, *dataStagingTask.SourcePath, localTempDataPath)
 		if err != nil {
@@ -179,13 +168,7 @@ func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Contex
 			return nil, err
 		}
 
-		dialConfig := ssh.NewSSHDialConfig(
-			*s.HostName,
-			*s.Port,
-			*s.LoginUser,
-			*s.SSHCredential,
-			*process.OwnerID,
-		)
+		dialConfig := transport.SCPDialConfig(s, *process.OwnerID)
 
 		// Ensure the destination directory exists before attempting the SCP upload.
 		if err := ssh.CreateDirectorySSH(ctx, dialConfig, a.sshContext, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
@@ -212,13 +195,7 @@ func (a *Tasks) copyData(ctx context.Context, executionContext *execution.Contex
 		}
 
 		// Ensure the destination directory exists before attempting the SCP upload.
-		dialConfig := ssh.NewSSHDialConfig(
-			s.SlurmCluster.HeadnodeHost,
-			s.SlurmCluster.HeadnodePort,
-			s.LoginUser,
-			*s.SSHCredential,
-			*process.OwnerID,
-		)
+		dialConfig := transport.SSHDialConfig(s, *process.OwnerID)
 		if err := ssh.CreateDirectorySSH(ctx, dialConfig, a.sshContext, filepath.Dir(*dataStagingTask.DestinationPath)); err != nil {
 			slog.Error("Failed to create destination directory on HPC through SSH", "taskId", dataStagingTask.ID, "processId", *dataStagingTask.ProcessID,
 				"destinationDirectory", filepath.Dir(*dataStagingTask.DestinationPath), "error", err)
