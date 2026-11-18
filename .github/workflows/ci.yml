@@ -82,6 +82,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: airavata
+          POSTGRES_USER: airavata
+          POSTGRES_PASSWORD: "123456"
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U airavata"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      AIRAVATA_TEST_POSTGRES_DSN: postgres://airavata:123456@localhost:5432/airavata?sslmode=disable
+
     steps:
       - uses: actions/checkout@v4
 
