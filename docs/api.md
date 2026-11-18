@@ -4,7 +4,7 @@ Base URL: `http://localhost:9095` (default `SERVER_PORT` is `9095`; override via
 
 This page is the narrative reference, with a worked `curl` example per endpoint. [`openapi.yaml`](openapi.yaml) beside it is the same API as a machine-readable OpenAPI 3.1 description, for client generation and for loading into Swagger UI or Redoc.\n\nSharing works the same way for every record that supports it, so it is documented once in **[sharing.md](sharing.md)** — the access model, who may grant what, and worked examples — rather than repeated under each resource below.
 
-All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET`) are open without a token. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on both counts — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and none are readable anonymously. See INSTALL.md for how to obtain the root token.
+All request/response bodies are JSON (`Content-Type: application/json`). Writes require an `Authorization: Bearer <token>` header for a principal with `ADMIN` or `SUPER_ADMIN` authority; catalog reads (`GET` on clusters, partitions, application templates and batch deployments) need a token but no particular role — any authenticated caller may read them; anonymous callers get `401`. [SSH credentials](#ssh-credentials), [groups](#groups), [cluster configs](#slurm-cluster-configs), [data products](#data-products) and [SCP data storages](#scp-data-storages) are the exception on writes — they are reached through ownership (and, for all but a credential, sharing rules) rather than platform roles, so any authenticated caller may create them, and reads are limited to their owner and whoever they are shared with. See INSTALL.md for how to obtain the root token.
 
 ## Error responses
 
@@ -489,7 +489,7 @@ A Slurm cluster is an HPC resource that batch deployments submit jobs to. It des
 
 How a particular person logs in — under which account, presenting which key, beneath which work root — is a [Slurm cluster config](#slurm-cluster-configs), a separate resource with its own owner and sharing rules. That split is what lets one registered cluster serve everybody without the catalogue ever holding anyone's credentials, and it is why registering a cluster needs no key, no endpoint and no storage.
 
-Reads are open to anyone, including anonymous callers. Writes require `ADMIN` or `SUPER_ADMIN`.
+Reads need a token but no role: any authenticated caller may read. Writes require `ADMIN` or `SUPER_ADMIN`.
 
 ### Create Slurm Cluster
 
@@ -676,7 +676,7 @@ PUT    /api/v1/slurm-clusters/{slurmClusterId}
 DELETE /api/v1/slurm-clusters/{slurmClusterId}
 ```
 
-Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read carries the cluster's partitions inline, so a caller that wants the layout never needs a second call.
+Reads need any authenticated caller; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. Every read carries the cluster's partitions inline, so a caller that wants the layout never needs a second call.
 
 `PUT` changes a cluster's own fields — including repointing it at a different head node or data endpoint — and leaves its partitions alone. A body carrying `partitions` is **rejected** rather than obeyed:
 
@@ -824,7 +824,7 @@ PUT    /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId}
 DELETE /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId}
 ```
 
-Reads are open; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. `PUT` takes the same body as [Create Cluster Partition](#create-cluster-partition).
+Reads need any authenticated caller; `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`. `PUT` takes the same body as [Create Cluster Partition](#create-cluster-partition).
 
 **Adding partitions to a cluster that already exists.** This is the ordinary case for a cluster that gains a partition after it was registered — a new queue, a GPU rack added later — and it is what [Create Cluster Partition](#create-cluster-partition) is for. A partition belongs to its cluster from the moment it is created: the `clusterId` in the path is the assignment, so there is no separate step that attaches one afterwards, and each call adds a partition without disturbing the ones already there.
 
@@ -1240,6 +1240,8 @@ Returned when e.g. `templateName` is blank, an `inputType`/`outputType` is missi
 ## Batch Deployments
 
 A batch deployment binds an application template to a Slurm cluster: the run script section and the resource request (walltime, nodes, GPUs, ...) a run of it starts from. Which identity a job submits under is a property of the run, not of the deployment, so it is named on the process instead. Deployments reference a template by id (see [Create Application Template](#create-application-template)).
+
+Reading deployments requires a token, though any role will do; anonymous callers get `401`.
 
 ### Create Batch Deployment
 
@@ -1704,9 +1706,12 @@ POST   /api/v1/processes/{processId}/launch    (owner)
 **Authorization.** Submitting is self-service: any authenticated caller may create a
 process, and the owner is taken from the token rather than the body. The unfiltered
 listing, `PUT` and `DELETE` require `ADMIN` or `SUPER_ADMIN`; `/me` lists the caller's
-own runs and needs only a token. Reading one process, and
-listing the runs of a deployment, carry no authorization at all — carried over from the
-Java service, which did the same. [Launching](#launch-a-process) is the exception among
+own runs and needs only a token. Reading one process (and its
+[status history](#process-statuses)) is owner-scoped: only the owner or a holder of
+`process:manage_any` (`ADMIN` by default) may read it; anyone else gets `403`, and an
+anonymous caller `401`. Listing the runs of a deployment (`?deploymentId=`) needs a token
+and returns only the caller's own runs, or every run for a holder of `process:manage_any`.
+[Launching](#launch-a-process) is the exception among
 the writes: it is owner-scoped rather than administrative, because it acts under the
 identity the run was submitted with.
 
@@ -2126,6 +2131,9 @@ A run's status history, read-only and nested under the process:
 GET /api/v1/processes/{processId}/statuses
 GET /api/v1/processes/{processId}/statuses/{statusId}
 ```
+
+Like the process itself, a status history is readable only by the process's owner or a
+holder of `process:manage_any`.
 
 There is deliberately no `POST` or `PUT` — both return `405 Method Not Allowed`.
 Statuses are recorded internally, never accepted from a client request body: `CREATED`

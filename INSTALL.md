@@ -326,12 +326,12 @@ curl -s -X POST localhost:9095/api/v1/users \
 ```bash
 go test ./...            # 99 tests covering the schema, routing, authorisation and orchestration
 curl -s localhost:9095/health
-curl -s localhost:9095/api/v1/slurm-clusters # readable without a token
+curl -s -H "Authorization: Bearer $TOKEN" localhost:9095/api/v1/slurm-clusters # any signed-in caller
 ```
 
-Catalogue reads — clusters, partitions, templates and deployments — are open to
-anonymous callers. SSH credentials are not: a credential is private to whoever
-registered it.
+Catalogue reads — clusters, partitions, templates and deployments — need a token,
+but any role will do; anonymous callers get `401`. SSH credentials are stricter: a
+credential is private to whoever registered it.
 Beyond those:
 
 - **Writes** require `ADMIN` or `SUPER_ADMIN`, except creating SSH credentials, cluster
