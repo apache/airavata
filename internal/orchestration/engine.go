@@ -46,7 +46,6 @@ import (
 	"github.com/apache/airavata/internal/orchestration/tasks/data"
 	"github.com/apache/airavata/internal/orchestration/tasks/monitoring"
 	"github.com/apache/airavata/internal/orchestration/workflows"
-	internalptr "github.com/apache/airavata/internal/ptr"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
 
@@ -176,14 +175,7 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 
 	if parsed.Status == model.BatchJobStatusBegin {
 		slog.Info("Handling begun batch job", "processID", process.ID)
-		// Update the process status to indicate that the batch job has begun
-		runningStatus := model.ProcessStatusTypeRunning
-		if err := w.processStatus.Create(ctx, &model.ProcessStatus{
-			ProcessID: &process.ID,
-			Status:    &runningStatus,
-			Log:       internalptr.To("Batch job has begun"),
-			Timestamp: internalptr.To(time.Now().UnixMilli()),
-		}); err != nil {
+		if err := w.processStatus.MarkRunning(ctx, process.ID, "Batch job has begun"); err != nil {
 			slog.Error("Failed to create process status", "processID", process.ID, "error", err)
 			return nil
 		}

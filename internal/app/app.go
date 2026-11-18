@@ -243,7 +243,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
-	linkSvc := processsvc.NewLinkService(repos.Links, processes, transport.NewLinkRegistry(), cfg.PublicURL)
+	linkSvc := processsvc.NewLinkService(repos.Links, processes, statuses, transport.NewLinkRegistry(), cfg.PublicURL)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
 		monitoringTasks, products, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext, linkSvc)
