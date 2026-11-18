@@ -156,6 +156,30 @@ is configured. It is intended for initial setup and testing.
 > permanently unreachable. The server refuses to start rather than failing later:
 > `no authentication configured: enable the root account or set CILOGON_CLIENT_ID`.
 
+### Job monitoring — email
+
+Airavata learns that a Slurm job has started, finished or failed from the
+notification emails Slurm sends. Every batch script it submits sets
+`--mail-user` to `AIRAVATA_EMAIL_MONITOR_ADDRESS`, and the server reads that
+mailbox over IMAP every 20 seconds. When a job's "Ended" or "Failed" mail
+arrives, the completion workflow runs: outputs are staged and the process is
+completed.
+
+Without these two variables the monitor does not start (the server logs
+`Failed to start email monitor`), so jobs are submitted but their completion
+step never runs.
+
+| Variable | Default | Description |
+|---|---|---|
+| `AIRAVATA_EMAIL_MONITOR_ADDRESS` | *(empty)* | Gmail address that Slurm notifications are sent to and the monitor reads. |
+| `AIRAVATA_EMAIL_MONITOR_APP_PASSWORD` | *(empty)* | A Google [app password](https://support.google.com/accounts/answer/185833) for that account, which requires 2-Step Verification. Spaces are ignored. |
+
+Use a mailbox dedicated to Airavata: the monitor reads every unread message in
+its inbox and marks it read, whether or not it is a Slurm notification. The
+mail server is fixed to Gmail (`imap.gmail.com:993`). The cluster must also be
+able to send mail, which means Slurm's `MailProg` has to deliver to outside
+addresses.
+
 ---
 
 ## Database setup
