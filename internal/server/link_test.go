@@ -222,11 +222,20 @@ func TestLinkCarriesTheJupyterServerToItsOwner(t *testing.T) {
 	}
 
 	// A resubmission is issued new tokens; the old ones open nothing.
-	if _, err := h.svcs.Link.Issue(ctx, processID); err != nil {
+	reissued, err := h.svcs.Link.Issue(ctx, processID)
+	if err != nil {
 		t.Fatalf("reissue: %v", err)
 	}
 	if resp, _ := get("/api/status", "token "+issued.JupyterToken); resp.StatusCode != http.StatusUnauthorized {
 		t.Errorf("stale Jupyter token: status = %d, want 401", resp.StatusCode)
+	}
+
+	// A stop revokes them.
+	if err := h.svcs.Link.Revoke(ctx, processID); err != nil {
+		t.Fatalf("revoke: %v", err)
+	}
+	if h.svcs.Link.Authenticate(ctx, processID, reissued.LinkToken) {
+		t.Error("revoked link token still authenticates")
 	}
 }
 

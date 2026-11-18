@@ -973,6 +973,11 @@ dl.facts dd {
   border-color: var(--danger);
   color: var(--surface);
 }
+.stepper li.stopped .marker {
+  border-color: var(--warn);
+  color: var(--warn);
+  background: var(--warn-soft);
+}
 .stepper .step-text {
   display: flex;
   flex-direction: column;

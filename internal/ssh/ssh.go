@@ -527,6 +527,16 @@ func signerFor(key credmodel.SSHCredential) (gossh.Signer, error) {
 	return signer, nil
 }
 
+// CommandRunner runs one command on a host, returning its stdout and stderr.
+type CommandRunner func(ctx context.Context, dial SSHDialConfig, command, target string) (string, string, error)
+
+// NewCommandRunner runs commands through RunSSHCommand over sshContext.
+func NewCommandRunner(sshContext *GlobalSSHContext) CommandRunner {
+	return func(ctx context.Context, dial SSHDialConfig, command, target string) (string, string, error) {
+		return RunSSHCommand(ctx, dial, sshContext, command, target)
+	}
+}
+
 // ShellQuote wraps s for the remote login shell, which is what runs the scp command
 // line. A path is user supplied, so it cannot be interpolated bare.
 func ShellQuote(s string) string {

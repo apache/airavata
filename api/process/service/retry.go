@@ -47,6 +47,9 @@ func (s *LaunchService) RetryProcess(ctx context.Context, processID string) (*dt
 	if err != nil {
 		return nil, err
 	}
+	if err := s.requireNotStopped(ctx, processID); err != nil {
+		return nil, err
+	}
 
 	recorded, err := s.processWorkflows.FindByProcessID(ctx, processID)
 	if err != nil {
@@ -65,16 +68,7 @@ func (s *LaunchService) RetryProcess(ctx context.Context, processID string) (*dt
 		procmodel.ProcessWorkflowStatusTypeRunning); err != nil {
 		return nil, err
 	}
-	if err := s.executionEngine.LaunchWorkflow(ctx, workflowID, processID, workflowType); err != nil {
-		slog.Error("Failed to start retried workflow", "processId", processID, "workflowId", workflowID, "error", err)
-		if _, recErr := s.processWorkflows.Record(ctx, processID, workflowID, workflowType,
-			procmodel.ProcessWorkflowStatusTypeFailed); recErr != nil {
-			slog.Error("Failed to record process workflow", "processId", processID, "workflowId", workflowID, "error", recErr)
-		}
-		return nil, err
-	}
-	slog.Info("Retried process workflow", "processId", processID, "workflowId", workflowID, "workflowType", workflowType)
-
+	// Recorded before the workflow starts, so a stop's STOPPED always lands after it.
 	status, log := procmodel.ProcessStatusTypeSubmitted, "Retrying the failed job submission"
 	if workflowType == procmodel.ProcessWorkflowTypeJobCompletion {
 		status, log = procmodel.ProcessStatusTypeRunning, "Retrying the failed job completion"
@@ -82,6 +76,19 @@ func (s *LaunchService) RetryProcess(ctx context.Context, processID string) (*dt
 	if _, err := s.statusService.Record(ctx, processID, status, ptr.To(log)); err != nil {
 		return nil, err
 	}
+	if err := s.executionEngine.LaunchWorkflow(ctx, workflowID, processID, workflowType); err != nil {
+		slog.Error("Failed to start retried workflow", "processId", processID, "workflowId", workflowID, "error", err)
+		if _, recErr := s.processWorkflows.Record(ctx, processID, workflowID, workflowType,
+			procmodel.ProcessWorkflowStatusTypeFailed); recErr != nil {
+			slog.Error("Failed to record process workflow", "processId", processID, "workflowId", workflowID, "error", recErr)
+		}
+		if _, recErr := s.statusService.Record(ctx, processID, procmodel.ProcessStatusTypeFailed, ptr.To(err.Error())); recErr != nil {
+			slog.Error("Failed to record process status", "processId", processID, "error", recErr)
+		}
+		return nil, err
+	}
+	slog.Info("Retried process workflow", "processId", processID, "workflowId", workflowID, "workflowType", workflowType)
+
 	return proc, nil
 }
 

@@ -45,16 +45,13 @@ import (
 // interactive credential waits for its owner to answer a password or OTP prompt.
 const discoveryTimeout = 5 * time.Minute
 
-// CommandRunner runs one command on a host, returning its stdout and stderr.
-type CommandRunner func(ctx context.Context, dial ssh.SSHDialConfig, command, target string) (string, string, error)
-
 // ClusterDiscoveryService reads what a Slurm cluster already knows off the cluster
 // itself — its partitions, and the allocations a login may charge — so that neither
 // has to be retyped into a registration.
 type ClusterDiscoveryService struct {
 	keys    *credsvc.KeyAccess
 	configs *ConfigAccess
-	run     CommandRunner
+	run     ssh.CommandRunner
 }
 
 // NewClusterDiscoveryService returns a discovery service logging in through sshCtx,
@@ -63,14 +60,12 @@ func NewClusterDiscoveryService(keys *credsvc.KeyAccess, configs *ConfigAccess, 
 	return &ClusterDiscoveryService{
 		keys:    keys,
 		configs: configs,
-		run: func(ctx context.Context, dial ssh.SSHDialConfig, command, target string) (string, string, error) {
-			return ssh.RunSSHCommand(ctx, dial, sshCtx, command, target)
-		},
+		run:     ssh.NewCommandRunner(sshCtx),
 	}
 }
 
 // WithRunner returns a copy of s running commands through run, for tests.
-func (s *ClusterDiscoveryService) WithRunner(run CommandRunner) *ClusterDiscoveryService {
+func (s *ClusterDiscoveryService) WithRunner(run ssh.CommandRunner) *ClusterDiscoveryService {
 	return &ClusterDiscoveryService{keys: s.keys, configs: s.configs, run: run}
 }
 

@@ -66,3 +66,11 @@ func (r *StatusRepository) FindByIDAndProcessID(ctx context.Context, id, process
 func (r *StatusRepository) Create(ctx context.Context, s *model.ProcessStatus) error {
 	return r.db.WithContext(ctx).Create(s).Error
 }
+
+// IsProcessStopped reports whether the process was ever stopped; a stop is permanent.
+func (r *StatusRepository) IsProcessStopped(ctx context.Context, processID string) (bool, error) {
+	var n int64
+	err := r.db.WithContext(ctx).Model(&model.ProcessStatus{}).
+		Where("process_id = ? AND status = ?", processID, model.ProcessStatusTypeStopped).Count(&n).Error
+	return n > 0, err
+}
