@@ -51,6 +51,23 @@ func notFoundAs(err error, format string, args ...any) error {
 	return err
 }
 
+// requireProcessRead loads a process and checks the caller may read it: its owner, or
+// a holder of process:manage_any (ADMIN by default). Anonymous callers get 401.
+func requireProcessRead(ctx context.Context, processes *repository.ProcessRepository, processID string) (*model.Process, error) {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
+	proc, err := processes.FindByID(ctx, processID)
+	if err != nil {
+		return nil, notFoundAs(err, "Process not found: %s", processID)
+	}
+	if !proc.OwnedBy(principal.Name) && !principal.Can(permission.ProcessManageAny) {
+		return nil, httpx.Forbidden("Access denied: you may only read your own processes")
+	}
+	return proc, nil
+}
+
 // ProcessService manages processes: individual runs, of whatever kind.
 //
 // Everything a run carries is managed from here. A batch process is written, read and
@@ -58,10 +75,9 @@ func notFoundAs(err error, format string, args ...any) error {
 // there is no service for it either — the API surface and the service surface say the
 // same thing about what is a resource.
 //
-// Note the asymmetry with cluster configs and SCP data. Submitting is self-service and
-// ownership is taken from the token, but reads are not owner-scoped:
-// listing by deployment and fetching by id carry no authorisation at all, matching
-// the Java service. That is worth revisiting, but it is the behaviour clients have.
+// Submitting is self-service and ownership is taken from the token. Reads are
+// owner-scoped: a process, and everything recorded against it, is visible only to its
+// owner and to holders of process:manage_any.
 type ProcessService struct {
 	db          *gorm.DB
 	processes   *repository.ProcessRepository
@@ -116,20 +132,34 @@ func (s *ProcessService) ListMine(ctx context.Context) ([]dto.Response, error) {
 	return dto.ToResponses(found), nil
 }
 
-// ListByDeployment returns every process run against one deployment.
+// ListByDeployment returns the processes run against one deployment that the caller
+// may see: all of them for a holder of process:manage_any, otherwise only the caller's own.
 func (s *ProcessService) ListByDeployment(ctx context.Context, deploymentID string) ([]dto.Response, error) {
+	principal, err := auth.RequireAuthenticated(ctx)
+	if err != nil {
+		return nil, err
+	}
 	found, err := s.processes.FindByDeploymentID(ctx, deploymentID)
 	if err != nil {
 		return nil, err
 	}
+	if !principal.Can(permission.ProcessManageAny) {
+		visible := found[:0]
+		for i := range found {
+			if found[i].OwnedBy(principal.Name) {
+				visible = append(visible, found[i])
+			}
+		}
+		found = visible
+	}
 	return dto.ToResponses(found), nil
 }
 
-// Get returns one process with every section it carries.
+// Get returns one process with every section it carries. Owner or process:manage_any.
 func (s *ProcessService) Get(ctx context.Context, id string) (*dto.Response, error) {
-	proc, err := s.processes.FindByID(ctx, id)
+	proc, err := requireProcessRead(ctx, s.processes, id)
 	if err != nil {
-		return nil, notFoundAs(err, "Process not found: %s", id)
+		return nil, err
 	}
 	out := dto.ToResponse(proc)
 	return &out, nil

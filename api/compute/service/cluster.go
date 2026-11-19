@@ -77,6 +77,9 @@ func NewSlurmClusterService(
 
 // List returns every cluster.
 func (s *SlurmClusterService) List(ctx context.Context) ([]dto.SlurmClusterResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	clusters, err := s.clusters.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -86,6 +89,9 @@ func (s *SlurmClusterService) List(ctx context.Context) ([]dto.SlurmClusterRespo
 
 // Get returns one cluster.
 func (s *SlurmClusterService) Get(ctx context.Context, id string) (*dto.SlurmClusterResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	cluster, err := s.clusters.FindByID(ctx, id)
 	if err != nil {
 		return nil, notFoundAs(err, "Slurm cluster not found: %s", id)
@@ -219,6 +225,9 @@ func NewClusterPartitionService(db *gorm.DB, partitions *repository.ClusterParti
 
 // List returns every partition of a cluster.
 func (s *ClusterPartitionService) List(ctx context.Context, clusterID string) ([]dto.ClusterPartitionResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	if _, err := s.requireCluster(ctx, clusterID); err != nil {
 		return nil, err
 	}
@@ -235,6 +244,9 @@ func (s *ClusterPartitionService) List(ctx context.Context, clusterID string) ([
 
 // Get returns one partition of a cluster.
 func (s *ClusterPartitionService) Get(ctx context.Context, clusterID, partitionID string) (*dto.ClusterPartitionResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	partition, err := s.requirePartition(ctx, clusterID, partitionID)
 	if err != nil {
 		return nil, err

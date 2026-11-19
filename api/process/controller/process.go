@@ -54,8 +54,9 @@ func (h *ProcessController) Register(mux *http.ServeMux) {
 }
 
 // list returns every process, or only those run against a deployment when
-// deploymentId is supplied. The two branches have different authorisation: the unfiltered listing is
-// admin only, while the per-deployment one is open.
+// deploymentId is supplied. The two branches have different authorisation: the unfiltered listing
+// needs process:list, while the per-deployment one needs a signed-in caller and shows them only
+// their own processes unless they hold process:manage_any.
 func (h *ProcessController) list(w http.ResponseWriter, r *http.Request) {
 	var (
 		found []dto.Response

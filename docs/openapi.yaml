@@ -40,13 +40,12 @@ info:
 
     - **Platform roles** (`ADMIN`, `SUPER_ADMIN`) guard the shared catalogue —
       Slurm clusters, partitions, application templates and batch deployments.
-      Reads of the catalogue are open to anyone, including anonymous callers;
-      writes require a role.
+      Reads of the catalogue need a token but no role; writes require a role.
     - **Ownership and sharing** guards the per-user resources — SSH credentials,
       groups, cluster configs, SCP data storages, data products and processes. Ownership
       comes from the token and is never carried in a request body, so nothing can be
       created on someone else's behalf or handed over by editing it. None of these
-      are readable anonymously.
+      are readable anonymously either.
 
     SSH credentials are the strictest case: platform admins are not treated as
     owners, and there is no share that opens one up. Private key material and
@@ -957,10 +956,9 @@ paths:
     get:
       tags: [Slurm Clusters]
       summary: List Slurm clusters
-      description: Catalogue read; open without a token.
+      description: Catalogue read; any authenticated caller, whatever their role.
       operationId: listSlurmClusters
       security:
-        - {}
         - bearerAuth: []
       responses:
         "200":
@@ -1047,10 +1045,9 @@ paths:
     get:
       tags: [Slurm Clusters]
       summary: Read a Slurm cluster
-      description: Catalogue read; open without a token.
+      description: Catalogue read; any authenticated caller, whatever their role.
       operationId: getSlurmCluster
       security:
-        - {}
         - bearerAuth: []
       responses:
         "200":
@@ -1108,10 +1105,9 @@ paths:
     get:
       tags: [Slurm Clusters]
       summary: List a cluster's partitions
-      description: Catalogue read; open without a token.
+      description: Catalogue read; any authenticated caller, whatever their role.
       operationId: listClusterPartitions
       security:
-        - {}
         - bearerAuth: []
       responses:
         "200":
@@ -1155,10 +1151,9 @@ paths:
     get:
       tags: [Slurm Clusters]
       summary: Read a partition
-      description: Catalogue read; open without a token.
+      description: Catalogue read; any authenticated caller, whatever their role.
       operationId: getClusterPartition
       security:
-        - {}
         - bearerAuth: []
       responses:
         "200":
@@ -1444,10 +1439,9 @@ paths:
     get:
       tags: [Application Templates]
       summary: List application templates
-      description: Catalogue read; open without a token.
+      description: Catalogue read; any authenticated caller, whatever their role.
       operationId: listApplicationTemplates
       security:
-        - {}
         - bearerAuth: []
       responses:
         "200":
@@ -1490,10 +1484,9 @@ paths:
     get:
       tags: [Application Templates]
       summary: Read an application template
-      description: Catalogue read; open without a token.
+      description: Catalogue read; any authenticated caller, whatever their role.
       operationId: getApplicationTemplate
       security:
-        - {}
         - bearerAuth: []
       responses:
         "200":
@@ -1553,11 +1546,10 @@ paths:
       tags: [Batch Deployments]
       summary: List batch deployments
       description: |
-        Catalogue read; open without a token. Supply `templateId` to narrow the
-        listing to one template's deployments.
+        Any authenticated caller. Supply `templateId` to narrow the listing to one
+        template's deployments.
       operationId: listBatchDeployments
       security:
-        - {}
         - bearerAuth: []
       parameters:
         - name: templateId
@@ -1609,10 +1601,9 @@ paths:
     get:
       tags: [Batch Deployments]
       summary: Read a batch deployment
-      description: Catalogue read; open without a token.
+      description: Catalogue read; any authenticated caller, whatever their role.
       operationId: getBatchDeployment
       security:
-        - {}
         - bearerAuth: []
       responses:
         "200":
@@ -2057,7 +2048,8 @@ paths:
       summary: List processes
       description: |
         The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
-        the runs of one deployment, which is open to any authenticated caller.
+        the runs of one deployment; any authenticated caller may ask, but sees only
+        their own runs unless they hold `process:manage_any`.
       operationId: listProcesses
       parameters:
         - name: deploymentId
@@ -2238,9 +2230,9 @@ paths:
       tags: [Processes]
       summary: List a process's status history
       description: |
-        Read-only. Statuses are recorded internally — by process submission and by
-        whatever submits and monitors the actual job — never accepted from a client,
-        so there is no `POST` or `PUT` here.
+        Owner or admin (`process:manage_any`). Read-only. Statuses are recorded
+        internally — by process submission and by whatever submits and monitors the
+        actual job — never accepted from a client, so there is no `POST` or `PUT` here.
       operationId: listProcessStatuses
       responses:
         "200":
@@ -2266,6 +2258,7 @@ paths:
     get:
       tags: [Processes]
       summary: Read one recorded status
+      description: Owner or admin (`process:manage_any`).
       operationId: getProcessStatus
       responses:
         "200":

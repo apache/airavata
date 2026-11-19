@@ -64,6 +64,9 @@ func NewTemplateService(db *gorm.DB, templates *repository.TemplateRepository, d
 
 // List returns every template.
 func (s *TemplateService) List(ctx context.Context) ([]dto.TemplateResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	templates, err := s.templates.FindAll(ctx)
 	if err != nil {
 		return nil, err
@@ -77,6 +80,9 @@ func (s *TemplateService) List(ctx context.Context) ([]dto.TemplateResponse, err
 
 // Get returns one template.
 func (s *TemplateService) Get(ctx context.Context, id string) (*dto.TemplateResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	template, err := s.templates.FindByID(ctx, id)
 	if err != nil {
 		return nil, notFoundAs(err, "Template not found: %s", id)
@@ -202,7 +208,11 @@ func NewBatchDeploymentService(
 }
 
 // List returns every deployment, or only those of templateID when it is non-empty.
+// Any authenticated caller may list; anonymous callers get 401.
 func (s *BatchDeploymentService) List(ctx context.Context, templateID string) ([]dto.BatchDeploymentResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	var (
 		found []model.BatchDeployment
 		err   error
@@ -224,6 +234,9 @@ func (s *BatchDeploymentService) List(ctx context.Context, templateID string) ([
 
 // Get returns one deployment.
 func (s *BatchDeploymentService) Get(ctx context.Context, id string) (*dto.BatchDeploymentResponse, error) {
+	if _, err := auth.RequireAuthenticated(ctx); err != nil {
+		return nil, err
+	}
 	deployment, err := s.deployments.FindByID(ctx, id)
 	if err != nil {
 		return nil, notFoundAs(err, "Deployment not found: %s", id)

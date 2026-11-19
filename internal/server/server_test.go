@@ -244,17 +244,81 @@ func TestHealthIsOpen(t *testing.T) {
 	h.mustDo(http.MethodGet, "/health", "", nil, http.StatusOK)
 }
 
-// The Java filter chain permits every request and enforces at the method level, so an
-// endpoint with no authority requirement stays reachable without a token.
-func TestReadsAreOpenToAnonymousCallers(t *testing.T) {
+// The catalogue — clusters, partitions, templates and deployments — is readable by any
+// signed-in caller, whatever their role, but not anonymously.
+func TestCatalogueReadsRequireAuthentication(t *testing.T) {
 	h := newHarness(t)
+	clusterID := h.seedCluster("catalogue")
+	partition := h.mustDo(http.MethodPost, "/api/v1/slurm-clusters/"+clusterID+"/partitions", tokenAdmin,
+		map[string]any{"name": "batch"}, http.StatusCreated)
+	tmpl := h.mustDo(http.MethodPost, "/api/v1/application-templates", tokenAdmin,
+		map[string]any{"templateName": "catalogue"}, http.StatusCreated)
+	deployment := h.mustDo(http.MethodPost, "/api/v1/slurm-deployments", tokenAdmin, map[string]any{
+		"templateId": tmpl["templateId"], "slurmRunSection": "run", "slurmClusterId": clusterID,
+		"defaultBatchJobConfig": map[string]any{"wallTimeMinutes": 60, "allocation": "A"},
+	}, http.StatusCreated)
+
 	for _, path := range []string{
 		"/api/v1/slurm-clusters",
+		"/api/v1/slurm-clusters/" + clusterID,
+		"/api/v1/slurm-clusters/" + clusterID + "/partitions",
+		"/api/v1/slurm-clusters/" + clusterID + "/partitions/" + partition["partitionId"].(string),
 		"/api/v1/application-templates",
+		"/api/v1/application-templates/" + tmpl["templateId"].(string),
 		"/api/v1/slurm-deployments",
+		"/api/v1/slurm-deployments/" + deployment["deploymentId"].(string),
 	} {
-		if rec := h.do(http.MethodGet, path, "", nil); rec.Code != http.StatusOK {
-			t.Errorf("GET %s anonymously: status = %d, want 200", path, rec.Code)
+		if rec := h.do(http.MethodGet, path, "", nil); rec.Code != http.StatusUnauthorized {
+			t.Errorf("anonymous GET %s = %d, want 401", path, rec.Code)
+		}
+		h.mustDo(http.MethodGet, path, tokenAlice, nil, http.StatusOK)
+	}
+}
+
+// A process and its status history are visible to the process's owner and to an
+// admin only — never to another user or an anonymous caller.
+func TestProcessReadsAreOwnerScoped(t *testing.T) {
+	h := newHarness(t)
+	processID := h.seedProcess("owner-scoped", tokenAlice)
+	proc := h.mustDo(http.MethodGet, "/api/v1/processes/"+processID, tokenAlice, nil, http.StatusOK)
+	deploymentID := proc["batchProcess"].(map[string]any)["deploymentId"].(string)
+	statusID := proc["lastStatusId"].(string)
+
+	paths := []string{
+		"/api/v1/processes/" + processID,
+		"/api/v1/processes/" + processID + "/statuses",
+		"/api/v1/processes/" + processID + "/statuses/" + statusID,
+	}
+	for _, tc := range []struct {
+		token string
+		want  int
+	}{
+		{tokenAlice, http.StatusOK},
+		{tokenAdmin, http.StatusOK},
+		{tokenBob, http.StatusForbidden},
+		{"", http.StatusUnauthorized},
+	} {
+		for _, path := range paths {
+			if rec := h.do(http.MethodGet, path, tc.token, nil); rec.Code != tc.want {
+				t.Errorf("GET %s as %q = %d, want %d", path, tc.token, rec.Code, tc.want)
+			}
+		}
+	}
+
+	byDeployment := "/api/v1/processes?deploymentId=" + deploymentID
+	if rec := h.do(http.MethodGet, byDeployment, "", nil); rec.Code != http.StatusUnauthorized {
+		t.Errorf("anonymous GET %s = %d, want 401", byDeployment, rec.Code)
+	}
+	for _, tc := range []struct {
+		token string
+		want  int
+	}{
+		{tokenAlice, 1},
+		{tokenAdmin, 1},
+		{tokenBob, 0},
+	} {
+		if got := len(h.list(byDeployment, tc.token)); got != tc.want {
+			t.Errorf("GET %s as %s returned %d processes, want %d", byDeployment, tc.token, got, tc.want)
 		}
 	}
 }
@@ -327,9 +391,9 @@ func TestPartitionLookupIsScopedToItsCluster(t *testing.T) {
 		map[string]any{"name": "wholenode", "maxNodes": 16}, http.StatusCreated)
 	partitionID := created["partitionId"].(string)
 
-	h.mustDo(http.MethodGet, "/api/v1/slurm-clusters/"+clusterA+"/partitions/"+partitionID, "", nil, http.StatusOK)
+	h.mustDo(http.MethodGet, "/api/v1/slurm-clusters/"+clusterA+"/partitions/"+partitionID, tokenAlice, nil, http.StatusOK)
 
-	if rec := h.do(http.MethodGet, "/api/v1/slurm-clusters/"+clusterB+"/partitions/"+partitionID, "", nil); rec.Code != http.StatusNotFound {
+	if rec := h.do(http.MethodGet, "/api/v1/slurm-clusters/"+clusterB+"/partitions/"+partitionID, tokenAlice, nil); rec.Code != http.StatusNotFound {
 		t.Errorf("cross-cluster partition read: status = %d, want 404", rec.Code)
 	}
 }
@@ -672,7 +736,7 @@ func TestClusterCarriesItsHeadnode(t *testing.T) {
 	}
 
 	// Reads go through a different path than the create response, so check both.
-	fetched := h.mustDo(http.MethodGet, "/api/v1/slurm-clusters/"+created["slurmClusterId"].(string), "", nil, http.StatusOK)
+	fetched := h.mustDo(http.MethodGet, "/api/v1/slurm-clusters/"+created["slurmClusterId"].(string), tokenAlice, nil, http.StatusOK)
 	if fetched["headnodeHost"] != "login.expanse.edu" {
 		t.Errorf("GET cluster headnodeHost = %v, want login.expanse.edu", fetched["headnodeHost"])
 	}
@@ -1923,7 +1987,7 @@ func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 	processID := proc["processId"].(string)
 
 	var statuses []map[string]any
-	rec := h.do(http.MethodGet, "/api/v1/processes/"+processID+"/statuses", "", nil)
+	rec := h.do(http.MethodGet, "/api/v1/processes/"+processID+"/statuses", tokenAlice, nil)
 	if rec.Code != http.StatusOK {
 		t.Fatalf("list statuses: status = %d, want 200\nbody: %s", rec.Code, rec.Body.String())
 	}
@@ -1942,7 +2006,7 @@ func TestCreatingProcessRecordsInitialCreatedStatus(t *testing.T) {
 
 	statusID := statuses[0]["processStatusId"].(string)
 	h.mustDo(http.MethodGet,
-		"/api/v1/processes/"+processID+"/statuses/"+statusID, "", nil, http.StatusOK)
+		"/api/v1/processes/"+processID+"/statuses/"+statusID, tokenAlice, nil, http.StatusOK)
 }
 
 // There is no way to create or update a status through the REST API — only to read
@@ -2005,14 +2069,14 @@ func TestGetProcessStatusIsScopedToItsProcess(t *testing.T) {
 	}, http.StatusCreated)
 
 	var statusesA []map[string]any
-	rec := h.do(http.MethodGet, "/api/v1/processes/"+procA["processId"].(string)+"/statuses", "", nil)
+	rec := h.do(http.MethodGet, "/api/v1/processes/"+procA["processId"].(string)+"/statuses", tokenAlice, nil)
 	if err := json.Unmarshal(rec.Body.Bytes(), &statusesA); err != nil {
 		t.Fatalf("decode: %v", err)
 	}
 	statusID := statusesA[0]["processStatusId"].(string)
 
 	if rec := h.do(http.MethodGet,
-		"/api/v1/processes/"+procB["processId"].(string)+"/statuses/"+statusID, "", nil,
+		"/api/v1/processes/"+procB["processId"].(string)+"/statuses/"+statusID, tokenAlice, nil,
 	); rec.Code != http.StatusNotFound {
 		t.Errorf("cross-process status read: status = %d, want 404", rec.Code)
 	}

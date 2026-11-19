@@ -83,7 +83,16 @@ func registerLanding(mux *http.ServeMux, dir string) {
 		return
 	}
 	slog.Info("serving landing page", "path", landingPrefix+"/", "dir", dir)
-	mux.Handle("GET "+landingPrefix+"/", http.StripPrefix(landingPrefix, dashboardHandler(os.DirFS(dir))))
+	files := http.StripPrefix(landingPrefix, dashboardHandler(os.DirFS(dir)))
+	mux.Handle("GET "+landingPrefix+"/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for _, segment := range strings.Split(path.Clean(r.URL.Path), "/") {
+			if segment == ".git" {
+				http.NotFound(w, r)
+				return
+			}
+		}
+		files.ServeHTTP(w, r)
+	}))
 }
 
 // dashboardHandler serves files from the export, answering a path the export has no

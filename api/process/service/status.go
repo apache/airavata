@@ -98,11 +98,10 @@ func (s *StatusService) RecordTx(ctx context.Context, tx *gorm.DB, processID str
 
 // ListForProcess returns every recorded status of a process, oldest first.
 //
-// Not owner-scoped, matching the rest of this package's reads (see ProcessService's doc
-// comment) — the Java service carried no authorisation on process status either.
+// Visible to the process's owner and to holders of process:manage_any.
 func (s *StatusService) ListForProcess(ctx context.Context, processID string) ([]dto.StatusResponse, error) {
-	if _, err := s.processes.FindByID(ctx, processID); err != nil {
-		return nil, notFoundAs(err, "Process not found: %s", processID)
+	if _, err := requireProcessRead(ctx, s.processes, processID); err != nil {
+		return nil, err
 	}
 	found, err := s.statuses.FindByProcessID(ctx, processID)
 	if err != nil {
@@ -111,10 +110,11 @@ func (s *StatusService) ListForProcess(ctx context.Context, processID string) ([
 	return dto.ToStatusResponses(found), nil
 }
 
-// Get returns one status, scoped to the process it must belong to.
+// Get returns one status, scoped to the process it must belong to. Owner or
+// process:manage_any.
 func (s *StatusService) Get(ctx context.Context, processID, statusID string) (*dto.StatusResponse, error) {
-	if _, err := s.processes.FindByID(ctx, processID); err != nil {
-		return nil, notFoundAs(err, "Process not found: %s", processID)
+	if _, err := requireProcessRead(ctx, s.processes, processID); err != nil {
+		return nil, err
 	}
 	found, err := s.statuses.FindByIDAndProcessID(ctx, statusID, processID)
 	if err != nil {
