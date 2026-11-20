@@ -537,7 +537,8 @@ td.actions {
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 12px;
 }
-label.field {
+label.field,
+div.field {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -756,6 +757,35 @@ button.link {
   white-space: nowrap;
   display: inline-block;
   vertical-align: bottom;
+}
+
+.prompt-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prompt-text .prompt-lines {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* Terminal-drawn QR codes: light-on-dark like the terminal they were made for, one
+   unwrapped row per line, and line-height 1 so the half-block cells stay square. */
+pre.qr-art {
+  align-self: flex-start;
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 0;
+  padding: 12px;
+  background: #000;
+  color: #fff;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: pre;
+  font-variant-ligatures: none;
 }
 
 pre.block {
