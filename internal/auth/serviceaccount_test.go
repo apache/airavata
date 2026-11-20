@@ -61,6 +61,56 @@ func newIntrospector(srv *httptest.Server, sa auth.ServiceAccountResolver) *auth
 	return c
 }
 
+// A second request with the same token must not go back to CILogon, while roles are
+// still looked up each time so a role change is seen on the next request.
+func TestCILogonClaimsAreCached(t *testing.T) {
+	var calls int
+	srv := cilogonStub(t, "alice", &calls)
+	c := newIntrospector(srv, nil)
+
+	for i := 0; i < 3; i++ {
+		p, err := c.Introspect(context.Background(), "opaque-token")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if p.Name != "alice" {
+			t.Fatalf("Name = %q; want alice", p.Name)
+		}
+	}
+	if calls != 2 {
+		t.Fatalf("CILogon calls = %d; want 2 (one introspection, one userinfo)", calls)
+	}
+
+	// A different token is introspected on its own.
+	if _, err := c.Introspect(context.Background(), "other-token"); err != nil {
+		t.Fatal(err)
+	}
+	if calls != 4 {
+		t.Fatalf("CILogon calls = %d; want 4", calls)
+	}
+}
+
+// A token CILogon rejects is not cached: it is checked again on every request.
+func TestRejectedTokenIsNotCached(t *testing.T) {
+	var calls int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"active":false}`))
+	}))
+	t.Cleanup(srv.Close)
+	c := newIntrospector(srv, nil)
+
+	for i := 0; i < 2; i++ {
+		if _, err := c.Introspect(context.Background(), "revoked"); err == nil {
+			t.Fatal("Introspect accepted an inactive token")
+		}
+	}
+	if calls != 2 {
+		t.Fatalf("CILogon calls = %d; want 2", calls)
+	}
+}
+
 // A service account token is an Airavata secret: it must be resolved locally and
 // never reach CILogon, whether or not a resolver is configured.
 func TestServiceAccountTokenNeverReachesCILogon(t *testing.T) {
