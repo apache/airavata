@@ -11,6 +11,7 @@ require (
 	github.com/glebarez/sqlite v1.11.0
 	github.com/google/jsonschema-go v0.4.3
 	github.com/google/uuid v1.6.0
+	github.com/hashicorp/yamux v0.1.2
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/oapi-codegen/runtime v1.8.0
 	github.com/zalando/go-keyring v0.2.8
@@ -43,10 +44,9 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.16.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/hashicorp/yamux v0.1.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
-	github.com/jackc/pgx/v5 v5.7.5 // indirect
+	github.com/jackc/pgx/v5 v5.9.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jellydator/ttlcache/v3 v3.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
