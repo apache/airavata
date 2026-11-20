@@ -1311,6 +1311,9 @@ type SlurmClusterConfigRequest struct {
 // machine it logs in to. The key is inlined as its safe summary.
 type SlurmClusterConfigResponse struct {
 	Description *string `json:"description,omitempty"`
+
+	// Disabled True while the config accepts no new processes: none can be created or
+	// launched under it.
 	Disabled  *bool   `json:"disabled,omitempty"`
 	LoginUser string  `json:"loginUser"`
 	Name      *string `json:"name,omitempty"`
@@ -1825,7 +1828,7 @@ type ClientInterface interface {
 
 	// ListApplicationTemplates List application templates
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Corresponds with GET /api/v1/application-templates (the `ListApplicationTemplates` operationId).
 	ListApplicationTemplates(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1860,7 +1863,7 @@ type ClientInterface interface {
 
 	// GetApplicationTemplate Read an application template
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Corresponds with GET /api/v1/application-templates/{templateId} (the `GetApplicationTemplate` operationId).
 	GetApplicationTemplate(ctx context.Context, templateId TemplateId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2189,7 +2192,8 @@ type ClientInterface interface {
 	// ListProcesses List processes
 	//
 	// The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
-	// the runs of one deployment, which is open to any authenticated caller.
+	// the runs of one deployment; any authenticated caller may ask, but sees only
+	// their own runs unless they hold `process:manage_any`.
 	//
 	// Corresponds with GET /api/v1/processes (the `ListProcesses` operationId).
 	ListProcesses(ctx context.Context, params *ListProcessesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2460,14 +2464,16 @@ type ClientInterface interface {
 
 	// ListProcessStatuses List a process's status history
 	//
-	// Read-only. Statuses are recorded internally — by process submission and by
-	// whatever submits and monitors the actual job — never accepted from a client,
-	// so there is no `POST` or `PUT` here.
+	// Owner or admin (`process:manage_any`). Read-only. Statuses are recorded
+	// internally — by process submission and by whatever submits and monitors the
+	// actual job — never accepted from a client, so there is no `POST` or `PUT` here.
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/statuses (the `ListProcessStatuses` operationId).
 	ListProcessStatuses(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetProcessStatus Read one recorded status
+	//
+	// Owner or admin (`process:manage_any`).
 	//
 	// Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 	GetProcessStatus(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2880,7 +2886,7 @@ type ClientInterface interface {
 
 	// ListSlurmClusters List Slurm clusters
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Corresponds with GET /api/v1/slurm-clusters (the `ListSlurmClusters` operationId).
 	ListSlurmClusters(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2944,7 +2950,7 @@ type ClientInterface interface {
 
 	// GetSlurmCluster Read a Slurm cluster
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Corresponds with GET /api/v1/slurm-clusters/{slurmClusterId} (the `GetSlurmCluster` operationId).
 	GetSlurmCluster(ctx context.Context, slurmClusterId SlurmClusterId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2975,7 +2981,7 @@ type ClientInterface interface {
 
 	// ListClusterPartitions List a cluster's partitions
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Corresponds with GET /api/v1/slurm-clusters/{slurmClusterId}/partitions (the `ListClusterPartitions` operationId).
 	ListClusterPartitions(ctx context.Context, slurmClusterId SlurmClusterId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3007,7 +3013,7 @@ type ClientInterface interface {
 
 	// GetClusterPartition Read a partition
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Corresponds with GET /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId} (the `GetClusterPartition` operationId).
 	GetClusterPartition(ctx context.Context, slurmClusterId SlurmClusterId, partitionId PartitionId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3032,8 +3038,8 @@ type ClientInterface interface {
 
 	// ListBatchDeployments List batch deployments
 	//
-	// Catalogue read; open without a token. Supply `templateId` to narrow the
-	// listing to one template's deployments.
+	// Any authenticated caller. Supply `templateId` to narrow the listing to one
+	// template's deployments.
 	//
 	// Corresponds with GET /api/v1/slurm-deployments (the `ListBatchDeployments` operationId).
 	ListBatchDeployments(ctx context.Context, params *ListBatchDeploymentsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3071,7 +3077,7 @@ type ClientInterface interface {
 
 	// GetBatchDeployment Read a batch deployment
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Corresponds with GET /api/v1/slurm-deployments/{deploymentId} (the `GetBatchDeployment` operationId).
 	GetBatchDeployment(ctx context.Context, deploymentId DeploymentId, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -3349,7 +3355,7 @@ type ClientInterface interface {
 
 // ListApplicationTemplates List application templates
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Corresponds with GET /api/v1/application-templates (the `ListApplicationTemplates` operationId).
 func (c *Client) ListApplicationTemplates(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -3424,7 +3430,7 @@ func (c *Client) DeleteApplicationTemplate(ctx context.Context, templateId Templ
 
 // GetApplicationTemplate Read an application template
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Corresponds with GET /api/v1/application-templates/{templateId} (the `GetApplicationTemplate` operationId).
 func (c *Client) GetApplicationTemplate(ctx context.Context, templateId TemplateId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -4133,7 +4139,8 @@ func (c *Client) ListPermissions(ctx context.Context, reqEditors ...RequestEdito
 // ListProcesses List processes
 //
 // The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
-// the runs of one deployment, which is open to any authenticated caller.
+// the runs of one deployment; any authenticated caller may ask, but sees only
+// their own runs unless they hold `process:manage_any`.
 //
 // Corresponds with GET /api/v1/processes (the `ListProcesses` operationId).
 func (c *Client) ListProcesses(ctx context.Context, params *ListProcessesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -4784,9 +4791,9 @@ func (c *Client) RetryProcess(ctx context.Context, processId ProcessId, reqEdito
 
 // ListProcessStatuses List a process's status history
 //
-// Read-only. Statuses are recorded internally — by process submission and by
-// whatever submits and monitors the actual job — never accepted from a client,
-// so there is no `POST` or `PUT` here.
+// Owner or admin (`process:manage_any`). Read-only. Statuses are recorded
+// internally — by process submission and by whatever submits and monitors the
+// actual job — never accepted from a client, so there is no `POST` or `PUT` here.
 //
 // Corresponds with GET /api/v1/processes/{processId}/statuses (the `ListProcessStatuses` operationId).
 func (c *Client) ListProcessStatuses(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -4802,6 +4809,8 @@ func (c *Client) ListProcessStatuses(ctx context.Context, processId ProcessId, r
 }
 
 // GetProcessStatus Read one recorded status
+//
+// Owner or admin (`process:manage_any`).
 //
 // Corresponds with GET /api/v1/processes/{processId}/statuses/{statusId} (the `GetProcessStatus` operationId).
 func (c *Client) GetProcessStatus(ctx context.Context, processId ProcessId, statusId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5684,7 +5693,7 @@ func (c *Client) PutApiV1SlurmClusterConfigsSlurmClusterConfigIdSharesSharingId(
 
 // ListSlurmClusters List Slurm clusters
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Corresponds with GET /api/v1/slurm-clusters (the `ListSlurmClusters` operationId).
 func (c *Client) ListSlurmClusters(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5808,7 +5817,7 @@ func (c *Client) DeleteSlurmCluster(ctx context.Context, slurmClusterId SlurmClu
 
 // GetSlurmCluster Read a Slurm cluster
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Corresponds with GET /api/v1/slurm-clusters/{slurmClusterId} (the `GetSlurmCluster` operationId).
 func (c *Client) GetSlurmCluster(ctx context.Context, slurmClusterId SlurmClusterId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5869,7 +5878,7 @@ func (c *Client) UpdateSlurmCluster(ctx context.Context, slurmClusterId SlurmClu
 
 // ListClusterPartitions List a cluster's partitions
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Corresponds with GET /api/v1/slurm-clusters/{slurmClusterId}/partitions (the `ListClusterPartitions` operationId).
 func (c *Client) ListClusterPartitions(ctx context.Context, slurmClusterId SlurmClusterId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5941,7 +5950,7 @@ func (c *Client) DeleteClusterPartition(ctx context.Context, slurmClusterId Slur
 
 // GetClusterPartition Read a partition
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Corresponds with GET /api/v1/slurm-clusters/{slurmClusterId}/partitions/{partitionId} (the `GetClusterPartition` operationId).
 func (c *Client) GetClusterPartition(ctx context.Context, slurmClusterId SlurmClusterId, partitionId PartitionId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -5996,8 +6005,8 @@ func (c *Client) UpdateClusterPartition(ctx context.Context, slurmClusterId Slur
 
 // ListBatchDeployments List batch deployments
 //
-// Catalogue read; open without a token. Supply `templateId` to narrow the
-// listing to one template's deployments.
+// Any authenticated caller. Supply `templateId` to narrow the listing to one
+// template's deployments.
 //
 // Corresponds with GET /api/v1/slurm-deployments (the `ListBatchDeployments` operationId).
 func (c *Client) ListBatchDeployments(ctx context.Context, params *ListBatchDeploymentsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -6075,7 +6084,7 @@ func (c *Client) DeleteBatchDeployment(ctx context.Context, deploymentId Deploym
 
 // GetBatchDeployment Read a batch deployment
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Corresponds with GET /api/v1/slurm-deployments/{deploymentId} (the `GetBatchDeployment` operationId).
 func (c *Client) GetBatchDeployment(ctx context.Context, deploymentId DeploymentId, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -11885,7 +11894,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListApplicationTemplatesWithResponse List application templates
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -11924,7 +11933,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetApplicationTemplateWithResponse Read an application template
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -12291,7 +12300,8 @@ type ClientWithResponsesInterface interface {
 	// ListProcessesWithResponse List processes
 	//
 	// The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
-	// the runs of one deployment, which is open to any authenticated caller.
+	// the runs of one deployment; any authenticated caller may ask, but sees only
+	// their own runs unless they hold `process:manage_any`.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -12598,9 +12608,9 @@ type ClientWithResponsesInterface interface {
 
 	// ListProcessStatusesWithResponse List a process's status history
 	//
-	// Read-only. Statuses are recorded internally — by process submission and by
-	// whatever submits and monitors the actual job — never accepted from a client,
-	// so there is no `POST` or `PUT` here.
+	// Owner or admin (`process:manage_any`). Read-only. Statuses are recorded
+	// internally — by process submission and by whatever submits and monitors the
+	// actual job — never accepted from a client, so there is no `POST` or `PUT` here.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -12608,6 +12618,8 @@ type ClientWithResponsesInterface interface {
 	ListProcessStatusesWithResponse(ctx context.Context, processId ProcessId, reqEditors ...RequestEditorFn) (*ListProcessStatusesResponse, error)
 
 	// GetProcessStatusWithResponse Read one recorded status
+	//
+	// Owner or admin (`process:manage_any`).
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -13066,7 +13078,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListSlurmClustersWithResponse List Slurm clusters
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -13134,7 +13146,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetSlurmClusterWithResponse Read a Slurm cluster
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -13167,7 +13179,7 @@ type ClientWithResponsesInterface interface {
 
 	// ListClusterPartitionsWithResponse List a cluster's partitions
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -13203,7 +13215,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetClusterPartitionWithResponse Read a partition
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -13230,8 +13242,8 @@ type ClientWithResponsesInterface interface {
 
 	// ListBatchDeploymentsWithResponse List batch deployments
 	//
-	// Catalogue read; open without a token. Supply `templateId` to narrow the
-	// listing to one template's deployments.
+	// Any authenticated caller. Supply `templateId` to narrow the listing to one
+	// template's deployments.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -13273,7 +13285,7 @@ type ClientWithResponsesInterface interface {
 
 	// GetBatchDeploymentWithResponse Read a batch deployment
 	//
-	// Catalogue read; open without a token.
+	// Catalogue read; any authenticated caller, whatever their role.
 	//
 	// Returns a wrapper object for the known response body format(s).
 	//
@@ -24517,7 +24529,7 @@ func (r HealthResponse) ContentType() string {
 
 // ListApplicationTemplatesWithResponse List application templates
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -24580,7 +24592,7 @@ func (c *ClientWithResponses) DeleteApplicationTemplateWithResponse(ctx context.
 
 // GetApplicationTemplateWithResponse Read an application template
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -25175,7 +25187,8 @@ func (c *ClientWithResponses) ListPermissionsWithResponse(ctx context.Context, r
 // ListProcessesWithResponse List processes
 //
 // The unfiltered listing is admin only. Supplying `deploymentId` narrows it to
-// the runs of one deployment, which is open to any authenticated caller.
+// the runs of one deployment; any authenticated caller may ask, but sees only
+// their own runs unless they hold `process:manage_any`.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -25710,9 +25723,9 @@ func (c *ClientWithResponses) RetryProcessWithResponse(ctx context.Context, proc
 
 // ListProcessStatusesWithResponse List a process's status history
 //
-// Read-only. Statuses are recorded internally — by process submission and by
-// whatever submits and monitors the actual job — never accepted from a client,
-// so there is no `POST` or `PUT` here.
+// Owner or admin (`process:manage_any`). Read-only. Statuses are recorded
+// internally — by process submission and by whatever submits and monitors the
+// actual job — never accepted from a client, so there is no `POST` or `PUT` here.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -25726,6 +25739,8 @@ func (c *ClientWithResponses) ListProcessStatusesWithResponse(ctx context.Contex
 }
 
 // GetProcessStatusWithResponse Read one recorded status
+//
+// Owner or admin (`process:manage_any`).
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -26466,7 +26481,7 @@ func (c *ClientWithResponses) PutApiV1SlurmClusterConfigsSlurmClusterConfigIdSha
 
 // ListSlurmClustersWithResponse List Slurm clusters
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -26570,7 +26585,7 @@ func (c *ClientWithResponses) DeleteSlurmClusterWithResponse(ctx context.Context
 
 // GetSlurmClusterWithResponse Read a Slurm cluster
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -26621,7 +26636,7 @@ func (c *ClientWithResponses) UpdateSlurmClusterWithResponse(ctx context.Context
 
 // ListClusterPartitionsWithResponse List a cluster's partitions
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -26681,7 +26696,7 @@ func (c *ClientWithResponses) DeleteClusterPartitionWithResponse(ctx context.Con
 
 // GetClusterPartitionWithResponse Read a partition
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -26726,8 +26741,8 @@ func (c *ClientWithResponses) UpdateClusterPartitionWithResponse(ctx context.Con
 
 // ListBatchDeploymentsWithResponse List batch deployments
 //
-// Catalogue read; open without a token. Supply `templateId` to narrow the
-// listing to one template's deployments.
+// Any authenticated caller. Supply `templateId` to narrow the listing to one
+// template's deployments.
 //
 // Returns a wrapper object for the known response body format(s).
 //
@@ -26793,7 +26808,7 @@ func (c *ClientWithResponses) DeleteBatchDeploymentWithResponse(ctx context.Cont
 
 // GetBatchDeploymentWithResponse Read a batch deployment
 //
-// Catalogue read; open without a token.
+// Catalogue read; any authenticated caller, whatever their role.
 //
 // Returns a wrapper object for the known response body format(s).
 //
