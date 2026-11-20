@@ -119,6 +119,8 @@ A deployment makes a template runnable on one compute resource. For the Slurm ba
 | `slurmRunSection` | The commands that run the application: module loads, the program invocation and any cleanup. It is a Jinja template ([pongo2](https://github.com/flosch/pongo2)). |
 | `defaultBatchJobConfig` | The resource request a run starts from: wall time, allocation, partition, nodes, CPUs, memory, GPUs, constraints and QOS. A run copies it and may change any of it. |
 
+A process keeps a reference to the deployment it ran, so a deployment that has been run cannot be deleted (`409 Conflict`).
+
 ### The run section
 
 Airavata generates the job header (`#SBATCH` lines on Slurm) itself. The run section is the body of the script, and it reaches the run's inputs and outputs through two variables:
