@@ -162,6 +162,18 @@ func (r *BatchDeploymentRepository) ExistsByTemplateID(ctx context.Context, temp
 	return n > 0, err
 }
 
+// CountProcesses reports how many batch processes were run against a deployment.
+// A process keeps naming its deployment as part of its history, so the schema
+// restricts deleting a deployment that has been run, and the service turns a nonzero
+// count into a conflict. The table is named directly because the process model
+// belongs to a package that depends on this one.
+func (r *BatchDeploymentRepository) CountProcesses(ctx context.Context, deploymentID string) (int64, error) {
+	var n int64
+	err := r.db.WithContext(ctx).Table("batch_processes").
+		Where("deployment_id = ?", deploymentID).Count(&n).Error
+	return n, err
+}
+
 // Save writes the deployment row. The owned config is written separately by
 // SaveConfig, so that an update mutates the existing config row rather than
 // replacing it and leaving an orphan.

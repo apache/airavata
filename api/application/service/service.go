@@ -337,11 +337,22 @@ func (s *BatchDeploymentService) Delete(ctx context.Context, id string) error {
 	if _, err := auth.RequirePermission(ctx, permission.DeploymentManage); err != nil {
 		return err
 	}
-	deployment, err := s.deployments.FindByID(ctx, id)
-	if err != nil {
-		return notFoundAs(err, "Deployment not found: %s", id)
-	}
-	return s.deployments.Delete(ctx, deployment)
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		deployments := s.deployments.WithTx(tx)
+
+		deployment, err := deployments.FindByID(ctx, id)
+		if err != nil {
+			return notFoundAs(err, "Deployment not found: %s", id)
+		}
+		runs, err := deployments.CountProcesses(ctx, deployment.ID)
+		if err != nil {
+			return err
+		}
+		if runs > 0 {
+			return httpx.Conflict("Deployment %s has %d process(es) run against it and cannot be deleted", deployment.ID, runs)
+		}
+		return deployments.Delete(ctx, deployment)
+	})
 }
 
 // resolveReferences looks up the template and the optional cluster a deployment
