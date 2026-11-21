@@ -35,7 +35,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/hashicorp/yamux"
 
-	"github.com/apache/airavata/internal/link"
+	"github.com/apache/airavata/internal/transport"
 )
 
 // fakeJupyter stands in for the Jupyter Server a job's Linkspan starts: it reports
@@ -73,7 +73,7 @@ func fakeJupyter(t *testing.T) *httptest.Server {
 // target, refusing every other port.
 func fakeLinkspan(t *testing.T, ctx context.Context, linkURL, token string, port uint16, target string) error {
 	t.Helper()
-	conn, resp, err := websocket.Dial(ctx, linkURL, &websocket.DialOptions{Subprotocols: []string{link.Protocol, link.TokenPrefix + token}})
+	conn, resp, err := websocket.Dial(ctx, linkURL, &websocket.DialOptions{Subprotocols: []string{transport.LinkProtocol, transport.LinkTokenPrefix + token}})
 	if resp != nil && resp.Body != nil {
 		resp.Body.Close()
 	}
@@ -130,7 +130,7 @@ func TestLinkCarriesTheJupyterServerToItsOwner(t *testing.T) {
 	if want := "wss://airavata.example.org/api/v1/processes/" + processID + "/link"; issued.URL != want {
 		t.Errorf("link URL = %q, want %q", issued.URL, want)
 	}
-	control, jupyterPort := link.Ports(processID)
+	control, jupyterPort := transport.LinkPorts(processID)
 	if issued.ControlPort != control || issued.JupyterPort != jupyterPort || control < 20000 || jupyterPort > 40000 {
 		t.Errorf("ports = %d/%d, want %d/%d in range", issued.ControlPort, issued.JupyterPort, control, jupyterPort)
 	}
