@@ -23,11 +23,14 @@ package workflows
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/cschleiden/go-workflows/tester"
 	workflow "github.com/cschleiden/go-workflows/workflow"
 	"github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
@@ -55,10 +58,10 @@ func runRecorded(t *testing.T, bodyErr error) (error, model.ProcessWorkflow) {
 		t.Fatalf("create process: %v", err)
 	}
 
-	w := New(nil, nil, nil, nil, nil, nil, nil, processrepo.NewWorkflowRepository(gdb))
+	w := New(nil, nil, nil, nil, nil, nil, processrepo.NewStatusRepository(gdb), processrepo.NewWorkflowRepository(gdb), nil)
 	wf := func(ctx workflow.Context, processID string) error {
 		return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission,
-			func() error { return bodyErr })
+			func(workflow.Context, string) error { return bodyErr })
 	}
 
 	wft := tester.NewWorkflowTester[any](wf)
@@ -101,5 +104,67 @@ func TestRecordingOutcomeMarksFailure(t *testing.T) {
 	}
 	if rec.Status == nil || *rec.Status != model.ProcessWorkflowStatusTypeFailed {
 		t.Errorf("status = %v, want FAILED", rec.Status)
+	}
+}
+
+// A stopped workflow must release again, since its task in flight may have submitted a
+// job after the teardown released.
+func TestAStopSignalledWorkflowReleasesAgain(t *testing.T) {
+	w := New(nil, nil, nil, nil, nil, nil, nil, nil, nil)
+	var calls []string
+	record := func(call string) func(mock.Arguments) { return func(mock.Arguments) { calls = append(calls, call) } }
+	wft := tester.NewWorkflowTester[any](func(ctx workflow.Context, processID string) error {
+		return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission,
+			// A task in flight runs to its end whatever the stop, as an activity does.
+			func(ctx workflow.Context, _ string) error {
+				return workflow.Sleep(workflow.NewDisconnectedContext(ctx), time.Hour)
+			})
+	})
+	wft.OnActivity(w.RecordWorkflowStatus, mock.Anything, "p", mock.Anything, mock.Anything, model.ProcessWorkflowStatusTypeRunning).Return(false, nil)
+	wft.OnActivity(w.RecordWorkflowStatus, mock.Anything, "p", mock.Anything, mock.Anything, model.ProcessWorkflowStatusTypeStopped).Run(record("workflow stopped")).Return(true, nil).Once()
+	wft.OnActivity(w.batch.ReleaseBatchResources, mock.Anything, "p").Run(record("released")).Return(nil).Once()
+	wft.OnActivity(w.RecordProcessStatus, mock.Anything, "p", model.ProcessStatusTypeStopped, ProcessStoppedLog).Run(record("process stopped")).Return(nil).Once()
+	wft.ScheduleCallback(time.Minute, func() { wft.SignalWorkflow(stopSignal, struct{}{}) })
+
+	wft.Execute(context.Background(), "p")
+	if _, err := wft.WorkflowResult(); err != nil {
+		t.Fatal(err)
+	}
+	wft.AssertExpectations(t)
+	if got := strings.Join(calls, ","); got != "workflow stopped,released,process stopped" {
+		t.Errorf("calls = %s, want the workflow recorded STOPPED, then released, then the process STOPPED last", got)
+	}
+}
+
+// A workflow that cannot tell whether its process is stopped, or learns it is, must not
+// start work a teardown would not wait for.
+func TestAWorkflowDoesNoWorkUnlessItRecordedRunningOnAnUnstoppedProcess(t *testing.T) {
+	for name, tc := range map[string]struct {
+		stopped bool
+		err     error
+	}{
+		"process already stopped": {stopped: true},
+		"RUNNING record failed":   {err: errors.New("database down")},
+	} {
+		t.Run(name, func(t *testing.T) {
+			w := New(nil, nil, nil, nil, nil, nil, nil, nil, nil)
+			ran := false
+			wft := tester.NewWorkflowTester[any](func(ctx workflow.Context, processID string) error {
+				return w.recordingOutcome(ctx, processID, model.ProcessWorkflowTypeBatchJobSubmission,
+					func(workflow.Context, string) error { ran = true; return nil })
+			})
+			wft.OnActivity(w.RecordWorkflowStatus, mock.Anything, "p", mock.Anything, mock.Anything, model.ProcessWorkflowStatusTypeRunning).
+				Return(tc.stopped, tc.err)
+			if tc.stopped {
+				wft.OnActivity(w.RecordWorkflowStatus, mock.Anything, "p", mock.Anything, mock.Anything, model.ProcessWorkflowStatusTypeStopped).
+					Return(true, nil).Once()
+				wft.OnActivity(w.RecordProcessStatus, mock.Anything, "p", model.ProcessStatusTypeStopped, ProcessStoppedLog).Return(nil).Once()
+			}
+			wft.Execute(context.Background(), "p")
+			if _, err := wft.WorkflowResult(); ran || (err == nil) != (tc.err == nil) {
+				t.Errorf("body ran = %v, error = %v; want no work and error %v", ran, err, tc.err != nil)
+			}
+			wft.AssertExpectations(t)
+		})
 	}
 }
