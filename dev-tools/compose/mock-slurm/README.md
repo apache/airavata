@@ -52,10 +52,20 @@ AIRAVATA_TOKEN=dev-token dev-tools/compose/mock-slurm/bootstrap.sh
 ```
 
 `bootstrap.sh` generates the key pair on first run, checks SSH, then uses the public
-REST API to register an SSH credential, a cluster with a `debug` partition, a cluster
-config for `slurmuser`, an echo template and its deployment, and prints their ids.
-Each run creates new, timestamp-named records. Add `--launch` to also create and
-launch a process and wait for the job's output.
+REST API to register, and print the ids of:
+
+- an SSH credential for the key (named by its fingerprint);
+- a cluster `mock-slurm` with the partitions the server discovers over SSH (`debug`,
+  and `compute` with 4 nodes and `gpu:1`), plus a cluster config for `slurmuser`;
+- an SCP data storage on the container, and a data product `mock-slurm-message` at
+  `/home/slurmuser/data/message.txt` whose content it uploads through the API;
+- a template `mock-slurm-echo` with a `FILE` input `message.txt` and a `FILE` output
+  `greeting.txt`, and its deployment.
+
+Re-running is safe: records are found by name and reused, and a regenerated key gets a
+new credential that the config and storage are switched to. Add `--launch` to also
+run the template: the server stages `message.txt` in over SCP, submits the job, and
+the script waits for `greeting.txt` (tracked in place) to appear.
 
 | Variable | Default | Meaning |
 |---|---|---|
