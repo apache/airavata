@@ -193,7 +193,8 @@ docker compose -f dev-tools/compose/compose.yml up -d postgres
 
 This starts PostgreSQL 17 on host port `15432` with the database, user and password
 matching the defaults above. Adminer is also available (`up -d adminer`,
-`http://localhost:18080`) for browsing the schema.
+`http://localhost:18080`) for browsing the schema. For a local Slurm cluster to launch
+jobs against, see [dev-tools/compose/mock-slurm](dev-tools/compose/mock-slurm/README.md).
 
 ### Without Docker
 

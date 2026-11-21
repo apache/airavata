@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+set -e
+
+STATE_DIR="/var/run/mock-slurm"
+JOBS_DIR="$STATE_DIR/jobs"
+
+FILTER_JOB=""
+FILTER_USER=""
+FORMAT=""
+NO_HEADER=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -j|--job)
+            FILTER_JOB="$2"
+            shift 2
+            ;;
+        --job=*)
+            FILTER_JOB="${1#*=}"
+            shift
+            ;;
+        -u|--user)
+            FILTER_USER="$2"
+            shift 2
+            ;;
+        --user=*)
+            FILTER_USER="${1#*=}"
+            shift
+            ;;
+        -o|--format)
+            FORMAT="$2"
+            shift 2
+            ;;
+        --format=*)
+            FORMAT="${1#*=}"
+            shift
+            ;;
+        -h|--noheader)
+            NO_HEADER=true
+            shift
+            ;;
+        *)
+            shift
+            ;;
+    esac
+done
+
+if [ ! -d "$JOBS_DIR" ]; then
+    if [ "$FORMAT" = "%T" ]; then
+        [ "$NO_HEADER" = false ] && echo "STATE"
+    else
+        [ "$NO_HEADER" = false ] && printf "%10s %10s %15s %10s %2s %10s %5s %s\n" "JOBID" "PARTITION" "NAME" "USER" "ST" "TIME" "NODES" "NODELIST(REASON)"
+    fi
+    exit 0
+fi
+
+if [ "$FORMAT" = "%T" ]; then
+    [ "$NO_HEADER" = false ] && echo "STATE"
+else
+    [ "$NO_HEADER" = false ] && printf "%10s %10s %15s %10s %2s %10s %5s %s\n" "JOBID" "PARTITION" "NAME" "USER" "ST" "TIME" "NODES" "NODELIST(REASON)"
+fi
+
+for jdir in "$JOBS_DIR"/*; do
+    [ -d "$jdir" ] || continue
+    meta="$jdir/metadata"
+    [ -f "$meta" ] || continue
+
+    jid=$(grep "^JOB_ID=" "$meta" | cut -d= -f2)
+    jname=$(grep "^JOB_NAME=" "$meta" | cut -d= -f2)
+    juser=$(grep "^USER=" "$meta" | cut -d= -f2)
+    jpart=$(grep "^PARTITION=" "$meta" | cut -d= -f2)
+    jpid=$(grep "^PID=" "$meta" | cut -d= -f2)
+    jstatus=$(grep "^STATUS=" "$meta" | tail -n1 | cut -d= -f2)
+    jstart=$(grep "^START_TIME=" "$meta" | cut -d= -f2)
+
+    [ -n "$FILTER_JOB" ] && [ "$FILTER_JOB" != "$jid" ] && continue
+    [ -n "$FILTER_USER" ] && [ "$FILTER_USER" != "$juser" ] && continue
+
+    # Check if PID is still alive
+    if [ -n "$jpid" ] && kill -0 "$jpid" 2>/dev/null; then
+        jstatus="RUNNING"
+        st="R"
+    else
+        if [ "$jstatus" = "RUNNING" ]; then
+            jstatus="COMPLETED"
+        fi
+        st="CD"
+        [ "$jstatus" = "FAILED" ] && st="F"
+        [ "$jstatus" = "CANCELLED" ] && st="CA"
+    fi
+
+    # Calculate run time
+    now=$(date +%s)
+    elapsed=$((now - ${jstart:-$now}))
+    mins=$((elapsed / 60))
+    secs=$((elapsed % 60))
+    time_str=$(printf "%02d:%02d" "$mins" "$secs")
+
+    if [ "$FORMAT" = "%T" ]; then
+        echo "$jstatus"
+    elif [ "$FORMAT" = "%t" ]; then
+        echo "$st"
+    else
+        printf "%10s %10s %15s %10s %2s %10s %5s %s\n" "$jid" "$jpart" "${jname:0:15}" "$juser" "$st" "$time_str" "1" "localhost"
+    fi
+done
+
+exit 0
