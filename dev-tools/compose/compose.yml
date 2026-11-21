@@ -17,6 +17,17 @@ services:
       timeout: 5s
       retries: 5
 
+  dex:
+    image: ghcr.io/dexidp/dex:v2.41.1
+    container_name: dex
+    profiles: [auth]
+    restart: unless-stopped
+    command: ["dex", "serve", "/etc/dex/config.yaml"]
+    ports:
+      - "5556:5556"
+    volumes:
+      - ./dex/config.yaml:/etc/dex/config.yaml:ro
+
   adminer:
     image: adminer:latest
     container_name: adminer
