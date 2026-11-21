@@ -142,6 +142,9 @@ introspection alone returns only a small fixed claim set.
 Authorities are never read from the token. They are looked up in the `user_roles` table
 by username, so a token cannot assert its own privileges.
 
+For local development without a CILogon client, an optional Dex instance with test users
+can stand in for CILogon: see [dev-tools/compose/dex](dev-tools/compose/dex/README.md).
+
 ### Authentication — root account
 
 | Variable | Default | Description |
