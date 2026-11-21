@@ -56,6 +56,36 @@ const config = {
     ],
   ],
 
+  plugins: [
+    // API reference pages are generated from docs/openapi.yaml by `npm run gen-api-docs`.
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'api-reference',
+        path: 'api-reference',
+        routeBasePath: 'reference',
+        sidebarPath: require.resolve('./api-reference-sidebar.js'),
+        docItemComponent: '@theme/ApiItem',
+      },
+    ],
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'openapi',
+        docsPluginId: 'api-reference',
+        config: {
+          airavata: {
+            specPath: '../docs/openapi.yaml',
+            outputDir: 'api-reference',
+            sidebarOptions: { groupPathsBy: 'tag', categoryLinkSource: 'auto' },
+          },
+        },
+      },
+    ],
+  ],
+
+  themes: ['docusaurus-theme-openapi-docs'],
+
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
@@ -66,7 +96,14 @@ const config = {
         title: 'Apache Airavata',
         items: [
           { type: 'docSidebar', sidebarId: 'docs', position: 'left', label: 'Docs' },
-          { to: '/api', label: 'API', position: 'left' },
+          { to: '/api', label: 'API guide', position: 'left' },
+          {
+            type: 'docSidebar',
+            sidebarId: 'reference',
+            docsPluginId: 'api-reference',
+            label: 'API reference',
+            position: 'left',
+          },
           { href: 'https://github.com/apache/airavata', label: 'GitHub', position: 'right' },
         ],
       },
@@ -78,7 +115,8 @@ const config = {
             items: [
               { label: 'Introduction', to: '/' },
               { label: 'Applications', to: '/application' },
-              { label: 'API reference', to: '/api' },
+              { label: 'API guide', to: '/api' },
+              { label: 'API reference', to: '/reference/apache-airavata-http-api' },
             ],
           },
           {

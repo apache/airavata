@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "build": "docusaurus build",
+    "gen-api-docs": "docusaurus clean-api-docs all && docusaurus gen-api-docs all",
+    "start": "npm run gen-api-docs && docusaurus start",
+    "build": "npm run gen-api-docs && docusaurus build",
     "serve": "docusaurus serve",
     "clear": "docusaurus clear"
   },
@@ -14,6 +15,8 @@
     "@docusaurus/preset-classic": "3.10.2",
     "@mdx-js/react": "^3.1.0",
     "clsx": "^2.1.1",
+    "docusaurus-plugin-openapi-docs": "5.2.0",
+    "docusaurus-theme-openapi-docs": "5.2.0",
     "prism-react-renderer": "^2.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
