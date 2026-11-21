@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"path"
 	"sort"
 	"strconv"
 	"strings"
@@ -34,7 +33,9 @@ import (
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
 	"github.com/apache/airavata/internal/permission"
+	"github.com/apache/airavata/internal/slurm"
 	"github.com/apache/airavata/internal/ssh"
+	"github.com/apache/airavata/internal/transport"
 
 	dto "github.com/apache/airavata/api/compute/dto"
 	credsvc "github.com/apache/airavata/api/credentials/service"
@@ -99,7 +100,7 @@ func (s *ClusterDiscoveryService) DiscoverPartitions(ctx context.Context, req *d
 	dial := ssh.NewSSHDialConfig(req.HeadnodeHost, port, req.LoginUser, *key, principal.Name)
 	target := fmt.Sprintf("ssh %s@%s:%d", req.LoginUser, req.HeadnodeHost, port)
 
-	scontrol := slurmCommand(req.SlurmHome, "scontrol") + " show partition -o"
+	scontrol := slurm.Command(req.SlurmHome, "scontrol") + " show partition -o"
 	stdout, stderr, err := s.run(ctx, dial, scontrol, target)
 	if err != nil {
 		return nil, discoveryFailed("Partition", err, stderr)
@@ -113,7 +114,7 @@ func (s *ClusterDiscoveryService) DiscoverPartitions(ctx context.Context, req *d
 	// per node. It is a refinement, so failing to run it costs those fields, not the
 	// discovery. The pooled connection is reused, so an interactive login is not asked
 	// to answer twice.
-	sinfo := slurmCommand(req.SlurmHome, "sinfo") + " -h -a -o " + ssh.ShellQuote("%R|%c|%m|%G")
+	sinfo := slurm.Command(req.SlurmHome, "sinfo") + " -h -a -o " + ssh.ShellQuote("%R|%c|%m|%G")
 	if out, _, err := s.run(ctx, dial, sinfo, target); err == nil {
 		applySinfo(partitions, out)
 	} else {
@@ -125,16 +126,6 @@ func (s *ClusterDiscoveryService) DiscoverPartitions(ctx context.Context, req *d
 		out = append(out, p.request())
 	}
 	return &dto.PartitionDiscoveryResponse{Partitions: out}, nil
-}
-
-// slurmCommand names a Slurm binary, under slurmHome when the cluster sets one — the
-// same rule job submission follows for sbatch, so a discovery that works means a
-// submission will find its binaries too.
-func slurmCommand(slurmHome *string, name string) string {
-	if slurmHome != nil && strings.TrimSpace(*slurmHome) != "" {
-		return ssh.ShellQuote(path.Join(strings.TrimSpace(*slurmHome), name))
-	}
-	return name
 }
 
 // discoveryFailed reports a login or command that did not work. Unlike a data
@@ -372,18 +363,18 @@ func (s *ClusterDiscoveryService) DiscoverAllocations(ctx context.Context, confi
 	defer cancel()
 
 	cluster := config.SlurmCluster
-	dial := ssh.NewSSHDialConfig(cluster.HeadnodeHost, cluster.HeadnodePort, config.LoginUser, *config.SSHCredential, principal.Name)
+	dial := transport.SSHDialConfig(config, principal.Name)
 	target := fmt.Sprintf("ssh %s@%s:%d", config.LoginUser, cluster.HeadnodeHost, cluster.HeadnodePort)
 	user := ssh.ShellQuote(config.LoginUser)
 
 	// sacctmgr knows each association with its partition and QOS limits. Some sites
 	// close it to ordinary users, so sshare — which lists the same accounts without the
 	// limits — is the fallback.
-	sacctmgr := slurmCommand(cluster.SlurmHome, "sacctmgr") + " -nP show associations where user=" + user + " format=Account,Partition,QOS"
+	sacctmgr := slurm.Command(cluster.SlurmHome, "sacctmgr") + " -nP show associations where user=" + user + " format=Account,Partition,QOS"
 	stdout, stderr, err := s.run(ctx, dial, sacctmgr, target)
 	allocations := parseAssociations(stdout)
 	if err != nil || len(allocations) == 0 {
-		sshare := slurmCommand(cluster.SlurmHome, "sshare") + " -h -P -U -u " + user + " -o Account"
+		sshare := slurm.Command(cluster.SlurmHome, "sshare") + " -h -P -U -u " + user + " -o Account"
 		out, shareStderr, shareErr := s.run(ctx, dial, sshare, target)
 		if shareErr != nil {
 			if err != nil {
@@ -405,7 +396,7 @@ func (s *ClusterDiscoveryService) DiscoverAllocations(ctx context.Context, confi
 	for i, a := range allocations {
 		names[i] = a.Account
 	}
-	describe := slurmCommand(cluster.SlurmHome, "sacctmgr") + " -nP show account where name=" +
+	describe := slurm.Command(cluster.SlurmHome, "sacctmgr") + " -nP show account where name=" +
 		ssh.ShellQuote(strings.Join(names, ",")) + " format=Account,Descr"
 	if out, _, err := s.run(ctx, dial, describe, target); err == nil {
 		applyDescriptions(allocations, out)

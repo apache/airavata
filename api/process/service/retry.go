@@ -43,11 +43,8 @@ import (
 // Owner-scoped like LaunchProcess, for the same reason. A process with a workflow still
 // running, or none that failed, is refused with a conflict rather than started twice.
 func (s *LaunchService) RetryProcess(ctx context.Context, processID string) (*dto.Response, error) {
-	proc, err := s.processService.Get(ctx, processID)
+	proc, err := s.findOwnedProcess(ctx, processID)
 	if err != nil {
-		return nil, notFoundAs(err, "Process not found: %s", processID)
-	}
-	if err := s.requireOwnership(ctx, proc); err != nil {
 		return nil, err
 	}
 
