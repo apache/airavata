@@ -35,6 +35,7 @@ services:
       dockerfile: Dockerfile
     image: airavata-mock-slurm:latest
     container_name: mock-slurm
+    profiles: [slurm]
     restart: unless-stopped
     ports:
       - "12222:22"

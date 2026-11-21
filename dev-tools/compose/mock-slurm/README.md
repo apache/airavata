@@ -37,10 +37,10 @@ and under `/opt/slurm/bin`, so a cluster works with or without `slurmHome`.
 
 ## Usage
 
-From the repository root:
+From the repository root (the container only runs with the `slurm` profile):
 
 ```bash
-docker compose -f dev-tools/compose/compose.yml up -d postgres mock-slurm
+docker compose -f dev-tools/compose/compose.yml --profile slurm up -d postgres mock-slurm
 ```
 
 ```bash
