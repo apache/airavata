@@ -167,18 +167,8 @@ func (w *ExecutionEngine) HandleBatchJobEmailResponse(ctx context.Context, email
 	if _, ok := triggeringStatus[parsed.Status]; ok {
 		slog.Info("Triggering action for batch job status", "status", parsed.Status)
 
-		if w.orchestrator == nil {
-			slog.Error("Cannot run batch job completion workflow", "error", ErrNoWorkflowBackend)
-			return nil
-		}
-
-		workflowId := uuid.NewString()
-
-		_, err := w.orchestrator.CreateWorkflowInstance(ctx, client.WorkflowInstanceOptions{
-			InstanceID: workflowId,
-		}, w.workflows.HandleBatchJobCompletion, process.ID)
-		if err != nil {
-			slog.Error("Failed to create workflow instance for batch job completion", "error", err)
+		if _, err := w.LaunchBatchJobCompletion(ctx, process.ID); err != nil {
+			slog.Error("Failed to launch batch job completion workflow", "processID", process.ID, "error", err)
 			return nil
 		}
 

@@ -125,11 +125,8 @@ func NewLaunchService(
 // monitoring task, so a second call would double them. A process that already carries
 // tasks is refused rather than launched again.
 func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*dto.Response, error) {
-	proc, err := s.processService.Get(ctx, processID)
+	proc, err := s.findOwnedProcess(ctx, processID)
 	if err != nil {
-		return nil, notFoundAs(err, "Process not found: %s", processID)
-	}
-	if err := s.requireOwnership(ctx, proc); err != nil {
 		return nil, err
 	}
 	if err := s.requireNotLaunched(ctx, proc.ProcessID); err != nil {
@@ -149,18 +146,22 @@ func (s *LaunchService) LaunchProcess(ctx context.Context, processID string) (*d
 	return proc, nil
 }
 
-// requireOwnership allows the run's owner and platform admins. A process with no owner
-// belongs to nobody, so it must not match the empty principal name.
-func (s *LaunchService) requireOwnership(ctx context.Context, proc *dto.Response) error {
+// findOwnedProcess returns the process if the caller owns it or is a platform admin. A
+// process with no owner belongs to nobody, so it must not match the empty principal name.
+func (s *LaunchService) findOwnedProcess(ctx context.Context, processID string) (*dto.Response, error) {
+	proc, err := s.processService.Get(ctx, processID)
+	if err != nil {
+		return nil, notFoundAs(err, "Process not found: %s", processID)
+	}
 	principal, err := auth.RequireAuthenticated(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	owned := proc.UserID != nil && *proc.UserID == principal.Name
 	if !owned && !principal.Can(permission.ProcessManageAny) {
-		return httpx.Forbidden("Access denied: you may only launch your own processes")
+		return nil, httpx.Forbidden("Access denied: you may only launch your own processes")
 	}
-	return nil
+	return proc, nil
 }
 
 // requireNotLaunched reports a conflict when a process already carries the tasks a

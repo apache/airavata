@@ -30,7 +30,7 @@ import (
 	"github.com/coder/websocket"
 
 	"github.com/apache/airavata/internal/httpx"
-	"github.com/apache/airavata/internal/link"
+	"github.com/apache/airavata/internal/transport"
 
 	"github.com/apache/airavata/api/process/service"
 )
@@ -83,11 +83,11 @@ func (h *LinkController) Register(mux *http.ServeMux) {
 // link until it closes.
 func (h *LinkController) link(w http.ResponseWriter, r *http.Request) {
 	processID := r.PathValue("processId")
-	if !h.svc.Authenticate(r.Context(), processID, link.OfferedToken(r)) {
+	if !h.svc.Authenticate(r.Context(), processID, transport.OfferedLinkToken(r)) {
 		httpx.WriteError(w, r, httpx.Unauthorized("The link token is not the one issued to process %s", processID))
 		return
 	}
-	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{Subprotocols: []string{link.Protocol}})
+	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{Subprotocols: []string{transport.LinkProtocol}})
 	if err != nil {
 		return
 	}
@@ -134,7 +134,7 @@ func (h *LinkController) jupyter(w http.ResponseWriter, r *http.Request) {
 	if out.URL.Path == "" {
 		out.URL.Path = "/"
 	}
-	out.URL.Host = link.Host(processID, port)
+	out.URL.Host = transport.LinkHost(processID, port)
 	// The Jupyter Server sees itself addressed on its own loopback port.
 	out.Host = "127.0.0.1:" + strconv.Itoa(int(port))
 	h.proxy.ServeHTTP(w, out)
