@@ -18,8 +18,8 @@
 * under the License.
  */
 
-// Package link holds the WebSockets Linkspan dials back to Airavata and reaches a job's
-// servers through them.
+// The link is the WebSocket a job's Linkspan dials back to Airavata; Airavata reaches
+// the job's servers through it.
 //
 // It speaks Linkspan's link protocol, the one cs-plane defined
 // (https://github.com/cyber-shuttle/linkspan/blob/main/docs/COMPATIBILITY.md): one
@@ -30,7 +30,8 @@
 // until either end closes. yamux's keepalive detects a dead link, and Linkspan redials.
 //
 // The registry is process-local. When Airavata restarts, every Linkspan redials.
-package link
+
+package transport
 
 import (
 	"context"
@@ -49,11 +50,11 @@ import (
 	"github.com/hashicorp/yamux"
 )
 
-// Protocol is the WebSocket subprotocol Linkspan offers and the link endpoint selects.
-const Protocol = "cybershuttle.v1"
+// LinkProtocol is the WebSocket subprotocol Linkspan offers and the link endpoint selects.
+const LinkProtocol = "cybershuttle.v1"
 
-// TokenPrefix marks the subprotocol that carries the link token.
-const TokenPrefix = "link."
+// LinkTokenPrefix marks the subprotocol that carries the link token.
+const LinkTokenPrefix = "link."
 
 // hostSuffix is the pseudo-domain of the addresses Transport dials: <process id>.process.
 const hostSuffix = ".process"
@@ -61,22 +62,22 @@ const hostSuffix = ".process"
 // ErrNotLinked reports a process whose Linkspan holds no link to this server.
 var ErrNotLinked = errors.New("the process's Linkspan is not linked to Airavata")
 
-// Registry holds the live link of each process.
-type Registry struct {
+// LinkRegistry holds the live link of each process.
+type LinkRegistry struct {
 	mu    sync.Mutex
 	links map[string]*yamux.Session
 }
 
-// NewRegistry returns an empty registry.
-func NewRegistry() *Registry {
-	return &Registry{links: map[string]*yamux.Session{}}
+// NewLinkRegistry returns an empty registry.
+func NewLinkRegistry() *LinkRegistry {
+	return &LinkRegistry{links: map[string]*yamux.Session{}}
 }
 
 // Serve runs conn, the WebSocket a process's Linkspan opened, as that process's link
 // until it ends or ctx is done. A newer link replaces an older one: the older is
 // closed, since only one job of the process holds valid tokens at a time and a
 // redialling Linkspan should not be refused by its own stale socket.
-func (r *Registry) Serve(ctx context.Context, processID string, conn net.Conn) error {
+func (r *LinkRegistry) Serve(ctx context.Context, processID string, conn net.Conn) error {
 	config := yamux.DefaultConfig()
 	config.LogOutput = io.Discard
 	session, err := yamux.Client(conn, config)
@@ -108,11 +109,11 @@ func (r *Registry) Serve(ctx context.Context, processID string, conn net.Conn) e
 }
 
 // Linked reports whether the process currently holds a link.
-func (r *Registry) Linked(processID string) bool {
+func (r *LinkRegistry) Linked(processID string) bool {
 	return r.session(processID) != nil
 }
 
-func (r *Registry) session(processID string) *yamux.Session {
+func (r *LinkRegistry) session(processID string) *yamux.Session {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	session := r.links[processID]
@@ -123,7 +124,7 @@ func (r *Registry) session(processID string) *yamux.Session {
 }
 
 // Dial opens a stream to the server the process's job runs on loopback port.
-func (r *Registry) Dial(ctx context.Context, processID string, port uint16) (net.Conn, error) {
+func (r *LinkRegistry) Dial(ctx context.Context, processID string, port uint16) (net.Conn, error) {
 	session := r.session(processID)
 	if session == nil {
 		return nil, ErrNotLinked
@@ -153,15 +154,15 @@ func (r *Registry) Dial(ctx context.Context, processID string, port uint16) (net
 	return stream, nil
 }
 
-// Host is the address Transport dials to reach port on the process's job.
-func Host(processID string, port uint16) string {
+// LinkHost is the address Transport dials to reach port on the process's job.
+func LinkHost(processID string, port uint16) string {
 	return processID + hostSuffix + ":" + strconv.Itoa(int(port))
 }
 
 // Transport returns an HTTP transport whose connections are streams over the links,
-// for addresses made by Host. It pools them per process and port, and carries
+// for addresses made by LinkHost. It pools them per process and port, and carries
 // WebSocket upgrades, so a reverse proxy over it serves a Jupyter Server whole.
-func (r *Registry) Transport() *http.Transport {
+func (r *LinkRegistry) Transport() *http.Transport {
 	return &http.Transport{
 		DialContext: func(ctx context.Context, _, address string) (net.Conn, error) {
 			host, rawPort, err := net.SplitHostPort(address)
@@ -181,22 +182,22 @@ func (r *Registry) Transport() *http.Transport {
 	}
 }
 
-// Ports derives the loopback ports a process's job serves on: Linkspan's control API
+// LinkPorts derives the loopback ports a process's job serves on: Linkspan's control API
 // and, one above it, the Jupyter Server. They are a function of the process id, in
 // 20000–39999, so Airavata knows them before the job starts. A job sharing a node with
 // another that drew the same port fails to start its server, as with any fixed port.
-func Ports(processID string) (control, jupyter uint16) {
+func LinkPorts(processID string) (control, jupyter uint16) {
 	sum := sha256.Sum256([]byte(processID))
 	base := 20000 + int(binary.BigEndian.Uint16(sum[:2]))%19999
 	return uint16(base), uint16(base + 1)
 }
 
-// OfferedToken returns the link token among the subprotocols a WebSocket upgrade
+// OfferedLinkToken returns the link token among the subprotocols a WebSocket upgrade
 // offered, or "".
-func OfferedToken(r *http.Request) string {
+func OfferedLinkToken(r *http.Request) string {
 	for _, offered := range r.Header.Values("Sec-WebSocket-Protocol") {
 		for _, p := range strings.Split(offered, ",") {
-			if token, ok := strings.CutPrefix(strings.TrimSpace(p), TokenPrefix); ok {
+			if token, ok := strings.CutPrefix(strings.TrimSpace(p), LinkTokenPrefix); ok {
 				return token
 			}
 		}
@@ -204,9 +205,9 @@ func OfferedToken(r *http.Request) string {
 	return ""
 }
 
-// Issued is what a process's job is handed so its Linkspan can link: where to dial,
+// IssuedLink is what a process's job is handed so its Linkspan can link: where to dial,
 // the token to offer, and the ports and Jupyter token its servers use.
-type Issued struct {
+type IssuedLink struct {
 	URL          string
 	LinkToken    string
 	JupyterToken string
@@ -214,10 +215,10 @@ type Issued struct {
 	JupyterPort  uint16
 }
 
-// Env is the job environment that carries Issued, under the names Linkspan reads
+// Env is the job environment that carries IssuedLink, under the names Linkspan reads
 // (LINKSPAN_LINK_TOKEN, JUPYTER_TOKEN) and the ones its documented job script uses
 // (CS_LINK_URL, CS_CONTROL_PORT), plus CS_JUPYTER_PORT for the workflow's addr.
-func (i *Issued) Env() map[string]string {
+func (i *IssuedLink) Env() map[string]string {
 	return map[string]string{
 		"CS_LINK_URL":         i.URL,
 		"CS_CONTROL_PORT":     strconv.Itoa(int(i.ControlPort)),

@@ -47,3 +47,8 @@ func (r *LinkRepository) FindByProcessID(ctx context.Context, processID string) 
 func (r *LinkRepository) Save(ctx context.Context, link *model.ProcessLink) error {
 	return r.db.WithContext(ctx).Save(link).Error
 }
+
+// DeleteByProcessID removes the process's link, if it has one.
+func (r *LinkRepository) DeleteByProcessID(ctx context.Context, processID string) error {
+	return r.db.WithContext(ctx).Delete(&model.ProcessLink{}, "process_id = ?", processID).Error
+}
