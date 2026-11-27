@@ -27,7 +27,7 @@ import (
 	appmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	model "github.com/apache/airavata/api/process/model"
-	"github.com/apache/airavata/internal/link"
+	linkspan "github.com/apache/airavata/extensions/linkspan"
 	"github.com/apache/airavata/internal/orchestration/execution"
 )
 
@@ -274,7 +274,7 @@ func TestBuildSlurmScriptRejectsLineBreaks(t *testing.T) {
 func TestBuildSlurmScriptSourcesTheLinkEnvFile(t *testing.T) {
 	process, deployment, template, clusterConfig := scriptFixture()
 	deployment.SlurmRunSection = `linkspan --port {{ link_control_port }} --tunnel-link-args="--url {{ link_url }}" # jupyter {{ link_jupyter_port }}`
-	issued := &link.Issued{
+	issued := &linkspan.Issued{
 		URL: "wss://airavata.example.org/api/v1/processes/proc-1/link", LinkToken: "link-secret",
 		JupyterToken: "jupyter-secret", ControlPort: 21000, JupyterPort: 21001,
 	}

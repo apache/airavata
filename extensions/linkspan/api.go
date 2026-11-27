@@ -1,24 +1,4 @@
-/**
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements. See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership. The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License. You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied. See the License for the
-* specific language governing permissions and limitations
-* under the License.
- */
-
-package controller
+package linkspan
 
 import (
 	"log/slog"
@@ -27,12 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/coder/websocket"
-
 	"github.com/apache/airavata/internal/httpx"
-	"github.com/apache/airavata/internal/link"
-
-	"github.com/apache/airavata/api/process/service"
+	"github.com/coder/websocket"
 )
 
 // LinkController serves the routes that make Airavata a process's Linkspan control
@@ -44,12 +20,12 @@ import (
 // "Authorization: token …" or, on WebSockets, as ?token=. Neither header is a bearer
 // token, so the auth middleware lets both through as anonymous.
 type LinkController struct {
-	svc   *service.LinkService
+	svc   *LinkService
 	proxy *httputil.ReverseProxy
 }
 
 // NewLinkController returns a handler delegating to svc.
-func NewLinkController(svc *service.LinkService) *LinkController {
+func NewLinkController(svc *LinkService) *LinkController {
 	return &LinkController{
 		svc: svc,
 		proxy: &httputil.ReverseProxy{
@@ -83,11 +59,11 @@ func (h *LinkController) Register(mux *http.ServeMux) {
 // link until it closes.
 func (h *LinkController) link(w http.ResponseWriter, r *http.Request) {
 	processID := r.PathValue("processId")
-	if !h.svc.Authenticate(r.Context(), processID, link.OfferedToken(r)) {
+	if !h.svc.Authenticate(r.Context(), processID, OfferedToken(r)) {
 		httpx.WriteError(w, r, httpx.Unauthorized("The link token is not the one issued to process %s", processID))
 		return
 	}
-	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{Subprotocols: []string{link.Protocol}})
+	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{Subprotocols: []string{Protocol}})
 	if err != nil {
 		return
 	}
@@ -134,7 +110,7 @@ func (h *LinkController) jupyter(w http.ResponseWriter, r *http.Request) {
 	if out.URL.Path == "" {
 		out.URL.Path = "/"
 	}
-	out.URL.Host = link.Host(processID, port)
+	out.URL.Host = Host(processID, port)
 	// The Jupyter Server sees itself addressed on its own loopback port.
 	out.Host = "127.0.0.1:" + strconv.Itoa(int(port))
 	h.proxy.ServeHTTP(w, out)

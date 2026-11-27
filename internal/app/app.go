@@ -32,7 +32,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/config"
-	"github.com/apache/airavata/internal/link"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
 	applicationsvc "github.com/apache/airavata/api/application/service"
@@ -50,6 +49,7 @@ import (
 	processsvc "github.com/apache/airavata/api/process/service"
 	sharingrepo "github.com/apache/airavata/api/sharing/repository"
 	sharingsvc "github.com/apache/airavata/api/sharing/service"
+	linkspan "github.com/apache/airavata/extensions/linkspan"
 	orchestration "github.com/apache/airavata/internal/orchestration"
 	"github.com/apache/airavata/internal/ssh"
 	"github.com/cschleiden/go-workflows/backend"
@@ -122,7 +122,7 @@ type Services struct {
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
 	Launch *processsvc.LaunchService
-	Link   *processsvc.LinkService
+	Link   *linkspan.LinkService
 
 	ExecutionEngine *orchestration.ExecutionEngine
 }
@@ -243,7 +243,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
-	linkSvc := processsvc.NewLinkService(repos.Links, processes, link.NewRegistry(), cfg.PublicURL)
+	linkSvc := linkspan.NewLinkService(repos.Links, processes, linkspan.NewRegistry(), cfg.PublicURL)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
 		monitoringTasks, products, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext, linkSvc)

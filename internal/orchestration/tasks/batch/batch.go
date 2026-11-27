@@ -38,7 +38,7 @@ import (
 	computerepo "github.com/apache/airavata/api/compute/repository"
 	model "github.com/apache/airavata/api/process/model"
 	processrepo "github.com/apache/airavata/api/process/repository"
-	"github.com/apache/airavata/internal/link"
+	linkspan "github.com/apache/airavata/extensions/linkspan"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
 )
@@ -46,7 +46,7 @@ import (
 // LinkIssuer mints the secrets a submission's job is handed so a Linkspan it runs can
 // link back to Airavata. It is process/service.LinkService.
 type LinkIssuer interface {
-	Issue(ctx context.Context, processID string) (*link.Issued, error)
+	Issue(ctx context.Context, processID string) (*linkspan.Issued, error)
 }
 
 // linkEnvFile is the file, in the job's working directory, that carries the issued
@@ -129,7 +129,7 @@ func (a *Tasks) submitBatchJob(ctx context.Context, executionContext *execution.
 
 	// Each submission is issued fresh link secrets, so a job from an earlier
 	// submission of the process can no longer link.
-	var issued *link.Issued
+	var issued *linkspan.Issued
 	envFilePath := ""
 	if a.links != nil {
 		issued, err = a.links.Issue(ctx, processID)
@@ -282,7 +282,7 @@ func parseSbatchJobID(out string) (string, error) {
 // uploadLinkEnv writes the issued link secrets to remotePath as shell exports, mode
 // 0600. scp keeps the local file's mode on a file it creates, and the remote file is
 // removed first so an existing one's wider mode is not inherited.
-func (a *Tasks) uploadLinkEnv(ctx context.Context, dialConfig ssh.SSHDialConfig, issued *link.Issued, remotePath string) error {
+func (a *Tasks) uploadLinkEnv(ctx context.Context, dialConfig ssh.SSHDialConfig, issued *linkspan.Issued, remotePath string) error {
 	env := issued.Env()
 	names := make([]string, 0, len(env))
 	for name := range env {
@@ -318,7 +318,7 @@ func (a *Tasks) uploadLinkEnv(ctx context.Context, dialConfig ssh.SSHDialConfig,
 	return ssh.UploadFileToSCP(ctx, dialConfig, a.sshContext, local.Name(), remotePath)
 }
 
-func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *execution.GlobalJobConfigs, issued *link.Issued, envFilePath string) (string, error) {
+func (a *Tasks) slurmScript(ctx context.Context, process *model.Process, globalJobConfigs *execution.GlobalJobConfigs, issued *linkspan.Issued, envFilePath string) (string, error) {
 	batch := process.BatchProcess
 
 	if batch.DeploymentID == nil {
