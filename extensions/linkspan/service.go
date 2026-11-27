@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/apache/airavata/api/process/repository"
 )
@@ -50,35 +49,6 @@ func (s *LinkService) LinkURL(processID string) (string, error) {
 		return "", fmt.Errorf("public URL %q is not an absolute http(s) URL", s.publicURL)
 	}
 	return u.JoinPath("api/v1/processes", url.PathEscape(processID), "link").String(), nil
-}
-
-// Issue mints the link and Jupyter tokens for a submission of the process, replacing
-// any issued before, and returns what the job is handed.
-func (s *LinkService) Issue(ctx context.Context, processID string) (*Issued, error) {
-	linkURL, err := s.LinkURL(processID)
-	if err != nil {
-		return nil, err
-	}
-	linkToken, err := newSecret()
-	if err != nil {
-		return nil, err
-	}
-	jupyterToken, err := newSecret()
-	if err != nil {
-		return nil, err
-	}
-	control, jupyter := Ports(processID)
-	if err := s.links.Save(ctx, &ProcessLink{
-		ProcessID:     processID,
-		LinkTokenHash: digest(linkToken),
-		JupyterToken:  jupyterToken,
-		ControlPort:   int32(control),
-		JupyterPort:   int32(jupyter),
-		IssuedAt:      time.Now().UnixMilli(),
-	}); err != nil {
-		return nil, err
-	}
-	return &Issued{URL: linkURL, LinkToken: linkToken, JupyterToken: jupyterToken, ControlPort: control, JupyterPort: jupyter}, nil
 }
 
 // Authenticate reports whether token is the link token last issued to the process.

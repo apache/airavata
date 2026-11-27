@@ -4,9 +4,11 @@ import (
 	"context"
 	"crypto/subtle"
 	"net/url"
+	"strconv"
 
 	"github.com/apache/airavata/internal/auth"
 	"github.com/apache/airavata/internal/httpx"
+	"time"
 
 	"github.com/apache/airavata/internal/common"
 )
@@ -55,4 +57,56 @@ func (s *LinkService) JupyterPort(ctx context.Context, processID, token string) 
 		return 0, false
 	}
 	return uint16(found.JupyterPort), true
+}
+
+// Issued is what a process's job is handed so its Linkspan can link: where to dial,
+// the token to offer, and the ports and Jupyter token its servers use.
+type JupyterLinkConfig struct {
+	URL          string
+	LinkToken    string
+	JupyterToken string
+	ControlPort  uint16
+	JupyterPort  uint16
+}
+
+// Env is the job environment that carries Issued, under the names Linkspan reads
+// (LINKSPAN_LINK_TOKEN, JUPYTER_TOKEN) and the ones its documented job script uses
+// (CS_LINK_URL, CS_CONTROL_PORT), plus CS_JUPYTER_PORT for the workflow's addr.
+func (i *JupyterLinkConfig) Env() map[string]string {
+	return map[string]string{
+		"CS_LINK_URL":         i.URL,
+		"CS_CONTROL_PORT":     strconv.Itoa(int(i.ControlPort)),
+		"CS_JUPYTER_PORT":     strconv.Itoa(int(i.JupyterPort)),
+		"LINKSPAN_LINK_TOKEN": i.LinkToken,
+		"JUPYTER_TOKEN":       i.JupyterToken,
+	}
+}
+
+// Issue mints the link and Jupyter tokens for a submission of the process, replacing
+// any issued before, and returns what the job is handed.
+func (s *LinkService) IssueJupyterLinkConfig(ctx context.Context, processID string) (*JupyterLinkConfig, error) {
+	linkURL, err := s.LinkURL(processID)
+	if err != nil {
+		return nil, err
+	}
+	linkToken, err := newSecret()
+	if err != nil {
+		return nil, err
+	}
+	jupyterToken, err := newSecret()
+	if err != nil {
+		return nil, err
+	}
+	control, jupyter := Ports(processID)
+	if err := s.links.Save(ctx, &ProcessLink{
+		ProcessID:     processID,
+		LinkTokenHash: digest(linkToken),
+		JupyterToken:  jupyterToken,
+		ControlPort:   int32(control),
+		JupyterPort:   int32(jupyter),
+		IssuedAt:      time.Now().UnixMilli(),
+	}); err != nil {
+		return nil, err
+	}
+	return &JupyterLinkConfig{URL: linkURL, LinkToken: linkToken, JupyterToken: jupyterToken, ControlPort: control, JupyterPort: jupyter}, nil
 }

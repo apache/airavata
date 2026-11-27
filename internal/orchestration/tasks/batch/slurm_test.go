@@ -27,7 +27,6 @@ import (
 	appmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	model "github.com/apache/airavata/api/process/model"
-	linkspan "github.com/apache/airavata/extensions/linkspan"
 	"github.com/apache/airavata/internal/orchestration/execution"
 )
 
@@ -101,7 +100,7 @@ func TestBuildSlurmScript(t *testing.T) {
 		MailUser: "airavata@example.com",
 	}
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg, nil, "")
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -152,7 +151,7 @@ func TestBuildSlurmScriptFallsBackToDeploymentConfig(t *testing.T) {
 		MailUser: "airavata@example.com",
 	}
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg, nil, "")
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -174,7 +173,7 @@ func TestBuildSlurmScriptHonoursBaseWorkDir(t *testing.T) {
 		MailUser: "airavata@example.com",
 	}
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg, nil, "")
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -193,7 +192,7 @@ func TestBuildSlurmScriptDoesNotReexpandInputValues(t *testing.T) {
 		MailUser: "airavata@example.com",
 	}
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg, nil, "")
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg)
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}
@@ -264,36 +263,8 @@ func TestBuildSlurmScriptRejectsLineBreaks(t *testing.T) {
 		MailUser: "airavata@example.com",
 	}
 
-	if _, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg, nil, ""); err == nil {
+	if _, err := buildSlurmScript(process, deployment, template, clusterConfig, &cfg); err == nil {
 		t.Fatal("expected a work dir spanning lines to be refused")
-	}
-}
-
-// A job issued a link sources its secrets from the env file, and the run section sees
-// the link URL and ports but never a token.
-func TestBuildSlurmScriptSourcesTheLinkEnvFile(t *testing.T) {
-	process, deployment, template, clusterConfig := scriptFixture()
-	deployment.SlurmRunSection = `linkspan --port {{ link_control_port }} --tunnel-link-args="--url {{ link_url }}" # jupyter {{ link_jupyter_port }}`
-	issued := &linkspan.Issued{
-		URL: "wss://airavata.example.org/api/v1/processes/proc-1/link", LinkToken: "link-secret",
-		JupyterToken: "jupyter-secret", ControlPort: 21000, JupyterPort: 21001,
-	}
-
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig,
-		&execution.GlobalJobConfigs{}, issued, "/scratch/airavata/proc-1/.airavata-link.env")
-	if err != nil {
-		t.Fatalf("buildSlurmScript: %v", err)
-	}
-	for _, line := range []string{
-		"cd '/scratch/airavata/proc-1' || exit 1\n. '/scratch/airavata/proc-1/.airavata-link.env' || exit 1\n",
-		`linkspan --port 21000 --tunnel-link-args="--url wss://airavata.example.org/api/v1/processes/proc-1/link" # jupyter 21001`,
-	} {
-		if !strings.Contains(script, line) {
-			t.Errorf("script is missing %q\n---\n%s", line, script)
-		}
-	}
-	if strings.Contains(script, "secret") {
-		t.Errorf("script carries a token\n---\n%s", script)
 	}
 }
 
@@ -303,7 +274,7 @@ func TestBuildSlurmScriptQOS(t *testing.T) {
 	qos := "high"
 	process.BatchProcess.BatchJobConfig.QOS = &qos
 
-	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &execution.GlobalJobConfigs{}, nil, "")
+	script, err := buildSlurmScript(process, deployment, template, clusterConfig, &execution.GlobalJobConfigs{})
 	if err != nil {
 		t.Fatalf("buildSlurmScript: %v", err)
 	}

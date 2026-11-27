@@ -76,7 +76,6 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	processWorkflows *processrepo.WorkflowRepository,
 	workflowBackend backend.Backend,
 	sshContext *ssh.GlobalSSHContext,
-	links batch.LinkIssuer,
 ) *ExecutionEngine {
 
 	// workflowBackend may be nil in tests to prevent sqlite driver collision. Only create
@@ -91,7 +90,7 @@ func NewExecutionEngine(dataStagingTasks *processrepo.DataStagingTaskRepository,
 	return &ExecutionEngine{
 		workflows: workflows.New(
 			data.New(processes, dataStagingTasks, dataProducts, scpStorages, slurmClusterConfigs, sshContext, tracker),
-			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker, links),
+			batch.New(processes, jobSubmissionTasks, slurmClusterConfigs, batchDeployments, templates, batchStatus, sshContext, tracker),
 			monitoring.New(processes, jobMonitoringTasks, tracker),
 			dataStagingTasks, jobSubmissionTasks, jobMonitoringTasks, processStatus,
 			processWorkflows,

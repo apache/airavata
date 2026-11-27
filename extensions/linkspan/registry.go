@@ -171,26 +171,3 @@ func OfferedToken(r *http.Request) string {
 	}
 	return ""
 }
-
-// Issued is what a process's job is handed so its Linkspan can link: where to dial,
-// the token to offer, and the ports and Jupyter token its servers use.
-type Issued struct {
-	URL          string
-	LinkToken    string
-	JupyterToken string
-	ControlPort  uint16
-	JupyterPort  uint16
-}
-
-// Env is the job environment that carries Issued, under the names Linkspan reads
-// (LINKSPAN_LINK_TOKEN, JUPYTER_TOKEN) and the ones its documented job script uses
-// (CS_LINK_URL, CS_CONTROL_PORT), plus CS_JUPYTER_PORT for the workflow's addr.
-func (i *Issued) Env() map[string]string {
-	return map[string]string{
-		"CS_LINK_URL":         i.URL,
-		"CS_CONTROL_PORT":     strconv.Itoa(int(i.ControlPort)),
-		"CS_JUPYTER_PORT":     strconv.Itoa(int(i.JupyterPort)),
-		"LINKSPAN_LINK_TOKEN": i.LinkToken,
-		"JUPYTER_TOKEN":       i.JupyterToken,
-	}
-}
