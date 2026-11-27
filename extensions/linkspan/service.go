@@ -12,13 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apache/airavata/internal/auth"
-	"github.com/apache/airavata/internal/httpx"
-
-	dto "github.com/apache/airavata/api/process/dto"
-	model "github.com/apache/airavata/api/process/model"
 	"github.com/apache/airavata/api/process/repository"
-	common "github.com/apache/airavata/internal/common"
 )
 
 // LinkService makes Airavata the control plane a job's Linkspan links to, in the role
@@ -26,7 +20,7 @@ import (
 // tokens, admits the WebSocket that offers the link token, and opens the job's Jupyter
 // Server to the process owner through a proxy.
 type LinkService struct {
-	links     *repository.LinkRepository
+	links     *LinkRepository
 	processes *repository.ProcessRepository
 	registry  *Registry
 	publicURL string
@@ -34,7 +28,7 @@ type LinkService struct {
 
 // NewLinkService returns a link service. publicURL is where jobs reach this server,
 // http(s)://host[:port]; the link URL is its ws(s) form.
-func NewLinkService(links *repository.LinkRepository, processes *repository.ProcessRepository, registry *Registry, publicURL string) *LinkService {
+func NewLinkService(links *LinkRepository, processes *repository.ProcessRepository, registry *Registry, publicURL string) *LinkService {
 	return &LinkService{links: links, processes: processes, registry: registry, publicURL: strings.TrimRight(publicURL, "/")}
 }
 
@@ -74,7 +68,7 @@ func (s *LinkService) Issue(ctx context.Context, processID string) (*Issued, err
 		return nil, err
 	}
 	control, jupyter := Ports(processID)
-	if err := s.links.Save(ctx, &model.ProcessLink{
+	if err := s.links.Save(ctx, &ProcessLink{
 		ProcessID:     processID,
 		LinkTokenHash: digest(linkToken),
 		JupyterToken:  jupyterToken,
@@ -97,45 +91,6 @@ func (s *LinkService) Authenticate(ctx context.Context, processID, token string)
 		return false
 	}
 	return subtle.ConstantTimeCompare([]byte(digest(token)), []byte(found.LinkTokenHash)) == 1
-}
-
-// JupyterServer returns the caller's access to their process's Jupyter Server. Only
-// the owner may have it: the token runs code as the owner's cluster account.
-func (s *LinkService) JupyterServer(ctx context.Context, processID string) (*dto.JupyterServerResponse, error) {
-	principal, err := auth.RequireAuthenticated(ctx)
-	if err != nil {
-		return nil, err
-	}
-	process, err := s.processes.FindByID(ctx, processID)
-	if err != nil {
-		return nil, common.NotFoundAs(err, "Process %s not found", processID)
-	}
-	if !process.OwnedBy(principal.Name) {
-		return nil, httpx.Forbidden("Only the owner of process %s can open its Jupyter Server", processID)
-	}
-	found, err := s.links.FindByProcessID(ctx, processID)
-	if err != nil {
-		return nil, common.NotFoundAs(err, "Process %s has not been submitted, so it has no Jupyter Server", processID)
-	}
-	return &dto.JupyterServerResponse{
-		ProcessID: processID,
-		Linked:    s.registry.Linked(processID),
-		BaseURL:   "/api/v1/processes/" + url.PathEscape(processID) + "/jupyter/",
-		Token:     found.JupyterToken,
-	}, nil
-}
-
-// JupyterPort returns the port of the process's Jupyter Server when token is its
-// Jupyter token, and false otherwise.
-func (s *LinkService) JupyterPort(ctx context.Context, processID, token string) (uint16, bool) {
-	if token == "" {
-		return 0, false
-	}
-	found, err := s.links.FindByProcessID(ctx, processID)
-	if err != nil || subtle.ConstantTimeCompare([]byte(token), []byte(found.JupyterToken)) != 1 {
-		return 0, false
-	}
-	return uint16(found.JupyterPort), true
 }
 
 func newSecret() (string, error) {

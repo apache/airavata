@@ -153,7 +153,7 @@ type Repositories struct {
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
 	JobMonitoringTasks      *processrepo.JobMonitoringTaskRepository
 	InteractiveCommandTasks *processrepo.InteractiveCommandTaskRepository
-	Links                   *processrepo.LinkRepository
+	Links                   *linkspan.LinkRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -183,7 +183,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
 		JobMonitoringTasks:      processrepo.NewJobMonitoringTaskRepository(db),
 		InteractiveCommandTasks: processrepo.NewInteractiveCommandTaskRepository(db),
-		Links:                   processrepo.NewLinkRepository(db),
+		Links:                   linkspan.NewLinkRepository(db),
 	}
 }
 
