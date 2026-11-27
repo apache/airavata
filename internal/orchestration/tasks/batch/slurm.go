@@ -32,9 +32,9 @@ import (
 	appmodel "github.com/apache/airavata/api/application/model"
 	computemodel "github.com/apache/airavata/api/compute/model"
 	model "github.com/apache/airavata/api/process/model"
-	"github.com/apache/airavata/internal/link"
 	"github.com/apache/airavata/internal/orchestration/execution"
 	ssh "github.com/apache/airavata/internal/ssh"
+	"github.com/apache/airavata/internal/transport"
 )
 
 const slurmScriptTemplate = `#!/bin/bash
@@ -113,7 +113,7 @@ func buildSlurmScript(
 	template *appmodel.Template,
 	clusterConfig *computemodel.SlurmClusterConfig,
 	globalJobConfigs *execution.GlobalJobConfigs,
-	issued *link.Issued,
+	issued *transport.IssuedLink,
 	linkEnvFile string,
 ) (string, error) {
 	batchProcess := process.BatchProcess

@@ -22,10 +22,12 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"gorm.io/gorm"
 
 	model "github.com/apache/airavata/api/process/model"
+	"github.com/apache/airavata/internal/ptr"
 )
 
 // StatusRepository reads and writes process statuses.
@@ -59,6 +61,17 @@ func (r *StatusRepository) FindByIDAndProcessID(ctx context.Context, id, process
 		return nil, err
 	}
 	return &out, nil
+}
+
+// MarkRunning records a SUBMITTED process as RUNNING, with log. Linkspan's dial and
+// Slurm's begin mail both mark a run RUNNING; whichever comes second records nothing.
+func (r *StatusRepository) MarkRunning(ctx context.Context, processID, log string) error {
+	found, err := r.FindByProcessID(ctx, processID)
+	if err != nil || len(found) == 0 || ptr.From(found[len(found)-1].Status) != model.ProcessStatusTypeSubmitted {
+		return err
+	}
+	running := model.ProcessStatusTypeRunning
+	return r.Create(ctx, &model.ProcessStatus{ProcessID: &processID, Status: &running, Log: &log, Timestamp: ptr.To(time.Now().UnixMilli())})
 }
 
 // Create inserts a status row. BeforeCreate assigns its id and AfterCreate repoints
