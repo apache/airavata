@@ -32,7 +32,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/apache/airavata/internal/config"
-	"github.com/apache/airavata/internal/link"
 
 	applicationrepo "github.com/apache/airavata/api/application/repository"
 	applicationsvc "github.com/apache/airavata/api/application/service"
@@ -50,6 +49,7 @@ import (
 	processsvc "github.com/apache/airavata/api/process/service"
 	sharingrepo "github.com/apache/airavata/api/sharing/repository"
 	sharingsvc "github.com/apache/airavata/api/sharing/service"
+	linkspan "github.com/apache/airavata/extensions/linkspan"
 	orchestration "github.com/apache/airavata/internal/orchestration"
 	"github.com/apache/airavata/internal/ssh"
 	"github.com/cschleiden/go-workflows/backend"
@@ -99,7 +99,10 @@ type Services struct {
 	BatchDeployment *applicationsvc.BatchDeploymentService
 
 	// Data.
-	SCPDataStorage              *datasvc.SCPDataStorageService
+	SCPDataStorage *datasvc.SCPDataStorageService
+	// AiravataDataStorage manages each user's storage on the Airavata host. Internal:
+	// no route reaches it.
+	AiravataDataStorage         *datasvc.AiravataDataStorageService
 	SCPDataStorageSharing       *sharingsvc.Service
 	DataProduct                 *datasvc.DataProductService
 	DataProductSharing          *sharingsvc.Service
@@ -122,7 +125,7 @@ type Services struct {
 	// Launch is a higher-level service that orchestrates the other services to submit
 	// a process and its tasks, and to monitor the job until it completes.
 	Launch *processsvc.LaunchService
-	Link   *processsvc.LinkService
+	Link   *linkspan.LinkService
 
 	ExecutionEngine *orchestration.ExecutionEngine
 }
@@ -140,6 +143,7 @@ type Repositories struct {
 	Templates               *applicationrepo.TemplateRepository
 	BatchDeployments        *applicationrepo.BatchDeploymentRepository
 	SCPDataStorages         *datarepo.SCPDataStorageRepository
+	AiravataDataStorages    *datarepo.AiravataDataStorageRepository
 	DataProducts            *datarepo.DataProductRepository
 	VirtualDataDirectories  *datarepo.VirtualDataDirectoryRepository
 	VirtualDataFiles        *datarepo.VirtualDataFileRepository
@@ -153,7 +157,7 @@ type Repositories struct {
 	JobSubmissionTasks      *processrepo.JobSubmissionTaskRepository
 	JobMonitoringTasks      *processrepo.JobMonitoringTaskRepository
 	InteractiveCommandTasks *processrepo.InteractiveCommandTaskRepository
-	Links                   *processrepo.LinkRepository
+	Links                   *linkspan.LinkRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -170,6 +174,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Templates:               applicationrepo.NewTemplateRepository(db),
 		BatchDeployments:        applicationrepo.NewBatchDeploymentRepository(db),
 		SCPDataStorages:         datarepo.NewSCPDataStorageRepository(db),
+		AiravataDataStorages:    datarepo.NewAiravataDataStorageRepository(db),
 		DataProducts:            datarepo.NewDataProductRepository(db),
 		VirtualDataDirectories:  datarepo.NewVirtualDataDirectoryRepository(db),
 		VirtualDataFiles:        datarepo.NewVirtualDataFileRepository(db),
@@ -183,7 +188,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		JobSubmissionTasks:      processrepo.NewJobSubmissionTaskRepository(db),
 		JobMonitoringTasks:      processrepo.NewJobMonitoringTaskRepository(db),
 		InteractiveCommandTasks: processrepo.NewInteractiveCommandTaskRepository(db),
-		Links:                   processrepo.NewLinkRepository(db),
+		Links:                   linkspan.NewLinkRepository(db),
 	}
 }
 
@@ -231,6 +236,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	slurmClusterConfigSharingSvc := computesvc.NewSlurmClusterConfigSharingService(db, clusterConfigs, shares, groups, users, groupMembers)
 	clusterPartitionSvc := computesvc.NewClusterPartitionService(db, partitions, clusters)
 	scpDataStorageSvc := datasvc.NewSCPDataStorageService(db, storages, shares, keyAccess, products, users, groupMembers)
+	airavataDataStorageSvc := datasvc.NewAiravataDataStorageService(db, repos.AiravataDataStorages, users, cfg.AiravataDataStoragePath)
 	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, shares, groups, users, groupMembers)
 	dataProductSvc := datasvc.NewDataProductService(db, products, shares, storages, users, groupMembers)
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, shares, groups, users, groupMembers)
@@ -243,10 +249,10 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	virtualDataDirectorySharingSvc := datasvc.NewVirtualDataDirectorySharingService(db, virtualDirs, shares, groups, users, groupMembers)
 	sshCredentialSvc := credentialssvc.NewSSHCredentialService(sshCredentials, users, clusterConfigs, storages)
 
-	linkSvc := processsvc.NewLinkService(repos.Links, processes, link.NewRegistry(), cfg.PublicURL)
+	linkSvc := linkspan.NewLinkService(repos.Links, processes, linkspan.NewRegistry(), cfg.PublicURL)
 
 	executionEngine := orchestration.NewExecutionEngine(stagingTasks, submissionTasks,
-		monitoringTasks, products, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext, linkSvc)
+		monitoringTasks, products, storages, clusterConfigs, processes, deployments, templates, batchStatus, statuses, repos.TaskStatuses, processWorkflows, workflowBackend, sshContext)
 	executionEngine.StartEngine()
 
 	return &Services{
@@ -280,6 +286,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		BatchDeployment: batchDeploymentSvc,
 
 		SCPDataStorage:        scpDataStorageSvc,
+		AiravataDataStorage:   airavataDataStorageSvc,
 		SCPDataStorageSharing: scpDataStorageSharingSvc,
 		DataProduct:           dataProductSvc,
 		DataProductSharing:    dataProductSharingSvc,

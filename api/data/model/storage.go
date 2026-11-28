@@ -32,16 +32,47 @@ import (
 type DataStorageType string
 
 const (
-	DataStorageTypeSCP DataStorageType = "SCP"
-	DataStorageTypeHPC DataStorageType = "HPC"
+	DataStorageTypeSCP      DataStorageType = "SCP"
+	DataStorageTypeHPC      DataStorageType = "HPC"
+	DataStorageTypeAiravata DataStorageType = "AIRAVATA"
 )
 
 func (t DataStorageType) Valid() bool {
 	switch t {
-	case DataStorageTypeSCP, DataStorageTypeHPC:
+	case DataStorageTypeSCP, DataStorageTypeHPC, DataStorageTypeAiravata:
 		return true
 	}
 	return false
+}
+
+// AiravataDataStorage is the temporary storage assigned for each user to upload
+// their data to be temporarily stored before submitting jobs when users do not
+// want to use permanent storage.
+//
+// It is a directory on the host Airavata itself runs on, under the configured
+// AiravataDataStoragePath. A user has at most one: the unique index on user_id
+// enforces it even against two concurrent creates.
+type AiravataDataStorage struct {
+	ID                string         `gorm:"column:data_id;primaryKey;type:varchar(36)" json:"dataId"`
+	Name              *string        `gorm:"column:data_name;type:varchar(255)" json:"dataName,omitempty"`
+	DataExpiryTimeout *int           `gorm:"column:data_expiry_timeout;type:int" json:"dataExpiryTimeout,omitempty"`
+	OwnerID           *string        `gorm:"column:user_id;type:varchar(255);uniqueIndex" json:"ownerId,omitempty"`
+	Owner             *iammodel.User `gorm:"references:ID;constraint:OnDelete:RESTRICT,OnUpdate:CASCADE" json:"-"`
+	RootDirectory     *string        `gorm:"column:root_directory;type:varchar(255)" json:"rootDirectory,omitempty"`
+}
+
+// TableName returns the table backing AiravataDataStorage.
+func (AiravataDataStorage) TableName() string { return "airavata_data_storage" }
+
+func (a *AiravataDataStorage) BeforeCreate(tx *gorm.DB) (err error) {
+	if a.ID == "" {
+		a.ID = uuid.New().String()
+	}
+	return
+}
+
+func (a *AiravataDataStorage) OwnedBy() *iammodel.User {
+	return a.Owner
 }
 
 // SCPDataStorage is a host and account data products can be staged through.

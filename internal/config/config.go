@@ -77,6 +77,10 @@ type Config struct {
 	// PublicURL is where compute nodes reach this server, http(s)://host[:port]. A
 	// job's Linkspan dials its ws(s) form to link back; see internal/link.
 	PublicURL string
+
+	// AiravataDataStoragePath is the directory on this host under which each user's
+	// AiravataDataStorage directory is created.
+	AiravataDataStoragePath string
 }
 
 // Load reads configuration from the environment, applying the same defaults the Java
@@ -104,6 +108,7 @@ func load() (Config, error) {
 		DashboardDir:              dashboardDir(),
 		LandingDir:                env("AIRAVATA_LANDING_DIR", ""),
 		PublicURL:                 env("AIRAVATA_PUBLIC_URL", "http://localhost:"+env("SERVER_PORT", "9095")),
+		AiravataDataStoragePath:   env("AIRAVATA_DATA_STORAGE_PATH", "/tmp/airavata/data-storage"),
 	}
 
 	// Without a root account and without CILogon credentials there is no way to

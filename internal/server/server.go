@@ -38,6 +38,7 @@ import (
 	iamctl "github.com/apache/airavata/api/iam/controller"
 	processctl "github.com/apache/airavata/api/process/controller"
 	sharingctl "github.com/apache/airavata/api/sharing/controller"
+	linkspan "github.com/apache/airavata/extensions/linkspan"
 )
 
 // New builds the fully wired HTTP handler over an already-assembled object graph.
@@ -82,7 +83,7 @@ func New(cfg config.Config, svcs *app.Services, introspector auth.Introspector) 
 	processctl.NewJobSubmissionTaskController(svcs.JobSubmissionTask).Register(mux)
 	processctl.NewJobMonitoringTaskController(svcs.JobMonitoringTask).Register(mux)
 	processctl.NewInteractiveCommandTaskController(svcs.InteractiveCommandTask).Register(mux)
-	processctl.NewLinkController(svcs.Link).Register(mux)
+	linkspan.NewLinkController(svcs.Link).Register(mux)
 
 	auth.NewSignIn(cfg.Issuer, cfg.ClientID, cfg.ClientSecret).Register(mux)
 

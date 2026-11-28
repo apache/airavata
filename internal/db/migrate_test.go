@@ -65,7 +65,7 @@ func TestAutoMigrateCreatesEveryTable(t *testing.T) {
 		"ssh_credentials",
 		"slurm_clusters", "cluster_partitions",
 		"slurm_cluster_configs",
-		"scp_data_storages",
+		"scp_data_storages", "airavata_data_storage",
 		"data_products", "resource_sharings",
 		"virtual_data_directories", "virtual_data_files",
 		"application_templates", "application_template_inputs", "application_template_outputs",
