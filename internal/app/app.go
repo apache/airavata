@@ -99,7 +99,10 @@ type Services struct {
 	BatchDeployment *applicationsvc.BatchDeploymentService
 
 	// Data.
-	SCPDataStorage              *datasvc.SCPDataStorageService
+	SCPDataStorage *datasvc.SCPDataStorageService
+	// AiravataDataStorage manages each user's storage on the Airavata host. Internal:
+	// no route reaches it.
+	AiravataDataStorage         *datasvc.AiravataDataStorageService
 	SCPDataStorageSharing       *sharingsvc.Service
 	DataProduct                 *datasvc.DataProductService
 	DataProductSharing          *sharingsvc.Service
@@ -140,6 +143,7 @@ type Repositories struct {
 	Templates               *applicationrepo.TemplateRepository
 	BatchDeployments        *applicationrepo.BatchDeploymentRepository
 	SCPDataStorages         *datarepo.SCPDataStorageRepository
+	AiravataDataStorages    *datarepo.AiravataDataStorageRepository
 	DataProducts            *datarepo.DataProductRepository
 	VirtualDataDirectories  *datarepo.VirtualDataDirectoryRepository
 	VirtualDataFiles        *datarepo.VirtualDataFileRepository
@@ -170,6 +174,7 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Templates:               applicationrepo.NewTemplateRepository(db),
 		BatchDeployments:        applicationrepo.NewBatchDeploymentRepository(db),
 		SCPDataStorages:         datarepo.NewSCPDataStorageRepository(db),
+		AiravataDataStorages:    datarepo.NewAiravataDataStorageRepository(db),
 		DataProducts:            datarepo.NewDataProductRepository(db),
 		VirtualDataDirectories:  datarepo.NewVirtualDataDirectoryRepository(db),
 		VirtualDataFiles:        datarepo.NewVirtualDataFileRepository(db),
@@ -231,6 +236,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 	slurmClusterConfigSharingSvc := computesvc.NewSlurmClusterConfigSharingService(db, clusterConfigs, shares, groups, users, groupMembers)
 	clusterPartitionSvc := computesvc.NewClusterPartitionService(db, partitions, clusters)
 	scpDataStorageSvc := datasvc.NewSCPDataStorageService(db, storages, shares, keyAccess, products, users, groupMembers)
+	airavataDataStorageSvc := datasvc.NewAiravataDataStorageService(db, repos.AiravataDataStorages, users, cfg.AiravataDataStoragePath)
 	scpDataStorageSharingSvc := datasvc.NewSCPDataStorageSharingService(db, storages, shares, groups, users, groupMembers)
 	dataProductSvc := datasvc.NewDataProductService(db, products, shares, storages, users, groupMembers)
 	dataProductSharingSvc := datasvc.NewDataProductSharingService(db, products, shares, groups, users, groupMembers)
@@ -280,6 +286,7 @@ func NewServices(cfg config.Config, db *gorm.DB, repos *Repositories, workflowBa
 		BatchDeployment: batchDeploymentSvc,
 
 		SCPDataStorage:        scpDataStorageSvc,
+		AiravataDataStorage:   airavataDataStorageSvc,
 		SCPDataStorageSharing: scpDataStorageSharingSvc,
 		DataProduct:           dataProductSvc,
 		DataProductSharing:    dataProductSharingSvc,

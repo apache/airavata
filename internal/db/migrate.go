@@ -57,6 +57,7 @@ func Entities() []any {
 		&iammodel.Group{},
 		&computemodel.SlurmCluster{},
 		&datamodel.SCPDataStorage{},
+		&datamodel.AiravataDataStorage{},
 		&datamodel.DataProduct{},
 		&applicationmodel.TemplateInput{},
 		&applicationmodel.TemplateOutput{},
