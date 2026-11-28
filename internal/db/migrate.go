@@ -34,6 +34,7 @@ import (
 	iammodel "github.com/apache/airavata/api/iam/model"
 	processmodel "github.com/apache/airavata/api/process/model"
 	sharingmodel "github.com/apache/airavata/api/sharing/model"
+	linkspan "github.com/apache/airavata/extensions/linkspan"
 )
 
 // Entities lists every persistent model, ordered so that a table is always created
@@ -114,7 +115,7 @@ func Entities() []any {
 		&processmodel.ProcessWorkflow{},
 
 		// The secrets a process's job is handed so its Linkspan can link back.
-		&processmodel.ProcessLink{},
+		&linkspan.ProcessLink{},
 
 		// The append-only record of what callers did. It references nothing, so it
 		// outlives the users and resources it describes.
